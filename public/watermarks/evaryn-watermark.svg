@@ -1,0 +1,56 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 900 750"
+     fill="none"
+     aria-hidden="true">
+  <defs>
+    <linearGradient id="orbit" x1="120" y1="100" x2="750" y2="650">
+      <stop stop-color="#00C6FF"/>
+      <stop offset=".52" stop-color="#0052CC"/>
+      <stop offset="1" stop-color="#071327"/>
+    </linearGradient>
+    <radialGradient id="node">
+      <stop stop-color="#00C6FF"/>
+      <stop offset="1" stop-color="#0052CC" stop-opacity=".3"/>
+    </radialGradient>
+    <pattern id="hexagons" width="110" height="95"
+             patternUnits="userSpaceOnUse">
+      <path d="M27 5 L82 5 L108 47 L82 90 L27 90 L1 47 Z"
+            stroke="#00AEEF" stroke-width="1.2"
+            stroke-opacity=".23"/>
+    </pattern>
+  </defs>
+
+  <rect width="900" height="750" fill="url(#hexagons)"/>
+
+  <g stroke="url(#orbit)" stroke-width="3" opacity=".65">
+    <ellipse cx="455" cy="348" rx="320" ry="120"
+             transform="rotate(-28 455 348)"/>
+    <ellipse cx="455" cy="348" rx="320" ry="120"
+             transform="rotate(34 455 348)"/>
+    <ellipse cx="455" cy="348" rx="290" ry="110"
+             transform="rotate(85 455 348)"
+             stroke-dasharray="10 12"/>
+  </g>
+
+  <g fill="url(#node)">
+    <circle cx="255" cy="194" r="15"/>
+    <circle cx="670" cy="232" r="13"/>
+    <circle cx="358" cy="623" r="12"/>
+    <circle cx="590" cy="542" r="15"/>
+    <circle cx="455" cy="348" r="28"/>
+  </g>
+
+  <g stroke="#00AEEF" stroke-width="2" opacity=".45">
+    <path d="M75 595 L145 540 L215 580 L282 515 L340 565"/>
+    <path d="M145 540 L175 475 L282 515"/>
+  </g>
+
+  <g fill="#0052CC" opacity=".55">
+    <circle cx="75" cy="595" r="7"/>
+    <circle cx="145" cy="540" r="9"/>
+    <circle cx="215" cy="580" r="7"/>
+    <circle cx="282" cy="515" r="8"/>
+    <circle cx="340" cy="565" r="7"/>
+    <circle cx="175" cy="475" r="6"/>
+  </g>
+</svg>
