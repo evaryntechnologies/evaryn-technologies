@@ -83,6 +83,7 @@ model EmployeeProfile {
   role       String
   status     String   @default("ACTIVE")
   department String?
+  suspensionUntil DateTime?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -112,6 +113,7 @@ model WorkProject {
 }
 
 model WorkTask {
+  extraAttachments TaskExtraAttachment[]
   id           String    @id @default(uuid()) @db.Uuid
   projectId    String?   @db.Uuid
   orderId      String?   @db.Text
@@ -145,7 +147,6 @@ model WorkTask {
   assignedTo  EmployeeProfile? @relation("TaskAssignee", fields: [assignedToId], references: [id])
   createdBy   EmployeeProfile  @relation("TaskCreator", fields: [createdById], references: [id])
   submissions TaskSubmission[]
-  extraAttachments TaskExtraAttachment[]
   messages TaskMessage[]
   reassignmentRequests TaskReassignmentRequest[]
   penalties TaskPenalty[]
@@ -255,7 +256,8 @@ model TaskPenalty {
   @@index([taskId,status])
 }
 
-// Additive files for order amendments. Existing attachment remains unchanged.
+
+// Additional files attached to an existing work task.
 model TaskExtraAttachment {
   id String @id @default(uuid()) @db.Uuid
   taskId String @db.Uuid
@@ -264,6 +266,7 @@ model TaskExtraAttachment {
   fileName String
   contentType String
   createdAt DateTime @default(now())
-  task WorkTask @relation(fields:[taskId],references:[id],onDelete:Restrict)
-  @@index([taskId,createdAt])
+
+task WorkTask @relation(fields: [taskId], references: [id], onDelete: Restrict)
+  @@index([taskId, createdAt])
 }

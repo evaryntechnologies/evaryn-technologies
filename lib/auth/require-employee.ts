@@ -56,8 +56,14 @@ export async function requireEmployee(
       email: true,
       role: true,
       status: true,
+      suspensionUntil: true,
     },
   });
+
+  if (employee?.status === "SUSPENDED" && employee.suspensionUntil && employee.suspensionUntil <= new Date()) {
+    await prisma.employeeProfile.updateMany({where:{authUserId:user.id,status:"SUSPENDED",suspensionUntil:{lte:new Date()}},data:{status:"ACTIVE",suspensionUntil:null}});
+    employee.status = "ACTIVE";
+  }
 
   if (
     !employee ||

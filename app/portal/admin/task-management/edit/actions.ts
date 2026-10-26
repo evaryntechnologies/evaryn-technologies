@@ -20,8 +20,16 @@ export async function updateOrderDetails(form: FormData): Promise<EditResult> {
   const instructions=String(form.get("instructions")??"").trim();
   const priority=String(form.get("priority")??"");
   if(title.length<3||title.length>160||description.length<10||description.length>10000||instructions.length>10000||!["LOW","NORMAL","HIGH","URGENT"].includes(priority)) return {success:false,message:"Check the title, details, instructions and priority."};
-  const task=await prisma.workTask.findUnique({where:{id:taskId},select:{status:true,assignedToId:true,deadline:true,reviewDeadline:true,qaDeadline:true,submissionHours:true,reviewHours:true,qaHours:true,_count:{select:{submissions:true}}}});
-  if(!task || !editableStates.includes(task.status) || task._count.submissions>0) return {success:false,message:"Only orders that have not been submitted can be edited."};
+  const task=await prisma.workTask.findUnique({where:{id:taskId},select:{status:true,assignedToId:true,deadline:true,reviewDeadline:true,qaDeadline:true,submissionHours:true,reviewHours:true,qaHours:true,reinstatedAt:true,_count:{select:{submissions:true}}}});
+  if(!task || !editableStates.includes(task.status)) return {success:false,message:"This order cannot be edited in its current status."};
+  // Reinstatement starts a new work round. Earlier submissions remain as history.
+  // Once the current round has been submitted, the edit threshold applies again.
+  if(task.reinstatedAt){
+    const submittedThisRound=await prisma.taskSubmission.count({where:{taskId,submittedAt:{gte:task.reinstatedAt}}});
+    if(submittedThisRound>0) return {success:false,message:"The reinstated order has already been submitted in its current round."};
+  } else if(task._count.submissions>0){
+    return {success:false,message:"This order has already been submitted. Reinstate a completed or canceled order to open a new editing round."};
+  }
   // Keep the current deadlines unchanged unless new positive durations are supplied.
   const parseHours=(name:string,old:number|null)=>{
     const raw=String(form.get(name)??"").trim();
@@ -57,8 +65,12 @@ export async function updateOrderDetails(form: FormData): Promise<EditResult> {
   try {
     await prisma.$transaction(async tx=>{
       // Recheck status and submission count inside the transaction before the amendment.
-      const current=await tx.workTask.findUnique({where:{id:taskId},select:{status:true,_count:{select:{submissions:true}}}});
-      if(!current || !editableStates.includes(current.status) || current._count.submissions>0) throw new Error("Order was submitted or closed while editing.");
+      const current=await tx.workTask.findUnique({where:{id:taskId},select:{status:true,reinstatedAt:true,_count:{select:{submissions:true}}}});
+      if(!current || !editableStates.includes(current.status)) throw new Error("Order no longer editable.");
+      if(current.reinstatedAt){
+        const submittedThisRound=await tx.taskSubmission.count({where:{taskId,submittedAt:{gte:current.reinstatedAt}}});
+        if(submittedThisRound>0) throw new Error("Reinstated order was submitted while editing.");
+      } else if(current._count.submissions>0) throw new Error("Order was submitted while editing.");
       await tx.workTask.update({where:{id:taskId},data:{title,description,instructions:instructions||null,priority,submissionHours,reviewHours,qaHours,deadline:due("submissionHours",submissionHours,task.deadline),reviewDeadline:due("reviewHours",reviewHours,task.reviewDeadline),qaDeadline:due("qaHours",qaHours,task.qaDeadline)}});
       if(uploaded) await tx.taskExtraAttachment.create({data:{taskId,uploadedById:manager.id,...uploaded}});
     });
