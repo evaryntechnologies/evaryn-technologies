@@ -150,6 +150,9 @@ model WorkTask {
   penalties TaskPenalty[]
   clientRating Int?
   clientActionAt DateTime?
+  reinstatedAt DateTime?
+  reinstatedById String? @db.Uuid
+  reinstatementCount Int @default(0)
 
   @@index([projectId, status])
   @@index([assignedToId, status])
