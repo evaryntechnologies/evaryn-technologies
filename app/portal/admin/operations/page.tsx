@@ -133,7 +133,7 @@ async function OperationsContent() {
                   </p>
                   <h3 className="mt-2 font-semibold">{task.title}</h3>
                   <p className="mt-2 text-sm text-slate-300">
-                    Assigned to {task.assignedTo.fullName}
+                    Assigned to {task.assignedTo?.fullName ?? "Unassigned"}
                   </p>
                   <div className="mt-3 flex flex-wrap gap-3 text-xs text-slate-300">
                     <span>Status: {task.status.replaceAll("_", " ")}</span>

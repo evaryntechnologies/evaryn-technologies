@@ -97,6 +97,7 @@ async function TaskerContent() {
         </p>
       </div>
 
+      <Link href="/portal/task-hub" className="mb-6 inline-block rounded-xl bg-[#0052CC] px-5 py-3 font-semibold text-white">Browse Task Hub</Link>
       {/* Task summary */}
       <div className="mb-8 grid gap-4 sm:grid-cols-2">
         <div className="rounded-2xl border border-white/10 bg-[#101F39] p-6">

@@ -298,7 +298,7 @@ async function HistoryContent({
                         {task.title}
                       </h3>
                       <p className="mt-2 text-sm text-slate-300">
-                        Assigned to {task.assignedTo.fullName}
+                        Assigned to {task.assignedTo?.fullName ?? "Unassigned"}
                       </p>
                       <p className="mt-2 text-xs text-slate-400">
                         Created {formatDate(task.createdAt)}
@@ -334,7 +334,7 @@ async function HistoryContent({
                     </p>
                     <p className="sm:col-span-2 break-all">
                       <strong className="text-white">Employee email:</strong>{" "}
-                      {task.assignedTo.email}
+                      {task.assignedTo?.email ?? "—"}
                     </p>
                   </div>
 

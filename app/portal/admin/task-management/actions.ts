@@ -14,21 +14,25 @@ export async function assignTask(formData: FormData): Promise<Result> {
   const creator = await prisma.employeeProfile.findUnique({ where: { authUserId: user.id }, select: { id: true, role: true, status: true } });
   if (!creator || creator.status !== "ACTIVE" || !["ADMIN", "SUPER_ADMIN", "QA"].includes(creator.role)) return { success:false,message:"Access denied." };
   const assignedToId = String(formData.get("assignedToId") ?? "");
+  const mode = String(formData.get("publishMode") ?? "ASSIGN");
+  if (!["DRAFT", "OPEN", "ASSIGN"].includes(mode)) return {success:false,message:"Invalid publication option."};
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const orderId = String(formData.get("orderId") ?? "");
   const category = String(formData.get("category") ?? "");
   const priority = String(formData.get("priority") ?? "NORMAL");
-  if (!uuid.test(assignedToId) || title.length < 3 || title.length > 160 || description.length < 10 || description.length > 10000 || orderId.length > 10000 || !category || !["LOW","NORMAL","HIGH","URGENT"].includes(priority)) return {success:false,message:"Check the entered task details."};
+  if ((mode === "ASSIGN" && !uuid.test(assignedToId)) || title.length < 3 || title.length > 160 || description.length < 10 || description.length > 10000 || orderId.length > 10000 || !category || !["LOW","NORMAL","HIGH","URGENT"].includes(priority)) return {success:false,message:"Check the entered task details."};
   const validCategory = await prisma.taskCategory.findFirst({where:{name:category,active:true},select:{id:true,rate:true,billingUnit:true}});
   if (!validCategory) return {success:false,message:"Please select an active category."};
   const unitsText=String(formData.get("unitsOrdered")??"").trim();
   const unitsOrdered=Number(unitsText);
   if (!unitsText || !Number.isFinite(unitsOrdered) || unitsOrdered<=0 || unitsOrdered>100000000 || !/^\d+(?:\.\d{1,2})?$/.test(unitsText)) return {success:false,message:"Enter valid units ordered (up to 2 decimal places)."};
-  const eligible = await prisma.employeeCategory.findUnique({where:{employeeId_categoryId:{employeeId:assignedToId,categoryId:validCategory.id}}});
-  if (!eligible) return {success:false,message:"This employee is not assigned to the selected task category."};
-  const worker = await prisma.employeeProfile.findUnique({where:{id:assignedToId},select:{status:true,role:true}});
-  if (!worker || worker.status !== "ACTIVE" || worker.role !== "TASKER") return {success:false,message:"Please select an active Tasker."};
+  if (mode === "ASSIGN") {
+    const eligible = await prisma.employeeCategory.findUnique({where:{employeeId_categoryId:{employeeId:assignedToId,categoryId:validCategory.id}}});
+    if (!eligible) return {success:false,message:"This employee is not assigned to the selected task category."};
+    const worker = await prisma.employeeProfile.findUnique({where:{id:assignedToId},select:{status:true,role:true}});
+    if (!worker || worker.status !== "ACTIVE" || worker.role !== "TASKER") return {success:false,message:"Please select an active Tasker."};
+  }
   const parseHours = (key:string) => {
     const text = String(formData.get(key) ?? "").trim();
     const hours=Number(text);
@@ -59,9 +63,13 @@ export async function assignTask(formData: FormData): Promise<Result> {
   const stamp=(hours:number)=>new Date(start+hours*3600000);
   try {
     await prisma.workTask.create({data:{
-      assignedToId,createdById:creator.id,title,description,priority,status:"ASSIGNED",
+      assignedToId:mode === "ASSIGN" ? assignedToId : null,createdById:creator.id,title,description,priority,status:mode === "ASSIGN" ? "ASSIGNED" : mode,
       orderId,category,unitsOrdered:unitsOrdered.toFixed(2),unitRate:validCategory.rate,totalOrderCost:validCategory.rate.mul(unitsOrdered),billingUnit:validCategory.billingUnit,publicTaskId:"TASK-"+randomUUID().replaceAll("-","").slice(0,12).toUpperCase(),
-      deadline:stamp(submissionHours),reviewDeadline:stamp(reviewHours),qaDeadline:stamp(qaHours),
+      // For hub tasks, deadlines start only once a Tasker claims the task.
+      deadline:mode === "ASSIGN" ? stamp(submissionHours) : null,
+      reviewDeadline:mode === "ASSIGN" ? stamp(reviewHours) : null,
+      qaDeadline:mode === "ASSIGN" ? stamp(qaHours) : null,
+      submissionHours, reviewHours, qaHours,
       attachmentKey,attachmentName,
     }});
   } catch(e) {
@@ -72,5 +80,6 @@ export async function assignTask(formData: FormData): Promise<Result> {
   revalidatePath("/portal/admin/task-management");
   revalidatePath("/portal/tasker");
   revalidatePath("/portal/qa");
-  return {success:true,message:"Task assigned successfully."};
+  revalidatePath("/portal/task-hub");
+  return {success:true,message:mode === "DRAFT" ? "Task saved as draft." : mode === "OPEN" ? "Task published to the Task Hub." : "Task assigned successfully."};
 }

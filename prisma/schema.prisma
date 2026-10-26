@@ -125,7 +125,7 @@ model WorkTask {
   status       String    @default("ASSIGNED")
   priority     String    @default("NORMAL")
   deadline     DateTime?
-  assignedToId String    @db.Uuid
+  assignedToId String?   @db.Uuid
   createdById  String    @db.Uuid
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
@@ -134,9 +134,12 @@ model WorkTask {
   unitRate Decimal? @db.Decimal(14,2)
   totalOrderCost Decimal? @db.Decimal(16,2)
   billingUnit String?
+  submissionHours Float?
+  reviewHours Float?
+  qaHours Float?
 
   project     WorkProject?     @relation(fields: [projectId], references: [id])
-  assignedTo  EmployeeProfile  @relation("TaskAssignee", fields: [assignedToId], references: [id])
+  assignedTo  EmployeeProfile? @relation("TaskAssignee", fields: [assignedToId], references: [id])
   createdBy   EmployeeProfile  @relation("TaskCreator", fields: [createdById], references: [id])
   submissions TaskSubmission[]
 
