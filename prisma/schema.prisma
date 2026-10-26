@@ -145,6 +145,7 @@ model WorkTask {
   assignedTo  EmployeeProfile? @relation("TaskAssignee", fields: [assignedToId], references: [id])
   createdBy   EmployeeProfile  @relation("TaskCreator", fields: [createdById], references: [id])
   submissions TaskSubmission[]
+  extraAttachments TaskExtraAttachment[]
   messages TaskMessage[]
   reassignmentRequests TaskReassignmentRequest[]
   penalties TaskPenalty[]
@@ -252,4 +253,17 @@ model TaskPenalty {
   task WorkTask @relation(fields:[taskId],references:[id],onDelete:Restrict)
   createdBy EmployeeProfile @relation(fields:[createdById],references:[id],onDelete:Restrict)
   @@index([taskId,status])
+}
+
+// Additive files for order amendments. Existing attachment remains unchanged.
+model TaskExtraAttachment {
+  id String @id @default(uuid()) @db.Uuid
+  taskId String @db.Uuid
+  uploadedById String @db.Uuid
+  storageKey String @unique
+  fileName String
+  contentType String
+  createdAt DateTime @default(now())
+  task WorkTask @relation(fields:[taskId],references:[id],onDelete:Restrict)
+  @@index([taskId,createdAt])
 }

@@ -28,6 +28,7 @@ async function TaskContent({
     where: { id: taskId, assignedToId: employee.id },
     include: {
       
+      extraAttachments: { orderBy: { createdAt: "desc" }, select: { id: true, fileName: true } },
       submissions: {
         where: { employeeId: employee.id },
         orderBy: { submittedAt: "desc" },
@@ -87,6 +88,7 @@ async function TaskContent({
         <section className="mt-8 rounded-2xl border border-white/10 bg-[#101F39] p-6 sm:p-8">
           <h2 className="text-xl font-bold">Task Details</h2>
           {task.attachmentKey && <p className="mt-4"><a className="text-cyan-300 underline" href={`/portal/attachments/${task.id}`}>Download reference: {task.attachmentName ?? "Attachment"}</a></p>}
+          {task.extraAttachments.map(file => <p key={file.id} className="mt-3"><a className="text-cyan-300 underline" href={`/portal/attachments/${task.id}/extra/${file.id}`}>Additional file: {file.fileName}</a></p>)}
           <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-slate-300">
             {task.description}
           </p>
