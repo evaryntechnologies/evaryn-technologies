@@ -45,6 +45,7 @@ async function createEmployeeInner(
   const role = String(formData.get("role") ?? "");
   const department = String(formData.get("department") ?? "").trim();
   const emailVerified = formData.get("emailVerified") === "yes";
+  const categoryIds=[...new Set(formData.getAll("categoryIds").map(String))];
 
   if (
     fullName.length < 2 ||
@@ -64,6 +65,10 @@ async function createEmployeeInner(
     };
   }
 
+  if (role!=="ADMIN") {
+    const available = await prisma.taskCategory.count({where:{id:{in:categoryIds},active:true}});
+    if (!categoryIds.length || available!==categoryIds.length) return {...initialEmployeeState,error:"Select at least one valid active task category for this employee."};
+  }
   if (await prisma.employeeProfile.findUnique({ where: { email } })) {
     return { ...initialEmployeeState, error: "This email already has an employee profile." };
   }
@@ -109,6 +114,7 @@ async function createEmployeeInner(
         role,
         department: department || null,
         status: "PENDING",
+        ...(role!=="ADMIN"?{eligibleCategories:{create:categoryIds.map(categoryId=>({category:{connect:{id:categoryId}}}))}}:{}),
       },
     });
 

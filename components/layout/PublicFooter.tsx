@@ -1,10 +1,10 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function PublicFooter() {
   return (
     <footer className="bg-[#071327] text-slate-300">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-3 md:px-8">
+      <div className="mx-auto grid w-full gap-10 px-6 py-14 md:grid-cols-3 md:px-8">
         <div>
           <div className="flex items-center gap-3">
             <Image

@@ -7,6 +7,7 @@ import { Users, UserPlus, ArrowLeft, ShieldCheck } from "lucide-react";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 import AddEmployeeForm from "./AddEmployeeForm";
+import {updateEmployeeCategories} from "./category-actions";
 
 async function EmployeeContent() {
   await connection();
@@ -37,6 +38,7 @@ async function EmployeeContent() {
     );
   }
 
+  const categories=await prisma.taskCategory.findMany({where:{active:true},select:{id:true,name:true},orderBy:{name:"asc"}});
   const employees = await prisma.employeeProfile.findMany({
     select: {
       id: true,
@@ -47,6 +49,7 @@ async function EmployeeContent() {
       status: true,
       department: true,
       createdAt: true,
+      eligibleCategories:{select:{categoryId:true}},
     },
     orderBy: { createdAt: "desc" },
     take: 100,
@@ -153,7 +156,7 @@ async function EmployeeContent() {
 
       {/* Employee creation */}
       <div className="mt-8">
-        <AddEmployeeForm />
+        <AddEmployeeForm categories={categories} />
       </div>
 
       {/* Employee directory */}
@@ -256,7 +259,7 @@ async function EmployeeContent() {
                       className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${statusColor}`}
                     >
                       {employee.status}
-                    </span>
+                    </span>{!["ADMIN","SUPER_ADMIN"].includes(employee.role) && <details className="w-full sm:w-auto sm:min-w-64 rounded-lg border border-white/15 p-3"><summary className="cursor-pointer text-sm font-semibold text-cyan-300">Edit categories ({employee.eligibleCategories.length})</summary><form action={updateEmployeeCategories} className="mt-3 grid gap-2"><input type="hidden" name="employeeId" value={employee.id}/>{categories.map(c=><label key={c.id} className="flex items-center gap-2 text-sm"><input name="categoryIds" type="checkbox" value={c.id} defaultChecked={employee.eligibleCategories.some(e=>e.categoryId===c.id)}/>{c.name}</label>)}<button className="mt-2 rounded-lg bg-[#0052CC] px-3 py-2 text-sm font-semibold">Save assigned categories</button></form></details>}
                   </div>
                 </article>
               );

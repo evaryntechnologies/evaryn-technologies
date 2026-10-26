@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -71,7 +71,7 @@ export default function Home() {
           className="pointer-events-none absolute inset-0 bg-[url('/watermarks/evaryn-watermark.svg')] bg-right bg-no-repeat opacity-15"
         />
 
-        <div className="relative mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
+        <div className="relative mx-auto grid w-full items-center gap-14 lg:grid-cols-2">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-white/10 px-4 py-2 text-xs font-semibold tracking-wide text-cyan-100">
               <Sparkles size={15} />
@@ -147,7 +147,7 @@ export default function Home() {
       </section>
 
       {/* SERVICES */}
-      <section className="mx-auto max-w-7xl px-6 py-20 md:px-8">
+      <section className="mx-auto w-full px-6 py-20 md:px-8">
         <div className="mb-10 max-w-3xl">
           <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#0052CC] dark:text-cyan-300">
             Our Expertise
@@ -171,7 +171,7 @@ export default function Home() {
 
       {/* CAREERS */}
       <section className="px-6 pb-20 md:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 rounded-3xl border border-cyan-200 bg-[#E7F6FF] p-8 dark:border-[#24496E] dark:bg-[#102D4D] md:flex-row md:items-center md:p-12">
+        <div className="mx-auto flex w-full flex-col items-start justify-between gap-8 rounded-3xl border border-cyan-200 bg-[#E7F6FF] p-8 dark:border-[#24496E] dark:bg-[#102D4D] md:flex-row md:items-center md:p-12">
           <div className="flex max-w-2xl items-start gap-5">
             <div className="rounded-2xl bg-white p-4 text-[#0052CC] dark:bg-[#17365B] dark:text-cyan-300">
               <Users size={28} />
@@ -205,7 +205,7 @@ export default function Home() {
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[url('/watermarks/evaryn-watermark.svg')] bg-center bg-no-repeat opacity-[0.035] dark:opacity-[0.08]"
         />
-        <div className="relative mx-auto max-w-7xl">
+        <div className="relative mx-auto w-full">
           <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#0052CC] dark:text-cyan-300">
             Explore Evaryn
           </p>
@@ -245,7 +245,7 @@ export default function Home() {
 
       {/* CUSTOM REQUEST */}
       <section className="px-6 py-20 md:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 rounded-3xl bg-gradient-to-r from-[#071327] to-[#002B7F] p-9 text-white md:flex-row md:items-center md:p-14">
+        <div className="mx-auto flex w-full flex-col items-start justify-between gap-8 rounded-3xl bg-gradient-to-r from-[#071327] to-[#002B7F] p-9 text-white md:flex-row md:items-center md:p-14">
           <div>
             <p className="text-sm font-bold uppercase tracking-widest text-cyan-300">
               Tailored Solutions
@@ -271,7 +271,7 @@ export default function Home() {
 
       {/* LOCATION */}
       <section className="border-t border-slate-200 bg-white px-6 py-20 dark:border-slate-800 dark:bg-[#0C1B33] md:px-8">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
+        <div className="mx-auto grid w-full items-center gap-12 lg:grid-cols-2">
           <div>
             <p className="text-sm font-bold uppercase tracking-widest text-[#0052CC] dark:text-cyan-300">
               Where we are

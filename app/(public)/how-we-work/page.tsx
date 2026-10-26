@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ClipboardList, UsersRound, PenLine, ScanSearch, BadgeCheck, CheckCircle2 } from "lucide-react";
 
@@ -20,7 +20,7 @@ export default function HowWeWorkPage() {
     <main className="bg-[#F3F7FC] text-[#071327] dark:bg-[#071327] dark:text-white">
       <section className="relative isolate overflow-hidden bg-gradient-to-br from-[#071327] via-[#002B7F] to-[#0052CC] px-6 py-20 text-white md:py-28">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[url('/watermarks/evaryn-watermark.svg')] bg-right bg-no-repeat opacity-15" />
-        <div className="relative mx-auto max-w-7xl">
+        <div className="relative mx-auto w-full">
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-cyan-300">Our delivery process</p>
           <h1 className="mt-5 max-w-3xl text-4xl font-bold tracking-tight md:text-6xl">How we work</h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">Five clear steps connect your brief to reviewed, quality-checked deliverables.</p>
@@ -28,7 +28,7 @@ export default function HowWeWorkPage() {
         </div>
       </section>
 
-      <section id="process" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-20 md:px-8">
+      <section id="process" className="mx-auto w-full scroll-mt-24 px-6 py-20 md:px-8">
         <div className="mb-12 max-w-2xl">
           <p className="text-sm font-bold uppercase tracking-widest text-[#0052CC] dark:text-cyan-300">A structured approach</p>
           <h2 className="mt-4 text-3xl font-bold md:text-4xl">From idea to delivery</h2>

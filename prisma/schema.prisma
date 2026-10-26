@@ -86,6 +86,7 @@ model EmployeeProfile {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+  eligibleCategories EmployeeCategory[]
   assignedTasks WorkTask[]       @relation("TaskAssignee")
   createdTasks  WorkTask[]       @relation("TaskCreator")
   submissions   TaskSubmission[]
@@ -128,6 +129,11 @@ model WorkTask {
   createdById  String    @db.Uuid
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+
+  unitsOrdered Decimal? @db.Decimal(14,2)
+  unitRate Decimal? @db.Decimal(14,2)
+  totalOrderCost Decimal? @db.Decimal(16,2)
+  billingUnit String?
 
   project     WorkProject?     @relation(fields: [projectId], references: [id])
   assignedTo  EmployeeProfile  @relation("TaskAssignee", fields: [assignedToId], references: [id])
@@ -177,8 +183,20 @@ model TaskCategory {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @unique
   active    Boolean  @default(true)
+  rate Decimal @default(0) @db.Decimal(14,2)
+  billingUnit String @default("TASK")
+  employees EmployeeCategory[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([active, name])
+}
+
+model EmployeeCategory {
+  employeeId String @db.Uuid
+  categoryId String @db.Uuid
+  employee EmployeeProfile @relation(fields:[employeeId],references:[id],onDelete:Cascade)
+  category TaskCategory @relation(fields:[categoryId],references:[id],onDelete:Restrict)
+  @@id([employeeId, categoryId])
+  @@index([categoryId])
 }

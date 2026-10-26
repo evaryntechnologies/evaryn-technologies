@@ -1,7 +1,7 @@
 "use client";
 
 import type { CreateEmployeeState } from "./create-actions";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import {
   createEmployee,
 } from "./create-actions";
@@ -14,7 +14,8 @@ const initialEmployeeState: CreateEmployeeState = {
   employeeId: "",
   temporaryPassword: "",
 };
-export default function AddEmployeeForm() {
+export default function AddEmployeeForm({categories}:{categories:{id:string;name:string}[]}) {
+  const [role,setRole]=useState("");
   const [state, action, pending] = useActionState(
     createEmployee,
     initialEmployeeState
@@ -43,7 +44,7 @@ export default function AddEmployeeForm() {
 
           <label className="block text-sm font-medium">
             Employee role
-            <select name="role" required defaultValue="" className={field}>
+            <select name="role" required value={role} onChange={e=>setRole(e.target.value)} className={field}>
               <option value="">Select role</option>
               <option value="TASKER">Tasker</option>
               <option value="REVIEWER">Reviewer</option>
@@ -59,6 +60,7 @@ export default function AddEmployeeForm() {
           </label>
         </div>
 
+        {role!=="ADMIN" && <fieldset className="rounded-xl border border-white/15 p-4"><legend className="px-2 font-semibold">Authorized task categories</legend><p className="mb-3 text-sm text-slate-300">Select all categories this employee may work on. Administrators do not need task categories.</p><div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">{categories.map(c=><label key={c.id} className="flex items-center gap-2 text-sm"><input type="checkbox" name="categoryIds" value={c.id}/>{c.name}</label>)}</div>{categories.length===0 && <p className="text-amber-200">Create and activate task categories first.</p>}</fieldset>}
         <label className="flex items-start gap-3 text-sm text-slate-300">
           <input type="checkbox" name="emailVerified" value="yes"
             required className="mt-1" />

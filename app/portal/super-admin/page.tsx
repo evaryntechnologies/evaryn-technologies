@@ -66,7 +66,7 @@ async function SuperAdminContent() {
 
   return (
     <div className="w-full max-w-none">
-      <Link href="/"><Image src="/brand/evaryn-full.png" alt="Evaryn Technologies Limited" width={240} height={74} className="mb-5 h-auto max-h-20 w-auto max-w-[65vw] object-contain" /></Link>
+      <Link href="/"><Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={240} height={74} className="mb-5 h-auto max-h-28 w-auto max-w-[75vw] object-contain" /></Link>
       <header className="flex flex-wrap items-center justify-between gap-5 border-b border-white/10 pb-7">
         <div>
           <p className="text-xs font-bold tracking-[0.2em] text-cyan-300">

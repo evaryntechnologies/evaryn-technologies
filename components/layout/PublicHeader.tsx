@@ -25,14 +25,14 @@ export default function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-xl dark:border-slate-800 dark:bg-[#071327]/95">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-5 md:px-8">
+      <div className="mx-auto flex h-24 w-full items-center justify-between gap-4 px-5 md:px-8">
         <Link
           href="/"
           onClick={closeMenu}
           className="flex min-w-0 items-center gap-3"
           aria-label="Evaryn Technologies Limited - Home"
         >
-          <Image src="/brand/evaryn-full.png" alt="Evaryn Technologies Limited" width={245} height={76} className="h-auto max-h-14 w-auto max-w-[min(56vw,245px)] object-contain" priority />
+          <Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={320} height={95} className="h-auto max-h-20 w-auto max-w-[min(62vw,320px)] object-contain" priority />
         </Link>
 
         {/* Desktop navigation */}
@@ -104,7 +104,7 @@ export default function PublicHeader() {
           aria-label="Mobile navigation"
           className="border-t border-slate-200 bg-white px-5 py-5 dark:border-slate-800 dark:bg-[#071327] lg:hidden"
         >
-          <div className="mx-auto flex max-w-7xl flex-col gap-2">
+          <div className="mx-auto flex w-full flex-col gap-2">
             {links.map((link) => {
               const active =
                 pathname === link.href ||

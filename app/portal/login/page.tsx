@@ -14,7 +14,7 @@ async function LoginContent({ searchParams }: LoginProps) {
     <main className="flex min-h-screen items-center justify-center bg-[#071327] px-4 py-12 text-white">
       <section className="w-full max-w-md rounded-3xl border border-white/10 bg-[#101F39] p-8 shadow-xl sm:p-10">
         <Link href="/" aria-label="Evaryn Technologies home" className="block">
-          <Image src="/brand/evaryn-full.png" alt="Evaryn Technologies Limited" width={360} height={110} className="h-auto max-h-28 w-full object-contain" priority />
+          <Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={360} height={110} className="h-auto max-h-44 w-full object-contain" priority />
         </Link>
 
         <h1 className="mt-5 text-3xl font-bold">
