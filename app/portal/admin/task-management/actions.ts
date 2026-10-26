@@ -7,7 +7,7 @@ import { createClient as adminClient } from "@supabase/supabase-js";
 
 type Result = { success: boolean; message: string };
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const categories = ["Writing", "Editing", "Research", "Data Annotation", "Video Editing", "Other"];
+
 
 export async function assignTask(formData: FormData): Promise<Result> {
   const user = await requireEmployee(["ADMIN", "SUPER_ADMIN", "QA"]);
@@ -19,7 +19,9 @@ export async function assignTask(formData: FormData): Promise<Result> {
   const orderId = String(formData.get("orderId") ?? "");
   const category = String(formData.get("category") ?? "");
   const priority = String(formData.get("priority") ?? "NORMAL");
-  if (!uuid.test(assignedToId) || title.length < 3 || title.length > 160 || description.length < 10 || description.length > 10000 || orderId.length > 10000 || !categories.includes(category) || !["LOW","NORMAL","HIGH","URGENT"].includes(priority)) return {success:false,message:"Check the entered task details."};
+  if (!uuid.test(assignedToId) || title.length < 3 || title.length > 160 || description.length < 10 || description.length > 10000 || orderId.length > 10000 || !category || !["LOW","NORMAL","HIGH","URGENT"].includes(priority)) return {success:false,message:"Check the entered task details."};
+  const validCategory = await prisma.taskCategory.findFirst({where:{name:category,active:true},select:{id:true}});
+  if (!validCategory) return {success:false,message:"Please select an active category."};
   const worker = await prisma.employeeProfile.findUnique({where:{id:assignedToId},select:{status:true,role:true}});
   if (!worker || worker.status !== "ACTIVE" || worker.role !== "TASKER") return {success:false,message:"Please select an active Tasker."};
   const parseHours = (key:string) => {

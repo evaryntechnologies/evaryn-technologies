@@ -25,7 +25,7 @@ async function QAContent() {
   ]);
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="w-full max-w-none">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-bold tracking-widest text-cyan-300">
@@ -121,7 +121,7 @@ export default function QAPage() {
     <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
       <Suspense
         fallback={
-          <div className="mx-auto max-w-6xl rounded-2xl border border-white/10 bg-[#101F39] p-8 text-slate-300">
+          <div className="w-full max-w-none rounded-2xl border border-white/10 bg-[#101F39] p-8 text-slate-300">
             Loading Quality Assurance...
           </div>
         }

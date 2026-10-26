@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -32,22 +32,7 @@ export default function PublicHeader() {
           className="flex min-w-0 items-center gap-3"
           aria-label="Evaryn Technologies Limited - Home"
         >
-          <Image
-            src="/brand/evaryn-icon.png"
-            alt="Evaryn Technologies logo"
-            width={45}
-            height={45}
-            className="h-11 w-11 object-contain"
-          />
-
-          <div className="min-w-0 leading-tight">
-            <span className="block text-lg font-extrabold tracking-wide text-[#0052CC] dark:text-[#00C6FF]">
-              EVARYN
-            </span>
-            <span className="block text-[11px] font-semibold tracking-wide text-slate-600 dark:text-slate-300">
-              TECHNOLOGIES LIMITED
-            </span>
-          </div>
+          <Image src="/brand/evaryn-full.png" alt="Evaryn Technologies Limited" width={245} height={76} className="h-auto max-h-14 w-auto max-w-[min(56vw,245px)] object-contain" priority />
         </Link>
 
         {/* Desktop navigation */}

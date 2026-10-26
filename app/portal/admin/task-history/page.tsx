@@ -192,7 +192,7 @@ async function HistoryContent({
   ];
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="w-full max-w-none">
       <Link
         href={user.role === "SUPER_ADMIN" ? "/portal/super-admin" : "/portal/admin"}
         className="text-sm font-semibold text-cyan-300 hover:underline"
@@ -480,7 +480,7 @@ export default function TaskHistoryPage({
     <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
       <Suspense
         fallback={
-          <div className="mx-auto max-w-7xl rounded-2xl border border-white/10 bg-[#101F39] p-8 text-slate-300">
+          <div className="w-full max-w-none rounded-2xl border border-white/10 bg-[#101F39] p-8 text-slate-300">
             Loading task history...
           </div>
         }

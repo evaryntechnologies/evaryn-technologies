@@ -1,5 +1,6 @@
-﻿
+
 import Link from "next/link";
+import Image from "next/image";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { requireEmployee } from "@/lib/auth/require-employee";
@@ -18,6 +19,13 @@ const modules = [
     title: "Task Management",
     description: "Create projects, assign tasks and monitor assignments.",
     href: "/portal/admin/task-management",
+    icon: ClipboardList,
+    ready: true,
+  },
+  {
+    title: "Task Categories",
+    description: "Add, rename, deactivate or delete task categories.",
+    href: "/portal/super-admin/categories",
     icon: ClipboardList,
     ready: true,
   },
@@ -57,7 +65,8 @@ async function SuperAdminContent() {
   const employee = await requireEmployee(["SUPER_ADMIN"]);
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="w-full max-w-none">
+      <Link href="/"><Image src="/brand/evaryn-full.png" alt="Evaryn Technologies Limited" width={240} height={74} className="mb-5 h-auto max-h-20 w-auto max-w-[65vw] object-contain" /></Link>
       <header className="flex flex-wrap items-center justify-between gap-5 border-b border-white/10 pb-7">
         <div>
           <p className="text-xs font-bold tracking-[0.2em] text-cyan-300">
@@ -165,7 +174,7 @@ export default function SuperAdminPage() {
     <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
       <Suspense
         fallback={
-          <div className="mx-auto max-w-7xl rounded-2xl border border-white/10 bg-[#101F39] p-8 text-slate-300">
+          <div className="w-full max-w-none rounded-2xl border border-white/10 bg-[#101F39] p-8 text-slate-300">
             Loading your secure dashboard...
           </div>
         }

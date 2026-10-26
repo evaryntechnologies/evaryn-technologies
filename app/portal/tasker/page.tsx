@@ -251,7 +251,7 @@ async function TaskerContent() {
 export default function TaskerPage() {
   return (
     <main className="min-h-screen bg-[#071327] px-5 py-10 text-white sm:px-10">
-      <div className="mx-auto max-w-6xl">
+      <div className="w-full max-w-none">
         <Suspense
           fallback={
             <div className="rounded-2xl border border-white/10 bg-[#101F39] p-8 text-slate-300">

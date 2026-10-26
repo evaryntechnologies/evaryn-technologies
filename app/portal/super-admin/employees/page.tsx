@@ -71,7 +71,7 @@ async function EmployeeContent() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="w-full max-w-none">
       {/* Navigation */}
       <Link
         href="/portal/super-admin"
@@ -279,7 +279,7 @@ export default function EmployeeManagementPage() {
     <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
       <Suspense
         fallback={
-          <div className="mx-auto max-w-7xl rounded-2xl border border-white/10 bg-[#101F39] p-8 text-slate-300">
+          <div className="w-full max-w-none rounded-2xl border border-white/10 bg-[#101F39] p-8 text-slate-300">
             Loading employee management...
           </div>
         }

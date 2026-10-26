@@ -22,6 +22,7 @@ export default function TaskManagementLayout({
           >
             Task History & Reports
           </Link>
+          <Link href="/portal/super-admin/categories" className="rounded-xl border border-white/20 px-4 py-2 text-sm font-medium text-cyan-300 hover:bg-white/5">Task Categories (Super Admin)</Link>
         </div>
       </nav>
       {children}

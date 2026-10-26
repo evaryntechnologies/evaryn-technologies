@@ -69,3 +69,11 @@ option {
   font-family: "Inter", Arial, sans-serif !important;
   font-weight: 700;
 }
+/* Responsive application layout: allow grids and tables to shrink without clipping. */
+html, body { width:100%; max-width:100%; overflow-x:clip; }
+main { width:100%; min-width:0; }
+main > div { min-width:0; }
+.grid > * { min-width:0; }
+img, svg { max-width:100%; }
+input, select, textarea { max-width:100%; }
+@media (max-width: 640px) { main { overflow-wrap:anywhere; } main table { display:block; max-width:100%; overflow-x:auto; } }

@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 import Link from "next/link";
+import Image from "next/image";
 import { Suspense } from "react";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { signOut } from "../actions";
@@ -55,7 +56,8 @@ async function AdminContent() {
   ]);
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="w-full max-w-none">
+      <Link href="/"><Image src="/brand/evaryn-full.png" alt="Evaryn Technologies Limited" width={240} height={74} className="mb-5 h-auto max-h-20 w-auto max-w-[65vw] object-contain" /></Link>
       <header className="flex flex-wrap items-start justify-between gap-5 border-b border-white/10 pb-7">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
@@ -178,7 +180,7 @@ export default function AdminPage() {
     <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
       <Suspense
         fallback={
-          <div className="mx-auto max-w-7xl rounded-2xl border border-white/10 bg-[#101F39] p-8 text-slate-300">
+          <div className="w-full max-w-none rounded-2xl border border-white/10 bg-[#101F39] p-8 text-slate-300">
             Loading administration...
           </div>
         }

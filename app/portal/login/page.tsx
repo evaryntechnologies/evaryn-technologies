@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { signIn } from "../actions";
 
 type LoginProps = {
@@ -11,9 +13,9 @@ async function LoginContent({ searchParams }: LoginProps) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#071327] px-4 py-12 text-white">
       <section className="w-full max-w-md rounded-3xl border border-white/10 bg-[#101F39] p-8 shadow-xl sm:p-10">
-        <p className="text-sm font-semibold tracking-widest text-cyan-300">
-          EVARYN TECHNOLOGIES
-        </p>
+        <Link href="/" aria-label="Evaryn Technologies home" className="block">
+          <Image src="/brand/evaryn-full.png" alt="Evaryn Technologies Limited" width={360} height={110} className="h-auto max-h-28 w-full object-contain" priority />
+        </Link>
 
         <h1 className="mt-5 text-3xl font-bold">
           Staff Login
@@ -59,6 +61,7 @@ async function LoginContent({ searchParams }: LoginProps) {
             Sign In
           </button>
         </form>
+        <Link href="/" className="mt-6 inline-flex items-center text-sm font-semibold text-cyan-300 hover:underline">← Back to Homepage</Link>
       </section>
     </main>
   );
