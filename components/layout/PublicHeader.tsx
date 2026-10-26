@@ -24,7 +24,7 @@ export default function PublicHeader() {
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-xl dark:border-slate-800 dark:bg-[#071327]/95">
+    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/55 backdrop-blur-lg dark:border-slate-800 dark:bg-[#071327]/55">
       <div className="mx-auto flex h-24 w-full items-center justify-between gap-4 px-5 md:px-8">
         <Link
           href="/"

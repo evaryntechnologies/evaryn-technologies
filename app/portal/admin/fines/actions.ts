@@ -1,0 +1,7 @@
+"use server";
+import {requireEmployee} from "@/lib/auth/require-employee";
+import {prisma} from "@/lib/db/prisma";
+import {revalidatePath} from "next/cache";
+async function current(){const user=await requireEmployee(["QA","ADMIN","SUPER_ADMIN"]);const p=await prisma.employeeProfile.findUnique({where:{authUserId:user.id}});if(!p||p.status!=="ACTIVE"||!["QA","ADMIN","SUPER_ADMIN"].includes(p.role))throw new Error("Not authorized");return p;}
+export async function addPenalty(f:FormData){const p=await current();const taskId=String(f.get("taskId")??"");const reason=String(f.get("reason")??"");const amount=Number(f.get("amount"));const note=String(f.get("note")??"").trim();if(!["POOR_RESPONSE","LATENESS","POOR_QUALITY","AI_GENERATED_CONTENT","OTHER"].includes(reason)||!Number.isFinite(amount)||amount<0||amount>1000000||note.length<10||note.length>3000)throw new Error("Invalid fine details");const task=await prisma.workTask.findUnique({where:{id:taskId},select:{id:true}});if(!task)throw new Error("Order not found");await prisma.taskPenalty.create({data:{taskId,createdById:p.id,reason,amount:String(amount),note}});revalidatePath("/portal/admin/fines");}
+export async function updatePenalty(f:FormData){await current();const id=String(f.get("id")??"");const status=String(f.get("status")??"");const note=String(f.get("note")??"").trim();if(!["ACTIVE","WAIVED"].includes(status)||note.length>3000)throw new Error("Invalid adjustment");await prisma.taskPenalty.update({where:{id},data:{status,...(note?{note}:{})}});revalidatePath("/portal/admin/fines");}

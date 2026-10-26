@@ -62,6 +62,7 @@ async function TaskContent({
           Back to My Tasks
         </Link>
 
+        <Link href={`/portal/tasks/${task.id}/discussion`} className="mt-5 inline-block text-cyan-300 underline">Task discussion and reassignment request</Link>
         <header className="mt-8">
           <p className="text-xs font-bold tracking-widest text-cyan-300">
             EVARYN TECHNOLOGIES LIMITED

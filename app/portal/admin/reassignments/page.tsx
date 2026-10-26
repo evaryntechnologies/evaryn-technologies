@@ -1,0 +1,8 @@
+import {connection} from "next/server";
+import {Suspense} from "react";
+import Link from "next/link";
+import {requireEmployee} from "@/lib/auth/require-employee";
+import {prisma} from "@/lib/db/prisma";
+import {resolveReassignment} from "./actions";
+async function Content(){await connection();await requireEmployee(["ADMIN","SUPER_ADMIN"]);const rows=await prisma.taskReassignmentRequest.findMany({include:{employee:{select:{fullName:true}},task:{select:{title:true}}},orderBy:{createdAt:"desc"},take:100});return <main className="min-h-screen bg-[#071327] p-6 text-white"><Link href="/portal" className="text-cyan-300">Dashboard</Link><h1 className="my-6 text-3xl font-bold">Individual task reassignment requests</h1><div className="space-y-4">{rows.map(r=><article key={r.id} className="rounded-xl bg-[#101F39] p-5"><h2 className="font-bold">{r.task.title} — {r.employee.fullName}</h2><p className="mt-2 text-sm text-slate-300">{r.reason}</p><p className="mt-2">Status: {r.status}</p>{r.status==="PENDING"&&<form action={resolveReassignment} className="mt-3 space-y-2"><input type="hidden" name="requestId" value={r.id}/><input name="note" maxLength={2000} className="w-full rounded-lg bg-[#071327] p-3" placeholder="Admin note (optional)"/><div className="flex gap-3"><button name="decision" value="APPROVED" className="rounded-lg bg-[#0052CC] p-3">Approve and return to Hub</button><button name="decision" value="REJECTED" className="rounded-lg border p-3">Reject</button></div></form>}</article>)}{!rows.length&&<p>No requests yet.</p>}</div></main>}
+export default function Page(){return <Suspense fallback={<p>Loading…</p>}><Content/></Suspense>}

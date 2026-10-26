@@ -91,6 +91,9 @@ model EmployeeProfile {
   createdTasks  WorkTask[]       @relation("TaskCreator")
   submissions   TaskSubmission[]
   reviews       TaskReview[]
+  taskMessages TaskMessage[]
+  reassignmentRequests TaskReassignmentRequest[]
+  penalties TaskPenalty[]
 
   @@index([role, status])
 }
@@ -142,6 +145,11 @@ model WorkTask {
   assignedTo  EmployeeProfile? @relation("TaskAssignee", fields: [assignedToId], references: [id])
   createdBy   EmployeeProfile  @relation("TaskCreator", fields: [createdById], references: [id])
   submissions TaskSubmission[]
+  messages TaskMessage[]
+  reassignmentRequests TaskReassignmentRequest[]
+  penalties TaskPenalty[]
+  clientRating Int?
+  clientActionAt DateTime?
 
   @@index([projectId, status])
   @@index([assignedToId, status])
@@ -202,4 +210,43 @@ model EmployeeCategory {
   category TaskCategory @relation(fields:[categoryId],references:[id],onDelete:Restrict)
   @@id([employeeId, categoryId])
   @@index([categoryId])
+}
+
+model TaskMessage {
+  id String @id @default(uuid()) @db.Uuid
+  taskId String @db.Uuid
+  senderId String @db.Uuid
+  body String @db.Text
+  createdAt DateTime @default(now())
+  task WorkTask @relation(fields:[taskId], references:[id],onDelete:Restrict)
+  sender EmployeeProfile @relation(fields:[senderId],references:[id],onDelete:Restrict)
+  @@index([taskId,createdAt])
+}
+model TaskReassignmentRequest {
+  id String @id @default(uuid()) @db.Uuid
+  taskId String @db.Uuid
+  employeeId String @db.Uuid
+  reason String @db.Text
+  status String @default("PENDING")
+  adminNote String? @db.Text
+  createdAt DateTime @default(now())
+  resolvedAt DateTime?
+  task WorkTask @relation(fields:[taskId],references:[id],onDelete:Restrict)
+  employee EmployeeProfile @relation(fields:[employeeId],references:[id],onDelete:Restrict)
+  @@index([status,createdAt])
+  @@index([taskId,employeeId])
+}
+model TaskPenalty {
+  id String @id @default(uuid()) @db.Uuid
+  taskId String @db.Uuid
+  createdById String @db.Uuid
+  reason String
+  amount Decimal @db.Decimal(14,2)
+  note String @db.Text
+  status String @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  task WorkTask @relation(fields:[taskId],references:[id],onDelete:Restrict)
+  createdBy EmployeeProfile @relation(fields:[createdById],references:[id],onDelete:Restrict)
+  @@index([taskId,status])
 }

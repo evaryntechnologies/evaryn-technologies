@@ -68,6 +68,7 @@ async function ReviewerContent() {
 
   return (
     <div className="w-full max-w-none">
+      <nav aria-label="Workspace navigation" className="mb-5 flex flex-wrap gap-3"><Link href="/portal/task-hub" className="rounded-lg bg-[#0052CC] px-4 py-2 text-white">Task Hub</Link><Link href="/portal/reviewer/queue" className="rounded-lg border border-white/20 px-4 py-2 text-cyan-300">My Queue</Link></nav>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <header>
           <p className="text-xs font-bold tracking-widest text-cyan-300">

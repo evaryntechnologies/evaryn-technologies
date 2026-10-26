@@ -234,7 +234,7 @@ async function QAQueueContent({
                       value="APPROVED"
                       className="rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold text-white hover:bg-[#003F9E]"
                     >
-                      Approve & Complete
+                      Approve & Deliver — Await Client
                     </button>
 
                     <button

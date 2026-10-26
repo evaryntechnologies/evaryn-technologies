@@ -15,6 +15,10 @@ import {
 } from "lucide-react";
 
 const modules = [
+  {title:"Task Hub", description:"Browse all published work and queues.",href:"/portal/task-hub",icon:ClipboardList,ready:true},
+  {title:"Reassignment Requests",description:"Review individual task release requests.",href:"/portal/admin/reassignments",icon:ClipboardList,ready:true},
+  {title:"Fines and Penalties",description:"Review issued fines and waivers.",href:"/portal/admin/fines",icon:ClipboardList,ready:true},
+  {title:"Client Actions",description:"Finalize delivered work on client payment or cancellation.",href:"/portal/qa/client-actions",icon:ClipboardList,ready:true},
   {
     title: "Task Management",
     description: "Create projects, assign tasks and monitor assignments.",

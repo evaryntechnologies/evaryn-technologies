@@ -61,6 +61,7 @@ async function QAContent() {
         </div>
       )}
 
+      <nav aria-label="Workspace navigation" className="mb-5 flex flex-wrap gap-3"><Link href="/portal/task-hub" className="rounded-lg bg-[#0052CC] px-4 py-2 text-white">Task Hub</Link><Link href="/portal/qa/queue" className="rounded-lg border border-white/20 px-4 py-2 text-cyan-300">QA Queue</Link><Link href="/portal/qa/client-actions" className="rounded-lg border border-white/20 px-4 py-2 text-cyan-300">Client Actions</Link><Link href="/portal/admin/fines" className="rounded-lg border border-white/20 px-4 py-2 text-cyan-300">Fines</Link></nav>
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
         <div className="rounded-2xl border border-white/10 bg-[#101F39] p-6">
           <p className="text-sm text-slate-300">Awaiting QA</p>

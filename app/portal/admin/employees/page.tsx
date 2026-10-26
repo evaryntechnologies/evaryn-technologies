@@ -1,17 +1,3 @@
-export default function Page() {
-  return (
-    <main className="min-h-screen bg-slate-50 p-8 text-slate-900">
-      <div className="w-full max-w-none">
-        <p className="text-sm font-semibold text-cyan-600">
-          EVARYN TECHNOLOGIES LIMITED
-        </p>
-        <h1 className="mt-4 text-3xl font-bold">
-          Employees
-        </h1>
-        <p className="mt-4 text-slate-600">
-          This section is being developed.
-        </p>
-      </div>
-    </main>
-  );
-}
+import {Suspense} from "react";import {connection} from "next/server";import Link from "next/link";import {requireEmployee} from "@/lib/auth/require-employee";import {prisma} from "@/lib/db/prisma";
+async function Content(){await connection();await requireEmployee(["ADMIN","SUPER_ADMIN"]);const employees=await prisma.employeeProfile.findMany({select:{id:true,fullName:true,email:true,role:true,status:true,eligibleCategories:{select:{category:{select:{name:true}}}}},orderBy:{fullName:"asc"},take:300});return <main className="min-h-screen bg-[#071327] p-5 text-white sm:p-9"><Link href="/portal" className="text-cyan-300">Dashboard</Link><h1 className="my-6 text-3xl font-bold">Employee directory</h1><p className="text-slate-300">Administrators can view employee status and authorized work categories. Account provisioning and role changes are reserved for Super Admin.</p><div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">{employees.map(e=><article className="rounded-xl bg-[#101F39] p-5" key={e.id}><h2 className="font-bold">{e.fullName}</h2><p className="break-words text-sm text-slate-300">{e.email}</p><p className="mt-2">{e.role.replaceAll("_"," ")} · {e.status}</p><p className="mt-2 text-xs text-cyan-200">{e.eligibleCategories.map(c=>c.category.name).join(", ")||"No categories"}</p></article>)}</div></main>}
+export default function Page(){return <Suspense fallback={<p>Loading employees…</p>}><Content/></Suspense>}

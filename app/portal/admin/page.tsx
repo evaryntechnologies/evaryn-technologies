@@ -14,6 +14,9 @@ import {
 } from "lucide-react";
 
 const modules = [
+  {title:"Task Hub",description:"Browse published orders.",href:"/portal/task-hub",icon:ClipboardList,available:true},
+  {title:"Reassignment Requests",description:"Review task release requests.",href:"/portal/admin/reassignments",icon:ClipboardList,available:true},
+  {title:"Fines and Penalties",description:"Review or waive fines.",href:"/portal/admin/fines",icon:ClipboardList,available:true},
   {
     title: "Task Management",
     description:
@@ -26,9 +29,9 @@ const modules = [
     title: "Employee Management",
     description:
       "Manage employee profiles, roles, and account access.",
-    href: "#",
+    href: "/portal/admin/employees",
     icon: Users,
-    available: false,
+    available: true,
   },
   {
     title: "Projects",

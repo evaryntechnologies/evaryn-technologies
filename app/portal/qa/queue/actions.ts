@@ -92,7 +92,7 @@ export async function qaDecision(formData: FormData): Promise<void> {
     });
 
     const nextStatus =
-      decision === "APPROVED" ? "COMPLETED" : "REWORK_REQUIRED";
+      decision === "APPROVED" ? "DELIVERED_AWAITING_CLIENT" : "REWORK_REQUIRED";
 
     await tx.taskSubmission.update({
       where: { id: submissionId },
@@ -111,6 +111,7 @@ export async function qaDecision(formData: FormData): Promise<void> {
     redirect("/portal/qa/queue?error=processed");
   }
 
+  revalidatePath("/portal/qa/client-actions");
   revalidatePath("/portal/qa/queue");
   revalidatePath("/portal/tasker");
   revalidatePath("/portal/reviewer/queue");
