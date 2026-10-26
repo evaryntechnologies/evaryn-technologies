@@ -58,7 +58,8 @@ export const ModelName = {
   WorkProject: 'WorkProject',
   WorkTask: 'WorkTask',
   TaskSubmission: 'TaskSubmission',
-  TaskReview: 'TaskReview'
+  TaskReview: 'TaskReview',
+  TaskCategory: 'TaskCategory'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -206,6 +207,17 @@ export const TaskReviewScalarFieldEnum = {
 } as const
 
 export type TaskReviewScalarFieldEnum = (typeof TaskReviewScalarFieldEnum)[keyof typeof TaskReviewScalarFieldEnum]
+
+
+export const TaskCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaskCategoryScalarFieldEnum = (typeof TaskCategoryScalarFieldEnum)[keyof typeof TaskCategoryScalarFieldEnum]
 
 
 export const SortOrder = {

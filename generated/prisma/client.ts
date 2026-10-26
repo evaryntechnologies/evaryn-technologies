@@ -81,3 +81,8 @@ export type TaskSubmission = Prisma.TaskSubmissionModel
  * 
  */
 export type TaskReview = Prisma.TaskReviewModel
+/**
+ * Model TaskCategory
+ * 
+ */
+export type TaskCategory = Prisma.TaskCategoryModel

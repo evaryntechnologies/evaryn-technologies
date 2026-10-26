@@ -404,7 +404,8 @@ export const ModelName = {
   WorkProject: 'WorkProject',
   WorkTask: 'WorkTask',
   TaskSubmission: 'TaskSubmission',
-  TaskReview: 'TaskReview'
+  TaskReview: 'TaskReview',
+  TaskCategory: 'TaskCategory'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -420,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "clientInquiry" | "customServiceRequest" | "jobApplication" | "employeeProfile" | "workProject" | "workTask" | "taskSubmission" | "taskReview"
+    modelProps: "clientInquiry" | "customServiceRequest" | "jobApplication" | "employeeProfile" | "workProject" | "workTask" | "taskSubmission" | "taskReview" | "taskCategory"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1016,6 +1017,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    TaskCategory: {
+      payload: Prisma.$TaskCategoryPayload<ExtArgs>
+      fields: Prisma.TaskCategoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TaskCategoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskCategoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TaskCategoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskCategoryPayload>
+        }
+        findFirst: {
+          args: Prisma.TaskCategoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskCategoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TaskCategoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskCategoryPayload>
+        }
+        findMany: {
+          args: Prisma.TaskCategoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskCategoryPayload>[]
+        }
+        create: {
+          args: Prisma.TaskCategoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskCategoryPayload>
+        }
+        createMany: {
+          args: Prisma.TaskCategoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TaskCategoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskCategoryPayload>[]
+        }
+        delete: {
+          args: Prisma.TaskCategoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskCategoryPayload>
+        }
+        update: {
+          args: Prisma.TaskCategoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskCategoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.TaskCategoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TaskCategoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TaskCategoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskCategoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.TaskCategoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskCategoryPayload>
+        }
+        aggregate: {
+          args: Prisma.TaskCategoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTaskCategory>
+        }
+        groupBy: {
+          args: Prisma.TaskCategoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaskCategoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TaskCategoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaskCategoryCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1186,6 +1261,17 @@ export const TaskReviewScalarFieldEnum = {
 export type TaskReviewScalarFieldEnum = (typeof TaskReviewScalarFieldEnum)[keyof typeof TaskReviewScalarFieldEnum]
 
 
+export const TaskCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaskCategoryScalarFieldEnum = (typeof TaskCategoryScalarFieldEnum)[keyof typeof TaskCategoryScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1269,6 +1355,13 @@ export type EnumApplicationStatusFieldRefInput<$PrismaModel> = FieldRefInputType
  * Reference to a field of type 'ApplicationStatus[]'
  */
 export type ListEnumApplicationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApplicationStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -1444,6 +1537,7 @@ export type GlobalOmitConfig = {
   workTask?: Prisma.WorkTaskOmit
   taskSubmission?: Prisma.TaskSubmissionOmit
   taskReview?: Prisma.TaskReviewOmit
+  taskCategory?: Prisma.TaskCategoryOmit
 }
 
 /* Types for Logging */
