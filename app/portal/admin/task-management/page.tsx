@@ -1,219 +1,42 @@
 import { connection } from "next/server";
 import { Suspense } from "react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
-import { createProject, assignTask } from "./actions";
+import { assignTask } from "./actions";
 
-const inputClass =
-  "mt-2 w-full rounded-xl border border-slate-600 bg-[#071327] px-4 py-3 text-white";
-
-async function AdminTaskContent() {
+const field="mt-2 w-full rounded-xl border border-slate-600 bg-[#071327] px-4 py-3 font-bold text-white";
+const categories=["Writing","Editing","Research","Data Annotation","Video Editing","Other"];
+async function Content({searchParams}:{searchParams:Promise<{message?:string;ok?:string}>}) {
   await connection();
-  const user = await requireEmployee(["ADMIN", "SUPER_ADMIN"]);
-
-  const administrator = await prisma.employeeProfile.findUnique({
-    where: { authUserId: user.id },
-    select: { role: true, status: true },
-  });
-
-  if (
-    !administrator ||
-    administrator.status !== "ACTIVE" ||
-    !["ADMIN", "SUPER_ADMIN"].includes(administrator.role)
-  ) {
-    return (
-      <p className="rounded-xl border border-amber-400/30 p-6 text-amber-200">
-        Your administrator profile is not active.
-      </p>
-    );
-  }
-
-  const [projects, workers, tasks] = await Promise.all([
-    prisma.workProject.findMany({
-      where: { status: "ACTIVE" },
-      select: { id: true, title: true },
-      orderBy: { createdAt: "desc" },
-      take: 100,
-    }),
-    prisma.employeeProfile.findMany({
-      where: { role: "TASKER", status: "ACTIVE" },
-      select: { id: true, fullName: true, email: true },
-      orderBy: { fullName: "asc" },
-      take: 200,
-    }),
-    prisma.workTask.findMany({
-      select: {
-        id: true,
-        title: true,
-        status: true,
-        priority: true,
-        assignedTo: { select: { fullName: true } },
-        project: { select: { title: true } },
-      },
-      orderBy: { createdAt: "desc" },
-      take: 30,
-    }),
+  const user=await requireEmployee(["ADMIN","SUPER_ADMIN","QA"]);
+  const profile=await prisma.employeeProfile.findUnique({where:{authUserId:user.id},select:{role:true,status:true}});
+  if(!profile || profile.status!=="ACTIVE" || !["ADMIN","SUPER_ADMIN","QA"].includes(profile.role)) return <p>Access denied.</p>;
+  const [workers,tasks,params]=await Promise.all([
+    prisma.employeeProfile.findMany({where:{status:"ACTIVE",role:"TASKER"},select:{id:true,fullName:true,email:true},orderBy:{fullName:"asc"},take:200}),
+    prisma.workTask.findMany({select:{id:true,publicTaskId:true,orderId:true,category:true,title:true,status:true,deadline:true,reviewDeadline:true,qaDeadline:true,assignedTo:{select:{fullName:true}}},orderBy:{createdAt:"desc"},take:30}),
+    searchParams
   ]);
-
-  return (
-    <div className="mx-auto max-w-6xl">
-      <header className="mb-9">
-        <p className="text-sm font-semibold tracking-widest text-cyan-300">
-          EVARYN TECHNOLOGIES
-        </p>
-        <h1 className="mt-3 text-3xl font-bold">
-          Task Management
-        </h1>
-        <p className="mt-3 text-slate-300">
-          Create projects and assign work to authorized employees.
-        </p>
-      </header>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-2xl border border-white/10 bg-[#101F39] p-6">
-          <h2 className="text-xl font-bold">Create Project</h2>
-
-          <form action={async (data: FormData) => { "use server"; await createProject(data); }} className="mt-5 space-y-5">
-            <label className="block text-sm font-medium">
-              Project title
-              <input
-                name="title"
-                required
-                minLength={3}
-                maxLength={160}
-                className={inputClass}
-              />
-            </label>
-
-            <label className="block text-sm font-medium">
-              Project description
-              <textarea
-                name="description"
-                required
-                minLength={10}
-                maxLength={10000}
-                rows={5}
-                className={inputClass}
-              />
-            </label>
-
-            <button
-              type="submit"
-              className="rounded-xl bg-[#0052CC] px-6 py-3 font-semibold hover:bg-[#003F9E]"
-            >
-              Create Project
-            </button>
-          </form>
-        </section>
-
-        <section className="rounded-2xl border border-white/10 bg-[#101F39] p-6">
-          <h2 className="text-xl font-bold">Assign Task</h2>
-
-          <form action={async (data: FormData) => { "use server"; await assignTask(data); }} className="mt-5 space-y-5">
-            <label className="block text-sm font-medium">
-              Project
-              <select name="projectId" required defaultValue="" className={inputClass}>
-                <option value="">Select project</option>
-                {projects.map((project) => (
-                  <option key={project.id} value={project.id}>
-                    {project.title}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="block text-sm font-medium">
-              Assigned employee
-              <select name="assignedToId" required defaultValue="" className={inputClass}>
-                <option value="">Select Tasker</option>
-                {workers.map((worker) => (
-                  <option key={worker.id} value={worker.id}>
-                    {worker.fullName} ({worker.email})
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="block text-sm font-medium">
-              Task title
-              <input name="title" required minLength={3} maxLength={160} className={inputClass} />
-            </label>
-
-            <label className="block text-sm font-medium">
-              Instructions
-              <textarea name="description" required minLength={10} maxLength={10000} rows={4} className={inputClass} />
-            </label>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="block text-sm font-medium">
-                Priority
-                <select name="priority" defaultValue="NORMAL" className={inputClass}>
-                  <option value="LOW">Low</option>
-                  <option value="NORMAL">Normal</option>
-                  <option value="HIGH">High</option>
-                  <option value="URGENT">Urgent</option>
-                </select>
-              </label>
-
-              <label className="block text-sm font-medium">
-                Deadline
-                <input type="date" name="deadline" className={inputClass} />
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              disabled={projects.length === 0 || workers.length === 0}
-              className="rounded-xl bg-[#0052CC] px-6 py-3 font-semibold hover:bg-[#003F9E] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Assign Task
-            </button>
-
-            {(projects.length === 0 || workers.length === 0) && (
-              <p className="text-sm text-amber-200">
-                Create a project and activate at least one Tasker before assigning work.
-              </p>
-            )}
-          </form>
-        </section>
-      </div>
-
-      <section className="mt-8 rounded-2xl border border-white/10 bg-[#101F39] p-6">
-        <h2 className="text-xl font-bold">Recent Assignments</h2>
-
-        {tasks.length === 0 ? (
-          <p className="mt-5 text-sm text-slate-300">
-            No tasks have been assigned yet.
-          </p>
-        ) : (
-          <div className="mt-5 space-y-3">
-            {tasks.map((task) => (
-              <article
-                key={task.id}
-                className="rounded-xl border border-white/10 p-4"
-              >
-                <h3 className="font-semibold">{task.title}</h3>
-                <p className="mt-2 text-sm text-slate-300">
-                  {task.project.title} Ã‚Â· {task.assignedTo.fullName}
-                </p>
-                <p className="mt-2 text-xs text-cyan-300">
-                  {task.status} Ã‚Â· {task.priority}
-                </p>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
-    </div>
-  );
+  return <main className="min-h-screen bg-[#071327] px-5 py-10 text-white sm:px-10"><div className="mx-auto max-w-6xl">
+    <Link href={profile.role==="QA"?"/portal/qa":"/portal/admin"} className="text-cyan-300 hover:underline">Back to dashboard</Link>
+    <h1 className="mt-6 text-3xl font-bold">Task Management</h1><p className="mt-2 text-slate-300">Create and assign tasks without creating projects.</p>
+    {params.message && <p role="status" className="mt-5 rounded-xl border border-white/20 p-4">{params.ok==="1"?"Success: ":"Error: "}{params.message}</p>}
+    <section className="mt-7 rounded-2xl border border-white/10 bg-[#101F39] p-6"><h2 className="text-xl font-bold">Create Task</h2>
+    <form className="mt-5 grid gap-5 sm:grid-cols-2" action={async(data:FormData)=>{"use server";const result=await assignTask(data);redirect("/portal/admin/task-management?ok="+(result.success?"1":"0")+"&message="+encodeURIComponent(result.message));}}>
+      <label>Order ID (external, kept private)<input name="orderId" className={field} placeholder="Enter the original order reference" /></label>
+      <label>Category<select name="category" required defaultValue="" className={field}><option value="">Select category</option>{categories.map(c=><option key={c} value={c}>{c}</option>)}</select></label>
+      <label>Assigned Tasker<select name="assignedToId" required defaultValue="" className={field}><option value="">Select Tasker</option>{workers.map(w=><option key={w.id} value={w.id}>{w.fullName} ({w.email})</option>)}</select></label>
+      <label>Priority<select name="priority" className={field} defaultValue="NORMAL"><option value="LOW">Low</option><option value="NORMAL">Normal</option><option value="HIGH">High</option><option value="URGENT">Urgent</option></select></label>
+      <label className="sm:col-span-2">Task title<input required name="title" minLength={3} maxLength={160} className={field}/></label>
+      <label className="sm:col-span-2">Instructions<textarea required name="description" minLength={10} maxLength={10000} rows={5} className={field}/></label>
+      <label>Submission deadline — hours from now<input required type="number" name="submissionHours" min="0.01" max="8760" step="any" className={field}/></label>
+      <label>Review deadline — hours from now<input required type="number" name="reviewHours" min="0.01" max="8760" step="any" className={field}/></label>
+      <label>QA deadline — hours from now<input required type="number" name="qaHours" min="0.01" max="8760" step="any" className={field}/></label>
+      <label>Reference attachment (max 10 MB)<input name="attachment" type="file" accept=".pdf,.txt,.docx,.xlsx,.png,.jpg,.jpeg" className={field}/></label>
+      <div className="sm:col-span-2"><button type="submit" disabled={!workers.length} className="rounded-xl bg-[#0052CC] px-6 py-3 font-bold text-white disabled:opacity-50">Create & Assign Task</button></div>
+    </form></section>
+    <section className="mt-8 rounded-2xl border border-white/10 bg-[#101F39] p-6"><h2 className="text-xl font-bold">Recent tasks</h2><div className="mt-5 space-y-3">{tasks.map(t=><article key={t.id} className="rounded-xl border border-white/10 p-4"><div className="font-bold">{t.publicTaskId??t.id} — {t.title}</div><div className="mt-1 text-sm text-slate-300">{t.category??"Uncategorized"} · {t.assignedTo.fullName} · {t.status}</div><p className="mt-1 text-xs text-slate-300">External Order ID: {t.orderId||"Not set"}</p><div className="mt-2 flex flex-wrap gap-4 text-xs text-cyan-200">{[{name:"Submission",date:t.deadline},{name:"Review",date:t.reviewDeadline},{name:"QA",date:t.qaDeadline}].map(({name,date})=><span key={String(name)}>{name}: {date instanceof Date?date.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"}):"Not set"}</span>)}</div></article>)}</div></section>
+  </div></main>;
 }
-
-export default function AdminTaskManagementPage() {
-  return (
-    <main className="min-h-screen bg-[#071327] px-5 py-10 text-white sm:px-10">
-      <Suspense fallback={<p>Loading task management...</p>}>
-        <AdminTaskContent />
-      </Suspense>
-    </main>
-  );
-}
+export default function Page({searchParams}:{searchParams:Promise<{message?:string;ok?:string}>}) {return <Suspense fallback={<main className="min-h-screen bg-[#071327] p-8 text-white">Loading task management...</main>}><Content searchParams={searchParams}/></Suspense>}

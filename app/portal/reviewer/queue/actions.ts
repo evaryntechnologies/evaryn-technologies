@@ -5,6 +5,16 @@ import { revalidatePath } from "next/cache";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 
+export async function claimReview(formData: FormData): Promise<void> {
+  const user = await requireEmployee(["REVIEWER"]);
+  const taskId = String(formData.get("taskId") ?? "");
+  const reviewer = await prisma.employeeProfile.findUnique({where:{authUserId:user.id},select:{id:true,role:true,status:true}});
+  if (!reviewer || reviewer.role !== "REVIEWER" || reviewer.status !== "ACTIVE") redirect("/portal/unauthorized");
+  const updated = await prisma.workTask.updateMany({where:{id:taskId,status:"PENDING_REVIEW",claimedReviewerId:null},data:{claimedReviewerId:reviewer.id}});
+  revalidatePath("/portal/reviewer/queue");
+  redirect(updated.count === 1 ? "/portal/reviewer/queue" : "/portal/reviewer/queue?error=processed");
+}
+
 export async function reviewSubmission(formData: FormData): Promise<void> {
   const user = await requireEmployee(["REVIEWER"]);
 
@@ -40,7 +50,7 @@ export async function reviewSubmission(formData: FormData): Promise<void> {
         status: true,
         employeeId: true,
         taskId: true,
-        task: { select: { status: true } },
+        task: { select: { status: true, claimedReviewerId: true } },
       },
     });
 
@@ -48,7 +58,8 @@ export async function reviewSubmission(formData: FormData): Promise<void> {
       !submission ||
       submission.status !== "PENDING_REVIEW" ||
       submission.task.status !== "PENDING_REVIEW" ||
-      submission.employeeId === reviewer.id
+      submission.employeeId === reviewer.id ||
+      submission.task.claimedReviewerId !== reviewer.id
     ) {
       return false;
     }

@@ -292,7 +292,7 @@ async function HistoryContent({
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="min-w-0">
                       <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">
-                        {task.project.title}
+                        {task.project?.title}
                       </p>
                       <h3 className="mt-2 text-lg font-bold">
                         {task.title}

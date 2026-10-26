@@ -3,7 +3,7 @@ import { connection } from "next/server";
 import Link from "next/link";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
-import { reviewSubmission } from "./actions";
+import { reviewSubmission, claimReview } from "./actions";
 
 async function ReviewQueueContent({
   searchParams,
@@ -11,7 +11,8 @@ async function ReviewQueueContent({
   searchParams: Promise<{ result?: string; error?: string }>;
 }) {
   await connection();
-  await requireEmployee(["REVIEWER"]);
+  const reviewerUser = await requireEmployee(["REVIEWER"]);
+  const reviewerProfile = await prisma.employeeProfile.findUnique({where:{authUserId:reviewerUser.id},select:{id:true}});
 
   const submissions = await prisma.taskSubmission.findMany({
     where: {
@@ -23,7 +24,14 @@ async function ReviewQueueContent({
         select: {
           title: true,
           description: true,
-          project: { select: { title: true } },
+          id: true,
+          publicTaskId: true,
+          deadline: true,
+          reviewDeadline: true,
+          claimedReviewerId: true,
+          attachmentKey: true,
+          attachmentName: true,
+          category: true,
         },
       },
       employee: {
@@ -90,10 +98,10 @@ async function ReviewQueueContent({
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-xs font-semibold text-cyan-300">
-                      {submission.task.project.title}
+                      {submission.task.category ?? "Uncategorized"}
                     </p>
                     <h2 className="mt-2 text-xl font-bold">
-                      {submission.task.title}
+                      {submission.task.publicTaskId ?? submission.task.id} · {submission.task.title}
                     </h2>
                     <p className="mt-2 text-sm text-slate-300">
                       Submitted by {submission.employee.fullName}
@@ -118,7 +126,11 @@ async function ReviewQueueContent({
                   </p>
                 </div>
 
-                <form action={reviewSubmission} className="mt-6 space-y-4">
+                <div className="mt-4 text-sm text-cyan-200">Submission deadline: {submission.task.deadline?.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"}) ?? "Not set"}</div>
+                {submission.task.claimedReviewerId === reviewerProfile?.id ? <div className="mt-2 text-sm text-cyan-200">Review deadline: {submission.task.reviewDeadline?.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"}) ?? "Not set"}</div> : null}
+                {submission.task.attachmentKey && submission.task.claimedReviewerId === reviewerProfile?.id && <a className="mt-2 block text-sm text-cyan-300 underline" href={"/portal/attachments/"+submission.task.id}>Download: {submission.task.attachmentName}</a>}
+                {!submission.task.claimedReviewerId && <form action={claimReview} className="mt-4"><input type="hidden" name="taskId" value={submission.task.id}/><button className="rounded-xl bg-[#0052CC] px-5 py-3 font-bold">Claim task for review</button></form>}
+                {submission.task.claimedReviewerId === reviewerProfile?.id && <form action={reviewSubmission} className="mt-6 space-y-4">
                   <input type="hidden" name="submissionId" value={submission.id} />
 
                   <label className="block text-sm font-semibold">
@@ -150,7 +162,7 @@ async function ReviewQueueContent({
                       Request Revisions
                     </button>
                   </div>
-                </form>
+                </form>}
               </article>
             ))}
           </div>

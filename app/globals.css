@@ -1,4 +1,5 @@
-﻿@import "tailwindcss";
+@import "@fontsource/inter/700.css";
+@import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -55,4 +56,16 @@ textarea {
 ::selection {
   background: #00aeef;
   color: #071327;
+}
+
+/* Evaryn unified typography */
+html,
+body,
+button,
+input,
+textarea,
+select,
+option {
+  font-family: "Inter", Arial, sans-serif !important;
+  font-weight: 700;
 }

@@ -41,8 +41,15 @@ async function QAQueueContent({
         select: {
           title: true,
           description: true,
+          id: true,
+          publicTaskId: true,
+          deadline: true,
+          reviewDeadline: true,
+          qaDeadline: true,
+          attachmentKey: true,
+          attachmentName: true,
           instructions: true,
-          project: { select: { title: true } },
+          category: true,
         },
       },
       reviews: {
@@ -133,11 +140,11 @@ async function QAQueueContent({
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">
-                      {submission.task.project.title}
+                      {submission.task.category ?? "Uncategorized"}
                     </p>
 
                     <h2 className="mt-2 text-xl font-bold">
-                      {submission.task.title}
+                      {submission.task.publicTaskId ?? submission.task.id} · {submission.task.title}
                     </h2>
 
                     <p className="mt-2 text-sm text-slate-300">
@@ -200,6 +207,8 @@ async function QAQueueContent({
                   </div>
                 ))}
 
+                <div className="mt-4 space-y-1 text-sm text-cyan-200"><p>Submission: {submission.task.deadline?.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"}) ?? "Not set"}</p><p>Review: {submission.task.reviewDeadline?.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"}) ?? "Not set"}</p><p>QA: {submission.task.qaDeadline?.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"}) ?? "Not set"}</p></div>
+                {submission.task.attachmentKey && <a className="mt-2 block text-sm text-cyan-300 underline" href={"/portal/attachments/"+submission.task.id}>Download: {submission.task.attachmentName}</a>}
                 <form action={qaDecision} className="mt-6 space-y-5">
                   <input
                     type="hidden"

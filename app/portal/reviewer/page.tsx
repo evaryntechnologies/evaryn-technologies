@@ -179,7 +179,7 @@ async function ReviewerContent() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-cyan-300">
-                        {review.submission.task.project.title}
+                        {review.submission.task.project?.title}
                       </p>
 
                       <h3 className="mt-2 font-semibold">

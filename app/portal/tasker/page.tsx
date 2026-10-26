@@ -1,4 +1,3 @@
-
 import { connection } from "next/server";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -44,11 +43,9 @@ async function TaskerContent() {
       status: true,
       priority: true,
       deadline: true,
-      project: {
-        select: {
-          title: true,
-        },
-      },
+      publicTaskId: true,
+      category: true,
+      attachmentName: true,
     },
     orderBy: [
       { deadline: "asc" },
@@ -170,7 +167,7 @@ async function TaskerContent() {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">
-                      {task.project.title}
+                      {task.category ?? "Uncategorized"}
                     </p>
 
                     <h3 className="mt-2 text-lg font-bold">
@@ -178,7 +175,7 @@ async function TaskerContent() {
                         href={`/portal/tasker/tasks/${task.id}`}
                         className="transition-colors hover:text-cyan-300 hover:underline"
                       >
-                        {task.title}
+                        {task.publicTaskId ?? task.id} · {task.title}
                       </Link>
                     </h3>
                   </div>
@@ -203,7 +200,7 @@ async function TaskerContent() {
                   <span>
                     Deadline:{" "}
                     {task.deadline
-                      ? task.deadline.toISOString().slice(0, 10)
+                      ? task.deadline.toLocaleString("en-KE", { timeZone: "Africa/Nairobi" })
                       : "Not set"}
                   </span>
                 </div>

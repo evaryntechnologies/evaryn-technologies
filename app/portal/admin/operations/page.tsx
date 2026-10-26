@@ -129,7 +129,7 @@ async function OperationsContent() {
                   className="rounded-xl border border-white/10 bg-[#071327] p-5"
                 >
                   <p className="text-xs font-semibold text-cyan-300">
-                    {task.project.title}
+                    {task.project?.title}
                   </p>
                   <h3 className="mt-2 font-semibold">{task.title}</h3>
                   <p className="mt-2 text-sm text-slate-300">

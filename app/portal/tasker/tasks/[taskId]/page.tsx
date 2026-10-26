@@ -27,7 +27,7 @@ async function TaskContent({
   const task = await prisma.workTask.findFirst({
     where: { id: taskId, assignedToId: employee.id },
     include: {
-      project: { select: { title: true } },
+      
       submissions: {
         where: { employeeId: employee.id },
         orderBy: { submittedAt: "desc" },
@@ -66,8 +66,8 @@ async function TaskContent({
           <p className="text-xs font-bold tracking-widest text-cyan-300">
             EVARYN TECHNOLOGIES LIMITED
           </p>
-          <p className="mt-5 text-sm text-slate-300">{task.project.title}</p>
-          <h1 className="mt-2 text-3xl font-bold">{task.title}</h1>
+          <p className="mt-5 text-sm text-slate-300">{task.category ?? "Uncategorized"}</p>
+          <h1 className="mt-2 text-3xl font-bold">{task.publicTaskId ?? task.id} · {task.title}</h1>
           <div className="mt-4 flex flex-wrap gap-3 text-xs">
             <span className="rounded-lg border border-white/20 px-3 py-2">
               {task.status.replaceAll("_", " ")}
@@ -77,7 +77,7 @@ async function TaskContent({
             </span>
             {task.deadline && (
               <span className="rounded-lg border border-white/20 px-3 py-2">
-                Deadline: {task.deadline.toLocaleDateString("en-KE", { timeZone: "Africa/Nairobi" })}
+                Submission deadline: {task.deadline.toLocaleString("en-KE", { timeZone: "Africa/Nairobi" })}
               </span>
             )}
           </div>
@@ -85,6 +85,7 @@ async function TaskContent({
 
         <section className="mt-8 rounded-2xl border border-white/10 bg-[#101F39] p-6 sm:p-8">
           <h2 className="text-xl font-bold">Task Details</h2>
+          {task.attachmentKey && <p className="mt-4"><a className="text-cyan-300 underline" href={`/portal/attachments/${task.id}`}>Download reference: {task.attachmentName ?? "Attachment"}</a></p>}
           <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-slate-300">
             {task.description}
           </p>
