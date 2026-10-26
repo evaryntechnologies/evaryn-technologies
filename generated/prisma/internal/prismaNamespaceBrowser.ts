@@ -53,7 +53,12 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   ClientInquiry: 'ClientInquiry',
   CustomServiceRequest: 'CustomServiceRequest',
-  JobApplication: 'JobApplication'
+  JobApplication: 'JobApplication',
+  EmployeeProfile: 'EmployeeProfile',
+  WorkProject: 'WorkProject',
+  WorkTask: 'WorkTask',
+  TaskSubmission: 'TaskSubmission',
+  TaskReview: 'TaskReview'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -121,6 +126,78 @@ export const JobApplicationScalarFieldEnum = {
 } as const
 
 export type JobApplicationScalarFieldEnum = (typeof JobApplicationScalarFieldEnum)[keyof typeof JobApplicationScalarFieldEnum]
+
+
+export const EmployeeProfileScalarFieldEnum = {
+  id: 'id',
+  authUserId: 'authUserId',
+  email: 'email',
+  fullName: 'fullName',
+  role: 'role',
+  status: 'status',
+  department: 'department',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EmployeeProfileScalarFieldEnum = (typeof EmployeeProfileScalarFieldEnum)[keyof typeof EmployeeProfileScalarFieldEnum]
+
+
+export const WorkProjectScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkProjectScalarFieldEnum = (typeof WorkProjectScalarFieldEnum)[keyof typeof WorkProjectScalarFieldEnum]
+
+
+export const WorkTaskScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  title: 'title',
+  description: 'description',
+  instructions: 'instructions',
+  status: 'status',
+  priority: 'priority',
+  deadline: 'deadline',
+  assignedToId: 'assignedToId',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkTaskScalarFieldEnum = (typeof WorkTaskScalarFieldEnum)[keyof typeof WorkTaskScalarFieldEnum]
+
+
+export const TaskSubmissionScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  employeeId: 'employeeId',
+  content: 'content',
+  fileUrl: 'fileUrl',
+  status: 'status',
+  submittedAt: 'submittedAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaskSubmissionScalarFieldEnum = (typeof TaskSubmissionScalarFieldEnum)[keyof typeof TaskSubmissionScalarFieldEnum]
+
+
+export const TaskReviewScalarFieldEnum = {
+  id: 'id',
+  submissionId: 'submissionId',
+  reviewerId: 'reviewerId',
+  stage: 'stage',
+  decision: 'decision',
+  feedback: 'feedback',
+  createdAt: 'createdAt'
+} as const
+
+export type TaskReviewScalarFieldEnum = (typeof TaskReviewScalarFieldEnum)[keyof typeof TaskReviewScalarFieldEnum]
 
 
 export const SortOrder = {

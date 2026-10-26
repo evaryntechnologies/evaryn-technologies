@@ -56,3 +56,28 @@ export type CustomServiceRequest = Prisma.CustomServiceRequestModel
  * 
  */
 export type JobApplication = Prisma.JobApplicationModel
+/**
+ * Model EmployeeProfile
+ * 
+ */
+export type EmployeeProfile = Prisma.EmployeeProfileModel
+/**
+ * Model WorkProject
+ * 
+ */
+export type WorkProject = Prisma.WorkProjectModel
+/**
+ * Model WorkTask
+ * 
+ */
+export type WorkTask = Prisma.WorkTaskModel
+/**
+ * Model TaskSubmission
+ * 
+ */
+export type TaskSubmission = Prisma.TaskSubmissionModel
+/**
+ * Model TaskReview
+ * 
+ */
+export type TaskReview = Prisma.TaskReviewModel

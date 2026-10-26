@@ -1,17 +1,42 @@
-﻿export default function Page() {
+import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { connection } from "next/server";
+import { requireEmployee } from "@/lib/auth/require-employee";
+
+const destinations = {
+  TASKER: "/portal/tasker",
+  REVIEWER: "/portal/reviewer",
+  QA: "/portal/qa",
+  ADMIN: "/portal/admin",
+  SUPER_ADMIN: "/portal/super-admin",
+} as const;
+
+async function AuthenticatedDestination() {
+  // Wait for a real incoming request before accessing
+  // Supabase authentication and session-expiry timestamps.
+  await connection();
+
+  const employee = await requireEmployee();
+
+  redirect(destinations[employee.role]);
+
+  return null;
+}
+
+export default function PortalPage() {
   return (
-    <main className="min-h-screen bg-slate-50 p-8 text-slate-900">
-      <div className="mx-auto max-w-5xl">
-        <p className="text-sm font-semibold text-cyan-600">
-          EVARYN TECHNOLOGIES LIMITED
-        </p>
-        <h1 className="mt-4 text-3xl font-bold">
-          Portal
-        </h1>
-        <p className="mt-4 text-slate-600">
-          This section is being developed.
-        </p>
-      </div>
+    <main className="min-h-screen bg-[#071327] text-white">
+      <Suspense
+        fallback={
+          <div className="flex min-h-screen items-center justify-center px-5">
+            <p className="text-sm text-slate-300">
+              Opening your secure workspace...
+            </p>
+          </div>
+        }
+      >
+        <AuthenticatedDestination />
+      </Suspense>
     </main>
   );
 }
