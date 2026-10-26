@@ -12,7 +12,7 @@ export type CreateEmployeeState = {
   temporaryPassword: string;
 };
 
-export const initialEmployeeState: CreateEmployeeState = {
+const initialEmployeeState: CreateEmployeeState = {
   error: "",
   employeeId: "",
   temporaryPassword: "",

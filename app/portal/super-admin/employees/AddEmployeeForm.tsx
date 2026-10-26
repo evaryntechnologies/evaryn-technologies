@@ -1,14 +1,19 @@
 "use client";
 
+import type { CreateEmployeeState } from "./create-actions";
 import { useActionState } from "react";
 import {
   createEmployee,
-  initialEmployeeState,
 } from "./create-actions";
 
 const field =
   "mt-2 w-full rounded-xl border border-slate-600 bg-[#071327] px-4 py-3 text-white";
 
+const initialEmployeeState: CreateEmployeeState = {
+  error: "",
+  employeeId: "",
+  temporaryPassword: "",
+};
 export default function AddEmployeeForm() {
   const [state, action, pending] = useActionState(
     createEmployee,
