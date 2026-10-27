@@ -32,6 +32,7 @@ export type EmployeeProfileMinAggregateOutputType = {
   role: string | null
   status: string | null
   department: string | null
+  suspensionUntil: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +45,7 @@ export type EmployeeProfileMaxAggregateOutputType = {
   role: string | null
   status: string | null
   department: string | null
+  suspensionUntil: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +58,7 @@ export type EmployeeProfileCountAggregateOutputType = {
   role: number
   status: number
   department: number
+  suspensionUntil: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -70,6 +73,7 @@ export type EmployeeProfileMinAggregateInputType = {
   role?: true
   status?: true
   department?: true
+  suspensionUntil?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -82,6 +86,7 @@ export type EmployeeProfileMaxAggregateInputType = {
   role?: true
   status?: true
   department?: true
+  suspensionUntil?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -94,6 +99,7 @@ export type EmployeeProfileCountAggregateInputType = {
   role?: true
   status?: true
   department?: true
+  suspensionUntil?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -179,6 +185,7 @@ export type EmployeeProfileGroupByOutputType = {
   role: string
   status: string
   department: string | null
+  suspensionUntil: Date | null
   createdAt: Date
   updatedAt: Date
   _count: EmployeeProfileCountAggregateOutputType | null
@@ -212,12 +219,20 @@ export type EmployeeProfileWhereInput = {
   role?: Prisma.StringFilter<"EmployeeProfile"> | string
   status?: Prisma.StringFilter<"EmployeeProfile"> | string
   department?: Prisma.StringNullableFilter<"EmployeeProfile"> | string | null
+  suspensionUntil?: Prisma.DateTimeNullableFilter<"EmployeeProfile"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"EmployeeProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EmployeeProfile"> | Date | string
+  notifications?: Prisma.PortalNotificationListRelationFilter
+  resolvedIssues?: Prisma.TaskDisputeListRelationFilter
+  raisedIssues?: Prisma.TaskDisputeListRelationFilter
+  eligibleCategories?: Prisma.EmployeeCategoryListRelationFilter
   assignedTasks?: Prisma.WorkTaskListRelationFilter
   createdTasks?: Prisma.WorkTaskListRelationFilter
   submissions?: Prisma.TaskSubmissionListRelationFilter
   reviews?: Prisma.TaskReviewListRelationFilter
+  taskMessages?: Prisma.TaskMessageListRelationFilter
+  reassignmentRequests?: Prisma.TaskReassignmentRequestListRelationFilter
+  penalties?: Prisma.TaskPenaltyListRelationFilter
 }
 
 export type EmployeeProfileOrderByWithRelationInput = {
@@ -228,12 +243,20 @@ export type EmployeeProfileOrderByWithRelationInput = {
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
   department?: Prisma.SortOrderInput | Prisma.SortOrder
+  suspensionUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  notifications?: Prisma.PortalNotificationOrderByRelationAggregateInput
+  resolvedIssues?: Prisma.TaskDisputeOrderByRelationAggregateInput
+  raisedIssues?: Prisma.TaskDisputeOrderByRelationAggregateInput
+  eligibleCategories?: Prisma.EmployeeCategoryOrderByRelationAggregateInput
   assignedTasks?: Prisma.WorkTaskOrderByRelationAggregateInput
   createdTasks?: Prisma.WorkTaskOrderByRelationAggregateInput
   submissions?: Prisma.TaskSubmissionOrderByRelationAggregateInput
   reviews?: Prisma.TaskReviewOrderByRelationAggregateInput
+  taskMessages?: Prisma.TaskMessageOrderByRelationAggregateInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestOrderByRelationAggregateInput
+  penalties?: Prisma.TaskPenaltyOrderByRelationAggregateInput
 }
 
 export type EmployeeProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -247,12 +270,20 @@ export type EmployeeProfileWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.StringFilter<"EmployeeProfile"> | string
   status?: Prisma.StringFilter<"EmployeeProfile"> | string
   department?: Prisma.StringNullableFilter<"EmployeeProfile"> | string | null
+  suspensionUntil?: Prisma.DateTimeNullableFilter<"EmployeeProfile"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"EmployeeProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EmployeeProfile"> | Date | string
+  notifications?: Prisma.PortalNotificationListRelationFilter
+  resolvedIssues?: Prisma.TaskDisputeListRelationFilter
+  raisedIssues?: Prisma.TaskDisputeListRelationFilter
+  eligibleCategories?: Prisma.EmployeeCategoryListRelationFilter
   assignedTasks?: Prisma.WorkTaskListRelationFilter
   createdTasks?: Prisma.WorkTaskListRelationFilter
   submissions?: Prisma.TaskSubmissionListRelationFilter
   reviews?: Prisma.TaskReviewListRelationFilter
+  taskMessages?: Prisma.TaskMessageListRelationFilter
+  reassignmentRequests?: Prisma.TaskReassignmentRequestListRelationFilter
+  penalties?: Prisma.TaskPenaltyListRelationFilter
 }, "id" | "authUserId" | "email">
 
 export type EmployeeProfileOrderByWithAggregationInput = {
@@ -263,6 +294,7 @@ export type EmployeeProfileOrderByWithAggregationInput = {
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
   department?: Prisma.SortOrderInput | Prisma.SortOrder
+  suspensionUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.EmployeeProfileCountOrderByAggregateInput
@@ -281,6 +313,7 @@ export type EmployeeProfileScalarWhereWithAggregatesInput = {
   role?: Prisma.StringWithAggregatesFilter<"EmployeeProfile"> | string
   status?: Prisma.StringWithAggregatesFilter<"EmployeeProfile"> | string
   department?: Prisma.StringNullableWithAggregatesFilter<"EmployeeProfile"> | string | null
+  suspensionUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"EmployeeProfile"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"EmployeeProfile"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"EmployeeProfile"> | Date | string
 }
@@ -293,12 +326,20 @@ export type EmployeeProfileCreateInput = {
   role: string
   status?: string
   department?: string | null
+  suspensionUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryCreateNestedManyWithoutEmployeeInput
   assignedTasks?: Prisma.WorkTaskCreateNestedManyWithoutAssignedToInput
   createdTasks?: Prisma.WorkTaskCreateNestedManyWithoutCreatedByInput
   submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutEmployeeInput
   reviews?: Prisma.TaskReviewCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutCreatedByInput
 }
 
 export type EmployeeProfileUncheckedCreateInput = {
@@ -309,12 +350,20 @@ export type EmployeeProfileUncheckedCreateInput = {
   role: string
   status?: string
   department?: string | null
+  suspensionUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationUncheckedCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedCreateNestedManyWithoutEmployeeInput
   assignedTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutAssignedToInput
   createdTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutCreatedByInput
   submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutEmployeeInput
   reviews?: Prisma.TaskReviewUncheckedCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type EmployeeProfileUpdateInput = {
@@ -325,12 +374,20 @@ export type EmployeeProfileUpdateInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUpdateManyWithoutEmployeeNestedInput
   assignedTasks?: Prisma.WorkTaskUpdateManyWithoutAssignedToNestedInput
   createdTasks?: Prisma.WorkTaskUpdateManyWithoutCreatedByNestedInput
   submissions?: Prisma.TaskSubmissionUpdateManyWithoutEmployeeNestedInput
   reviews?: Prisma.TaskReviewUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutCreatedByNestedInput
 }
 
 export type EmployeeProfileUncheckedUpdateInput = {
@@ -341,12 +398,20 @@ export type EmployeeProfileUncheckedUpdateInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedUpdateManyWithoutEmployeeNestedInput
   assignedTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   createdTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutCreatedByNestedInput
   submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutEmployeeNestedInput
   reviews?: Prisma.TaskReviewUncheckedUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUncheckedUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type EmployeeProfileCreateManyInput = {
@@ -357,6 +422,7 @@ export type EmployeeProfileCreateManyInput = {
   role: string
   status?: string
   department?: string | null
+  suspensionUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -369,6 +435,7 @@ export type EmployeeProfileUpdateManyMutationInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -381,6 +448,7 @@ export type EmployeeProfileUncheckedUpdateManyInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -393,6 +461,7 @@ export type EmployeeProfileCountOrderByAggregateInput = {
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
   department?: Prisma.SortOrder
+  suspensionUntil?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -405,6 +474,7 @@ export type EmployeeProfileMaxOrderByAggregateInput = {
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
   department?: Prisma.SortOrder
+  suspensionUntil?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -417,8 +487,14 @@ export type EmployeeProfileMinOrderByAggregateInput = {
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
   department?: Prisma.SortOrder
+  suspensionUntil?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type EmployeeProfileNullableScalarRelationFilter = {
+  is?: Prisma.EmployeeProfileWhereInput | null
+  isNot?: Prisma.EmployeeProfileWhereInput | null
 }
 
 export type EmployeeProfileScalarRelationFilter = {
@@ -438,10 +514,12 @@ export type EmployeeProfileCreateNestedOneWithoutCreatedTasksInput = {
   connect?: Prisma.EmployeeProfileWhereUniqueInput
 }
 
-export type EmployeeProfileUpdateOneRequiredWithoutAssignedTasksNestedInput = {
+export type EmployeeProfileUpdateOneWithoutAssignedTasksNestedInput = {
   create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutAssignedTasksInput, Prisma.EmployeeProfileUncheckedCreateWithoutAssignedTasksInput>
   connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutAssignedTasksInput
   upsert?: Prisma.EmployeeProfileUpsertWithoutAssignedTasksInput
+  disconnect?: Prisma.EmployeeProfileWhereInput | boolean
+  delete?: Prisma.EmployeeProfileWhereInput | boolean
   connect?: Prisma.EmployeeProfileWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeProfileUpdateToOneWithWhereWithoutAssignedTasksInput, Prisma.EmployeeProfileUpdateWithoutAssignedTasksInput>, Prisma.EmployeeProfileUncheckedUpdateWithoutAssignedTasksInput>
 }
@@ -482,6 +560,106 @@ export type EmployeeProfileUpdateOneRequiredWithoutReviewsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeProfileUpdateToOneWithWhereWithoutReviewsInput, Prisma.EmployeeProfileUpdateWithoutReviewsInput>, Prisma.EmployeeProfileUncheckedUpdateWithoutReviewsInput>
 }
 
+export type EmployeeProfileCreateNestedOneWithoutEligibleCategoriesInput = {
+  create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutEligibleCategoriesInput, Prisma.EmployeeProfileUncheckedCreateWithoutEligibleCategoriesInput>
+  connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutEligibleCategoriesInput
+  connect?: Prisma.EmployeeProfileWhereUniqueInput
+}
+
+export type EmployeeProfileUpdateOneRequiredWithoutEligibleCategoriesNestedInput = {
+  create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutEligibleCategoriesInput, Prisma.EmployeeProfileUncheckedCreateWithoutEligibleCategoriesInput>
+  connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutEligibleCategoriesInput
+  upsert?: Prisma.EmployeeProfileUpsertWithoutEligibleCategoriesInput
+  connect?: Prisma.EmployeeProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeProfileUpdateToOneWithWhereWithoutEligibleCategoriesInput, Prisma.EmployeeProfileUpdateWithoutEligibleCategoriesInput>, Prisma.EmployeeProfileUncheckedUpdateWithoutEligibleCategoriesInput>
+}
+
+export type EmployeeProfileCreateNestedOneWithoutTaskMessagesInput = {
+  create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutTaskMessagesInput, Prisma.EmployeeProfileUncheckedCreateWithoutTaskMessagesInput>
+  connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutTaskMessagesInput
+  connect?: Prisma.EmployeeProfileWhereUniqueInput
+}
+
+export type EmployeeProfileUpdateOneRequiredWithoutTaskMessagesNestedInput = {
+  create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutTaskMessagesInput, Prisma.EmployeeProfileUncheckedCreateWithoutTaskMessagesInput>
+  connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutTaskMessagesInput
+  upsert?: Prisma.EmployeeProfileUpsertWithoutTaskMessagesInput
+  connect?: Prisma.EmployeeProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeProfileUpdateToOneWithWhereWithoutTaskMessagesInput, Prisma.EmployeeProfileUpdateWithoutTaskMessagesInput>, Prisma.EmployeeProfileUncheckedUpdateWithoutTaskMessagesInput>
+}
+
+export type EmployeeProfileCreateNestedOneWithoutReassignmentRequestsInput = {
+  create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutReassignmentRequestsInput, Prisma.EmployeeProfileUncheckedCreateWithoutReassignmentRequestsInput>
+  connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutReassignmentRequestsInput
+  connect?: Prisma.EmployeeProfileWhereUniqueInput
+}
+
+export type EmployeeProfileUpdateOneRequiredWithoutReassignmentRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutReassignmentRequestsInput, Prisma.EmployeeProfileUncheckedCreateWithoutReassignmentRequestsInput>
+  connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutReassignmentRequestsInput
+  upsert?: Prisma.EmployeeProfileUpsertWithoutReassignmentRequestsInput
+  connect?: Prisma.EmployeeProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeProfileUpdateToOneWithWhereWithoutReassignmentRequestsInput, Prisma.EmployeeProfileUpdateWithoutReassignmentRequestsInput>, Prisma.EmployeeProfileUncheckedUpdateWithoutReassignmentRequestsInput>
+}
+
+export type EmployeeProfileCreateNestedOneWithoutPenaltiesInput = {
+  create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutPenaltiesInput, Prisma.EmployeeProfileUncheckedCreateWithoutPenaltiesInput>
+  connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutPenaltiesInput
+  connect?: Prisma.EmployeeProfileWhereUniqueInput
+}
+
+export type EmployeeProfileUpdateOneRequiredWithoutPenaltiesNestedInput = {
+  create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutPenaltiesInput, Prisma.EmployeeProfileUncheckedCreateWithoutPenaltiesInput>
+  connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutPenaltiesInput
+  upsert?: Prisma.EmployeeProfileUpsertWithoutPenaltiesInput
+  connect?: Prisma.EmployeeProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeProfileUpdateToOneWithWhereWithoutPenaltiesInput, Prisma.EmployeeProfileUpdateWithoutPenaltiesInput>, Prisma.EmployeeProfileUncheckedUpdateWithoutPenaltiesInput>
+}
+
+export type EmployeeProfileCreateNestedOneWithoutRaisedIssuesInput = {
+  create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutRaisedIssuesInput, Prisma.EmployeeProfileUncheckedCreateWithoutRaisedIssuesInput>
+  connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutRaisedIssuesInput
+  connect?: Prisma.EmployeeProfileWhereUniqueInput
+}
+
+export type EmployeeProfileCreateNestedOneWithoutResolvedIssuesInput = {
+  create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutResolvedIssuesInput, Prisma.EmployeeProfileUncheckedCreateWithoutResolvedIssuesInput>
+  connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutResolvedIssuesInput
+  connect?: Prisma.EmployeeProfileWhereUniqueInput
+}
+
+export type EmployeeProfileUpdateOneRequiredWithoutRaisedIssuesNestedInput = {
+  create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutRaisedIssuesInput, Prisma.EmployeeProfileUncheckedCreateWithoutRaisedIssuesInput>
+  connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutRaisedIssuesInput
+  upsert?: Prisma.EmployeeProfileUpsertWithoutRaisedIssuesInput
+  connect?: Prisma.EmployeeProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeProfileUpdateToOneWithWhereWithoutRaisedIssuesInput, Prisma.EmployeeProfileUpdateWithoutRaisedIssuesInput>, Prisma.EmployeeProfileUncheckedUpdateWithoutRaisedIssuesInput>
+}
+
+export type EmployeeProfileUpdateOneWithoutResolvedIssuesNestedInput = {
+  create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutResolvedIssuesInput, Prisma.EmployeeProfileUncheckedCreateWithoutResolvedIssuesInput>
+  connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutResolvedIssuesInput
+  upsert?: Prisma.EmployeeProfileUpsertWithoutResolvedIssuesInput
+  disconnect?: Prisma.EmployeeProfileWhereInput | boolean
+  delete?: Prisma.EmployeeProfileWhereInput | boolean
+  connect?: Prisma.EmployeeProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeProfileUpdateToOneWithWhereWithoutResolvedIssuesInput, Prisma.EmployeeProfileUpdateWithoutResolvedIssuesInput>, Prisma.EmployeeProfileUncheckedUpdateWithoutResolvedIssuesInput>
+}
+
+export type EmployeeProfileCreateNestedOneWithoutNotificationsInput = {
+  create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutNotificationsInput, Prisma.EmployeeProfileUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutNotificationsInput
+  connect?: Prisma.EmployeeProfileWhereUniqueInput
+}
+
+export type EmployeeProfileUpdateOneRequiredWithoutNotificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutNotificationsInput, Prisma.EmployeeProfileUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutNotificationsInput
+  upsert?: Prisma.EmployeeProfileUpsertWithoutNotificationsInput
+  connect?: Prisma.EmployeeProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeProfileUpdateToOneWithWhereWithoutNotificationsInput, Prisma.EmployeeProfileUpdateWithoutNotificationsInput>, Prisma.EmployeeProfileUncheckedUpdateWithoutNotificationsInput>
+}
+
 export type EmployeeProfileCreateWithoutAssignedTasksInput = {
   id?: string
   authUserId: string
@@ -490,11 +668,19 @@ export type EmployeeProfileCreateWithoutAssignedTasksInput = {
   role: string
   status?: string
   department?: string | null
+  suspensionUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryCreateNestedManyWithoutEmployeeInput
   createdTasks?: Prisma.WorkTaskCreateNestedManyWithoutCreatedByInput
   submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutEmployeeInput
   reviews?: Prisma.TaskReviewCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutCreatedByInput
 }
 
 export type EmployeeProfileUncheckedCreateWithoutAssignedTasksInput = {
@@ -505,11 +691,19 @@ export type EmployeeProfileUncheckedCreateWithoutAssignedTasksInput = {
   role: string
   status?: string
   department?: string | null
+  suspensionUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationUncheckedCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedCreateNestedManyWithoutEmployeeInput
   createdTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutCreatedByInput
   submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutEmployeeInput
   reviews?: Prisma.TaskReviewUncheckedCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type EmployeeProfileCreateOrConnectWithoutAssignedTasksInput = {
@@ -525,11 +719,19 @@ export type EmployeeProfileCreateWithoutCreatedTasksInput = {
   role: string
   status?: string
   department?: string | null
+  suspensionUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryCreateNestedManyWithoutEmployeeInput
   assignedTasks?: Prisma.WorkTaskCreateNestedManyWithoutAssignedToInput
   submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutEmployeeInput
   reviews?: Prisma.TaskReviewCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutCreatedByInput
 }
 
 export type EmployeeProfileUncheckedCreateWithoutCreatedTasksInput = {
@@ -540,11 +742,19 @@ export type EmployeeProfileUncheckedCreateWithoutCreatedTasksInput = {
   role: string
   status?: string
   department?: string | null
+  suspensionUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationUncheckedCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedCreateNestedManyWithoutEmployeeInput
   assignedTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutAssignedToInput
   submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutEmployeeInput
   reviews?: Prisma.TaskReviewUncheckedCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type EmployeeProfileCreateOrConnectWithoutCreatedTasksInput = {
@@ -571,11 +781,19 @@ export type EmployeeProfileUpdateWithoutAssignedTasksInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUpdateManyWithoutEmployeeNestedInput
   createdTasks?: Prisma.WorkTaskUpdateManyWithoutCreatedByNestedInput
   submissions?: Prisma.TaskSubmissionUpdateManyWithoutEmployeeNestedInput
   reviews?: Prisma.TaskReviewUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutCreatedByNestedInput
 }
 
 export type EmployeeProfileUncheckedUpdateWithoutAssignedTasksInput = {
@@ -586,11 +804,19 @@ export type EmployeeProfileUncheckedUpdateWithoutAssignedTasksInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedUpdateManyWithoutEmployeeNestedInput
   createdTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutCreatedByNestedInput
   submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutEmployeeNestedInput
   reviews?: Prisma.TaskReviewUncheckedUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUncheckedUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type EmployeeProfileUpsertWithoutCreatedTasksInput = {
@@ -612,11 +838,19 @@ export type EmployeeProfileUpdateWithoutCreatedTasksInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUpdateManyWithoutEmployeeNestedInput
   assignedTasks?: Prisma.WorkTaskUpdateManyWithoutAssignedToNestedInput
   submissions?: Prisma.TaskSubmissionUpdateManyWithoutEmployeeNestedInput
   reviews?: Prisma.TaskReviewUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutCreatedByNestedInput
 }
 
 export type EmployeeProfileUncheckedUpdateWithoutCreatedTasksInput = {
@@ -627,11 +861,19 @@ export type EmployeeProfileUncheckedUpdateWithoutCreatedTasksInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedUpdateManyWithoutEmployeeNestedInput
   assignedTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutEmployeeNestedInput
   reviews?: Prisma.TaskReviewUncheckedUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUncheckedUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type EmployeeProfileCreateWithoutSubmissionsInput = {
@@ -642,11 +884,19 @@ export type EmployeeProfileCreateWithoutSubmissionsInput = {
   role: string
   status?: string
   department?: string | null
+  suspensionUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryCreateNestedManyWithoutEmployeeInput
   assignedTasks?: Prisma.WorkTaskCreateNestedManyWithoutAssignedToInput
   createdTasks?: Prisma.WorkTaskCreateNestedManyWithoutCreatedByInput
   reviews?: Prisma.TaskReviewCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutCreatedByInput
 }
 
 export type EmployeeProfileUncheckedCreateWithoutSubmissionsInput = {
@@ -657,11 +907,19 @@ export type EmployeeProfileUncheckedCreateWithoutSubmissionsInput = {
   role: string
   status?: string
   department?: string | null
+  suspensionUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationUncheckedCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedCreateNestedManyWithoutEmployeeInput
   assignedTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutAssignedToInput
   createdTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutCreatedByInput
   reviews?: Prisma.TaskReviewUncheckedCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type EmployeeProfileCreateOrConnectWithoutSubmissionsInput = {
@@ -688,11 +946,19 @@ export type EmployeeProfileUpdateWithoutSubmissionsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUpdateManyWithoutEmployeeNestedInput
   assignedTasks?: Prisma.WorkTaskUpdateManyWithoutAssignedToNestedInput
   createdTasks?: Prisma.WorkTaskUpdateManyWithoutCreatedByNestedInput
   reviews?: Prisma.TaskReviewUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutCreatedByNestedInput
 }
 
 export type EmployeeProfileUncheckedUpdateWithoutSubmissionsInput = {
@@ -703,11 +969,19 @@ export type EmployeeProfileUncheckedUpdateWithoutSubmissionsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedUpdateManyWithoutEmployeeNestedInput
   assignedTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   createdTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutCreatedByNestedInput
   reviews?: Prisma.TaskReviewUncheckedUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUncheckedUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type EmployeeProfileCreateWithoutReviewsInput = {
@@ -718,11 +992,19 @@ export type EmployeeProfileCreateWithoutReviewsInput = {
   role: string
   status?: string
   department?: string | null
+  suspensionUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryCreateNestedManyWithoutEmployeeInput
   assignedTasks?: Prisma.WorkTaskCreateNestedManyWithoutAssignedToInput
   createdTasks?: Prisma.WorkTaskCreateNestedManyWithoutCreatedByInput
   submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutEmployeeInput
+  taskMessages?: Prisma.TaskMessageCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutCreatedByInput
 }
 
 export type EmployeeProfileUncheckedCreateWithoutReviewsInput = {
@@ -733,11 +1015,19 @@ export type EmployeeProfileUncheckedCreateWithoutReviewsInput = {
   role: string
   status?: string
   department?: string | null
+  suspensionUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationUncheckedCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedCreateNestedManyWithoutEmployeeInput
   assignedTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutAssignedToInput
   createdTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutCreatedByInput
   submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutEmployeeInput
+  taskMessages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type EmployeeProfileCreateOrConnectWithoutReviewsInput = {
@@ -764,11 +1054,19 @@ export type EmployeeProfileUpdateWithoutReviewsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUpdateManyWithoutEmployeeNestedInput
   assignedTasks?: Prisma.WorkTaskUpdateManyWithoutAssignedToNestedInput
   createdTasks?: Prisma.WorkTaskUpdateManyWithoutCreatedByNestedInput
   submissions?: Prisma.TaskSubmissionUpdateManyWithoutEmployeeNestedInput
+  taskMessages?: Prisma.TaskMessageUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutCreatedByNestedInput
 }
 
 export type EmployeeProfileUncheckedUpdateWithoutReviewsInput = {
@@ -779,11 +1077,775 @@ export type EmployeeProfileUncheckedUpdateWithoutReviewsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedUpdateManyWithoutEmployeeNestedInput
   assignedTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   createdTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutCreatedByNestedInput
   submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutEmployeeNestedInput
+  taskMessages?: Prisma.TaskMessageUncheckedUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type EmployeeProfileCreateWithoutEligibleCategoriesInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  role: string
+  status?: string
+  department?: string | null
+  suspensionUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutRaisedByInput
+  assignedTasks?: Prisma.WorkTaskCreateNestedManyWithoutAssignedToInput
+  createdTasks?: Prisma.WorkTaskCreateNestedManyWithoutCreatedByInput
+  submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutEmployeeInput
+  reviews?: Prisma.TaskReviewCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutCreatedByInput
+}
+
+export type EmployeeProfileUncheckedCreateWithoutEligibleCategoriesInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  role: string
+  status?: string
+  department?: string | null
+  suspensionUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationUncheckedCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutRaisedByInput
+  assignedTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutAssignedToInput
+  createdTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutEmployeeInput
+  reviews?: Prisma.TaskReviewUncheckedCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type EmployeeProfileCreateOrConnectWithoutEligibleCategoriesInput = {
+  where: Prisma.EmployeeProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutEligibleCategoriesInput, Prisma.EmployeeProfileUncheckedCreateWithoutEligibleCategoriesInput>
+}
+
+export type EmployeeProfileUpsertWithoutEligibleCategoriesInput = {
+  update: Prisma.XOR<Prisma.EmployeeProfileUpdateWithoutEligibleCategoriesInput, Prisma.EmployeeProfileUncheckedUpdateWithoutEligibleCategoriesInput>
+  create: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutEligibleCategoriesInput, Prisma.EmployeeProfileUncheckedCreateWithoutEligibleCategoriesInput>
+  where?: Prisma.EmployeeProfileWhereInput
+}
+
+export type EmployeeProfileUpdateToOneWithWhereWithoutEligibleCategoriesInput = {
+  where?: Prisma.EmployeeProfileWhereInput
+  data: Prisma.XOR<Prisma.EmployeeProfileUpdateWithoutEligibleCategoriesInput, Prisma.EmployeeProfileUncheckedUpdateWithoutEligibleCategoriesInput>
+}
+
+export type EmployeeProfileUpdateWithoutEligibleCategoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUpdateManyWithoutRaisedByNestedInput
+  assignedTasks?: Prisma.WorkTaskUpdateManyWithoutAssignedToNestedInput
+  createdTasks?: Prisma.WorkTaskUpdateManyWithoutCreatedByNestedInput
+  submissions?: Prisma.TaskSubmissionUpdateManyWithoutEmployeeNestedInput
+  reviews?: Prisma.TaskReviewUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutCreatedByNestedInput
+}
+
+export type EmployeeProfileUncheckedUpdateWithoutEligibleCategoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutRaisedByNestedInput
+  assignedTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+  createdTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutEmployeeNestedInput
+  reviews?: Prisma.TaskReviewUncheckedUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUncheckedUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type EmployeeProfileCreateWithoutTaskMessagesInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  role: string
+  status?: string
+  department?: string | null
+  suspensionUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryCreateNestedManyWithoutEmployeeInput
+  assignedTasks?: Prisma.WorkTaskCreateNestedManyWithoutAssignedToInput
+  createdTasks?: Prisma.WorkTaskCreateNestedManyWithoutCreatedByInput
+  submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutEmployeeInput
+  reviews?: Prisma.TaskReviewCreateNestedManyWithoutReviewerInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutCreatedByInput
+}
+
+export type EmployeeProfileUncheckedCreateWithoutTaskMessagesInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  role: string
+  status?: string
+  department?: string | null
+  suspensionUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationUncheckedCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedCreateNestedManyWithoutEmployeeInput
+  assignedTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutAssignedToInput
+  createdTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutEmployeeInput
+  reviews?: Prisma.TaskReviewUncheckedCreateNestedManyWithoutReviewerInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type EmployeeProfileCreateOrConnectWithoutTaskMessagesInput = {
+  where: Prisma.EmployeeProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutTaskMessagesInput, Prisma.EmployeeProfileUncheckedCreateWithoutTaskMessagesInput>
+}
+
+export type EmployeeProfileUpsertWithoutTaskMessagesInput = {
+  update: Prisma.XOR<Prisma.EmployeeProfileUpdateWithoutTaskMessagesInput, Prisma.EmployeeProfileUncheckedUpdateWithoutTaskMessagesInput>
+  create: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutTaskMessagesInput, Prisma.EmployeeProfileUncheckedCreateWithoutTaskMessagesInput>
+  where?: Prisma.EmployeeProfileWhereInput
+}
+
+export type EmployeeProfileUpdateToOneWithWhereWithoutTaskMessagesInput = {
+  where?: Prisma.EmployeeProfileWhereInput
+  data: Prisma.XOR<Prisma.EmployeeProfileUpdateWithoutTaskMessagesInput, Prisma.EmployeeProfileUncheckedUpdateWithoutTaskMessagesInput>
+}
+
+export type EmployeeProfileUpdateWithoutTaskMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUpdateManyWithoutEmployeeNestedInput
+  assignedTasks?: Prisma.WorkTaskUpdateManyWithoutAssignedToNestedInput
+  createdTasks?: Prisma.WorkTaskUpdateManyWithoutCreatedByNestedInput
+  submissions?: Prisma.TaskSubmissionUpdateManyWithoutEmployeeNestedInput
+  reviews?: Prisma.TaskReviewUpdateManyWithoutReviewerNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutCreatedByNestedInput
+}
+
+export type EmployeeProfileUncheckedUpdateWithoutTaskMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedUpdateManyWithoutEmployeeNestedInput
+  assignedTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+  createdTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutEmployeeNestedInput
+  reviews?: Prisma.TaskReviewUncheckedUpdateManyWithoutReviewerNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type EmployeeProfileCreateWithoutReassignmentRequestsInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  role: string
+  status?: string
+  department?: string | null
+  suspensionUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryCreateNestedManyWithoutEmployeeInput
+  assignedTasks?: Prisma.WorkTaskCreateNestedManyWithoutAssignedToInput
+  createdTasks?: Prisma.WorkTaskCreateNestedManyWithoutCreatedByInput
+  submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutEmployeeInput
+  reviews?: Prisma.TaskReviewCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageCreateNestedManyWithoutSenderInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutCreatedByInput
+}
+
+export type EmployeeProfileUncheckedCreateWithoutReassignmentRequestsInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  role: string
+  status?: string
+  department?: string | null
+  suspensionUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationUncheckedCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedCreateNestedManyWithoutEmployeeInput
+  assignedTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutAssignedToInput
+  createdTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutEmployeeInput
+  reviews?: Prisma.TaskReviewUncheckedCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutSenderInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type EmployeeProfileCreateOrConnectWithoutReassignmentRequestsInput = {
+  where: Prisma.EmployeeProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutReassignmentRequestsInput, Prisma.EmployeeProfileUncheckedCreateWithoutReassignmentRequestsInput>
+}
+
+export type EmployeeProfileUpsertWithoutReassignmentRequestsInput = {
+  update: Prisma.XOR<Prisma.EmployeeProfileUpdateWithoutReassignmentRequestsInput, Prisma.EmployeeProfileUncheckedUpdateWithoutReassignmentRequestsInput>
+  create: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutReassignmentRequestsInput, Prisma.EmployeeProfileUncheckedCreateWithoutReassignmentRequestsInput>
+  where?: Prisma.EmployeeProfileWhereInput
+}
+
+export type EmployeeProfileUpdateToOneWithWhereWithoutReassignmentRequestsInput = {
+  where?: Prisma.EmployeeProfileWhereInput
+  data: Prisma.XOR<Prisma.EmployeeProfileUpdateWithoutReassignmentRequestsInput, Prisma.EmployeeProfileUncheckedUpdateWithoutReassignmentRequestsInput>
+}
+
+export type EmployeeProfileUpdateWithoutReassignmentRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUpdateManyWithoutEmployeeNestedInput
+  assignedTasks?: Prisma.WorkTaskUpdateManyWithoutAssignedToNestedInput
+  createdTasks?: Prisma.WorkTaskUpdateManyWithoutCreatedByNestedInput
+  submissions?: Prisma.TaskSubmissionUpdateManyWithoutEmployeeNestedInput
+  reviews?: Prisma.TaskReviewUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUpdateManyWithoutSenderNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutCreatedByNestedInput
+}
+
+export type EmployeeProfileUncheckedUpdateWithoutReassignmentRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedUpdateManyWithoutEmployeeNestedInput
+  assignedTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+  createdTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutEmployeeNestedInput
+  reviews?: Prisma.TaskReviewUncheckedUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUncheckedUpdateManyWithoutSenderNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type EmployeeProfileCreateWithoutPenaltiesInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  role: string
+  status?: string
+  department?: string | null
+  suspensionUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryCreateNestedManyWithoutEmployeeInput
+  assignedTasks?: Prisma.WorkTaskCreateNestedManyWithoutAssignedToInput
+  createdTasks?: Prisma.WorkTaskCreateNestedManyWithoutCreatedByInput
+  submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutEmployeeInput
+  reviews?: Prisma.TaskReviewCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutEmployeeInput
+}
+
+export type EmployeeProfileUncheckedCreateWithoutPenaltiesInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  role: string
+  status?: string
+  department?: string | null
+  suspensionUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationUncheckedCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedCreateNestedManyWithoutEmployeeInput
+  assignedTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutAssignedToInput
+  createdTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutEmployeeInput
+  reviews?: Prisma.TaskReviewUncheckedCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutEmployeeInput
+}
+
+export type EmployeeProfileCreateOrConnectWithoutPenaltiesInput = {
+  where: Prisma.EmployeeProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutPenaltiesInput, Prisma.EmployeeProfileUncheckedCreateWithoutPenaltiesInput>
+}
+
+export type EmployeeProfileUpsertWithoutPenaltiesInput = {
+  update: Prisma.XOR<Prisma.EmployeeProfileUpdateWithoutPenaltiesInput, Prisma.EmployeeProfileUncheckedUpdateWithoutPenaltiesInput>
+  create: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutPenaltiesInput, Prisma.EmployeeProfileUncheckedCreateWithoutPenaltiesInput>
+  where?: Prisma.EmployeeProfileWhereInput
+}
+
+export type EmployeeProfileUpdateToOneWithWhereWithoutPenaltiesInput = {
+  where?: Prisma.EmployeeProfileWhereInput
+  data: Prisma.XOR<Prisma.EmployeeProfileUpdateWithoutPenaltiesInput, Prisma.EmployeeProfileUncheckedUpdateWithoutPenaltiesInput>
+}
+
+export type EmployeeProfileUpdateWithoutPenaltiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUpdateManyWithoutEmployeeNestedInput
+  assignedTasks?: Prisma.WorkTaskUpdateManyWithoutAssignedToNestedInput
+  createdTasks?: Prisma.WorkTaskUpdateManyWithoutCreatedByNestedInput
+  submissions?: Prisma.TaskSubmissionUpdateManyWithoutEmployeeNestedInput
+  reviews?: Prisma.TaskReviewUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutEmployeeNestedInput
+}
+
+export type EmployeeProfileUncheckedUpdateWithoutPenaltiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedUpdateManyWithoutEmployeeNestedInput
+  assignedTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+  createdTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutEmployeeNestedInput
+  reviews?: Prisma.TaskReviewUncheckedUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUncheckedUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+}
+
+export type EmployeeProfileCreateWithoutRaisedIssuesInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  role: string
+  status?: string
+  department?: string | null
+  suspensionUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutResolvedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryCreateNestedManyWithoutEmployeeInput
+  assignedTasks?: Prisma.WorkTaskCreateNestedManyWithoutAssignedToInput
+  createdTasks?: Prisma.WorkTaskCreateNestedManyWithoutCreatedByInput
+  submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutEmployeeInput
+  reviews?: Prisma.TaskReviewCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutCreatedByInput
+}
+
+export type EmployeeProfileUncheckedCreateWithoutRaisedIssuesInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  role: string
+  status?: string
+  department?: string | null
+  suspensionUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationUncheckedCreateNestedManyWithoutRecipientInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutResolvedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedCreateNestedManyWithoutEmployeeInput
+  assignedTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutAssignedToInput
+  createdTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutEmployeeInput
+  reviews?: Prisma.TaskReviewUncheckedCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type EmployeeProfileCreateOrConnectWithoutRaisedIssuesInput = {
+  where: Prisma.EmployeeProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutRaisedIssuesInput, Prisma.EmployeeProfileUncheckedCreateWithoutRaisedIssuesInput>
+}
+
+export type EmployeeProfileCreateWithoutResolvedIssuesInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  role: string
+  status?: string
+  department?: string | null
+  suspensionUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationCreateNestedManyWithoutRecipientInput
+  raisedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryCreateNestedManyWithoutEmployeeInput
+  assignedTasks?: Prisma.WorkTaskCreateNestedManyWithoutAssignedToInput
+  createdTasks?: Prisma.WorkTaskCreateNestedManyWithoutCreatedByInput
+  submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutEmployeeInput
+  reviews?: Prisma.TaskReviewCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutCreatedByInput
+}
+
+export type EmployeeProfileUncheckedCreateWithoutResolvedIssuesInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  role: string
+  status?: string
+  department?: string | null
+  suspensionUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.PortalNotificationUncheckedCreateNestedManyWithoutRecipientInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedCreateNestedManyWithoutEmployeeInput
+  assignedTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutAssignedToInput
+  createdTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutEmployeeInput
+  reviews?: Prisma.TaskReviewUncheckedCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type EmployeeProfileCreateOrConnectWithoutResolvedIssuesInput = {
+  where: Prisma.EmployeeProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutResolvedIssuesInput, Prisma.EmployeeProfileUncheckedCreateWithoutResolvedIssuesInput>
+}
+
+export type EmployeeProfileUpsertWithoutRaisedIssuesInput = {
+  update: Prisma.XOR<Prisma.EmployeeProfileUpdateWithoutRaisedIssuesInput, Prisma.EmployeeProfileUncheckedUpdateWithoutRaisedIssuesInput>
+  create: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutRaisedIssuesInput, Prisma.EmployeeProfileUncheckedCreateWithoutRaisedIssuesInput>
+  where?: Prisma.EmployeeProfileWhereInput
+}
+
+export type EmployeeProfileUpdateToOneWithWhereWithoutRaisedIssuesInput = {
+  where?: Prisma.EmployeeProfileWhereInput
+  data: Prisma.XOR<Prisma.EmployeeProfileUpdateWithoutRaisedIssuesInput, Prisma.EmployeeProfileUncheckedUpdateWithoutRaisedIssuesInput>
+}
+
+export type EmployeeProfileUpdateWithoutRaisedIssuesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUpdateManyWithoutResolvedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUpdateManyWithoutEmployeeNestedInput
+  assignedTasks?: Prisma.WorkTaskUpdateManyWithoutAssignedToNestedInput
+  createdTasks?: Prisma.WorkTaskUpdateManyWithoutCreatedByNestedInput
+  submissions?: Prisma.TaskSubmissionUpdateManyWithoutEmployeeNestedInput
+  reviews?: Prisma.TaskReviewUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutCreatedByNestedInput
+}
+
+export type EmployeeProfileUncheckedUpdateWithoutRaisedIssuesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  resolvedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutResolvedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedUpdateManyWithoutEmployeeNestedInput
+  assignedTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+  createdTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutEmployeeNestedInput
+  reviews?: Prisma.TaskReviewUncheckedUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUncheckedUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type EmployeeProfileUpsertWithoutResolvedIssuesInput = {
+  update: Prisma.XOR<Prisma.EmployeeProfileUpdateWithoutResolvedIssuesInput, Prisma.EmployeeProfileUncheckedUpdateWithoutResolvedIssuesInput>
+  create: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutResolvedIssuesInput, Prisma.EmployeeProfileUncheckedCreateWithoutResolvedIssuesInput>
+  where?: Prisma.EmployeeProfileWhereInput
+}
+
+export type EmployeeProfileUpdateToOneWithWhereWithoutResolvedIssuesInput = {
+  where?: Prisma.EmployeeProfileWhereInput
+  data: Prisma.XOR<Prisma.EmployeeProfileUpdateWithoutResolvedIssuesInput, Prisma.EmployeeProfileUncheckedUpdateWithoutResolvedIssuesInput>
+}
+
+export type EmployeeProfileUpdateWithoutResolvedIssuesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUpdateManyWithoutRecipientNestedInput
+  raisedIssues?: Prisma.TaskDisputeUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUpdateManyWithoutEmployeeNestedInput
+  assignedTasks?: Prisma.WorkTaskUpdateManyWithoutAssignedToNestedInput
+  createdTasks?: Prisma.WorkTaskUpdateManyWithoutCreatedByNestedInput
+  submissions?: Prisma.TaskSubmissionUpdateManyWithoutEmployeeNestedInput
+  reviews?: Prisma.TaskReviewUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutCreatedByNestedInput
+}
+
+export type EmployeeProfileUncheckedUpdateWithoutResolvedIssuesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.PortalNotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedUpdateManyWithoutEmployeeNestedInput
+  assignedTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+  createdTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutEmployeeNestedInput
+  reviews?: Prisma.TaskReviewUncheckedUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUncheckedUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type EmployeeProfileCreateWithoutNotificationsInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  role: string
+  status?: string
+  department?: string | null
+  suspensionUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  resolvedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryCreateNestedManyWithoutEmployeeInput
+  assignedTasks?: Prisma.WorkTaskCreateNestedManyWithoutAssignedToInput
+  createdTasks?: Prisma.WorkTaskCreateNestedManyWithoutCreatedByInput
+  submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutEmployeeInput
+  reviews?: Prisma.TaskReviewCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutCreatedByInput
+}
+
+export type EmployeeProfileUncheckedCreateWithoutNotificationsInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  role: string
+  status?: string
+  department?: string | null
+  suspensionUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  resolvedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutResolvedByInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutRaisedByInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedCreateNestedManyWithoutEmployeeInput
+  assignedTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutAssignedToInput
+  createdTasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutEmployeeInput
+  reviews?: Prisma.TaskReviewUncheckedCreateNestedManyWithoutReviewerInput
+  taskMessages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutSenderInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type EmployeeProfileCreateOrConnectWithoutNotificationsInput = {
+  where: Prisma.EmployeeProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutNotificationsInput, Prisma.EmployeeProfileUncheckedCreateWithoutNotificationsInput>
+}
+
+export type EmployeeProfileUpsertWithoutNotificationsInput = {
+  update: Prisma.XOR<Prisma.EmployeeProfileUpdateWithoutNotificationsInput, Prisma.EmployeeProfileUncheckedUpdateWithoutNotificationsInput>
+  create: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutNotificationsInput, Prisma.EmployeeProfileUncheckedCreateWithoutNotificationsInput>
+  where?: Prisma.EmployeeProfileWhereInput
+}
+
+export type EmployeeProfileUpdateToOneWithWhereWithoutNotificationsInput = {
+  where?: Prisma.EmployeeProfileWhereInput
+  data: Prisma.XOR<Prisma.EmployeeProfileUpdateWithoutNotificationsInput, Prisma.EmployeeProfileUncheckedUpdateWithoutNotificationsInput>
+}
+
+export type EmployeeProfileUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  resolvedIssues?: Prisma.TaskDisputeUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUpdateManyWithoutEmployeeNestedInput
+  assignedTasks?: Prisma.WorkTaskUpdateManyWithoutAssignedToNestedInput
+  createdTasks?: Prisma.WorkTaskUpdateManyWithoutCreatedByNestedInput
+  submissions?: Prisma.TaskSubmissionUpdateManyWithoutEmployeeNestedInput
+  reviews?: Prisma.TaskReviewUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutCreatedByNestedInput
+}
+
+export type EmployeeProfileUncheckedUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspensionUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  resolvedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutResolvedByNestedInput
+  raisedIssues?: Prisma.TaskDisputeUncheckedUpdateManyWithoutRaisedByNestedInput
+  eligibleCategories?: Prisma.EmployeeCategoryUncheckedUpdateManyWithoutEmployeeNestedInput
+  assignedTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+  createdTasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutEmployeeNestedInput
+  reviews?: Prisma.TaskReviewUncheckedUpdateManyWithoutReviewerNestedInput
+  taskMessages?: Prisma.TaskMessageUncheckedUpdateManyWithoutSenderNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 
@@ -792,17 +1854,31 @@ export type EmployeeProfileUncheckedUpdateWithoutReviewsInput = {
  */
 
 export type EmployeeProfileCountOutputType = {
+  notifications: number
+  resolvedIssues: number
+  raisedIssues: number
+  eligibleCategories: number
   assignedTasks: number
   createdTasks: number
   submissions: number
   reviews: number
+  taskMessages: number
+  reassignmentRequests: number
+  penalties: number
 }
 
 export type EmployeeProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  notifications?: boolean | EmployeeProfileCountOutputTypeCountNotificationsArgs
+  resolvedIssues?: boolean | EmployeeProfileCountOutputTypeCountResolvedIssuesArgs
+  raisedIssues?: boolean | EmployeeProfileCountOutputTypeCountRaisedIssuesArgs
+  eligibleCategories?: boolean | EmployeeProfileCountOutputTypeCountEligibleCategoriesArgs
   assignedTasks?: boolean | EmployeeProfileCountOutputTypeCountAssignedTasksArgs
   createdTasks?: boolean | EmployeeProfileCountOutputTypeCountCreatedTasksArgs
   submissions?: boolean | EmployeeProfileCountOutputTypeCountSubmissionsArgs
   reviews?: boolean | EmployeeProfileCountOutputTypeCountReviewsArgs
+  taskMessages?: boolean | EmployeeProfileCountOutputTypeCountTaskMessagesArgs
+  reassignmentRequests?: boolean | EmployeeProfileCountOutputTypeCountReassignmentRequestsArgs
+  penalties?: boolean | EmployeeProfileCountOutputTypeCountPenaltiesArgs
 }
 
 /**
@@ -813,6 +1889,34 @@ export type EmployeeProfileCountOutputTypeDefaultArgs<ExtArgs extends runtime.Ty
    * Select specific fields to fetch from the EmployeeProfileCountOutputType
    */
   select?: Prisma.EmployeeProfileCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * EmployeeProfileCountOutputType without action
+ */
+export type EmployeeProfileCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PortalNotificationWhereInput
+}
+
+/**
+ * EmployeeProfileCountOutputType without action
+ */
+export type EmployeeProfileCountOutputTypeCountResolvedIssuesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskDisputeWhereInput
+}
+
+/**
+ * EmployeeProfileCountOutputType without action
+ */
+export type EmployeeProfileCountOutputTypeCountRaisedIssuesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskDisputeWhereInput
+}
+
+/**
+ * EmployeeProfileCountOutputType without action
+ */
+export type EmployeeProfileCountOutputTypeCountEligibleCategoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EmployeeCategoryWhereInput
 }
 
 /**
@@ -843,6 +1947,27 @@ export type EmployeeProfileCountOutputTypeCountReviewsArgs<ExtArgs extends runti
   where?: Prisma.TaskReviewWhereInput
 }
 
+/**
+ * EmployeeProfileCountOutputType without action
+ */
+export type EmployeeProfileCountOutputTypeCountTaskMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskMessageWhereInput
+}
+
+/**
+ * EmployeeProfileCountOutputType without action
+ */
+export type EmployeeProfileCountOutputTypeCountReassignmentRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskReassignmentRequestWhereInput
+}
+
+/**
+ * EmployeeProfileCountOutputType without action
+ */
+export type EmployeeProfileCountOutputTypeCountPenaltiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskPenaltyWhereInput
+}
+
 
 export type EmployeeProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -852,12 +1977,20 @@ export type EmployeeProfileSelect<ExtArgs extends runtime.Types.Extensions.Inter
   role?: boolean
   status?: boolean
   department?: boolean
+  suspensionUntil?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  notifications?: boolean | Prisma.EmployeeProfile$notificationsArgs<ExtArgs>
+  resolvedIssues?: boolean | Prisma.EmployeeProfile$resolvedIssuesArgs<ExtArgs>
+  raisedIssues?: boolean | Prisma.EmployeeProfile$raisedIssuesArgs<ExtArgs>
+  eligibleCategories?: boolean | Prisma.EmployeeProfile$eligibleCategoriesArgs<ExtArgs>
   assignedTasks?: boolean | Prisma.EmployeeProfile$assignedTasksArgs<ExtArgs>
   createdTasks?: boolean | Prisma.EmployeeProfile$createdTasksArgs<ExtArgs>
   submissions?: boolean | Prisma.EmployeeProfile$submissionsArgs<ExtArgs>
   reviews?: boolean | Prisma.EmployeeProfile$reviewsArgs<ExtArgs>
+  taskMessages?: boolean | Prisma.EmployeeProfile$taskMessagesArgs<ExtArgs>
+  reassignmentRequests?: boolean | Prisma.EmployeeProfile$reassignmentRequestsArgs<ExtArgs>
+  penalties?: boolean | Prisma.EmployeeProfile$penaltiesArgs<ExtArgs>
   _count?: boolean | Prisma.EmployeeProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["employeeProfile"]>
 
@@ -869,6 +2002,7 @@ export type EmployeeProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   role?: boolean
   status?: boolean
   department?: boolean
+  suspensionUntil?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["employeeProfile"]>
@@ -881,6 +2015,7 @@ export type EmployeeProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   role?: boolean
   status?: boolean
   department?: boolean
+  suspensionUntil?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["employeeProfile"]>
@@ -893,16 +2028,24 @@ export type EmployeeProfileSelectScalar = {
   role?: boolean
   status?: boolean
   department?: boolean
+  suspensionUntil?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EmployeeProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "authUserId" | "email" | "fullName" | "role" | "status" | "department" | "createdAt" | "updatedAt", ExtArgs["result"]["employeeProfile"]>
+export type EmployeeProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "authUserId" | "email" | "fullName" | "role" | "status" | "department" | "suspensionUntil" | "createdAt" | "updatedAt", ExtArgs["result"]["employeeProfile"]>
 export type EmployeeProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  notifications?: boolean | Prisma.EmployeeProfile$notificationsArgs<ExtArgs>
+  resolvedIssues?: boolean | Prisma.EmployeeProfile$resolvedIssuesArgs<ExtArgs>
+  raisedIssues?: boolean | Prisma.EmployeeProfile$raisedIssuesArgs<ExtArgs>
+  eligibleCategories?: boolean | Prisma.EmployeeProfile$eligibleCategoriesArgs<ExtArgs>
   assignedTasks?: boolean | Prisma.EmployeeProfile$assignedTasksArgs<ExtArgs>
   createdTasks?: boolean | Prisma.EmployeeProfile$createdTasksArgs<ExtArgs>
   submissions?: boolean | Prisma.EmployeeProfile$submissionsArgs<ExtArgs>
   reviews?: boolean | Prisma.EmployeeProfile$reviewsArgs<ExtArgs>
+  taskMessages?: boolean | Prisma.EmployeeProfile$taskMessagesArgs<ExtArgs>
+  reassignmentRequests?: boolean | Prisma.EmployeeProfile$reassignmentRequestsArgs<ExtArgs>
+  penalties?: boolean | Prisma.EmployeeProfile$penaltiesArgs<ExtArgs>
   _count?: boolean | Prisma.EmployeeProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EmployeeProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -911,10 +2054,17 @@ export type EmployeeProfileIncludeUpdateManyAndReturn<ExtArgs extends runtime.Ty
 export type $EmployeeProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "EmployeeProfile"
   objects: {
+    notifications: Prisma.$PortalNotificationPayload<ExtArgs>[]
+    resolvedIssues: Prisma.$TaskDisputePayload<ExtArgs>[]
+    raisedIssues: Prisma.$TaskDisputePayload<ExtArgs>[]
+    eligibleCategories: Prisma.$EmployeeCategoryPayload<ExtArgs>[]
     assignedTasks: Prisma.$WorkTaskPayload<ExtArgs>[]
     createdTasks: Prisma.$WorkTaskPayload<ExtArgs>[]
     submissions: Prisma.$TaskSubmissionPayload<ExtArgs>[]
     reviews: Prisma.$TaskReviewPayload<ExtArgs>[]
+    taskMessages: Prisma.$TaskMessagePayload<ExtArgs>[]
+    reassignmentRequests: Prisma.$TaskReassignmentRequestPayload<ExtArgs>[]
+    penalties: Prisma.$TaskPenaltyPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -924,6 +2074,7 @@ export type $EmployeeProfilePayload<ExtArgs extends runtime.Types.Extensions.Int
     role: string
     status: string
     department: string | null
+    suspensionUntil: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["employeeProfile"]>
@@ -1320,10 +2471,17 @@ readonly fields: EmployeeProfileFieldRefs;
  */
 export interface Prisma__EmployeeProfileClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  notifications<T extends Prisma.EmployeeProfile$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeProfile$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PortalNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  resolvedIssues<T extends Prisma.EmployeeProfile$resolvedIssuesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeProfile$resolvedIssuesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskDisputePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  raisedIssues<T extends Prisma.EmployeeProfile$raisedIssuesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeProfile$raisedIssuesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskDisputePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  eligibleCategories<T extends Prisma.EmployeeProfile$eligibleCategoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeProfile$eligibleCategoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmployeeCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignedTasks<T extends Prisma.EmployeeProfile$assignedTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeProfile$assignedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdTasks<T extends Prisma.EmployeeProfile$createdTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeProfile$createdTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   submissions<T extends Prisma.EmployeeProfile$submissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeProfile$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviews<T extends Prisma.EmployeeProfile$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeProfile$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  taskMessages<T extends Prisma.EmployeeProfile$taskMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeProfile$taskMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reassignmentRequests<T extends Prisma.EmployeeProfile$reassignmentRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeProfile$reassignmentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskReassignmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  penalties<T extends Prisma.EmployeeProfile$penaltiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeProfile$penaltiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPenaltyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1360,6 +2518,7 @@ export interface EmployeeProfileFieldRefs {
   readonly role: Prisma.FieldRef<"EmployeeProfile", 'String'>
   readonly status: Prisma.FieldRef<"EmployeeProfile", 'String'>
   readonly department: Prisma.FieldRef<"EmployeeProfile", 'String'>
+  readonly suspensionUntil: Prisma.FieldRef<"EmployeeProfile", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"EmployeeProfile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"EmployeeProfile", 'DateTime'>
 }
@@ -1755,6 +2914,102 @@ export type EmployeeProfileDeleteManyArgs<ExtArgs extends runtime.Types.Extensio
 }
 
 /**
+ * EmployeeProfile.notifications
+ */
+export type EmployeeProfile$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PortalNotification
+   */
+  select?: Prisma.PortalNotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PortalNotification
+   */
+  omit?: Prisma.PortalNotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PortalNotificationInclude<ExtArgs> | null
+  where?: Prisma.PortalNotificationWhereInput
+  orderBy?: Prisma.PortalNotificationOrderByWithRelationInput | Prisma.PortalNotificationOrderByWithRelationInput[]
+  cursor?: Prisma.PortalNotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PortalNotificationScalarFieldEnum | Prisma.PortalNotificationScalarFieldEnum[]
+}
+
+/**
+ * EmployeeProfile.resolvedIssues
+ */
+export type EmployeeProfile$resolvedIssuesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskDispute
+   */
+  select?: Prisma.TaskDisputeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskDispute
+   */
+  omit?: Prisma.TaskDisputeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskDisputeInclude<ExtArgs> | null
+  where?: Prisma.TaskDisputeWhereInput
+  orderBy?: Prisma.TaskDisputeOrderByWithRelationInput | Prisma.TaskDisputeOrderByWithRelationInput[]
+  cursor?: Prisma.TaskDisputeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskDisputeScalarFieldEnum | Prisma.TaskDisputeScalarFieldEnum[]
+}
+
+/**
+ * EmployeeProfile.raisedIssues
+ */
+export type EmployeeProfile$raisedIssuesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskDispute
+   */
+  select?: Prisma.TaskDisputeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskDispute
+   */
+  omit?: Prisma.TaskDisputeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskDisputeInclude<ExtArgs> | null
+  where?: Prisma.TaskDisputeWhereInput
+  orderBy?: Prisma.TaskDisputeOrderByWithRelationInput | Prisma.TaskDisputeOrderByWithRelationInput[]
+  cursor?: Prisma.TaskDisputeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskDisputeScalarFieldEnum | Prisma.TaskDisputeScalarFieldEnum[]
+}
+
+/**
+ * EmployeeProfile.eligibleCategories
+ */
+export type EmployeeProfile$eligibleCategoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EmployeeCategory
+   */
+  select?: Prisma.EmployeeCategorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EmployeeCategory
+   */
+  omit?: Prisma.EmployeeCategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmployeeCategoryInclude<ExtArgs> | null
+  where?: Prisma.EmployeeCategoryWhereInput
+  orderBy?: Prisma.EmployeeCategoryOrderByWithRelationInput | Prisma.EmployeeCategoryOrderByWithRelationInput[]
+  cursor?: Prisma.EmployeeCategoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EmployeeCategoryScalarFieldEnum | Prisma.EmployeeCategoryScalarFieldEnum[]
+}
+
+/**
  * EmployeeProfile.assignedTasks
  */
 export type EmployeeProfile$assignedTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1848,6 +3103,78 @@ export type EmployeeProfile$reviewsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.TaskReviewScalarFieldEnum | Prisma.TaskReviewScalarFieldEnum[]
+}
+
+/**
+ * EmployeeProfile.taskMessages
+ */
+export type EmployeeProfile$taskMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskMessage
+   */
+  select?: Prisma.TaskMessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskMessage
+   */
+  omit?: Prisma.TaskMessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskMessageInclude<ExtArgs> | null
+  where?: Prisma.TaskMessageWhereInput
+  orderBy?: Prisma.TaskMessageOrderByWithRelationInput | Prisma.TaskMessageOrderByWithRelationInput[]
+  cursor?: Prisma.TaskMessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskMessageScalarFieldEnum | Prisma.TaskMessageScalarFieldEnum[]
+}
+
+/**
+ * EmployeeProfile.reassignmentRequests
+ */
+export type EmployeeProfile$reassignmentRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskReassignmentRequest
+   */
+  select?: Prisma.TaskReassignmentRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskReassignmentRequest
+   */
+  omit?: Prisma.TaskReassignmentRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskReassignmentRequestInclude<ExtArgs> | null
+  where?: Prisma.TaskReassignmentRequestWhereInput
+  orderBy?: Prisma.TaskReassignmentRequestOrderByWithRelationInput | Prisma.TaskReassignmentRequestOrderByWithRelationInput[]
+  cursor?: Prisma.TaskReassignmentRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskReassignmentRequestScalarFieldEnum | Prisma.TaskReassignmentRequestScalarFieldEnum[]
+}
+
+/**
+ * EmployeeProfile.penalties
+ */
+export type EmployeeProfile$penaltiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskPenalty
+   */
+  select?: Prisma.TaskPenaltySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskPenalty
+   */
+  omit?: Prisma.TaskPenaltyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskPenaltyInclude<ExtArgs> | null
+  where?: Prisma.TaskPenaltyWhereInput
+  orderBy?: Prisma.TaskPenaltyOrderByWithRelationInput | Prisma.TaskPenaltyOrderByWithRelationInput[]
+  cursor?: Prisma.TaskPenaltyWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskPenaltyScalarFieldEnum | Prisma.TaskPenaltyScalarFieldEnum[]
 }
 
 /**

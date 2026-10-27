@@ -62,3 +62,38 @@ export type TaskReview = Prisma.TaskReviewModel
  * 
  */
 export type TaskCategory = Prisma.TaskCategoryModel
+/**
+ * Model EmployeeCategory
+ * 
+ */
+export type EmployeeCategory = Prisma.EmployeeCategoryModel
+/**
+ * Model TaskMessage
+ * 
+ */
+export type TaskMessage = Prisma.TaskMessageModel
+/**
+ * Model TaskReassignmentRequest
+ * 
+ */
+export type TaskReassignmentRequest = Prisma.TaskReassignmentRequestModel
+/**
+ * Model TaskPenalty
+ * 
+ */
+export type TaskPenalty = Prisma.TaskPenaltyModel
+/**
+ * Model TaskExtraAttachment
+ * 
+ */
+export type TaskExtraAttachment = Prisma.TaskExtraAttachmentModel
+/**
+ * Model TaskDispute
+ * 
+ */
+export type TaskDispute = Prisma.TaskDisputeModel
+/**
+ * Model PortalNotification
+ * 
+ */
+export type PortalNotification = Prisma.PortalNotificationModel

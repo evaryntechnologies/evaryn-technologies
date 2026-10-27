@@ -20,8 +20,32 @@ export type WorkTaskModel = runtime.Types.Result.DefaultSelection<Prisma.$WorkTa
 
 export type AggregateWorkTask = {
   _count: WorkTaskCountAggregateOutputType | null
+  _avg: WorkTaskAvgAggregateOutputType | null
+  _sum: WorkTaskSumAggregateOutputType | null
   _min: WorkTaskMinAggregateOutputType | null
   _max: WorkTaskMaxAggregateOutputType | null
+}
+
+export type WorkTaskAvgAggregateOutputType = {
+  unitsOrdered: runtime.Decimal | null
+  unitRate: runtime.Decimal | null
+  totalOrderCost: runtime.Decimal | null
+  submissionHours: number | null
+  reviewHours: number | null
+  qaHours: number | null
+  clientRating: number | null
+  reinstatementCount: number | null
+}
+
+export type WorkTaskSumAggregateOutputType = {
+  unitsOrdered: runtime.Decimal | null
+  unitRate: runtime.Decimal | null
+  totalOrderCost: runtime.Decimal | null
+  submissionHours: number | null
+  reviewHours: number | null
+  qaHours: number | null
+  clientRating: number | null
+  reinstatementCount: number | null
 }
 
 export type WorkTaskMinAggregateOutputType = {
@@ -45,6 +69,18 @@ export type WorkTaskMinAggregateOutputType = {
   createdById: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  unitsOrdered: runtime.Decimal | null
+  unitRate: runtime.Decimal | null
+  totalOrderCost: runtime.Decimal | null
+  billingUnit: string | null
+  submissionHours: number | null
+  reviewHours: number | null
+  qaHours: number | null
+  clientRating: number | null
+  clientActionAt: Date | null
+  reinstatedAt: Date | null
+  reinstatedById: string | null
+  reinstatementCount: number | null
 }
 
 export type WorkTaskMaxAggregateOutputType = {
@@ -68,6 +104,18 @@ export type WorkTaskMaxAggregateOutputType = {
   createdById: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  unitsOrdered: runtime.Decimal | null
+  unitRate: runtime.Decimal | null
+  totalOrderCost: runtime.Decimal | null
+  billingUnit: string | null
+  submissionHours: number | null
+  reviewHours: number | null
+  qaHours: number | null
+  clientRating: number | null
+  clientActionAt: Date | null
+  reinstatedAt: Date | null
+  reinstatedById: string | null
+  reinstatementCount: number | null
 }
 
 export type WorkTaskCountAggregateOutputType = {
@@ -91,9 +139,43 @@ export type WorkTaskCountAggregateOutputType = {
   createdById: number
   createdAt: number
   updatedAt: number
+  unitsOrdered: number
+  unitRate: number
+  totalOrderCost: number
+  billingUnit: number
+  submissionHours: number
+  reviewHours: number
+  qaHours: number
+  clientRating: number
+  clientActionAt: number
+  reinstatedAt: number
+  reinstatedById: number
+  reinstatementCount: number
   _all: number
 }
 
+
+export type WorkTaskAvgAggregateInputType = {
+  unitsOrdered?: true
+  unitRate?: true
+  totalOrderCost?: true
+  submissionHours?: true
+  reviewHours?: true
+  qaHours?: true
+  clientRating?: true
+  reinstatementCount?: true
+}
+
+export type WorkTaskSumAggregateInputType = {
+  unitsOrdered?: true
+  unitRate?: true
+  totalOrderCost?: true
+  submissionHours?: true
+  reviewHours?: true
+  qaHours?: true
+  clientRating?: true
+  reinstatementCount?: true
+}
 
 export type WorkTaskMinAggregateInputType = {
   id?: true
@@ -116,6 +198,18 @@ export type WorkTaskMinAggregateInputType = {
   createdById?: true
   createdAt?: true
   updatedAt?: true
+  unitsOrdered?: true
+  unitRate?: true
+  totalOrderCost?: true
+  billingUnit?: true
+  submissionHours?: true
+  reviewHours?: true
+  qaHours?: true
+  clientRating?: true
+  clientActionAt?: true
+  reinstatedAt?: true
+  reinstatedById?: true
+  reinstatementCount?: true
 }
 
 export type WorkTaskMaxAggregateInputType = {
@@ -139,6 +233,18 @@ export type WorkTaskMaxAggregateInputType = {
   createdById?: true
   createdAt?: true
   updatedAt?: true
+  unitsOrdered?: true
+  unitRate?: true
+  totalOrderCost?: true
+  billingUnit?: true
+  submissionHours?: true
+  reviewHours?: true
+  qaHours?: true
+  clientRating?: true
+  clientActionAt?: true
+  reinstatedAt?: true
+  reinstatedById?: true
+  reinstatementCount?: true
 }
 
 export type WorkTaskCountAggregateInputType = {
@@ -162,6 +268,18 @@ export type WorkTaskCountAggregateInputType = {
   createdById?: true
   createdAt?: true
   updatedAt?: true
+  unitsOrdered?: true
+  unitRate?: true
+  totalOrderCost?: true
+  billingUnit?: true
+  submissionHours?: true
+  reviewHours?: true
+  qaHours?: true
+  clientRating?: true
+  clientActionAt?: true
+  reinstatedAt?: true
+  reinstatedById?: true
+  reinstatementCount?: true
   _all?: true
 }
 
@@ -203,6 +321,18 @@ export type WorkTaskAggregateArgs<ExtArgs extends runtime.Types.Extensions.Inter
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: WorkTaskAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: WorkTaskSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: WorkTaskMinAggregateInputType
@@ -233,6 +363,8 @@ export type WorkTaskGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   _count?: WorkTaskCountAggregateInputType | true
+  _avg?: WorkTaskAvgAggregateInputType
+  _sum?: WorkTaskSumAggregateInputType
   _min?: WorkTaskMinAggregateInputType
   _max?: WorkTaskMaxAggregateInputType
 }
@@ -254,11 +386,25 @@ export type WorkTaskGroupByOutputType = {
   status: string
   priority: string
   deadline: Date | null
-  assignedToId: string
+  assignedToId: string | null
   createdById: string
   createdAt: Date
   updatedAt: Date
+  unitsOrdered: runtime.Decimal | null
+  unitRate: runtime.Decimal | null
+  totalOrderCost: runtime.Decimal | null
+  billingUnit: string | null
+  submissionHours: number | null
+  reviewHours: number | null
+  qaHours: number | null
+  clientRating: number | null
+  clientActionAt: Date | null
+  reinstatedAt: Date | null
+  reinstatedById: string | null
+  reinstatementCount: number
   _count: WorkTaskCountAggregateOutputType | null
+  _avg: WorkTaskAvgAggregateOutputType | null
+  _sum: WorkTaskSumAggregateOutputType | null
   _min: WorkTaskMinAggregateOutputType | null
   _max: WorkTaskMaxAggregateOutputType | null
 }
@@ -298,14 +444,31 @@ export type WorkTaskWhereInput = {
   status?: Prisma.StringFilter<"WorkTask"> | string
   priority?: Prisma.StringFilter<"WorkTask"> | string
   deadline?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
-  assignedToId?: Prisma.UuidFilter<"WorkTask"> | string
+  assignedToId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
   createdById?: Prisma.UuidFilter<"WorkTask"> | string
   createdAt?: Prisma.DateTimeFilter<"WorkTask"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WorkTask"> | Date | string
+  unitsOrdered?: Prisma.DecimalNullableFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.DecimalNullableFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.DecimalNullableFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.StringNullableFilter<"WorkTask"> | string | null
+  submissionHours?: Prisma.FloatNullableFilter<"WorkTask"> | number | null
+  reviewHours?: Prisma.FloatNullableFilter<"WorkTask"> | number | null
+  qaHours?: Prisma.FloatNullableFilter<"WorkTask"> | number | null
+  clientRating?: Prisma.IntNullableFilter<"WorkTask"> | number | null
+  clientActionAt?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
+  reinstatedAt?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
+  reinstatedById?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
+  reinstatementCount?: Prisma.IntFilter<"WorkTask"> | number
+  disputes?: Prisma.TaskDisputeListRelationFilter
+  extraAttachments?: Prisma.TaskExtraAttachmentListRelationFilter
   project?: Prisma.XOR<Prisma.WorkProjectNullableScalarRelationFilter, Prisma.WorkProjectWhereInput> | null
-  assignedTo?: Prisma.XOR<Prisma.EmployeeProfileScalarRelationFilter, Prisma.EmployeeProfileWhereInput>
+  assignedTo?: Prisma.XOR<Prisma.EmployeeProfileNullableScalarRelationFilter, Prisma.EmployeeProfileWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.EmployeeProfileScalarRelationFilter, Prisma.EmployeeProfileWhereInput>
   submissions?: Prisma.TaskSubmissionListRelationFilter
+  messages?: Prisma.TaskMessageListRelationFilter
+  reassignmentRequests?: Prisma.TaskReassignmentRequestListRelationFilter
+  penalties?: Prisma.TaskPenaltyListRelationFilter
 }
 
 export type WorkTaskOrderByWithRelationInput = {
@@ -325,14 +488,31 @@ export type WorkTaskOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
   deadline?: Prisma.SortOrderInput | Prisma.SortOrder
-  assignedToId?: Prisma.SortOrder
+  assignedToId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  unitsOrdered?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitRate?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalOrderCost?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingUnit?: Prisma.SortOrderInput | Prisma.SortOrder
+  submissionHours?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewHours?: Prisma.SortOrderInput | Prisma.SortOrder
+  qaHours?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientRating?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientActionAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  reinstatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  reinstatedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  reinstatementCount?: Prisma.SortOrder
+  disputes?: Prisma.TaskDisputeOrderByRelationAggregateInput
+  extraAttachments?: Prisma.TaskExtraAttachmentOrderByRelationAggregateInput
   project?: Prisma.WorkProjectOrderByWithRelationInput
   assignedTo?: Prisma.EmployeeProfileOrderByWithRelationInput
   createdBy?: Prisma.EmployeeProfileOrderByWithRelationInput
   submissions?: Prisma.TaskSubmissionOrderByRelationAggregateInput
+  messages?: Prisma.TaskMessageOrderByRelationAggregateInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestOrderByRelationAggregateInput
+  penalties?: Prisma.TaskPenaltyOrderByRelationAggregateInput
 }
 
 export type WorkTaskWhereUniqueInput = Prisma.AtLeast<{
@@ -355,14 +535,31 @@ export type WorkTaskWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.StringFilter<"WorkTask"> | string
   priority?: Prisma.StringFilter<"WorkTask"> | string
   deadline?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
-  assignedToId?: Prisma.UuidFilter<"WorkTask"> | string
+  assignedToId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
   createdById?: Prisma.UuidFilter<"WorkTask"> | string
   createdAt?: Prisma.DateTimeFilter<"WorkTask"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WorkTask"> | Date | string
+  unitsOrdered?: Prisma.DecimalNullableFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.DecimalNullableFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.DecimalNullableFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.StringNullableFilter<"WorkTask"> | string | null
+  submissionHours?: Prisma.FloatNullableFilter<"WorkTask"> | number | null
+  reviewHours?: Prisma.FloatNullableFilter<"WorkTask"> | number | null
+  qaHours?: Prisma.FloatNullableFilter<"WorkTask"> | number | null
+  clientRating?: Prisma.IntNullableFilter<"WorkTask"> | number | null
+  clientActionAt?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
+  reinstatedAt?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
+  reinstatedById?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
+  reinstatementCount?: Prisma.IntFilter<"WorkTask"> | number
+  disputes?: Prisma.TaskDisputeListRelationFilter
+  extraAttachments?: Prisma.TaskExtraAttachmentListRelationFilter
   project?: Prisma.XOR<Prisma.WorkProjectNullableScalarRelationFilter, Prisma.WorkProjectWhereInput> | null
-  assignedTo?: Prisma.XOR<Prisma.EmployeeProfileScalarRelationFilter, Prisma.EmployeeProfileWhereInput>
+  assignedTo?: Prisma.XOR<Prisma.EmployeeProfileNullableScalarRelationFilter, Prisma.EmployeeProfileWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.EmployeeProfileScalarRelationFilter, Prisma.EmployeeProfileWhereInput>
   submissions?: Prisma.TaskSubmissionListRelationFilter
+  messages?: Prisma.TaskMessageListRelationFilter
+  reassignmentRequests?: Prisma.TaskReassignmentRequestListRelationFilter
+  penalties?: Prisma.TaskPenaltyListRelationFilter
 }, "id" | "publicTaskId">
 
 export type WorkTaskOrderByWithAggregationInput = {
@@ -382,13 +579,27 @@ export type WorkTaskOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
   deadline?: Prisma.SortOrderInput | Prisma.SortOrder
-  assignedToId?: Prisma.SortOrder
+  assignedToId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  unitsOrdered?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitRate?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalOrderCost?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingUnit?: Prisma.SortOrderInput | Prisma.SortOrder
+  submissionHours?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewHours?: Prisma.SortOrderInput | Prisma.SortOrder
+  qaHours?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientRating?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientActionAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  reinstatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  reinstatedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  reinstatementCount?: Prisma.SortOrder
   _count?: Prisma.WorkTaskCountOrderByAggregateInput
+  _avg?: Prisma.WorkTaskAvgOrderByAggregateInput
   _max?: Prisma.WorkTaskMaxOrderByAggregateInput
   _min?: Prisma.WorkTaskMinOrderByAggregateInput
+  _sum?: Prisma.WorkTaskSumOrderByAggregateInput
 }
 
 export type WorkTaskScalarWhereWithAggregatesInput = {
@@ -411,10 +622,22 @@ export type WorkTaskScalarWhereWithAggregatesInput = {
   status?: Prisma.StringWithAggregatesFilter<"WorkTask"> | string
   priority?: Prisma.StringWithAggregatesFilter<"WorkTask"> | string
   deadline?: Prisma.DateTimeNullableWithAggregatesFilter<"WorkTask"> | Date | string | null
-  assignedToId?: Prisma.UuidWithAggregatesFilter<"WorkTask"> | string
+  assignedToId?: Prisma.UuidNullableWithAggregatesFilter<"WorkTask"> | string | null
   createdById?: Prisma.UuidWithAggregatesFilter<"WorkTask"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"WorkTask"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"WorkTask"> | Date | string
+  unitsOrdered?: Prisma.DecimalNullableWithAggregatesFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.DecimalNullableWithAggregatesFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.DecimalNullableWithAggregatesFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.StringNullableWithAggregatesFilter<"WorkTask"> | string | null
+  submissionHours?: Prisma.FloatNullableWithAggregatesFilter<"WorkTask"> | number | null
+  reviewHours?: Prisma.FloatNullableWithAggregatesFilter<"WorkTask"> | number | null
+  qaHours?: Prisma.FloatNullableWithAggregatesFilter<"WorkTask"> | number | null
+  clientRating?: Prisma.IntNullableWithAggregatesFilter<"WorkTask"> | number | null
+  clientActionAt?: Prisma.DateTimeNullableWithAggregatesFilter<"WorkTask"> | Date | string | null
+  reinstatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"WorkTask"> | Date | string | null
+  reinstatedById?: Prisma.UuidNullableWithAggregatesFilter<"WorkTask"> | string | null
+  reinstatementCount?: Prisma.IntWithAggregatesFilter<"WorkTask"> | number
 }
 
 export type WorkTaskCreateInput = {
@@ -435,10 +658,27 @@ export type WorkTaskCreateInput = {
   deadline?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentCreateNestedManyWithoutTaskInput
   project?: Prisma.WorkProjectCreateNestedOneWithoutTasksInput
-  assignedTo: Prisma.EmployeeProfileCreateNestedOneWithoutAssignedTasksInput
+  assignedTo?: Prisma.EmployeeProfileCreateNestedOneWithoutAssignedTasksInput
   createdBy: Prisma.EmployeeProfileCreateNestedOneWithoutCreatedTasksInput
   submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutTaskInput
 }
 
 export type WorkTaskUncheckedCreateInput = {
@@ -458,11 +698,28 @@ export type WorkTaskUncheckedCreateInput = {
   status?: string
   priority?: string
   deadline?: Date | string | null
-  assignedToId: string
+  assignedToId?: string | null
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedCreateNestedManyWithoutTaskInput
   submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutTaskInput
 }
 
 export type WorkTaskUpdateInput = {
@@ -483,10 +740,27 @@ export type WorkTaskUpdateInput = {
   deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUpdateManyWithoutTaskNestedInput
   project?: Prisma.WorkProjectUpdateOneWithoutTasksNestedInput
-  assignedTo?: Prisma.EmployeeProfileUpdateOneRequiredWithoutAssignedTasksNestedInput
+  assignedTo?: Prisma.EmployeeProfileUpdateOneWithoutAssignedTasksNestedInput
   createdBy?: Prisma.EmployeeProfileUpdateOneRequiredWithoutCreatedTasksNestedInput
   submissions?: Prisma.TaskSubmissionUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutTaskNestedInput
 }
 
 export type WorkTaskUncheckedUpdateInput = {
@@ -506,11 +780,28 @@ export type WorkTaskUncheckedUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   priority?: Prisma.StringFieldUpdateOperationsInput | string
   deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  assignedToId?: Prisma.StringFieldUpdateOperationsInput | string
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUncheckedUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedUpdateManyWithoutTaskNestedInput
   submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUncheckedUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutTaskNestedInput
 }
 
 export type WorkTaskCreateManyInput = {
@@ -530,10 +821,22 @@ export type WorkTaskCreateManyInput = {
   status?: string
   priority?: string
   deadline?: Date | string | null
-  assignedToId: string
+  assignedToId?: string | null
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
 }
 
 export type WorkTaskUpdateManyMutationInput = {
@@ -554,6 +857,18 @@ export type WorkTaskUpdateManyMutationInput = {
   deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type WorkTaskUncheckedUpdateManyInput = {
@@ -573,10 +888,22 @@ export type WorkTaskUncheckedUpdateManyInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   priority?: Prisma.StringFieldUpdateOperationsInput | string
   deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  assignedToId?: Prisma.StringFieldUpdateOperationsInput | string
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type WorkTaskListRelationFilter = {
@@ -610,6 +937,29 @@ export type WorkTaskCountOrderByAggregateInput = {
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  unitsOrdered?: Prisma.SortOrder
+  unitRate?: Prisma.SortOrder
+  totalOrderCost?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
+  submissionHours?: Prisma.SortOrder
+  reviewHours?: Prisma.SortOrder
+  qaHours?: Prisma.SortOrder
+  clientRating?: Prisma.SortOrder
+  clientActionAt?: Prisma.SortOrder
+  reinstatedAt?: Prisma.SortOrder
+  reinstatedById?: Prisma.SortOrder
+  reinstatementCount?: Prisma.SortOrder
+}
+
+export type WorkTaskAvgOrderByAggregateInput = {
+  unitsOrdered?: Prisma.SortOrder
+  unitRate?: Prisma.SortOrder
+  totalOrderCost?: Prisma.SortOrder
+  submissionHours?: Prisma.SortOrder
+  reviewHours?: Prisma.SortOrder
+  qaHours?: Prisma.SortOrder
+  clientRating?: Prisma.SortOrder
+  reinstatementCount?: Prisma.SortOrder
 }
 
 export type WorkTaskMaxOrderByAggregateInput = {
@@ -633,6 +983,18 @@ export type WorkTaskMaxOrderByAggregateInput = {
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  unitsOrdered?: Prisma.SortOrder
+  unitRate?: Prisma.SortOrder
+  totalOrderCost?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
+  submissionHours?: Prisma.SortOrder
+  reviewHours?: Prisma.SortOrder
+  qaHours?: Prisma.SortOrder
+  clientRating?: Prisma.SortOrder
+  clientActionAt?: Prisma.SortOrder
+  reinstatedAt?: Prisma.SortOrder
+  reinstatedById?: Prisma.SortOrder
+  reinstatementCount?: Prisma.SortOrder
 }
 
 export type WorkTaskMinOrderByAggregateInput = {
@@ -656,6 +1018,29 @@ export type WorkTaskMinOrderByAggregateInput = {
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  unitsOrdered?: Prisma.SortOrder
+  unitRate?: Prisma.SortOrder
+  totalOrderCost?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
+  submissionHours?: Prisma.SortOrder
+  reviewHours?: Prisma.SortOrder
+  qaHours?: Prisma.SortOrder
+  clientRating?: Prisma.SortOrder
+  clientActionAt?: Prisma.SortOrder
+  reinstatedAt?: Prisma.SortOrder
+  reinstatedById?: Prisma.SortOrder
+  reinstatementCount?: Prisma.SortOrder
+}
+
+export type WorkTaskSumOrderByAggregateInput = {
+  unitsOrdered?: Prisma.SortOrder
+  unitRate?: Prisma.SortOrder
+  totalOrderCost?: Prisma.SortOrder
+  submissionHours?: Prisma.SortOrder
+  reviewHours?: Prisma.SortOrder
+  qaHours?: Prisma.SortOrder
+  clientRating?: Prisma.SortOrder
+  reinstatementCount?: Prisma.SortOrder
 }
 
 export type WorkTaskScalarRelationFilter = {
@@ -789,6 +1174,38 @@ export type WorkTaskUncheckedUpdateManyWithoutProjectNestedInput = {
   deleteMany?: Prisma.WorkTaskScalarWhereInput | Prisma.WorkTaskScalarWhereInput[]
 }
 
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type WorkTaskCreateNestedOneWithoutSubmissionsInput = {
   create?: Prisma.XOR<Prisma.WorkTaskCreateWithoutSubmissionsInput, Prisma.WorkTaskUncheckedCreateWithoutSubmissionsInput>
   connectOrCreate?: Prisma.WorkTaskCreateOrConnectWithoutSubmissionsInput
@@ -801,6 +1218,76 @@ export type WorkTaskUpdateOneRequiredWithoutSubmissionsNestedInput = {
   upsert?: Prisma.WorkTaskUpsertWithoutSubmissionsInput
   connect?: Prisma.WorkTaskWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.WorkTaskUpdateToOneWithWhereWithoutSubmissionsInput, Prisma.WorkTaskUpdateWithoutSubmissionsInput>, Prisma.WorkTaskUncheckedUpdateWithoutSubmissionsInput>
+}
+
+export type WorkTaskCreateNestedOneWithoutMessagesInput = {
+  create?: Prisma.XOR<Prisma.WorkTaskCreateWithoutMessagesInput, Prisma.WorkTaskUncheckedCreateWithoutMessagesInput>
+  connectOrCreate?: Prisma.WorkTaskCreateOrConnectWithoutMessagesInput
+  connect?: Prisma.WorkTaskWhereUniqueInput
+}
+
+export type WorkTaskUpdateOneRequiredWithoutMessagesNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkTaskCreateWithoutMessagesInput, Prisma.WorkTaskUncheckedCreateWithoutMessagesInput>
+  connectOrCreate?: Prisma.WorkTaskCreateOrConnectWithoutMessagesInput
+  upsert?: Prisma.WorkTaskUpsertWithoutMessagesInput
+  connect?: Prisma.WorkTaskWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkTaskUpdateToOneWithWhereWithoutMessagesInput, Prisma.WorkTaskUpdateWithoutMessagesInput>, Prisma.WorkTaskUncheckedUpdateWithoutMessagesInput>
+}
+
+export type WorkTaskCreateNestedOneWithoutReassignmentRequestsInput = {
+  create?: Prisma.XOR<Prisma.WorkTaskCreateWithoutReassignmentRequestsInput, Prisma.WorkTaskUncheckedCreateWithoutReassignmentRequestsInput>
+  connectOrCreate?: Prisma.WorkTaskCreateOrConnectWithoutReassignmentRequestsInput
+  connect?: Prisma.WorkTaskWhereUniqueInput
+}
+
+export type WorkTaskUpdateOneRequiredWithoutReassignmentRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkTaskCreateWithoutReassignmentRequestsInput, Prisma.WorkTaskUncheckedCreateWithoutReassignmentRequestsInput>
+  connectOrCreate?: Prisma.WorkTaskCreateOrConnectWithoutReassignmentRequestsInput
+  upsert?: Prisma.WorkTaskUpsertWithoutReassignmentRequestsInput
+  connect?: Prisma.WorkTaskWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkTaskUpdateToOneWithWhereWithoutReassignmentRequestsInput, Prisma.WorkTaskUpdateWithoutReassignmentRequestsInput>, Prisma.WorkTaskUncheckedUpdateWithoutReassignmentRequestsInput>
+}
+
+export type WorkTaskCreateNestedOneWithoutPenaltiesInput = {
+  create?: Prisma.XOR<Prisma.WorkTaskCreateWithoutPenaltiesInput, Prisma.WorkTaskUncheckedCreateWithoutPenaltiesInput>
+  connectOrCreate?: Prisma.WorkTaskCreateOrConnectWithoutPenaltiesInput
+  connect?: Prisma.WorkTaskWhereUniqueInput
+}
+
+export type WorkTaskUpdateOneRequiredWithoutPenaltiesNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkTaskCreateWithoutPenaltiesInput, Prisma.WorkTaskUncheckedCreateWithoutPenaltiesInput>
+  connectOrCreate?: Prisma.WorkTaskCreateOrConnectWithoutPenaltiesInput
+  upsert?: Prisma.WorkTaskUpsertWithoutPenaltiesInput
+  connect?: Prisma.WorkTaskWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkTaskUpdateToOneWithWhereWithoutPenaltiesInput, Prisma.WorkTaskUpdateWithoutPenaltiesInput>, Prisma.WorkTaskUncheckedUpdateWithoutPenaltiesInput>
+}
+
+export type WorkTaskCreateNestedOneWithoutExtraAttachmentsInput = {
+  create?: Prisma.XOR<Prisma.WorkTaskCreateWithoutExtraAttachmentsInput, Prisma.WorkTaskUncheckedCreateWithoutExtraAttachmentsInput>
+  connectOrCreate?: Prisma.WorkTaskCreateOrConnectWithoutExtraAttachmentsInput
+  connect?: Prisma.WorkTaskWhereUniqueInput
+}
+
+export type WorkTaskUpdateOneRequiredWithoutExtraAttachmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkTaskCreateWithoutExtraAttachmentsInput, Prisma.WorkTaskUncheckedCreateWithoutExtraAttachmentsInput>
+  connectOrCreate?: Prisma.WorkTaskCreateOrConnectWithoutExtraAttachmentsInput
+  upsert?: Prisma.WorkTaskUpsertWithoutExtraAttachmentsInput
+  connect?: Prisma.WorkTaskWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkTaskUpdateToOneWithWhereWithoutExtraAttachmentsInput, Prisma.WorkTaskUpdateWithoutExtraAttachmentsInput>, Prisma.WorkTaskUncheckedUpdateWithoutExtraAttachmentsInput>
+}
+
+export type WorkTaskCreateNestedOneWithoutDisputesInput = {
+  create?: Prisma.XOR<Prisma.WorkTaskCreateWithoutDisputesInput, Prisma.WorkTaskUncheckedCreateWithoutDisputesInput>
+  connectOrCreate?: Prisma.WorkTaskCreateOrConnectWithoutDisputesInput
+  connect?: Prisma.WorkTaskWhereUniqueInput
+}
+
+export type WorkTaskUpdateOneRequiredWithoutDisputesNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkTaskCreateWithoutDisputesInput, Prisma.WorkTaskUncheckedCreateWithoutDisputesInput>
+  connectOrCreate?: Prisma.WorkTaskCreateOrConnectWithoutDisputesInput
+  upsert?: Prisma.WorkTaskUpsertWithoutDisputesInput
+  connect?: Prisma.WorkTaskWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkTaskUpdateToOneWithWhereWithoutDisputesInput, Prisma.WorkTaskUpdateWithoutDisputesInput>, Prisma.WorkTaskUncheckedUpdateWithoutDisputesInput>
 }
 
 export type WorkTaskCreateWithoutAssignedToInput = {
@@ -821,9 +1308,26 @@ export type WorkTaskCreateWithoutAssignedToInput = {
   deadline?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentCreateNestedManyWithoutTaskInput
   project?: Prisma.WorkProjectCreateNestedOneWithoutTasksInput
   createdBy: Prisma.EmployeeProfileCreateNestedOneWithoutCreatedTasksInput
   submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutTaskInput
 }
 
 export type WorkTaskUncheckedCreateWithoutAssignedToInput = {
@@ -846,7 +1350,24 @@ export type WorkTaskUncheckedCreateWithoutAssignedToInput = {
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedCreateNestedManyWithoutTaskInput
   submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutTaskInput
 }
 
 export type WorkTaskCreateOrConnectWithoutAssignedToInput = {
@@ -877,9 +1398,26 @@ export type WorkTaskCreateWithoutCreatedByInput = {
   deadline?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentCreateNestedManyWithoutTaskInput
   project?: Prisma.WorkProjectCreateNestedOneWithoutTasksInput
-  assignedTo: Prisma.EmployeeProfileCreateNestedOneWithoutAssignedTasksInput
+  assignedTo?: Prisma.EmployeeProfileCreateNestedOneWithoutAssignedTasksInput
   submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutTaskInput
 }
 
 export type WorkTaskUncheckedCreateWithoutCreatedByInput = {
@@ -899,10 +1437,27 @@ export type WorkTaskUncheckedCreateWithoutCreatedByInput = {
   status?: string
   priority?: string
   deadline?: Date | string | null
-  assignedToId: string
+  assignedToId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedCreateNestedManyWithoutTaskInput
   submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutTaskInput
 }
 
 export type WorkTaskCreateOrConnectWithoutCreatedByInput = {
@@ -951,10 +1506,22 @@ export type WorkTaskScalarWhereInput = {
   status?: Prisma.StringFilter<"WorkTask"> | string
   priority?: Prisma.StringFilter<"WorkTask"> | string
   deadline?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
-  assignedToId?: Prisma.UuidFilter<"WorkTask"> | string
+  assignedToId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
   createdById?: Prisma.UuidFilter<"WorkTask"> | string
   createdAt?: Prisma.DateTimeFilter<"WorkTask"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WorkTask"> | Date | string
+  unitsOrdered?: Prisma.DecimalNullableFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.DecimalNullableFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.DecimalNullableFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.StringNullableFilter<"WorkTask"> | string | null
+  submissionHours?: Prisma.FloatNullableFilter<"WorkTask"> | number | null
+  reviewHours?: Prisma.FloatNullableFilter<"WorkTask"> | number | null
+  qaHours?: Prisma.FloatNullableFilter<"WorkTask"> | number | null
+  clientRating?: Prisma.IntNullableFilter<"WorkTask"> | number | null
+  clientActionAt?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
+  reinstatedAt?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
+  reinstatedById?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
+  reinstatementCount?: Prisma.IntFilter<"WorkTask"> | number
 }
 
 export type WorkTaskUpsertWithWhereUniqueWithoutCreatedByInput = {
@@ -991,9 +1558,26 @@ export type WorkTaskCreateWithoutProjectInput = {
   deadline?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignedTo: Prisma.EmployeeProfileCreateNestedOneWithoutAssignedTasksInput
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentCreateNestedManyWithoutTaskInput
+  assignedTo?: Prisma.EmployeeProfileCreateNestedOneWithoutAssignedTasksInput
   createdBy: Prisma.EmployeeProfileCreateNestedOneWithoutCreatedTasksInput
   submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutTaskInput
 }
 
 export type WorkTaskUncheckedCreateWithoutProjectInput = {
@@ -1012,11 +1596,28 @@ export type WorkTaskUncheckedCreateWithoutProjectInput = {
   status?: string
   priority?: string
   deadline?: Date | string | null
-  assignedToId: string
+  assignedToId?: string | null
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedCreateNestedManyWithoutTaskInput
   submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutTaskInput
 }
 
 export type WorkTaskCreateOrConnectWithoutProjectInput = {
@@ -1063,9 +1664,26 @@ export type WorkTaskCreateWithoutSubmissionsInput = {
   deadline?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentCreateNestedManyWithoutTaskInput
   project?: Prisma.WorkProjectCreateNestedOneWithoutTasksInput
-  assignedTo: Prisma.EmployeeProfileCreateNestedOneWithoutAssignedTasksInput
+  assignedTo?: Prisma.EmployeeProfileCreateNestedOneWithoutAssignedTasksInput
   createdBy: Prisma.EmployeeProfileCreateNestedOneWithoutCreatedTasksInput
+  messages?: Prisma.TaskMessageCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutTaskInput
 }
 
 export type WorkTaskUncheckedCreateWithoutSubmissionsInput = {
@@ -1085,10 +1703,27 @@ export type WorkTaskUncheckedCreateWithoutSubmissionsInput = {
   status?: string
   priority?: string
   deadline?: Date | string | null
-  assignedToId: string
+  assignedToId?: string | null
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutTaskInput
 }
 
 export type WorkTaskCreateOrConnectWithoutSubmissionsInput = {
@@ -1125,9 +1760,26 @@ export type WorkTaskUpdateWithoutSubmissionsInput = {
   deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUpdateManyWithoutTaskNestedInput
   project?: Prisma.WorkProjectUpdateOneWithoutTasksNestedInput
-  assignedTo?: Prisma.EmployeeProfileUpdateOneRequiredWithoutAssignedTasksNestedInput
+  assignedTo?: Prisma.EmployeeProfileUpdateOneWithoutAssignedTasksNestedInput
   createdBy?: Prisma.EmployeeProfileUpdateOneRequiredWithoutCreatedTasksNestedInput
+  messages?: Prisma.TaskMessageUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutTaskNestedInput
 }
 
 export type WorkTaskUncheckedUpdateWithoutSubmissionsInput = {
@@ -1147,10 +1799,907 @@ export type WorkTaskUncheckedUpdateWithoutSubmissionsInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   priority?: Prisma.StringFieldUpdateOperationsInput | string
   deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  assignedToId?: Prisma.StringFieldUpdateOperationsInput | string
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUncheckedUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUncheckedUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutTaskNestedInput
+}
+
+export type WorkTaskCreateWithoutMessagesInput = {
+  id?: string
+  orderId?: string | null
+  publicTaskId?: string | null
+  category?: string | null
+  reviewDeadline?: Date | string | null
+  qaDeadline?: Date | string | null
+  claimedReviewerId?: string | null
+  attachmentKey?: string | null
+  attachmentName?: string | null
+  title: string
+  description: string
+  instructions?: string | null
+  status?: string
+  priority?: string
+  deadline?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentCreateNestedManyWithoutTaskInput
+  project?: Prisma.WorkProjectCreateNestedOneWithoutTasksInput
+  assignedTo?: Prisma.EmployeeProfileCreateNestedOneWithoutAssignedTasksInput
+  createdBy: Prisma.EmployeeProfileCreateNestedOneWithoutCreatedTasksInput
+  submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutTaskInput
+}
+
+export type WorkTaskUncheckedCreateWithoutMessagesInput = {
+  id?: string
+  projectId?: string | null
+  orderId?: string | null
+  publicTaskId?: string | null
+  category?: string | null
+  reviewDeadline?: Date | string | null
+  qaDeadline?: Date | string | null
+  claimedReviewerId?: string | null
+  attachmentKey?: string | null
+  attachmentName?: string | null
+  title: string
+  description: string
+  instructions?: string | null
+  status?: string
+  priority?: string
+  deadline?: Date | string | null
+  assignedToId?: string | null
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedCreateNestedManyWithoutTaskInput
+  submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutTaskInput
+}
+
+export type WorkTaskCreateOrConnectWithoutMessagesInput = {
+  where: Prisma.WorkTaskWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkTaskCreateWithoutMessagesInput, Prisma.WorkTaskUncheckedCreateWithoutMessagesInput>
+}
+
+export type WorkTaskUpsertWithoutMessagesInput = {
+  update: Prisma.XOR<Prisma.WorkTaskUpdateWithoutMessagesInput, Prisma.WorkTaskUncheckedUpdateWithoutMessagesInput>
+  create: Prisma.XOR<Prisma.WorkTaskCreateWithoutMessagesInput, Prisma.WorkTaskUncheckedCreateWithoutMessagesInput>
+  where?: Prisma.WorkTaskWhereInput
+}
+
+export type WorkTaskUpdateToOneWithWhereWithoutMessagesInput = {
+  where?: Prisma.WorkTaskWhereInput
+  data: Prisma.XOR<Prisma.WorkTaskUpdateWithoutMessagesInput, Prisma.WorkTaskUncheckedUpdateWithoutMessagesInput>
+}
+
+export type WorkTaskUpdateWithoutMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
+  deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUpdateManyWithoutTaskNestedInput
+  project?: Prisma.WorkProjectUpdateOneWithoutTasksNestedInput
+  assignedTo?: Prisma.EmployeeProfileUpdateOneWithoutAssignedTasksNestedInput
+  createdBy?: Prisma.EmployeeProfileUpdateOneRequiredWithoutCreatedTasksNestedInput
+  submissions?: Prisma.TaskSubmissionUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutTaskNestedInput
+}
+
+export type WorkTaskUncheckedUpdateWithoutMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
+  deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUncheckedUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedUpdateManyWithoutTaskNestedInput
+  submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutTaskNestedInput
+}
+
+export type WorkTaskCreateWithoutReassignmentRequestsInput = {
+  id?: string
+  orderId?: string | null
+  publicTaskId?: string | null
+  category?: string | null
+  reviewDeadline?: Date | string | null
+  qaDeadline?: Date | string | null
+  claimedReviewerId?: string | null
+  attachmentKey?: string | null
+  attachmentName?: string | null
+  title: string
+  description: string
+  instructions?: string | null
+  status?: string
+  priority?: string
+  deadline?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentCreateNestedManyWithoutTaskInput
+  project?: Prisma.WorkProjectCreateNestedOneWithoutTasksInput
+  assignedTo?: Prisma.EmployeeProfileCreateNestedOneWithoutAssignedTasksInput
+  createdBy: Prisma.EmployeeProfileCreateNestedOneWithoutCreatedTasksInput
+  submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutTaskInput
+}
+
+export type WorkTaskUncheckedCreateWithoutReassignmentRequestsInput = {
+  id?: string
+  projectId?: string | null
+  orderId?: string | null
+  publicTaskId?: string | null
+  category?: string | null
+  reviewDeadline?: Date | string | null
+  qaDeadline?: Date | string | null
+  claimedReviewerId?: string | null
+  attachmentKey?: string | null
+  attachmentName?: string | null
+  title: string
+  description: string
+  instructions?: string | null
+  status?: string
+  priority?: string
+  deadline?: Date | string | null
+  assignedToId?: string | null
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedCreateNestedManyWithoutTaskInput
+  submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutTaskInput
+}
+
+export type WorkTaskCreateOrConnectWithoutReassignmentRequestsInput = {
+  where: Prisma.WorkTaskWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkTaskCreateWithoutReassignmentRequestsInput, Prisma.WorkTaskUncheckedCreateWithoutReassignmentRequestsInput>
+}
+
+export type WorkTaskUpsertWithoutReassignmentRequestsInput = {
+  update: Prisma.XOR<Prisma.WorkTaskUpdateWithoutReassignmentRequestsInput, Prisma.WorkTaskUncheckedUpdateWithoutReassignmentRequestsInput>
+  create: Prisma.XOR<Prisma.WorkTaskCreateWithoutReassignmentRequestsInput, Prisma.WorkTaskUncheckedCreateWithoutReassignmentRequestsInput>
+  where?: Prisma.WorkTaskWhereInput
+}
+
+export type WorkTaskUpdateToOneWithWhereWithoutReassignmentRequestsInput = {
+  where?: Prisma.WorkTaskWhereInput
+  data: Prisma.XOR<Prisma.WorkTaskUpdateWithoutReassignmentRequestsInput, Prisma.WorkTaskUncheckedUpdateWithoutReassignmentRequestsInput>
+}
+
+export type WorkTaskUpdateWithoutReassignmentRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
+  deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUpdateManyWithoutTaskNestedInput
+  project?: Prisma.WorkProjectUpdateOneWithoutTasksNestedInput
+  assignedTo?: Prisma.EmployeeProfileUpdateOneWithoutAssignedTasksNestedInput
+  createdBy?: Prisma.EmployeeProfileUpdateOneRequiredWithoutCreatedTasksNestedInput
+  submissions?: Prisma.TaskSubmissionUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutTaskNestedInput
+}
+
+export type WorkTaskUncheckedUpdateWithoutReassignmentRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
+  deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUncheckedUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedUpdateManyWithoutTaskNestedInput
+  submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUncheckedUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutTaskNestedInput
+}
+
+export type WorkTaskCreateWithoutPenaltiesInput = {
+  id?: string
+  orderId?: string | null
+  publicTaskId?: string | null
+  category?: string | null
+  reviewDeadline?: Date | string | null
+  qaDeadline?: Date | string | null
+  claimedReviewerId?: string | null
+  attachmentKey?: string | null
+  attachmentName?: string | null
+  title: string
+  description: string
+  instructions?: string | null
+  status?: string
+  priority?: string
+  deadline?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentCreateNestedManyWithoutTaskInput
+  project?: Prisma.WorkProjectCreateNestedOneWithoutTasksInput
+  assignedTo?: Prisma.EmployeeProfileCreateNestedOneWithoutAssignedTasksInput
+  createdBy: Prisma.EmployeeProfileCreateNestedOneWithoutCreatedTasksInput
+  submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutTaskInput
+}
+
+export type WorkTaskUncheckedCreateWithoutPenaltiesInput = {
+  id?: string
+  projectId?: string | null
+  orderId?: string | null
+  publicTaskId?: string | null
+  category?: string | null
+  reviewDeadline?: Date | string | null
+  qaDeadline?: Date | string | null
+  claimedReviewerId?: string | null
+  attachmentKey?: string | null
+  attachmentName?: string | null
+  title: string
+  description: string
+  instructions?: string | null
+  status?: string
+  priority?: string
+  deadline?: Date | string | null
+  assignedToId?: string | null
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutTaskInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedCreateNestedManyWithoutTaskInput
+  submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutTaskInput
+}
+
+export type WorkTaskCreateOrConnectWithoutPenaltiesInput = {
+  where: Prisma.WorkTaskWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkTaskCreateWithoutPenaltiesInput, Prisma.WorkTaskUncheckedCreateWithoutPenaltiesInput>
+}
+
+export type WorkTaskUpsertWithoutPenaltiesInput = {
+  update: Prisma.XOR<Prisma.WorkTaskUpdateWithoutPenaltiesInput, Prisma.WorkTaskUncheckedUpdateWithoutPenaltiesInput>
+  create: Prisma.XOR<Prisma.WorkTaskCreateWithoutPenaltiesInput, Prisma.WorkTaskUncheckedCreateWithoutPenaltiesInput>
+  where?: Prisma.WorkTaskWhereInput
+}
+
+export type WorkTaskUpdateToOneWithWhereWithoutPenaltiesInput = {
+  where?: Prisma.WorkTaskWhereInput
+  data: Prisma.XOR<Prisma.WorkTaskUpdateWithoutPenaltiesInput, Prisma.WorkTaskUncheckedUpdateWithoutPenaltiesInput>
+}
+
+export type WorkTaskUpdateWithoutPenaltiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
+  deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUpdateManyWithoutTaskNestedInput
+  project?: Prisma.WorkProjectUpdateOneWithoutTasksNestedInput
+  assignedTo?: Prisma.EmployeeProfileUpdateOneWithoutAssignedTasksNestedInput
+  createdBy?: Prisma.EmployeeProfileUpdateOneRequiredWithoutCreatedTasksNestedInput
+  submissions?: Prisma.TaskSubmissionUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutTaskNestedInput
+}
+
+export type WorkTaskUncheckedUpdateWithoutPenaltiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
+  deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUncheckedUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedUpdateManyWithoutTaskNestedInput
+  submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUncheckedUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutTaskNestedInput
+}
+
+export type WorkTaskCreateWithoutExtraAttachmentsInput = {
+  id?: string
+  orderId?: string | null
+  publicTaskId?: string | null
+  category?: string | null
+  reviewDeadline?: Date | string | null
+  qaDeadline?: Date | string | null
+  claimedReviewerId?: string | null
+  attachmentKey?: string | null
+  attachmentName?: string | null
+  title: string
+  description: string
+  instructions?: string | null
+  status?: string
+  priority?: string
+  deadline?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeCreateNestedManyWithoutTaskInput
+  project?: Prisma.WorkProjectCreateNestedOneWithoutTasksInput
+  assignedTo?: Prisma.EmployeeProfileCreateNestedOneWithoutAssignedTasksInput
+  createdBy: Prisma.EmployeeProfileCreateNestedOneWithoutCreatedTasksInput
+  submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutTaskInput
+}
+
+export type WorkTaskUncheckedCreateWithoutExtraAttachmentsInput = {
+  id?: string
+  projectId?: string | null
+  orderId?: string | null
+  publicTaskId?: string | null
+  category?: string | null
+  reviewDeadline?: Date | string | null
+  qaDeadline?: Date | string | null
+  claimedReviewerId?: string | null
+  attachmentKey?: string | null
+  attachmentName?: string | null
+  title: string
+  description: string
+  instructions?: string | null
+  status?: string
+  priority?: string
+  deadline?: Date | string | null
+  assignedToId?: string | null
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  disputes?: Prisma.TaskDisputeUncheckedCreateNestedManyWithoutTaskInput
+  submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutTaskInput
+}
+
+export type WorkTaskCreateOrConnectWithoutExtraAttachmentsInput = {
+  where: Prisma.WorkTaskWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkTaskCreateWithoutExtraAttachmentsInput, Prisma.WorkTaskUncheckedCreateWithoutExtraAttachmentsInput>
+}
+
+export type WorkTaskUpsertWithoutExtraAttachmentsInput = {
+  update: Prisma.XOR<Prisma.WorkTaskUpdateWithoutExtraAttachmentsInput, Prisma.WorkTaskUncheckedUpdateWithoutExtraAttachmentsInput>
+  create: Prisma.XOR<Prisma.WorkTaskCreateWithoutExtraAttachmentsInput, Prisma.WorkTaskUncheckedCreateWithoutExtraAttachmentsInput>
+  where?: Prisma.WorkTaskWhereInput
+}
+
+export type WorkTaskUpdateToOneWithWhereWithoutExtraAttachmentsInput = {
+  where?: Prisma.WorkTaskWhereInput
+  data: Prisma.XOR<Prisma.WorkTaskUpdateWithoutExtraAttachmentsInput, Prisma.WorkTaskUncheckedUpdateWithoutExtraAttachmentsInput>
+}
+
+export type WorkTaskUpdateWithoutExtraAttachmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
+  deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUpdateManyWithoutTaskNestedInput
+  project?: Prisma.WorkProjectUpdateOneWithoutTasksNestedInput
+  assignedTo?: Prisma.EmployeeProfileUpdateOneWithoutAssignedTasksNestedInput
+  createdBy?: Prisma.EmployeeProfileUpdateOneRequiredWithoutCreatedTasksNestedInput
+  submissions?: Prisma.TaskSubmissionUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutTaskNestedInput
+}
+
+export type WorkTaskUncheckedUpdateWithoutExtraAttachmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
+  deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUncheckedUpdateManyWithoutTaskNestedInput
+  submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUncheckedUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutTaskNestedInput
+}
+
+export type WorkTaskCreateWithoutDisputesInput = {
+  id?: string
+  orderId?: string | null
+  publicTaskId?: string | null
+  category?: string | null
+  reviewDeadline?: Date | string | null
+  qaDeadline?: Date | string | null
+  claimedReviewerId?: string | null
+  attachmentKey?: string | null
+  attachmentName?: string | null
+  title: string
+  description: string
+  instructions?: string | null
+  status?: string
+  priority?: string
+  deadline?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  extraAttachments?: Prisma.TaskExtraAttachmentCreateNestedManyWithoutTaskInput
+  project?: Prisma.WorkProjectCreateNestedOneWithoutTasksInput
+  assignedTo?: Prisma.EmployeeProfileCreateNestedOneWithoutAssignedTasksInput
+  createdBy: Prisma.EmployeeProfileCreateNestedOneWithoutCreatedTasksInput
+  submissions?: Prisma.TaskSubmissionCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyCreateNestedManyWithoutTaskInput
+}
+
+export type WorkTaskUncheckedCreateWithoutDisputesInput = {
+  id?: string
+  projectId?: string | null
+  orderId?: string | null
+  publicTaskId?: string | null
+  category?: string | null
+  reviewDeadline?: Date | string | null
+  qaDeadline?: Date | string | null
+  claimedReviewerId?: string | null
+  attachmentKey?: string | null
+  attachmentName?: string | null
+  title: string
+  description: string
+  instructions?: string | null
+  status?: string
+  priority?: string
+  deadline?: Date | string | null
+  assignedToId?: string | null
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedCreateNestedManyWithoutTaskInput
+  submissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutTaskInput
+  messages?: Prisma.TaskMessageUncheckedCreateNestedManyWithoutTaskInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedCreateNestedManyWithoutTaskInput
+  penalties?: Prisma.TaskPenaltyUncheckedCreateNestedManyWithoutTaskInput
+}
+
+export type WorkTaskCreateOrConnectWithoutDisputesInput = {
+  where: Prisma.WorkTaskWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkTaskCreateWithoutDisputesInput, Prisma.WorkTaskUncheckedCreateWithoutDisputesInput>
+}
+
+export type WorkTaskUpsertWithoutDisputesInput = {
+  update: Prisma.XOR<Prisma.WorkTaskUpdateWithoutDisputesInput, Prisma.WorkTaskUncheckedUpdateWithoutDisputesInput>
+  create: Prisma.XOR<Prisma.WorkTaskCreateWithoutDisputesInput, Prisma.WorkTaskUncheckedCreateWithoutDisputesInput>
+  where?: Prisma.WorkTaskWhereInput
+}
+
+export type WorkTaskUpdateToOneWithWhereWithoutDisputesInput = {
+  where?: Prisma.WorkTaskWhereInput
+  data: Prisma.XOR<Prisma.WorkTaskUpdateWithoutDisputesInput, Prisma.WorkTaskUncheckedUpdateWithoutDisputesInput>
+}
+
+export type WorkTaskUpdateWithoutDisputesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
+  deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  extraAttachments?: Prisma.TaskExtraAttachmentUpdateManyWithoutTaskNestedInput
+  project?: Prisma.WorkProjectUpdateOneWithoutTasksNestedInput
+  assignedTo?: Prisma.EmployeeProfileUpdateOneWithoutAssignedTasksNestedInput
+  createdBy?: Prisma.EmployeeProfileUpdateOneRequiredWithoutCreatedTasksNestedInput
+  submissions?: Prisma.TaskSubmissionUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutTaskNestedInput
+}
+
+export type WorkTaskUncheckedUpdateWithoutDisputesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
+  deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedUpdateManyWithoutTaskNestedInput
+  submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUncheckedUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutTaskNestedInput
 }
 
 export type WorkTaskCreateManyAssignedToInput = {
@@ -1173,6 +2722,18 @@ export type WorkTaskCreateManyAssignedToInput = {
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
 }
 
 export type WorkTaskCreateManyCreatedByInput = {
@@ -1192,9 +2753,21 @@ export type WorkTaskCreateManyCreatedByInput = {
   status?: string
   priority?: string
   deadline?: Date | string | null
-  assignedToId: string
+  assignedToId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
 }
 
 export type WorkTaskUpdateWithoutAssignedToInput = {
@@ -1215,9 +2788,26 @@ export type WorkTaskUpdateWithoutAssignedToInput = {
   deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUpdateManyWithoutTaskNestedInput
   project?: Prisma.WorkProjectUpdateOneWithoutTasksNestedInput
   createdBy?: Prisma.EmployeeProfileUpdateOneRequiredWithoutCreatedTasksNestedInput
   submissions?: Prisma.TaskSubmissionUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutTaskNestedInput
 }
 
 export type WorkTaskUncheckedUpdateWithoutAssignedToInput = {
@@ -1240,7 +2830,24 @@ export type WorkTaskUncheckedUpdateWithoutAssignedToInput = {
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUncheckedUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedUpdateManyWithoutTaskNestedInput
   submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUncheckedUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutTaskNestedInput
 }
 
 export type WorkTaskUncheckedUpdateManyWithoutAssignedToInput = {
@@ -1263,6 +2870,18 @@ export type WorkTaskUncheckedUpdateManyWithoutAssignedToInput = {
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type WorkTaskUpdateWithoutCreatedByInput = {
@@ -1283,9 +2902,26 @@ export type WorkTaskUpdateWithoutCreatedByInput = {
   deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUpdateManyWithoutTaskNestedInput
   project?: Prisma.WorkProjectUpdateOneWithoutTasksNestedInput
-  assignedTo?: Prisma.EmployeeProfileUpdateOneRequiredWithoutAssignedTasksNestedInput
+  assignedTo?: Prisma.EmployeeProfileUpdateOneWithoutAssignedTasksNestedInput
   submissions?: Prisma.TaskSubmissionUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutTaskNestedInput
 }
 
 export type WorkTaskUncheckedUpdateWithoutCreatedByInput = {
@@ -1305,10 +2941,27 @@ export type WorkTaskUncheckedUpdateWithoutCreatedByInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   priority?: Prisma.StringFieldUpdateOperationsInput | string
   deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  assignedToId?: Prisma.StringFieldUpdateOperationsInput | string
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUncheckedUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedUpdateManyWithoutTaskNestedInput
   submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUncheckedUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutTaskNestedInput
 }
 
 export type WorkTaskUncheckedUpdateManyWithoutCreatedByInput = {
@@ -1328,9 +2981,21 @@ export type WorkTaskUncheckedUpdateManyWithoutCreatedByInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   priority?: Prisma.StringFieldUpdateOperationsInput | string
   deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  assignedToId?: Prisma.StringFieldUpdateOperationsInput | string
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type WorkTaskCreateManyProjectInput = {
@@ -1349,10 +3014,22 @@ export type WorkTaskCreateManyProjectInput = {
   status?: string
   priority?: string
   deadline?: Date | string | null
-  assignedToId: string
+  assignedToId?: string | null
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  unitsOrdered?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: string | null
+  submissionHours?: number | null
+  reviewHours?: number | null
+  qaHours?: number | null
+  clientRating?: number | null
+  clientActionAt?: Date | string | null
+  reinstatedAt?: Date | string | null
+  reinstatedById?: string | null
+  reinstatementCount?: number
 }
 
 export type WorkTaskUpdateWithoutProjectInput = {
@@ -1373,9 +3050,26 @@ export type WorkTaskUpdateWithoutProjectInput = {
   deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignedTo?: Prisma.EmployeeProfileUpdateOneRequiredWithoutAssignedTasksNestedInput
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUpdateManyWithoutTaskNestedInput
+  assignedTo?: Prisma.EmployeeProfileUpdateOneWithoutAssignedTasksNestedInput
   createdBy?: Prisma.EmployeeProfileUpdateOneRequiredWithoutCreatedTasksNestedInput
   submissions?: Prisma.TaskSubmissionUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUpdateManyWithoutTaskNestedInput
 }
 
 export type WorkTaskUncheckedUpdateWithoutProjectInput = {
@@ -1394,11 +3088,28 @@ export type WorkTaskUncheckedUpdateWithoutProjectInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   priority?: Prisma.StringFieldUpdateOperationsInput | string
   deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  assignedToId?: Prisma.StringFieldUpdateOperationsInput | string
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  disputes?: Prisma.TaskDisputeUncheckedUpdateManyWithoutTaskNestedInput
+  extraAttachments?: Prisma.TaskExtraAttachmentUncheckedUpdateManyWithoutTaskNestedInput
   submissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutTaskNestedInput
+  messages?: Prisma.TaskMessageUncheckedUpdateManyWithoutTaskNestedInput
+  reassignmentRequests?: Prisma.TaskReassignmentRequestUncheckedUpdateManyWithoutTaskNestedInput
+  penalties?: Prisma.TaskPenaltyUncheckedUpdateManyWithoutTaskNestedInput
 }
 
 export type WorkTaskUncheckedUpdateManyWithoutProjectInput = {
@@ -1417,10 +3128,22 @@ export type WorkTaskUncheckedUpdateManyWithoutProjectInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   priority?: Prisma.StringFieldUpdateOperationsInput | string
   deadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  assignedToId?: Prisma.StringFieldUpdateOperationsInput | string
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  unitsOrdered?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unitRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalOrderCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billingUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  reviewHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  qaHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  clientRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientActionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reinstatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reinstatementCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
@@ -1429,11 +3152,21 @@ export type WorkTaskUncheckedUpdateManyWithoutProjectInput = {
  */
 
 export type WorkTaskCountOutputType = {
+  disputes: number
+  extraAttachments: number
   submissions: number
+  messages: number
+  reassignmentRequests: number
+  penalties: number
 }
 
 export type WorkTaskCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  disputes?: boolean | WorkTaskCountOutputTypeCountDisputesArgs
+  extraAttachments?: boolean | WorkTaskCountOutputTypeCountExtraAttachmentsArgs
   submissions?: boolean | WorkTaskCountOutputTypeCountSubmissionsArgs
+  messages?: boolean | WorkTaskCountOutputTypeCountMessagesArgs
+  reassignmentRequests?: boolean | WorkTaskCountOutputTypeCountReassignmentRequestsArgs
+  penalties?: boolean | WorkTaskCountOutputTypeCountPenaltiesArgs
 }
 
 /**
@@ -1449,8 +3182,43 @@ export type WorkTaskCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
 /**
  * WorkTaskCountOutputType without action
  */
+export type WorkTaskCountOutputTypeCountDisputesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskDisputeWhereInput
+}
+
+/**
+ * WorkTaskCountOutputType without action
+ */
+export type WorkTaskCountOutputTypeCountExtraAttachmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskExtraAttachmentWhereInput
+}
+
+/**
+ * WorkTaskCountOutputType without action
+ */
 export type WorkTaskCountOutputTypeCountSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.TaskSubmissionWhereInput
+}
+
+/**
+ * WorkTaskCountOutputType without action
+ */
+export type WorkTaskCountOutputTypeCountMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskMessageWhereInput
+}
+
+/**
+ * WorkTaskCountOutputType without action
+ */
+export type WorkTaskCountOutputTypeCountReassignmentRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskReassignmentRequestWhereInput
+}
+
+/**
+ * WorkTaskCountOutputType without action
+ */
+export type WorkTaskCountOutputTypeCountPenaltiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskPenaltyWhereInput
 }
 
 
@@ -1475,10 +3243,27 @@ export type WorkTaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  unitsOrdered?: boolean
+  unitRate?: boolean
+  totalOrderCost?: boolean
+  billingUnit?: boolean
+  submissionHours?: boolean
+  reviewHours?: boolean
+  qaHours?: boolean
+  clientRating?: boolean
+  clientActionAt?: boolean
+  reinstatedAt?: boolean
+  reinstatedById?: boolean
+  reinstatementCount?: boolean
+  disputes?: boolean | Prisma.WorkTask$disputesArgs<ExtArgs>
+  extraAttachments?: boolean | Prisma.WorkTask$extraAttachmentsArgs<ExtArgs>
   project?: boolean | Prisma.WorkTask$projectArgs<ExtArgs>
-  assignedTo?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
+  assignedTo?: boolean | Prisma.WorkTask$assignedToArgs<ExtArgs>
   createdBy?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
   submissions?: boolean | Prisma.WorkTask$submissionsArgs<ExtArgs>
+  messages?: boolean | Prisma.WorkTask$messagesArgs<ExtArgs>
+  reassignmentRequests?: boolean | Prisma.WorkTask$reassignmentRequestsArgs<ExtArgs>
+  penalties?: boolean | Prisma.WorkTask$penaltiesArgs<ExtArgs>
   _count?: boolean | Prisma.WorkTaskCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workTask"]>
 
@@ -1503,8 +3288,20 @@ export type WorkTaskSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  unitsOrdered?: boolean
+  unitRate?: boolean
+  totalOrderCost?: boolean
+  billingUnit?: boolean
+  submissionHours?: boolean
+  reviewHours?: boolean
+  qaHours?: boolean
+  clientRating?: boolean
+  clientActionAt?: boolean
+  reinstatedAt?: boolean
+  reinstatedById?: boolean
+  reinstatementCount?: boolean
   project?: boolean | Prisma.WorkTask$projectArgs<ExtArgs>
-  assignedTo?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
+  assignedTo?: boolean | Prisma.WorkTask$assignedToArgs<ExtArgs>
   createdBy?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workTask"]>
 
@@ -1529,8 +3326,20 @@ export type WorkTaskSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  unitsOrdered?: boolean
+  unitRate?: boolean
+  totalOrderCost?: boolean
+  billingUnit?: boolean
+  submissionHours?: boolean
+  reviewHours?: boolean
+  qaHours?: boolean
+  clientRating?: boolean
+  clientActionAt?: boolean
+  reinstatedAt?: boolean
+  reinstatedById?: boolean
+  reinstatementCount?: boolean
   project?: boolean | Prisma.WorkTask$projectArgs<ExtArgs>
-  assignedTo?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
+  assignedTo?: boolean | Prisma.WorkTask$assignedToArgs<ExtArgs>
   createdBy?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workTask"]>
 
@@ -1555,34 +3364,56 @@ export type WorkTaskSelectScalar = {
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  unitsOrdered?: boolean
+  unitRate?: boolean
+  totalOrderCost?: boolean
+  billingUnit?: boolean
+  submissionHours?: boolean
+  reviewHours?: boolean
+  qaHours?: boolean
+  clientRating?: boolean
+  clientActionAt?: boolean
+  reinstatedAt?: boolean
+  reinstatedById?: boolean
+  reinstatementCount?: boolean
 }
 
-export type WorkTaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "orderId" | "publicTaskId" | "category" | "reviewDeadline" | "qaDeadline" | "claimedReviewerId" | "attachmentKey" | "attachmentName" | "title" | "description" | "instructions" | "status" | "priority" | "deadline" | "assignedToId" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["workTask"]>
+export type WorkTaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "orderId" | "publicTaskId" | "category" | "reviewDeadline" | "qaDeadline" | "claimedReviewerId" | "attachmentKey" | "attachmentName" | "title" | "description" | "instructions" | "status" | "priority" | "deadline" | "assignedToId" | "createdById" | "createdAt" | "updatedAt" | "unitsOrdered" | "unitRate" | "totalOrderCost" | "billingUnit" | "submissionHours" | "reviewHours" | "qaHours" | "clientRating" | "clientActionAt" | "reinstatedAt" | "reinstatedById" | "reinstatementCount", ExtArgs["result"]["workTask"]>
 export type WorkTaskInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  disputes?: boolean | Prisma.WorkTask$disputesArgs<ExtArgs>
+  extraAttachments?: boolean | Prisma.WorkTask$extraAttachmentsArgs<ExtArgs>
   project?: boolean | Prisma.WorkTask$projectArgs<ExtArgs>
-  assignedTo?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
+  assignedTo?: boolean | Prisma.WorkTask$assignedToArgs<ExtArgs>
   createdBy?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
   submissions?: boolean | Prisma.WorkTask$submissionsArgs<ExtArgs>
+  messages?: boolean | Prisma.WorkTask$messagesArgs<ExtArgs>
+  reassignmentRequests?: boolean | Prisma.WorkTask$reassignmentRequestsArgs<ExtArgs>
+  penalties?: boolean | Prisma.WorkTask$penaltiesArgs<ExtArgs>
   _count?: boolean | Prisma.WorkTaskCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type WorkTaskIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.WorkTask$projectArgs<ExtArgs>
-  assignedTo?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
+  assignedTo?: boolean | Prisma.WorkTask$assignedToArgs<ExtArgs>
   createdBy?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
 }
 export type WorkTaskIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.WorkTask$projectArgs<ExtArgs>
-  assignedTo?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
+  assignedTo?: boolean | Prisma.WorkTask$assignedToArgs<ExtArgs>
   createdBy?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
 }
 
 export type $WorkTaskPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "WorkTask"
   objects: {
+    disputes: Prisma.$TaskDisputePayload<ExtArgs>[]
+    extraAttachments: Prisma.$TaskExtraAttachmentPayload<ExtArgs>[]
     project: Prisma.$WorkProjectPayload<ExtArgs> | null
-    assignedTo: Prisma.$EmployeeProfilePayload<ExtArgs>
+    assignedTo: Prisma.$EmployeeProfilePayload<ExtArgs> | null
     createdBy: Prisma.$EmployeeProfilePayload<ExtArgs>
     submissions: Prisma.$TaskSubmissionPayload<ExtArgs>[]
+    messages: Prisma.$TaskMessagePayload<ExtArgs>[]
+    reassignmentRequests: Prisma.$TaskReassignmentRequestPayload<ExtArgs>[]
+    penalties: Prisma.$TaskPenaltyPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1601,10 +3432,22 @@ export type $WorkTaskPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     status: string
     priority: string
     deadline: Date | null
-    assignedToId: string
+    assignedToId: string | null
     createdById: string
     createdAt: Date
     updatedAt: Date
+    unitsOrdered: runtime.Decimal | null
+    unitRate: runtime.Decimal | null
+    totalOrderCost: runtime.Decimal | null
+    billingUnit: string | null
+    submissionHours: number | null
+    reviewHours: number | null
+    qaHours: number | null
+    clientRating: number | null
+    clientActionAt: Date | null
+    reinstatedAt: Date | null
+    reinstatedById: string | null
+    reinstatementCount: number
   }, ExtArgs["result"]["workTask"]>
   composites: {}
 }
@@ -1999,10 +3842,15 @@ readonly fields: WorkTaskFieldRefs;
  */
 export interface Prisma__WorkTaskClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  disputes<T extends Prisma.WorkTask$disputesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkTask$disputesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskDisputePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  extraAttachments<T extends Prisma.WorkTask$extraAttachmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkTask$extraAttachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskExtraAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   project<T extends Prisma.WorkTask$projectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkTask$projectArgs<ExtArgs>>): Prisma.Prisma__WorkProjectClient<runtime.Types.Result.GetResult<Prisma.$WorkProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  assignedTo<T extends Prisma.EmployeeProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__EmployeeProfileClient<runtime.Types.Result.GetResult<Prisma.$EmployeeProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  assignedTo<T extends Prisma.WorkTask$assignedToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkTask$assignedToArgs<ExtArgs>>): Prisma.Prisma__EmployeeProfileClient<runtime.Types.Result.GetResult<Prisma.$EmployeeProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.EmployeeProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__EmployeeProfileClient<runtime.Types.Result.GetResult<Prisma.$EmployeeProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   submissions<T extends Prisma.WorkTask$submissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkTask$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  messages<T extends Prisma.WorkTask$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkTask$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reassignmentRequests<T extends Prisma.WorkTask$reassignmentRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkTask$reassignmentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskReassignmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  penalties<T extends Prisma.WorkTask$penaltiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkTask$penaltiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPenaltyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2052,6 +3900,18 @@ export interface WorkTaskFieldRefs {
   readonly createdById: Prisma.FieldRef<"WorkTask", 'String'>
   readonly createdAt: Prisma.FieldRef<"WorkTask", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"WorkTask", 'DateTime'>
+  readonly unitsOrdered: Prisma.FieldRef<"WorkTask", 'Decimal'>
+  readonly unitRate: Prisma.FieldRef<"WorkTask", 'Decimal'>
+  readonly totalOrderCost: Prisma.FieldRef<"WorkTask", 'Decimal'>
+  readonly billingUnit: Prisma.FieldRef<"WorkTask", 'String'>
+  readonly submissionHours: Prisma.FieldRef<"WorkTask", 'Float'>
+  readonly reviewHours: Prisma.FieldRef<"WorkTask", 'Float'>
+  readonly qaHours: Prisma.FieldRef<"WorkTask", 'Float'>
+  readonly clientRating: Prisma.FieldRef<"WorkTask", 'Int'>
+  readonly clientActionAt: Prisma.FieldRef<"WorkTask", 'DateTime'>
+  readonly reinstatedAt: Prisma.FieldRef<"WorkTask", 'DateTime'>
+  readonly reinstatedById: Prisma.FieldRef<"WorkTask", 'String'>
+  readonly reinstatementCount: Prisma.FieldRef<"WorkTask", 'Int'>
 }
     
 
@@ -2453,6 +4313,54 @@ export type WorkTaskDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
+ * WorkTask.disputes
+ */
+export type WorkTask$disputesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskDispute
+   */
+  select?: Prisma.TaskDisputeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskDispute
+   */
+  omit?: Prisma.TaskDisputeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskDisputeInclude<ExtArgs> | null
+  where?: Prisma.TaskDisputeWhereInput
+  orderBy?: Prisma.TaskDisputeOrderByWithRelationInput | Prisma.TaskDisputeOrderByWithRelationInput[]
+  cursor?: Prisma.TaskDisputeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskDisputeScalarFieldEnum | Prisma.TaskDisputeScalarFieldEnum[]
+}
+
+/**
+ * WorkTask.extraAttachments
+ */
+export type WorkTask$extraAttachmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskExtraAttachment
+   */
+  select?: Prisma.TaskExtraAttachmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskExtraAttachment
+   */
+  omit?: Prisma.TaskExtraAttachmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskExtraAttachmentInclude<ExtArgs> | null
+  where?: Prisma.TaskExtraAttachmentWhereInput
+  orderBy?: Prisma.TaskExtraAttachmentOrderByWithRelationInput | Prisma.TaskExtraAttachmentOrderByWithRelationInput[]
+  cursor?: Prisma.TaskExtraAttachmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskExtraAttachmentScalarFieldEnum | Prisma.TaskExtraAttachmentScalarFieldEnum[]
+}
+
+/**
  * WorkTask.project
  */
 export type WorkTask$projectArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2469,6 +4377,25 @@ export type WorkTask$projectArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   include?: Prisma.WorkProjectInclude<ExtArgs> | null
   where?: Prisma.WorkProjectWhereInput
+}
+
+/**
+ * WorkTask.assignedTo
+ */
+export type WorkTask$assignedToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EmployeeProfile
+   */
+  select?: Prisma.EmployeeProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EmployeeProfile
+   */
+  omit?: Prisma.EmployeeProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmployeeProfileInclude<ExtArgs> | null
+  where?: Prisma.EmployeeProfileWhereInput
 }
 
 /**
@@ -2493,6 +4420,78 @@ export type WorkTask$submissionsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.TaskSubmissionScalarFieldEnum | Prisma.TaskSubmissionScalarFieldEnum[]
+}
+
+/**
+ * WorkTask.messages
+ */
+export type WorkTask$messagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskMessage
+   */
+  select?: Prisma.TaskMessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskMessage
+   */
+  omit?: Prisma.TaskMessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskMessageInclude<ExtArgs> | null
+  where?: Prisma.TaskMessageWhereInput
+  orderBy?: Prisma.TaskMessageOrderByWithRelationInput | Prisma.TaskMessageOrderByWithRelationInput[]
+  cursor?: Prisma.TaskMessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskMessageScalarFieldEnum | Prisma.TaskMessageScalarFieldEnum[]
+}
+
+/**
+ * WorkTask.reassignmentRequests
+ */
+export type WorkTask$reassignmentRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskReassignmentRequest
+   */
+  select?: Prisma.TaskReassignmentRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskReassignmentRequest
+   */
+  omit?: Prisma.TaskReassignmentRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskReassignmentRequestInclude<ExtArgs> | null
+  where?: Prisma.TaskReassignmentRequestWhereInput
+  orderBy?: Prisma.TaskReassignmentRequestOrderByWithRelationInput | Prisma.TaskReassignmentRequestOrderByWithRelationInput[]
+  cursor?: Prisma.TaskReassignmentRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskReassignmentRequestScalarFieldEnum | Prisma.TaskReassignmentRequestScalarFieldEnum[]
+}
+
+/**
+ * WorkTask.penalties
+ */
+export type WorkTask$penaltiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskPenalty
+   */
+  select?: Prisma.TaskPenaltySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskPenalty
+   */
+  omit?: Prisma.TaskPenaltyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskPenaltyInclude<ExtArgs> | null
+  where?: Prisma.TaskPenaltyWhereInput
+  orderBy?: Prisma.TaskPenaltyOrderByWithRelationInput | Prisma.TaskPenaltyOrderByWithRelationInput[]
+  cursor?: Prisma.TaskPenaltyWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskPenaltyScalarFieldEnum | Prisma.TaskPenaltyScalarFieldEnum[]
 }
 
 /**

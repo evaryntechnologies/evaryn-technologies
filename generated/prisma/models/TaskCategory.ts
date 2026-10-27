@@ -20,14 +20,26 @@ export type TaskCategoryModel = runtime.Types.Result.DefaultSelection<Prisma.$Ta
 
 export type AggregateTaskCategory = {
   _count: TaskCategoryCountAggregateOutputType | null
+  _avg: TaskCategoryAvgAggregateOutputType | null
+  _sum: TaskCategorySumAggregateOutputType | null
   _min: TaskCategoryMinAggregateOutputType | null
   _max: TaskCategoryMaxAggregateOutputType | null
+}
+
+export type TaskCategoryAvgAggregateOutputType = {
+  rate: runtime.Decimal | null
+}
+
+export type TaskCategorySumAggregateOutputType = {
+  rate: runtime.Decimal | null
 }
 
 export type TaskCategoryMinAggregateOutputType = {
   id: string | null
   name: string | null
   active: boolean | null
+  rate: runtime.Decimal | null
+  billingUnit: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -36,6 +48,8 @@ export type TaskCategoryMaxAggregateOutputType = {
   id: string | null
   name: string | null
   active: boolean | null
+  rate: runtime.Decimal | null
+  billingUnit: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,16 +58,28 @@ export type TaskCategoryCountAggregateOutputType = {
   id: number
   name: number
   active: number
+  rate: number
+  billingUnit: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
 
+export type TaskCategoryAvgAggregateInputType = {
+  rate?: true
+}
+
+export type TaskCategorySumAggregateInputType = {
+  rate?: true
+}
+
 export type TaskCategoryMinAggregateInputType = {
   id?: true
   name?: true
   active?: true
+  rate?: true
+  billingUnit?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -62,6 +88,8 @@ export type TaskCategoryMaxAggregateInputType = {
   id?: true
   name?: true
   active?: true
+  rate?: true
+  billingUnit?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -70,6 +98,8 @@ export type TaskCategoryCountAggregateInputType = {
   id?: true
   name?: true
   active?: true
+  rate?: true
+  billingUnit?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -113,6 +143,18 @@ export type TaskCategoryAggregateArgs<ExtArgs extends runtime.Types.Extensions.I
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: TaskCategoryAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: TaskCategorySumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: TaskCategoryMinAggregateInputType
@@ -143,6 +185,8 @@ export type TaskCategoryGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   _count?: TaskCategoryCountAggregateInputType | true
+  _avg?: TaskCategoryAvgAggregateInputType
+  _sum?: TaskCategorySumAggregateInputType
   _min?: TaskCategoryMinAggregateInputType
   _max?: TaskCategoryMaxAggregateInputType
 }
@@ -151,9 +195,13 @@ export type TaskCategoryGroupByOutputType = {
   id: string
   name: string
   active: boolean
+  rate: runtime.Decimal
+  billingUnit: string
   createdAt: Date
   updatedAt: Date
   _count: TaskCategoryCountAggregateOutputType | null
+  _avg: TaskCategoryAvgAggregateOutputType | null
+  _sum: TaskCategorySumAggregateOutputType | null
   _min: TaskCategoryMinAggregateOutputType | null
   _max: TaskCategoryMaxAggregateOutputType | null
 }
@@ -180,16 +228,22 @@ export type TaskCategoryWhereInput = {
   id?: Prisma.UuidFilter<"TaskCategory"> | string
   name?: Prisma.StringFilter<"TaskCategory"> | string
   active?: Prisma.BoolFilter<"TaskCategory"> | boolean
+  rate?: Prisma.DecimalFilter<"TaskCategory"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  billingUnit?: Prisma.StringFilter<"TaskCategory"> | string
   createdAt?: Prisma.DateTimeFilter<"TaskCategory"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskCategory"> | Date | string
+  employees?: Prisma.EmployeeCategoryListRelationFilter
 }
 
 export type TaskCategoryOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  rate?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  employees?: Prisma.EmployeeCategoryOrderByRelationAggregateInput
 }
 
 export type TaskCategoryWhereUniqueInput = Prisma.AtLeast<{
@@ -199,19 +253,26 @@ export type TaskCategoryWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.TaskCategoryWhereInput[]
   NOT?: Prisma.TaskCategoryWhereInput | Prisma.TaskCategoryWhereInput[]
   active?: Prisma.BoolFilter<"TaskCategory"> | boolean
+  rate?: Prisma.DecimalFilter<"TaskCategory"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  billingUnit?: Prisma.StringFilter<"TaskCategory"> | string
   createdAt?: Prisma.DateTimeFilter<"TaskCategory"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskCategory"> | Date | string
+  employees?: Prisma.EmployeeCategoryListRelationFilter
 }, "id" | "name">
 
 export type TaskCategoryOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  rate?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TaskCategoryCountOrderByAggregateInput
+  _avg?: Prisma.TaskCategoryAvgOrderByAggregateInput
   _max?: Prisma.TaskCategoryMaxOrderByAggregateInput
   _min?: Prisma.TaskCategoryMinOrderByAggregateInput
+  _sum?: Prisma.TaskCategorySumOrderByAggregateInput
 }
 
 export type TaskCategoryScalarWhereWithAggregatesInput = {
@@ -221,6 +282,8 @@ export type TaskCategoryScalarWhereWithAggregatesInput = {
   id?: Prisma.UuidWithAggregatesFilter<"TaskCategory"> | string
   name?: Prisma.StringWithAggregatesFilter<"TaskCategory"> | string
   active?: Prisma.BoolWithAggregatesFilter<"TaskCategory"> | boolean
+  rate?: Prisma.DecimalWithAggregatesFilter<"TaskCategory"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  billingUnit?: Prisma.StringWithAggregatesFilter<"TaskCategory"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskCategory"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TaskCategory"> | Date | string
 }
@@ -229,38 +292,52 @@ export type TaskCategoryCreateInput = {
   id?: string
   name: string
   active?: boolean
+  rate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  billingUnit?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  employees?: Prisma.EmployeeCategoryCreateNestedManyWithoutCategoryInput
 }
 
 export type TaskCategoryUncheckedCreateInput = {
   id?: string
   name: string
   active?: boolean
+  rate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  billingUnit?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  employees?: Prisma.EmployeeCategoryUncheckedCreateNestedManyWithoutCategoryInput
 }
 
 export type TaskCategoryUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  billingUnit?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employees?: Prisma.EmployeeCategoryUpdateManyWithoutCategoryNestedInput
 }
 
 export type TaskCategoryUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  billingUnit?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employees?: Prisma.EmployeeCategoryUncheckedUpdateManyWithoutCategoryNestedInput
 }
 
 export type TaskCategoryCreateManyInput = {
   id?: string
   name: string
   active?: boolean
+  rate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  billingUnit?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -269,6 +346,8 @@ export type TaskCategoryUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  billingUnit?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -277,6 +356,8 @@ export type TaskCategoryUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  billingUnit?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -285,14 +366,22 @@ export type TaskCategoryCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  rate?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type TaskCategoryAvgOrderByAggregateInput = {
+  rate?: Prisma.SortOrder
 }
 
 export type TaskCategoryMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  rate?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -301,28 +390,152 @@ export type TaskCategoryMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  rate?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type TaskCategorySumOrderByAggregateInput = {
+  rate?: Prisma.SortOrder
+}
+
+export type TaskCategoryScalarRelationFilter = {
+  is?: Prisma.TaskCategoryWhereInput
+  isNot?: Prisma.TaskCategoryWhereInput
 }
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type DecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
+export type TaskCategoryCreateNestedOneWithoutEmployeesInput = {
+  create?: Prisma.XOR<Prisma.TaskCategoryCreateWithoutEmployeesInput, Prisma.TaskCategoryUncheckedCreateWithoutEmployeesInput>
+  connectOrCreate?: Prisma.TaskCategoryCreateOrConnectWithoutEmployeesInput
+  connect?: Prisma.TaskCategoryWhereUniqueInput
+}
+
+export type TaskCategoryUpdateOneRequiredWithoutEmployeesNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskCategoryCreateWithoutEmployeesInput, Prisma.TaskCategoryUncheckedCreateWithoutEmployeesInput>
+  connectOrCreate?: Prisma.TaskCategoryCreateOrConnectWithoutEmployeesInput
+  upsert?: Prisma.TaskCategoryUpsertWithoutEmployeesInput
+  connect?: Prisma.TaskCategoryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TaskCategoryUpdateToOneWithWhereWithoutEmployeesInput, Prisma.TaskCategoryUpdateWithoutEmployeesInput>, Prisma.TaskCategoryUncheckedUpdateWithoutEmployeesInput>
+}
+
+export type TaskCategoryCreateWithoutEmployeesInput = {
+  id?: string
+  name: string
+  active?: boolean
+  rate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  billingUnit?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TaskCategoryUncheckedCreateWithoutEmployeesInput = {
+  id?: string
+  name: string
+  active?: boolean
+  rate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  billingUnit?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TaskCategoryCreateOrConnectWithoutEmployeesInput = {
+  where: Prisma.TaskCategoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.TaskCategoryCreateWithoutEmployeesInput, Prisma.TaskCategoryUncheckedCreateWithoutEmployeesInput>
+}
+
+export type TaskCategoryUpsertWithoutEmployeesInput = {
+  update: Prisma.XOR<Prisma.TaskCategoryUpdateWithoutEmployeesInput, Prisma.TaskCategoryUncheckedUpdateWithoutEmployeesInput>
+  create: Prisma.XOR<Prisma.TaskCategoryCreateWithoutEmployeesInput, Prisma.TaskCategoryUncheckedCreateWithoutEmployeesInput>
+  where?: Prisma.TaskCategoryWhereInput
+}
+
+export type TaskCategoryUpdateToOneWithWhereWithoutEmployeesInput = {
+  where?: Prisma.TaskCategoryWhereInput
+  data: Prisma.XOR<Prisma.TaskCategoryUpdateWithoutEmployeesInput, Prisma.TaskCategoryUncheckedUpdateWithoutEmployeesInput>
+}
+
+export type TaskCategoryUpdateWithoutEmployeesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  billingUnit?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TaskCategoryUncheckedUpdateWithoutEmployeesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  billingUnit?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type TaskCategoryCountOutputType
+ */
+
+export type TaskCategoryCountOutputType = {
+  employees: number
+}
+
+export type TaskCategoryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  employees?: boolean | TaskCategoryCountOutputTypeCountEmployeesArgs
+}
+
+/**
+ * TaskCategoryCountOutputType without action
+ */
+export type TaskCategoryCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskCategoryCountOutputType
+   */
+  select?: Prisma.TaskCategoryCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * TaskCategoryCountOutputType without action
+ */
+export type TaskCategoryCountOutputTypeCountEmployeesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EmployeeCategoryWhereInput
+}
 
 
 export type TaskCategorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   active?: boolean
+  rate?: boolean
+  billingUnit?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  employees?: boolean | Prisma.TaskCategory$employeesArgs<ExtArgs>
+  _count?: boolean | Prisma.TaskCategoryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskCategory"]>
 
 export type TaskCategorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   active?: boolean
+  rate?: boolean
+  billingUnit?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["taskCategory"]>
@@ -331,6 +544,8 @@ export type TaskCategorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   name?: boolean
   active?: boolean
+  rate?: boolean
+  billingUnit?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["taskCategory"]>
@@ -339,19 +554,31 @@ export type TaskCategorySelectScalar = {
   id?: boolean
   name?: boolean
   active?: boolean
+  rate?: boolean
+  billingUnit?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TaskCategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["taskCategory"]>
+export type TaskCategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "active" | "rate" | "billingUnit" | "createdAt" | "updatedAt", ExtArgs["result"]["taskCategory"]>
+export type TaskCategoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  employees?: boolean | Prisma.TaskCategory$employeesArgs<ExtArgs>
+  _count?: boolean | Prisma.TaskCategoryCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type TaskCategoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type TaskCategoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $TaskCategoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TaskCategory"
-  objects: {}
+  objects: {
+    employees: Prisma.$EmployeeCategoryPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
     active: boolean
+    rate: runtime.Decimal
+    billingUnit: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["taskCategory"]>
@@ -748,6 +975,7 @@ readonly fields: TaskCategoryFieldRefs;
  */
 export interface Prisma__TaskCategoryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  employees<T extends Prisma.TaskCategory$employeesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskCategory$employeesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmployeeCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -780,6 +1008,8 @@ export interface TaskCategoryFieldRefs {
   readonly id: Prisma.FieldRef<"TaskCategory", 'String'>
   readonly name: Prisma.FieldRef<"TaskCategory", 'String'>
   readonly active: Prisma.FieldRef<"TaskCategory", 'Boolean'>
+  readonly rate: Prisma.FieldRef<"TaskCategory", 'Decimal'>
+  readonly billingUnit: Prisma.FieldRef<"TaskCategory", 'String'>
   readonly createdAt: Prisma.FieldRef<"TaskCategory", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"TaskCategory", 'DateTime'>
 }
@@ -799,6 +1029,10 @@ export type TaskCategoryFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.
    */
   omit?: Prisma.TaskCategoryOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskCategoryInclude<ExtArgs> | null
+  /**
    * Filter, which TaskCategory to fetch.
    */
   where: Prisma.TaskCategoryWhereUniqueInput
@@ -817,6 +1051,10 @@ export type TaskCategoryFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exte
    */
   omit?: Prisma.TaskCategoryOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskCategoryInclude<ExtArgs> | null
+  /**
    * Filter, which TaskCategory to fetch.
    */
   where: Prisma.TaskCategoryWhereUniqueInput
@@ -834,6 +1072,10 @@ export type TaskCategoryFindFirstArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the TaskCategory
    */
   omit?: Prisma.TaskCategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskCategoryInclude<ExtArgs> | null
   /**
    * Filter, which TaskCategory to fetch.
    */
@@ -883,6 +1125,10 @@ export type TaskCategoryFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Exten
    */
   omit?: Prisma.TaskCategoryOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskCategoryInclude<ExtArgs> | null
+  /**
    * Filter, which TaskCategory to fetch.
    */
   where?: Prisma.TaskCategoryWhereInput
@@ -930,6 +1176,10 @@ export type TaskCategoryFindManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the TaskCategory
    */
   omit?: Prisma.TaskCategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskCategoryInclude<ExtArgs> | null
   /**
    * Filter, which TaskCategories to fetch.
    */
@@ -979,6 +1229,10 @@ export type TaskCategoryCreateArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.TaskCategoryOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskCategoryInclude<ExtArgs> | null
+  /**
    * The data needed to create a TaskCategory.
    */
   data: Prisma.XOR<Prisma.TaskCategoryCreateInput, Prisma.TaskCategoryUncheckedCreateInput>
@@ -1026,6 +1280,10 @@ export type TaskCategoryUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the TaskCategory
    */
   omit?: Prisma.TaskCategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskCategoryInclude<ExtArgs> | null
   /**
    * The data needed to update a TaskCategory.
    */
@@ -1093,6 +1351,10 @@ export type TaskCategoryUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.TaskCategoryOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskCategoryInclude<ExtArgs> | null
+  /**
    * The filter to search for the TaskCategory to update in case it exists.
    */
   where: Prisma.TaskCategoryWhereUniqueInput
@@ -1119,6 +1381,10 @@ export type TaskCategoryDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.TaskCategoryOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskCategoryInclude<ExtArgs> | null
+  /**
    * Filter which TaskCategory to delete.
    */
   where: Prisma.TaskCategoryWhereUniqueInput
@@ -1139,6 +1405,30 @@ export type TaskCategoryDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
+ * TaskCategory.employees
+ */
+export type TaskCategory$employeesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EmployeeCategory
+   */
+  select?: Prisma.EmployeeCategorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EmployeeCategory
+   */
+  omit?: Prisma.EmployeeCategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmployeeCategoryInclude<ExtArgs> | null
+  where?: Prisma.EmployeeCategoryWhereInput
+  orderBy?: Prisma.EmployeeCategoryOrderByWithRelationInput | Prisma.EmployeeCategoryOrderByWithRelationInput[]
+  cursor?: Prisma.EmployeeCategoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EmployeeCategoryScalarFieldEnum | Prisma.EmployeeCategoryScalarFieldEnum[]
+}
+
+/**
  * TaskCategory without action
  */
 export type TaskCategoryDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1150,4 +1440,8 @@ export type TaskCategoryDefaultArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the TaskCategory
    */
   omit?: Prisma.TaskCategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskCategoryInclude<ExtArgs> | null
 }

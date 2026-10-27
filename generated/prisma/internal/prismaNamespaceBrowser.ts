@@ -59,7 +59,14 @@ export const ModelName = {
   WorkTask: 'WorkTask',
   TaskSubmission: 'TaskSubmission',
   TaskReview: 'TaskReview',
-  TaskCategory: 'TaskCategory'
+  TaskCategory: 'TaskCategory',
+  EmployeeCategory: 'EmployeeCategory',
+  TaskMessage: 'TaskMessage',
+  TaskReassignmentRequest: 'TaskReassignmentRequest',
+  TaskPenalty: 'TaskPenalty',
+  TaskExtraAttachment: 'TaskExtraAttachment',
+  TaskDispute: 'TaskDispute',
+  PortalNotification: 'PortalNotification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -137,6 +144,7 @@ export const EmployeeProfileScalarFieldEnum = {
   role: 'role',
   status: 'status',
   department: 'department',
+  suspensionUntil: 'suspensionUntil',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -176,7 +184,19 @@ export const WorkTaskScalarFieldEnum = {
   assignedToId: 'assignedToId',
   createdById: 'createdById',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  unitsOrdered: 'unitsOrdered',
+  unitRate: 'unitRate',
+  totalOrderCost: 'totalOrderCost',
+  billingUnit: 'billingUnit',
+  submissionHours: 'submissionHours',
+  reviewHours: 'reviewHours',
+  qaHours: 'qaHours',
+  clientRating: 'clientRating',
+  clientActionAt: 'clientActionAt',
+  reinstatedAt: 'reinstatedAt',
+  reinstatedById: 'reinstatedById',
+  reinstatementCount: 'reinstatementCount'
 } as const
 
 export type WorkTaskScalarFieldEnum = (typeof WorkTaskScalarFieldEnum)[keyof typeof WorkTaskScalarFieldEnum]
@@ -213,11 +233,102 @@ export const TaskCategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
   active: 'active',
+  rate: 'rate',
+  billingUnit: 'billingUnit',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type TaskCategoryScalarFieldEnum = (typeof TaskCategoryScalarFieldEnum)[keyof typeof TaskCategoryScalarFieldEnum]
+
+
+export const EmployeeCategoryScalarFieldEnum = {
+  employeeId: 'employeeId',
+  categoryId: 'categoryId'
+} as const
+
+export type EmployeeCategoryScalarFieldEnum = (typeof EmployeeCategoryScalarFieldEnum)[keyof typeof EmployeeCategoryScalarFieldEnum]
+
+
+export const TaskMessageScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  senderId: 'senderId',
+  body: 'body',
+  createdAt: 'createdAt'
+} as const
+
+export type TaskMessageScalarFieldEnum = (typeof TaskMessageScalarFieldEnum)[keyof typeof TaskMessageScalarFieldEnum]
+
+
+export const TaskReassignmentRequestScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  employeeId: 'employeeId',
+  reason: 'reason',
+  status: 'status',
+  adminNote: 'adminNote',
+  createdAt: 'createdAt',
+  resolvedAt: 'resolvedAt'
+} as const
+
+export type TaskReassignmentRequestScalarFieldEnum = (typeof TaskReassignmentRequestScalarFieldEnum)[keyof typeof TaskReassignmentRequestScalarFieldEnum]
+
+
+export const TaskPenaltyScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  createdById: 'createdById',
+  reason: 'reason',
+  amount: 'amount',
+  note: 'note',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaskPenaltyScalarFieldEnum = (typeof TaskPenaltyScalarFieldEnum)[keyof typeof TaskPenaltyScalarFieldEnum]
+
+
+export const TaskExtraAttachmentScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  uploadedById: 'uploadedById',
+  storageKey: 'storageKey',
+  fileName: 'fileName',
+  contentType: 'contentType',
+  createdAt: 'createdAt'
+} as const
+
+export type TaskExtraAttachmentScalarFieldEnum = (typeof TaskExtraAttachmentScalarFieldEnum)[keyof typeof TaskExtraAttachmentScalarFieldEnum]
+
+
+export const TaskDisputeScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  raisedById: 'raisedById',
+  resolvedById: 'resolvedById',
+  reason: 'reason',
+  resolution: 'resolution',
+  status: 'status',
+  createdAt: 'createdAt',
+  resolvedAt: 'resolvedAt'
+} as const
+
+export type TaskDisputeScalarFieldEnum = (typeof TaskDisputeScalarFieldEnum)[keyof typeof TaskDisputeScalarFieldEnum]
+
+
+export const PortalNotificationScalarFieldEnum = {
+  id: 'id',
+  recipientId: 'recipientId',
+  title: 'title',
+  body: 'body',
+  href: 'href',
+  readAt: 'readAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PortalNotificationScalarFieldEnum = (typeof PortalNotificationScalarFieldEnum)[keyof typeof PortalNotificationScalarFieldEnum]
 
 
 export const SortOrder = {
