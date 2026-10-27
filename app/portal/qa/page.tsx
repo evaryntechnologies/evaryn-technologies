@@ -9,7 +9,8 @@ async function QAContent() {
 
   const user = await requireEmployee(["QA"]);
 
-  const [pending, completed, returned] = await Promise.all([
+  const qaProfile = await prisma.employeeProfile.findUnique({where:{authUserId:user.id},select:{id:true}});
+  const [pending, completed, returned, taskClaims, reviewClaims, reviewsDone] = await Promise.all([
     prisma.workTask.count({
       where: { status: "PENDING_QA" },
     }),
@@ -22,6 +23,9 @@ async function QAContent() {
         decision: "REWORK_REQUIRED",
       },
     }),
+    prisma.workTask.count({where:{assignedToId:qaProfile?.id}}),
+    prisma.workTask.count({where:{claimedReviewerId:qaProfile?.id}}),
+    prisma.taskReview.count({where:{reviewerId:qaProfile?.id,stage:"QA"}}),
   ]);
 
   return (
@@ -61,7 +65,8 @@ async function QAContent() {
         </div>
       )}
 
-      <nav aria-label="Workspace navigation" className="mb-5 flex flex-wrap gap-3"><Link href="/portal/task-hub" className="rounded-lg bg-[#0052CC] px-4 py-2 text-white">Task Hub</Link><Link href="/portal/qa/queue" className="rounded-lg border border-white/20 px-4 py-2 text-cyan-300">QA Queue</Link><Link href="/portal/qa/client-actions" className="rounded-lg border border-white/20 px-4 py-2 text-cyan-300">Client Actions</Link><Link href="/portal/admin/fines" className="rounded-lg border border-white/20 px-4 py-2 text-cyan-300">Fines</Link></nav>
+      <nav aria-label="Workspace navigation" className="mb-5 flex flex-wrap gap-3"><Link href="/portal/notifications" className="rounded-lg border border-white/20 px-4 py-2 text-cyan-300">Notifications</Link><Link href="/portal/task-hub" className="rounded-lg bg-[#0052CC] px-4 py-2 text-white">Task Hub</Link><Link href="/portal/qa/queue" className="rounded-lg border border-white/20 px-4 py-2 text-cyan-300">QA Queue</Link><Link href="/portal/qa/client-actions" className="rounded-lg border border-white/20 px-4 py-2 text-cyan-300">Client Actions</Link><Link href="/portal/admin/fines" className="rounded-lg border border-white/20 px-4 py-2 text-cyan-300">Fines</Link></nav>
+      <div className="mt-8 grid gap-4 sm:grid-cols-3">{[["Tasks claimed",taskClaims],["Review tasks claimed",reviewClaims],["Tasks reviewed",reviewsDone]].map(([label,value])=><div key={String(label)} className="rounded-xl bg-[#101F39] p-5"><p className="text-slate-300">{label}</p><p className="mt-2 text-2xl font-bold text-cyan-300">{value}</p></div>)}</div>
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
         <div className="rounded-2xl border border-white/10 bg-[#101F39] p-6">
           <p className="text-sm text-slate-300">Awaiting QA</p>

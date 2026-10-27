@@ -1,17 +1,3 @@
-export default function Page() {
-  return (
-    <main className="min-h-screen bg-slate-50 p-8 text-slate-900">
-      <div className="w-full max-w-none">
-        <p className="text-sm font-semibold text-cyan-600">
-          EVARYN TECHNOLOGIES LIMITED
-        </p>
-        <h1 className="mt-4 text-3xl font-bold">
-          Notifications
-        </h1>
-        <p className="mt-4 text-slate-600">
-          This section is being developed.
-        </p>
-      </div>
-    </main>
-  );
-}
+import {Suspense} from "react";import {connection} from "next/server";import Link from "next/link";import {requireEmployee} from "@/lib/auth/require-employee";import {prisma} from "@/lib/db/prisma";import {markNotificationRead} from "./actions";
+async function Content(){await connection();const user=await requireEmployee();const p=await prisma.employeeProfile.findUnique({where:{authUserId:user.id},select:{id:true}});const items=p?await prisma.portalNotification.findMany({where:{recipientId:p.id},orderBy:{createdAt:"desc"},take:100}):[];return <main className="min-h-screen bg-[#071327] p-6 text-white"><Link href="/portal" className="text-cyan-300 underline">Dashboard</Link><h1 className="mt-5 text-3xl font-bold">Notifications</h1><div className="mt-6 space-y-3">{items.map(n=><article key={n.id} className="rounded-xl border border-white/15 bg-[#101F39] p-5"><p className="font-semibold">{n.title} {!n.readAt&&<span className="ml-2 text-cyan-300">New</span>}</p><p className="mt-2 whitespace-pre-wrap text-sm text-slate-300">{n.body}</p><p className="mt-1 text-xs text-slate-400">{n.createdAt.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"})}</p><div className="mt-3 flex gap-4">{n.href&&<Link className="text-cyan-300 underline" href={n.href}>Open</Link>}{!n.readAt&&<form action={markNotificationRead}><input type="hidden" name="id" value={n.id}/><button className="text-cyan-300 underline">Mark read</button></form>}</div></article>)}{!items.length&&<p className="text-slate-300">No notifications yet.</p>}</div></main>}
+export default function Page(){return <Suspense fallback={<p>Loading notifications...</p>}><Content/></Suspense>}

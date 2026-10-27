@@ -6,17 +6,19 @@ import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 
 export async function claimReview(formData: FormData): Promise<void> {
-  const user = await requireEmployee(["REVIEWER"]);
+  const user = await requireEmployee(["REVIEWER","QA"]);
   const taskId = String(formData.get("taskId") ?? "");
   const reviewer = await prisma.employeeProfile.findUnique({where:{authUserId:user.id},select:{id:true,role:true,status:true}});
-  if (!reviewer || reviewer.role !== "REVIEWER" || reviewer.status !== "ACTIVE") redirect("/portal/unauthorized");
-  const updated = await prisma.workTask.updateMany({where:{id:taskId,status:"PENDING_REVIEW",claimedReviewerId:null},data:{claimedReviewerId:reviewer.id}});
+  if (!reviewer || !["REVIEWER","QA"].includes(reviewer.role) || reviewer.status !== "ACTIVE") redirect("/portal/unauthorized");
+  const task = await prisma.workTask.findFirst({where:{id:taskId,status:"PENDING_REVIEW",claimedReviewerId:null},select:{assignedToId:true}});
+  if (!task || task.assignedToId === reviewer.id) redirect("/portal/reviewer/queue?error=processed");
+  const updated = await prisma.workTask.updateMany({where:{id:taskId,status:"PENDING_REVIEW",claimedReviewerId:null,assignedToId:{not:reviewer.id}},data:{claimedReviewerId:reviewer.id}});
   revalidatePath("/portal/reviewer/queue");
   redirect(updated.count === 1 ? "/portal/reviewer/queue" : "/portal/reviewer/queue?error=processed");
 }
 
 export async function reviewSubmission(formData: FormData): Promise<void> {
-  const user = await requireEmployee(["REVIEWER"]);
+  const user = await requireEmployee(["REVIEWER","QA"]);
 
   const submissionId = String(formData.get("submissionId") ?? "");
   const decision = String(formData.get("decision") ?? "");
@@ -38,7 +40,7 @@ export async function reviewSubmission(formData: FormData): Promise<void> {
     select: { id: true, role: true, status: true },
   });
 
-  if (!reviewer || reviewer.role !== "REVIEWER" || reviewer.status !== "ACTIVE") {
+  if (!reviewer || !["REVIEWER","QA"].includes(reviewer.role) || reviewer.status !== "ACTIVE") {
     redirect("/portal/unauthorized");
   }
 

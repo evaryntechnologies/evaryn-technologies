@@ -76,6 +76,9 @@ model JobApplication {
 // authUserId corresponds to auth.users.id.
 
 model EmployeeProfile {
+  notifications PortalNotification[]
+  resolvedIssues TaskDispute[] @relation("DisputeResolver")
+  raisedIssues TaskDispute[] @relation("DisputeCreator")
   id         String   @id @default(uuid()) @db.Uuid
   authUserId String   @unique @db.Uuid
   email      String   @unique
@@ -113,6 +116,7 @@ model WorkProject {
 }
 
 model WorkTask {
+  disputes TaskDispute[]
   extraAttachments TaskExtraAttachment[]
   id           String    @id @default(uuid()) @db.Uuid
   projectId    String?   @db.Uuid
@@ -269,4 +273,31 @@ model TaskExtraAttachment {
 
 task WorkTask @relation(fields: [taskId], references: [id], onDelete: Restrict)
   @@index([taskId, createdAt])
+}
+model TaskDispute {
+  id String @id @default(uuid()) @db.Uuid
+  taskId String @db.Uuid
+  raisedById String @db.Uuid
+  resolvedById String? @db.Uuid
+  reason String @db.Text
+  resolution String? @db.Text
+  status String @default("OPEN")
+  createdAt DateTime @default(now())
+  resolvedAt DateTime?
+  task WorkTask @relation(fields: [taskId], references: [id], onDelete: Restrict)
+  raisedBy EmployeeProfile @relation("DisputeCreator", fields: [raisedById], references: [id], onDelete: Restrict)
+  resolvedBy EmployeeProfile? @relation("DisputeResolver", fields: [resolvedById], references: [id], onDelete: Restrict)
+  @@index([taskId, status])
+  @@index([status, createdAt])
+}
+model PortalNotification {
+  id String @id @default(uuid()) @db.Uuid
+  recipientId String @db.Uuid
+  title String
+  body String @db.Text
+  href String?
+  readAt DateTime?
+  createdAt DateTime @default(now())
+  recipient EmployeeProfile @relation(fields: [recipientId], references: [id], onDelete: Restrict)
+  @@index([recipientId, createdAt])
 }

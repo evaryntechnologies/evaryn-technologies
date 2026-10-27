@@ -4,9 +4,9 @@ import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 
 export async function claimHubTask(formData:FormData):Promise<void> {
-  const user=await requireEmployee(["TASKER"]);
+  const user=await requireEmployee(["TASKER","REVIEWER","QA"]);
   const profile=await prisma.employeeProfile.findUnique({where:{authUserId:user.id},select:{id:true,status:true,role:true,eligibleCategories:{select:{category:{select:{name:true,active:true}}}}}});
-  if (!profile || profile.role!=="TASKER" || profile.status!=="ACTIVE") throw new Error("Tasker access required.");
+  if (!profile || !["TASKER","REVIEWER","QA"].includes(profile.role) || profile.status!=="ACTIVE") throw new Error("Active Tasker, Reviewer or QA account required.");
   const id=String(formData.get("taskId")??"");
   if (!/^[0-9a-f-]{36}$/i.test(id)) throw new Error("Invalid task reference.");
   const task=await prisma.workTask.findFirst({where:{id,status:"OPEN",assignedToId:null},select:{id:true,category:true,submissionHours:true,reviewHours:true,qaHours:true}});

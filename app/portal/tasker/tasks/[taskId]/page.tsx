@@ -15,7 +15,7 @@ async function TaskContent({
 }) {
   await connection();
 
-  const user = await requireEmployee(["TASKER"]);
+  const user = await requireEmployee(["TASKER","REVIEWER","QA"]);
 
   const employee = await prisma.employeeProfile.findUnique({
     where: { authUserId: user.id },
@@ -63,6 +63,7 @@ async function TaskContent({
           Back to My Tasks
         </Link>
 
+        <Link href={`/portal/tasks/${task.id}/issues`} className="mt-5 mr-5 inline-block rounded-lg border border-amber-400/40 px-4 py-2 text-amber-200">Raise Issue</Link>
         <Link href={`/portal/tasks/${task.id}/discussion`} className="mt-5 inline-block text-cyan-300 underline">Task discussion and reassignment request</Link>
         <header className="mt-8">
           <p className="text-xs font-bold tracking-widest text-cyan-300">

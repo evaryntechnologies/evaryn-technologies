@@ -11,7 +11,7 @@ async function ReviewQueueContent({
   searchParams: Promise<{ result?: string; error?: string }>;
 }) {
   await connection();
-  const reviewerUser = await requireEmployee(["REVIEWER"]);
+  const reviewerUser = await requireEmployee(["REVIEWER","QA"]);
   const reviewerProfile = await prisma.employeeProfile.findUnique({where:{authUserId:reviewerUser.id},select:{id:true}});
 
   const submissions = await prisma.taskSubmission.findMany({

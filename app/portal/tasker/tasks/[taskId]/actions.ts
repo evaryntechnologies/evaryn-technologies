@@ -6,7 +6,7 @@ import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 
 export async function submitTask(formData: FormData): Promise<void> {
-  const user = await requireEmployee(["TASKER"]);
+  const user = await requireEmployee(["TASKER","REVIEWER","QA"]);
 
   const taskId = String(formData.get("taskId") ?? "");
   const content = String(formData.get("content") ?? "").trim();
@@ -27,7 +27,7 @@ export async function submitTask(formData: FormData): Promise<void> {
     select: { id: true, status: true, role: true },
   });
 
-  if (!employee || employee.status !== "ACTIVE" || employee.role !== "TASKER") {
+  if (!employee || employee.status !== "ACTIVE" || !["TASKER","REVIEWER","QA"].includes(employee.role)) {
     redirect("/portal/unauthorized");
   }
 
