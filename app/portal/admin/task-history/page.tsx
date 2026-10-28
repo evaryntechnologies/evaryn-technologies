@@ -13,6 +13,7 @@ const statuses: Record<string, string> = {
   QA_IN_PROGRESS: "QA in Progress",
   COMPLETED: "Completed",
   CANCELLED: "Cancelled",
+  CANCELED: "Canceled",
 };
 
 function formatDate(value: Date | null | undefined) {
@@ -54,7 +55,7 @@ async function HistoryContent({
 }) {
   await connection();
 
-  const user = await requireEmployee(["ADMIN", "SUPER_ADMIN"]);
+  const user = await requireEmployee(["QA", "ADMIN", "SUPER_ADMIN"]);
   const params = await searchParams;
 
   // TASK_HISTORY_FILTERS_V1
@@ -68,6 +69,7 @@ async function HistoryContent({
     "QA_IN_PROGRESS",
     "COMPLETED",
     "CANCELLED",
+    "CANCELED",
   ];
   const status = allowedStatuses.includes(params.status ?? "")
     ? params.status ?? ""
@@ -123,6 +125,7 @@ async function HistoryContent({
       title: true,
       description: true,
       status: true,
+      cancellationReason: true,
       priority: true,
       deadline: true,
       createdAt: true,
@@ -183,7 +186,9 @@ async function HistoryContent({
       prisma.workTask.count({ where: { status: "REWORK_REQUIRED" } }),
     ]);
 
+  const canceledTasks = await prisma.workTask.count({ where: { status: { in: ["CANCELED", "CANCELLED"] } } }); /* EVARYN_CANCELLATION_TOTAL_V1 */
   const summary = [
+    { label: "Canceled Tasks", value: canceledTasks, color: "text-amber-200" },
     { label: "Total Tasks", value: totalTasks, color: "text-white" },
     { label: "Completed", value: completedTasks, color: "text-emerald-300" },
     { label: "Awaiting Review", value: waitingReview, color: "text-cyan-300" },
@@ -304,7 +309,7 @@ async function HistoryContent({
                         Created {formatDate(task.createdAt)}
                       </p>
                     </div>
-                    <StatusPill status={task.status} />
+                    <StatusPill status={task.status} />{/* EVARYN_HISTORY_CANCELLATION_V1 */}{(task.status === "CANCELED" || task.status === "CANCELLED") && <p className="mt-3 rounded-lg border border-amber-500/30 bg-amber-950/30 p-3 text-sm text-amber-100"><strong>Cancellation reason:</strong> {task.cancellationReason || "Not recorded (historical cancellation)"}</p>}
                   </div>
                   <p className="mt-5 text-xs font-semibold text-cyan-300 group-open:hidden">
                     View submissions, reviews and details

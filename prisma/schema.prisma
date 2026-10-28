@@ -116,6 +116,7 @@ model WorkProject {
 }
 
 model WorkTask {
+  cancellationReason String? @db.Text
   disputes TaskDispute[]
   extraAttachments TaskExtraAttachment[]
   id           String    @id @default(uuid()) @db.Uuid
