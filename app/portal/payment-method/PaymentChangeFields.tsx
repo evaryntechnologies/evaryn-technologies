@@ -1,0 +1,9 @@
+"use client";
+import { useState } from "react";
+export default function PaymentChangeFields(){
+ const [method,setMethod]=useState("MOBILE_MONEY");const [provider,setProvider]=useState("MPESA");
+ const input="mt-2 block w-full rounded-lg border border-white/20 bg-[#071327] p-3 text-white";
+ return <div className="space-y-4"><label className="block">Payment method<select name="method" value={method} onChange={e=>setMethod(e.target.value)} className={input}><option value="MOBILE_MONEY">Mobile money</option><option value="BANK">Bank transfer</option></select></label>
+ {method==="MOBILE_MONEY"?<><label className="block">Provider<select name="provider" value={provider} onChange={e=>setProvider(e.target.value)} className={input}><option value="MPESA">M-Pesa</option><option value="SAFARICOM">Safaricom</option><option value="AIRTEL">Airtel</option><option value="TELKOM">Telkom</option><option value="OTHER">Other provider</option></select></label>{provider==="OTHER"&&<label className="block">Other mobile provider<input className={input} name="otherProvider" required minLength={2} maxLength={80}/></label>}<label className="block">Mobile money number<input className={input} name="phone" type="tel" required placeholder="07XXXXXXXX or +2547XXXXXXXX"/></label></>:<><label className="block">Bank name<input name="bankName" className={input} required maxLength={100}/></label><label className="block">Account holder's full name<input name="accountName" className={input} required maxLength={150}/></label><label className="block">Bank account number<input name="accountNumber" className={input} required maxLength={50} autoComplete="off"/></label></>}
+ <p className="text-sm text-slate-400">Bank and mobile numbers are stored encrypted. No sensitive account number is displayed on this page.</p></div>;
+}

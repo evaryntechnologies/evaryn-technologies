@@ -1,27 +1,36 @@
 "use server";
-import { randomBytes, createCipheriv } from "node:crypto";
-import { prisma } from "@/lib/db/prisma";
-import { requireEmployee } from "@/lib/auth/require-employee";
 import { revalidatePath } from "next/cache";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { prisma } from "@/lib/db/prisma";
+import { encryptPaymentDetails, canChangePaymentNow } from "./payment-utils";
 
-// Keep the 32-byte key in Vercel secrets; never commit it to GitHub.
-function encryptPaymentDetails(plaintext:string):string {
- const hex=process.env.PAYMENT_DETAILS_ENCRYPTION_KEY;
- if(!hex || !/^[a-f0-9]{64}$/i.test(hex)) throw new Error("Payment details cannot be saved until encryption is configured.");
- const key=Buffer.from(hex,"hex"), iv=randomBytes(12);
- const cipher=createCipheriv("aes-256-gcm",key,iv);
- const ciphertext=Buffer.concat([cipher.update(plaintext,"utf8"),cipher.final()]);
- return `v1:${iv.toString("base64url")}:${cipher.getAuthTag().toString("base64url")}:${ciphertext.toString("base64url")}`;
-}
-export async function savePaymentMethod(form:FormData){
- const user=await requireEmployee();
- const p=await prisma.employeeProfile.findUnique({where:{authUserId:user.id},select:{id:true,status:true}});
- if(!p||p.status!=="ACTIVE") throw new Error("Access denied");
- const method=String(form.get("method")??"");
- const accountName=String(form.get("accountName")??"").trim();
- const details=String(form.get("details")??"").trim();
- if(!["MPESA","BANK","PAYPAL","PAYONEER","OTHER"].includes(method)||accountName.length<2||accountName.length>150||details.length<4||details.length>500) throw new Error("Check your payment details");
- const secured=encryptPaymentDetails(details);
- await prisma.$executeRaw`INSERT INTO public."EmployeePaymentMethod" ("employeeId","method","accountName","details") VALUES (${p.id}::uuid,${method},${accountName},${secured}) ON CONFLICT ("employeeId") DO UPDATE SET "method"=EXCLUDED."method","accountName"=EXCLUDED."accountName","details"=EXCLUDED."details","updatedAt"=now()`;
- revalidatePath("/portal/payment-method");
+export async function requestPaymentChange(form:FormData) {
+  const auth=await requireEmployee();
+  const profile=await prisma.employeeProfile.findUnique({where:{authUserId:auth.id},select:{id:true,status:true}});
+  if(!profile || profile.status!=="ACTIVE") throw new Error("Employee access denied.");
+  if(!canChangePaymentNow()) throw new Error("Payment details cannot change within four days before a payout.");
+  const method=String(form.get("method")??"");
+  const provider=String(form.get("provider")??"");
+  const other=String(form.get("otherProvider")??"").trim();
+  const phone=String(form.get("phone")??"").trim();
+  const bank=String(form.get("bankName")??"").trim();
+  const owner=String(form.get("accountName")??"").trim();
+  const number=String(form.get("accountNumber")??"").trim();
+  let accountName="", details="";
+  if(method==="MOBILE_MONEY") {
+    if(!["MPESA","SAFARICOM","AIRTEL","TELKOM","OTHER"].includes(provider)) throw new Error("Select a mobile provider.");
+    if(provider==="OTHER" && (other.length<2 || other.length>80)) throw new Error("Specify the mobile provider.");
+    if(!/^\+?[0-9\s-]{9,20}$/.test(phone)) throw new Error("Enter a valid mobile money number.");
+    accountName=provider==="OTHER"?other:provider;
+    details=JSON.stringify({provider:accountName,number:phone});
+  } else if(method==="BANK") {
+    if(bank.length<2||bank.length>100||owner.length<2||owner.length>150||number.length<4||number.length>50) throw new Error("Enter valid bank details.");
+    accountName=owner;
+    details=JSON.stringify({bankName:bank,accountHolder:owner,accountNumber:number});
+  } else throw new Error("Select mobile money or bank transfer.");
+  const encrypted=encryptPaymentDetails(details);
+  // DB unique partial index prevents simultaneous duplicate pending requests.
+  await prisma.$executeRaw`INSERT INTO public."PaymentChangeRequest" ("employeeId","method","accountName","details") VALUES (${profile.id}::uuid,${method},${accountName},${encrypted})`;
+  revalidatePath("/portal/payment-method");
+  revalidatePath("/portal/admin/payment-approvals");
 }
