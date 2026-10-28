@@ -3,36 +3,39 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
-import { approvePayrollEntry, markPayrollPaid } from "./actions";
+import { approveWorkforcePay, markWorkforcePaid } from "./actions";
 
-type Candidate = { id: string; publicTaskId: string|null; title: string; fullName: string; email: string; clientActionAt: Date; totalOrderCost: unknown; fines: unknown; };
-type Entry = { id: string; title: string; fullName: string; email: string; grossAmount: unknown; payableAmount: unknown; fineAmount: unknown; payoutDate: Date; status: string; paymentReference: string|null; paidAt: Date|null; };
-const money = (n: unknown) => Number(n ?? 0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
-async function PayrollContent() {
+type Candidate = { eventKey: string; sourceType: string; taskId: string | null; employeeId: string; fullName: string; grossAmount: unknown; fineAmount: unknown; payoutDate: Date; label: string; };
+type Ledger = { id: string; sourceType: string; fullName: string; label: string; grossAmount: unknown; fineAmount: unknown; payableAmount: unknown; payoutDate: Date; status: string; paymentReference: string | null; paidAt: Date | null; hasMethod: boolean; };
+const amount = (n: unknown) => Number(n ?? 0).toFixed(2);
+const date = (d: Date) => new Date(d).toISOString().slice(0,10);
+async function Content() {
   await connection();
   const user = await requireEmployee(["SUPER_ADMIN"]);
-  if (user.role !== "SUPER_ADMIN") throw new Error("Super Admin only");
+  if (user.role !== "SUPER_ADMIN") throw new Error("Access denied");
   const candidates = await prisma.$queryRaw<Candidate[]>`
-    SELECT t.id,t."publicTaskId",t.title,e."fullName",e.email,t."clientActionAt",t."totalOrderCost",
-    COALESCE((SELECT SUM(p.amount) FROM public."TaskPenalty" p WHERE p."taskId"=t.id AND p.status='ACTIVE'),0) AS fines
-    FROM public."WorkTask" t JOIN public."EmployeeProfile" e ON e.id=t."assignedToId"
-    WHERE t.status='COMPLETED' AND t."clientActionAt" IS NOT NULL AND t."totalOrderCost" > 0
-    AND NOT EXISTS (SELECT 1 FROM public."PayrollEntry" l WHERE l."taskId"=t.id AND l."employeeId"=t."assignedToId")
-    ORDER BY t."clientActionAt" DESC LIMIT 100`;
-  const entries = await prisma.$queryRaw<Entry[]>`
-    SELECT p.id,t.title,e."fullName",e.email,p."grossAmount",p."payableAmount",p."fineAmount",p."payoutDate",p.status,p."paymentReference",p."paidAt"
-    FROM public."PayrollEntry" p JOIN public."WorkTask" t ON t.id=p."taskId" JOIN public."EmployeeProfile" e ON e.id=p."employeeId"
-    ORDER BY p."payoutDate" DESC,p."createdAt" DESC LIMIT 200`;
-  const pending = entries.filter(e=>e.status==='PENDING');
-  const total = pending.reduce((sum,e)=>sum+Number(e.payableAmount),0);
+    SELECT c."eventKey",c."sourceType",c."taskId",c."employeeId",e."fullName",c."grossAmount",c."fineAmount",c."payoutDate",
+      COALESCE(t.title, 'Admin time session') AS label
+    FROM public."WorkforcePayCandidates" c
+    JOIN public."EmployeeProfile" e ON e.id=c."employeeId"
+    LEFT JOIN public."WorkTask" t ON t.id=c."taskId"
+    ORDER BY c."payoutDate" ASC,c."eventKey" LIMIT 250`;
+  const entries = await prisma.$queryRaw<Ledger[]>`
+    SELECT l.id,l."sourceType",e."fullName",COALESCE(t.title,'Admin time session') AS label,
+      l."grossAmount",l."fineAmount",l."payableAmount",l."payoutDate",l.status,l."paymentReference",l."paidAt",
+      EXISTS(SELECT 1 FROM public."EmployeePaymentMethod" m WHERE m."employeeId"=l."employeeId" AND length(btrim(m.details))>0) AS "hasMethod"
+    FROM public."WorkforcePayLedger" l JOIN public."EmployeeProfile" e ON e.id=l."employeeId"
+    LEFT JOIN public."WorkTask" t ON t.id=l."taskId"
+    ORDER BY l."payoutDate" DESC,l."createdAt" DESC LIMIT 500`;
+  const pending = entries.filter(x => x.status === "PENDING");
+  const pendingTotal = pending.reduce((v,x) => v+Number(x.payableAmount),0);
   return <main className="min-h-screen bg-[#071327] p-5 text-white sm:p-9">
     <div className="w-full space-y-8">
-      <div><Link className="text-sm text-cyan-300 hover:underline" href="/portal">← My Dashboard</Link><h1 className="mt-4 text-3xl font-bold">Super Admin Payroll</h1><p className="mt-2 text-slate-300">Review completed and client-paid orders, approve employee pay, and record external payments. No transfers are sent automatically.</p></div>
-      <div className="grid gap-4 sm:grid-cols-3">{[["Unapproved eligible orders",String(candidates.length)],["Pending payroll entries",String(pending.length)],["Pending total",money(total)]].map(([label,value])=><div key={label} className="rounded-xl border border-white/10 bg-[#101F39] p-5"><p className="text-sm text-slate-300">{label}</p><p className="mt-2 text-2xl font-bold">{value}</p></div>)}</div>
-      <section><h2 className="text-xl font-semibold">Eligible orders awaiting approval</h2><p className="mt-2 text-sm text-slate-300">Order value is not necessarily employee wages. Review and enter the employee amount before approving. Active fines reduce the maximum available amount.</p><div className="mt-4 grid gap-4 lg:grid-cols-2">
-        {candidates.map(t=>{const max=Math.max(0,Number(t.totalOrderCost)-Number(t.fines));return <article className="rounded-xl border border-white/10 bg-[#101F39] p-5" key={t.id}><h3 className="font-semibold">{t.publicTaskId??t.id} — {t.title}</h3><p className="mt-2 text-sm text-slate-300">{t.fullName} · {t.email}</p><p className="mt-2 text-sm">Order value: {money(t.totalOrderCost)} · Active fines: {money(t.fines)} · Available cap: {money(max)}</p><form action={approvePayrollEntry} className="mt-4 flex flex-wrap gap-2"><input type="hidden" name="taskId" value={t.id}/><input type="number" name="gross" min="0" max={max.toFixed(2)} step="0.01" required placeholder="Approved employee amount" aria-label="Approved employee amount" className="min-w-0 flex-1 rounded-lg bg-[#071327] p-3"/><button className="rounded-lg bg-[#0052CC] px-4 py-3 font-semibold">Approve payroll</button></form></article>})}
-        {candidates.length===0&&<p className="text-slate-300">No eligible orders awaiting approval.</p>}</div></section>
-      <section><h2 className="text-xl font-semibold">Payroll register</h2><div className="mt-4 grid gap-4 lg:grid-cols-2">{entries.map(e=><article key={e.id} className="rounded-xl border border-white/10 bg-[#101F39] p-5"><div className="flex flex-wrap justify-between gap-2"><h3 className="font-semibold">{e.fullName}</h3><span className="text-sm text-cyan-300">{e.status}</span></div><p className="mt-1 text-sm text-slate-300">{e.title}</p><p className="mt-3">Payable: {money(e.payableAmount)} · Active fines at approval: {money(e.fineAmount)}</p><p className="mt-2 text-sm text-slate-300">Payout cycle: {new Date(e.payoutDate).toISOString().slice(0,10)}</p>{e.status==='PENDING'?<form action={markPayrollPaid} className="mt-4 space-y-2"><input type="hidden" name="entryId" value={e.id}/><input name="paymentReference" required minLength={3} maxLength={150} placeholder="External payment reference" className="w-full rounded-lg bg-[#071327] p-3"/><textarea name="paymentNote" maxLength={1000} placeholder="Optional payment note" className="w-full rounded-lg bg-[#071327] p-3"/><button className="rounded-lg bg-[#0052CC] px-4 py-3 font-semibold">Record as paid</button></form>:<p className="mt-3 text-sm text-emerald-200">Paid · Reference {e.paymentReference} · {e.paidAt?.toLocaleDateString("en-KE")}</p>}</article>)}{entries.length===0&&<p className="text-slate-300">No payroll entries recorded yet.</p>}</div></section>
-    </div></main>;
+      <header><Link href="/portal" className="text-cyan-300 underline">← My Dashboard</Link><h1 className="mt-5 text-3xl font-bold">Super Admin Payroll</h1><p className="mt-2 text-slate-300">Client-paid completed work and closed Admin time sessions. These entries record external payments only; money is never sent automatically.</p></header>
+      <section className="grid gap-3 sm:grid-cols-3">{[["Unapproved earnings",String(candidates.length)],["Pending entries",String(pending.length)],["Net pending",amount(pendingTotal)]].map(([name,v])=><article key={name} className="rounded-xl border border-white/10 bg-[#101F39] p-5"><p className="text-sm text-slate-300">{name}</p><strong className="mt-2 block text-2xl">{v}</strong></article>)}</section>
+      <section><h2 className="text-xl font-bold">Earnings awaiting approval</h2><p className="mt-2 text-sm text-slate-300">Tasker: order value minus active fines; Reviewer: 1.50 per review; QA: 1.00 per QA review; Admin: 2.00 per clocked hour. QA/Reviewer credits remain withheld until the client has paid and the order is completed.</p><div className="mt-4 grid gap-3 lg:grid-cols-2">{candidates.map(c=><article key={c.eventKey} className="rounded-xl border border-white/10 bg-[#101F39] p-5"><p className="font-semibold">{c.fullName} · {c.sourceType}</p><p className="mt-1 text-sm text-slate-300">{c.label}</p><p className="mt-2 text-sm">Gross {amount(c.grossAmount)} · Fines {amount(c.fineAmount)} · Net {amount(Math.max(0,Number(c.grossAmount)-Number(c.fineAmount)))}</p><p className="mt-1 text-xs text-slate-400">Cycle: {date(c.payoutDate)}</p><form action={approveWorkforcePay} className="mt-3"><input type="hidden" name="eventKey" value={c.eventKey}/><button className="rounded-lg bg-[#0052CC] px-4 py-2 font-semibold">Approve earnings</button></form></article>)}{!candidates.length&&<p className="text-slate-300">No unapproved earnings.</p>}</div></section>
+      <section><h2 className="text-xl font-bold">Payroll ledger</h2><div className="mt-4 grid gap-3 lg:grid-cols-2">{entries.map(e=><article key={e.id} className="rounded-xl border border-white/10 bg-[#101F39] p-5"><div className="flex justify-between gap-2"><strong>{e.fullName}</strong><span className="text-cyan-300">{e.status}</span></div><p className="mt-2 text-sm text-slate-300">{e.sourceType} · {e.label}</p><p className="mt-2">Gross {amount(e.grossAmount)} · Fines {amount(e.fineAmount)} · Payable {amount(e.payableAmount)}</p><p className="mt-1 text-sm text-slate-300">Cycle {date(e.payoutDate)}</p>{e.status==="PAID"?<p className="mt-3 text-sm text-emerald-200">Paid · {e.paymentReference} · {e.paidAt&&date(e.paidAt)}</p>:<form action={markWorkforcePaid} className="mt-3 space-y-2"><input type="hidden" name="id" value={e.id}/>{!e.hasMethod&&<p className="text-amber-200 text-sm">Employee payment details are missing.</p>}<input name="reference" required minLength={3} maxLength={150} placeholder="External payment reference" className="w-full rounded-lg bg-[#071327] p-3"/><textarea name="note" maxLength={1000} placeholder="Optional reconciliation note" className="w-full rounded-lg bg-[#071327] p-3"/><button disabled={!e.hasMethod} className="rounded-lg bg-[#0052CC] px-4 py-2 font-semibold disabled:opacity-40">Record external payment</button></form>}</article>)}{!entries.length&&<p className="text-slate-300">No approved entries yet.</p>}</div></section>
+    </div>
+  </main>;
 }
-export default function Page(){return <Suspense fallback={<main className="min-h-screen bg-[#071327] p-8 text-slate-300">Loading payroll…</main>}><PayrollContent/></Suspense>}
+export default function Page(){return <Suspense fallback={<p className="p-6">Loading payroll...</p>}><Content/></Suspense>}
