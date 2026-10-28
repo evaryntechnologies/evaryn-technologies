@@ -1,17 +1,8 @@
-export default function Page() {
-  return (
-    <main className="min-h-screen bg-slate-50 p-8 text-slate-900">
-      <div className="w-full max-w-none">
-        <p className="text-sm font-semibold text-cyan-600">
-          EVARYN TECHNOLOGIES LIMITED
-        </p>
-        <h1 className="mt-4 text-3xl font-bold">
-          Earnings
-        </h1>
-        <p className="mt-4 text-slate-600">
-          This section is being developed.
-        </p>
-      </div>
-    </main>
-  );
-}
+import { connection } from "next/server";
+import { Suspense } from "react";
+import Link from "next/link";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { prisma } from "@/lib/db/prisma";
+type Ledger={id:string;title:string;grossAmount:unknown;fineAmount:unknown;payableAmount:unknown;payoutDate:Date;status:string;paidAt:Date|null};
+async function Content(){await connection();const u=await requireEmployee();const p=await prisma.employeeProfile.findUnique({where:{authUserId:u.id},select:{id:true}});const entries=p?await prisma.$queryRaw<Ledger[]>`SELECT l.id,t.title,l."grossAmount",l."fineAmount",l."payableAmount",l."payoutDate",l.status,l."paidAt" FROM public."PayrollEntry" l JOIN public."WorkTask" t ON t.id=l."taskId" WHERE l."employeeId"=${p.id}::uuid ORDER BY l."payoutDate" DESC LIMIT 200`:[];const pending=entries.filter(e=>e.status==="PENDING").reduce((a,b)=>a+Number(b.payableAmount),0);const paid=entries.filter(e=>e.status==="PAID").reduce((a,b)=>a+Number(b.payableAmount),0);return <main className="min-h-screen bg-[#071327] px-4 py-8 text-white sm:px-8"><Link href="/portal" className="text-cyan-300">← My Dashboard</Link><h1 className="mt-5 text-3xl font-bold">My Earnings</h1><p className="mt-2 text-slate-300">Approved payroll entries and payment status. Unapproved task work, reviewer/QA round earnings and time sessions are not yet included here.</p><div className="mt-5 grid gap-3 sm:grid-cols-2"><div className="rounded-xl bg-[#101F39] p-5">Pending <strong className="block text-2xl">{pending.toFixed(2)}</strong></div><div className="rounded-xl bg-[#101F39] p-5">Paid <strong className="block text-2xl">{paid.toFixed(2)}</strong></div></div><div className="mt-6 space-y-3">{entries.map(e=><article className="rounded-xl border border-white/10 bg-[#101F39] p-4" key={e.id}><div className="flex justify-between gap-2"><strong>{e.title}</strong><span>{e.status}</span></div><p className="mt-2 text-sm text-slate-300">Approved: {Number(e.payableAmount).toFixed(2)} · Fine recorded: {Number(e.fineAmount).toFixed(2)} · Cycle: {e.payoutDate.toISOString().slice(0,10)}</p></article>)}{!entries.length&&<p>No approved payroll entries yet.</p>}</div></main>}
+export default function Page(){return <Suspense fallback={<p>Loading earnings…</p>}><Content/></Suspense>}

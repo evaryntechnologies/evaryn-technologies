@@ -1,0 +1,5 @@
+"use server";
+import {prisma} from "@/lib/db/prisma";import {requireEmployee} from "@/lib/auth/require-employee";import {revalidatePath} from "next/cache";
+async function adminProfile(){const u=await requireEmployee(["ADMIN"]);const p=await prisma.employeeProfile.findUnique({where:{authUserId:u.id},select:{id:true,role:true,status:true}});if(p?.role!=="ADMIN"||p.status!=="ACTIVE")throw new Error("Admin only");return p;}
+export async function clockIn(){const p=await adminProfile();const existing=await prisma.$queryRaw<Array<{id:string}>>`SELECT id FROM public."AdminTimeSession" WHERE "employeeId"=${p.id}::uuid AND "endedAt" IS NULL LIMIT 1`;if(existing.length)throw new Error("You are already on the clock");await prisma.$executeRaw`INSERT INTO public."AdminTimeSession" ("employeeId","rateHourly") VALUES (${p.id}::uuid,2.00)`;revalidatePath("/portal/admin/time-tracker");}
+export async function clockOut(){const p=await adminProfile();const n=await prisma.$executeRaw`UPDATE public."AdminTimeSession" SET "endedAt"=now() WHERE "employeeId"=${p.id}::uuid AND "endedAt" IS NULL`;if(n!==1)throw new Error("No active session");revalidatePath("/portal/admin/time-tracker");}

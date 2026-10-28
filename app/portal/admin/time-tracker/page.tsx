@@ -1,17 +1,9 @@
-export default function Page() {
-  return (
-    <main className="min-h-screen bg-slate-50 p-8 text-slate-900">
-      <div className="w-full max-w-none">
-        <p className="text-sm font-semibold text-cyan-600">
-          EVARYN TECHNOLOGIES LIMITED
-        </p>
-        <h1 className="mt-4 text-3xl font-bold">
-          Time Tracker
-        </h1>
-        <p className="mt-4 text-slate-600">
-          This section is being developed.
-        </p>
-      </div>
-    </main>
-  );
-}
+import { connection } from "next/server";
+import { Suspense } from "react";
+import Link from "next/link";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { prisma } from "@/lib/db/prisma";
+import {clockIn,clockOut} from "./actions";
+type Session={id:string;startedAt:Date;endedAt:Date|null;rateHourly:unknown};
+async function Content(){await connection();const u=await requireEmployee(["ADMIN"]);if(u.role!=="ADMIN")return <main className="min-h-screen bg-[#071327] px-4 py-8 text-white sm:px-8">Only administrator accounts track paid time.</main>;const p=await prisma.employeeProfile.findUnique({where:{authUserId:u.id},select:{id:true}});const rows=p?await prisma.$queryRaw<Session[]>`SELECT id,"startedAt","endedAt","rateHourly" FROM public."AdminTimeSession" WHERE "employeeId"=${p.id}::uuid ORDER BY "startedAt" DESC LIMIT 100`:[];const running=rows.some(r=>!r.endedAt);return <main className="min-h-screen bg-[#071327] px-4 py-8 text-white sm:px-8"><Link href="/portal" className="text-cyan-300">← My Dashboard</Link><h1 className="mt-5 text-3xl font-bold">Admin Time Tracker</h1><p className="mt-2 text-slate-300">Clock your work sessions. The recorded rate is $2.00/hour; these sessions are not automatically added to payroll yet.</p><form className="mt-6" action={running?clockOut:clockIn}><button className="rounded-lg bg-[#0052CC] px-5 py-3 font-semibold">{running?"Clock out":"Clock in"}</button></form><div className="mt-7 space-y-3">{rows.map(s=>{const hours=s.endedAt?Math.max(0,(s.endedAt.getTime()-s.startedAt.getTime())/3600000):null;return <article className="rounded-xl bg-[#101F39] p-4" key={s.id}><p>{s.startedAt.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"})} — {s.endedAt?.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"})??"Running"}</p><p className="text-sm text-slate-300">{hours===null?"Active session":`${hours.toFixed(2)} hours · ${(hours*Number(s.rateHourly)).toFixed(2)} accrued (unsettled)`}</p></article>})}</div></main>}
+export default function Page(){return <Suspense fallback={<p>Loading sessions…</p>}><Content/></Suspense>}
