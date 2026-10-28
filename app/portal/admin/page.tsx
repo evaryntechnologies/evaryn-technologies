@@ -54,14 +54,9 @@ async function AdminContent() {
       <Link href="/portal"><Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={240} height={74} className="mb-5 h-auto max-h-28 w-auto max-w-[75vw] object-contain" /></Link>
       <header className="flex flex-wrap items-start justify-between gap-5 border-b border-white/10 pb-7">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
-            EVARYN TECHNOLOGIES LIMITED
-          </p>
+          
 
-          <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
-            Administration
-          </h1>
-          <p className="mt-3 text-lg font-semibold text-cyan-200">Welcome back, {employee.firstName}</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Welcome back, {employee.firstName}</h1>
 
           <p className="mt-3 text-sm leading-6 text-slate-300">
             Manage your workforce, tasks, and business operations.

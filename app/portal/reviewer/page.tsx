@@ -71,14 +71,9 @@ async function ReviewerContent() {
       <nav aria-label="Workspace navigation" className="mb-5 flex flex-wrap gap-3"><Link href="/portal/notifications" className="rounded-lg border border-white/20 px-4 py-2 text-cyan-300">Notifications</Link><Link href="/portal/task-hub" className="rounded-lg bg-[#0052CC] px-4 py-2 text-white">Task Hub</Link><Link href="/portal/reviewer/queue" className="rounded-lg border border-white/20 px-4 py-2 text-cyan-300">My Queue</Link></nav>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <header>
-          <p className="text-xs font-bold tracking-widest text-cyan-300">
-            EVARYN TECHNOLOGIES LIMITED
-          </p>
+          
 
-          <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
-            Reviewer Dashboard
-          </h1>
-          <p className="mt-3 text-lg font-semibold text-cyan-200">Welcome back, {user.firstName}</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Welcome back, {user.firstName}</h1>
 
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
             Monitor submitted work, assess quality, provide

@@ -84,9 +84,7 @@ async function TaskerContent() {
     <>
       {/* Workspace heading */}
       <div className="mb-8">
-        <p className="text-sm font-semibold tracking-widest text-cyan-300">
-          TASKER WORKSPACE
-        </p>
+        
 
         <h1 className="mt-3 text-3xl font-bold">
           Welcome back, {user.firstName}
