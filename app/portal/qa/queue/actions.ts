@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
+import { saveOrderAttachment, removeOrderAttachment } from "@/lib/tasks/order-attachment";
 
 export async function claimQA(formData: FormData): Promise<void> {
   const auth = await requireEmployee(["QA"]);
@@ -49,7 +50,18 @@ export async function qaDecision(formData: FormData): Promise<void> {
     redirect("/portal/unauthorized");
   }
 
-  const outcome = await prisma.$transaction(async (tx) => {
+  // Require a fresh attachment for this QA decision, without relaxing QA claim ownership.
+  const candidate = await prisma.taskSubmission.findUnique({
+    where: { id: submissionId },
+    select: { taskId: true, status: true, task: { select: { status: true, claimedQaId: true } } },
+  });
+  if (!candidate || candidate.status !== "PENDING_QA" || candidate.task.status !== "PENDING_QA" || candidate.task.claimedQaId !== qaEmployee.id) {
+    redirect("/portal/qa/queue?error=processed");
+  }
+  const attachment = await saveOrderAttachment(formData, candidate.taskId, qaEmployee.id);
+  let outcome: boolean;
+  try {
+    outcome = await prisma.$transaction(async (tx) => {
     const submission = await tx.taskSubmission.findUnique({
       where: { id: submissionId },
       select: {
@@ -121,9 +133,13 @@ export async function qaDecision(formData: FormData): Promise<void> {
     });
 
     return true;
-  });
-
+    });
+  } catch (error) {
+    await removeOrderAttachment(attachment);
+    throw error;
+  }
   if (!outcome) {
+    await removeOrderAttachment(attachment);
     redirect("/portal/qa/queue?error=processed");
   }
 

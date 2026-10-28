@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { taskAccess } from "@/lib/tasks/access";
 import { prisma } from "@/lib/db/prisma";
+import { saveOrderAttachment } from "@/lib/tasks/order-attachment";
 
 export async function sendTaskMessage(form: FormData) {
  const taskId=String(form.get("taskId")??"");
@@ -68,4 +69,13 @@ export async function requestTaskReassignment(form:FormData){
   if(team.length)await tx.portalNotification.createMany({data:team.map(member=>({recipientId:member.id,title:"Task reassignment requested",body:`A tasker requested reassignment of task ${taskId}. Reason: ${reason}`,href:`/portal/admin/reassignments`}))});
  });
  revalidatePath(`/portal/tasks/${taskId}/discussion`);revalidatePath('/portal/admin/reassignments');
+}
+
+
+/** Upload an additional order document without changing a work-stage decision. */
+export async function uploadOrderFile(form: FormData) {
+ const taskId = String(form.get("taskId") ?? "");
+ const { person } = await taskAccess(taskId);
+ await saveOrderAttachment(form, taskId, person.id);
+ revalidatePath(`/portal/tasks/${taskId}/discussion`);
 }
