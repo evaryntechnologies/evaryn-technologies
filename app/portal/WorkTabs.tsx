@@ -8,6 +8,7 @@ export default function WorkTabs({role}:{role:Role}){
  const tabs=[
   {label:"Dashboard",href:`/portal/${role.toLowerCase()}`},
   {label:"Task Hub",href:"/portal/task-hub"},
+  {label:"Review Queue",href:"/portal/reviewer/queue"},
   {label:"All My Orders",href:base},
   {label:"In Progress",href:`${base}?tab=progress`},
   {label:"In Revision",href:`${base}?tab=revision`},
