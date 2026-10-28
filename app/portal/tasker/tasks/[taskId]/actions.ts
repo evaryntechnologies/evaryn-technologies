@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
+import {saveOrderAttachment,removeOrderAttachment} from "@/lib/tasks/order-attachment";
 
 export async function submitTask(formData: FormData): Promise<void> {
   const user = await requireEmployee(["TASKER","REVIEWER","QA"]);
@@ -44,7 +45,9 @@ export async function submitTask(formData: FormData): Promise<void> {
     redirect(`${taskUrl}?error=closed`);
   }
 
-  const outcome = await prisma.$transaction(async (tx) => {
+  const attachment = await saveOrderAttachment(formData, taskId, employee.id);
+  let outcome = false;
+  try { outcome = await prisma.$transaction(async (tx) => {
     const changed = await tx.workTask.updateMany({
       where: {
         id: taskId,
@@ -66,7 +69,8 @@ export async function submitTask(formData: FormData): Promise<void> {
     });
 
     return true;
-  });
+  }); } catch (e) { await removeOrderAttachment(attachment); throw e; }
+  if (!outcome) await removeOrderAttachment(attachment);
 
   if (!outcome) {
     redirect(`${taskUrl}?error=closed`);

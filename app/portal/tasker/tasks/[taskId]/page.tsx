@@ -124,6 +124,9 @@ async function TaskContent({
 
           {canSubmit ? (
             <form action={submitTask} className="mt-6 space-y-5">
+<label className="block text-sm font-semibold">Required work attachment (any file format, maximum 10 MB)
+<input type="file" name="attachment" required className="mt-2 block w-full rounded-lg border border-cyan-400/30 p-3 text-sm" />
+</label>
               <input type="hidden" name="taskId" value={task.id} />
 
               <label className="block text-sm font-medium">

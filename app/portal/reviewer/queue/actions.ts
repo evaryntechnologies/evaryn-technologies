@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
+import {saveOrderAttachment,removeOrderAttachment} from "@/lib/tasks/order-attachment";
 
 export async function claimReview(formData: FormData): Promise<void> {
   const user = await requireEmployee(["REVIEWER","QA"]);
@@ -44,7 +45,12 @@ export async function reviewSubmission(formData: FormData): Promise<void> {
     redirect("/portal/unauthorized");
   }
 
-  const outcome = await prisma.$transaction(async (tx) => {
+  // Identify the work item before uploading; the transaction re-checks claim ownership.
+  const candidate = await prisma.taskSubmission.findUnique({where:{id:submissionId},select:{taskId:true,status:true,task:{select:{claimedReviewerId:true,status:true}}}});
+  if(!candidate || candidate.status!=="PENDING_REVIEW" || candidate.task.status!=="PENDING_REVIEW" || candidate.task.claimedReviewerId!==reviewer.id) redirect("/portal/reviewer/queue?error=processed");
+  const attachment = await saveOrderAttachment(formData,candidate.taskId,reviewer.id);
+  let outcome=false;
+  try { outcome = await prisma.$transaction(async (tx) => {
     const submission = await tx.taskSubmission.findUnique({
       where: { id: submissionId },
       select: {
@@ -98,7 +104,8 @@ export async function reviewSubmission(formData: FormData): Promise<void> {
     });
 
     return true;
-  });
+  }); } catch(e){await removeOrderAttachment(attachment);throw e;}
+  if(!outcome) await removeOrderAttachment(attachment);
 
   if (!outcome) {
     redirect("/portal/reviewer/queue?error=processed");
