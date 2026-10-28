@@ -127,6 +127,7 @@ model WorkTask {
   reviewDeadline DateTime?
   qaDeadline     DateTime?
   claimedReviewerId String? @db.Uuid
+  claimedQaId String? @db.Uuid
   attachmentKey String?
   attachmentName String?
   title        String
@@ -231,6 +232,7 @@ model TaskMessage {
   task WorkTask @relation(fields:[taskId], references:[id],onDelete:Restrict)
   sender EmployeeProfile @relation(fields:[senderId],references:[id],onDelete:Restrict)
   @@index([taskId,createdAt])
+  recipientRole String @default("GENERAL")
 }
 model TaskReassignmentRequest {
   id String @id @default(uuid()) @db.Uuid
