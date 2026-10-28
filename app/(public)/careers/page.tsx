@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CalendarCheck2, ClipboardCheck, Clock3, TrendingUp, Users } from "lucide-react";
-import { careers, openCareers } from "@/lib/careers";
+import { careers } from "@/lib/careers";
+import { getOpenCareerSlugs } from "@/lib/recruitment-openings";
+import { connection } from "next/server";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Careers",
@@ -15,7 +18,10 @@ const benefits = [
   { title: "Room to grow", detail: "Opportunities to develop towards Review and QA roles.", Icon: TrendingUp },
 ];
 
-export default function CareersPage() {
+async function CareerContent() {
+  await connection();
+  const openSlugs = new Set(await getOpenCareerSlugs());
+  const openCareers = careers.filter(job => openSlugs.has(job.slug));
   return (
     <main className="min-h-screen bg-[#F3F7FC] text-[#071327] dark:bg-[#071327] dark:text-white">
       <section className="relative isolate overflow-hidden bg-gradient-to-br from-[#071327] via-[#002B7F] to-[#0052CC] px-6 py-20 text-white md:py-28">
@@ -69,3 +75,5 @@ export default function CareersPage() {
     </main>
   );
 }
+
+export default function CareersPage() { return <Suspense fallback={<main className="min-h-screen p-8">Loading careers…</main>}><CareerContent /></Suspense>; }
