@@ -1,0 +1,70 @@
+import { NextResponse } from "next/server";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { prisma } from "@/lib/db/prisma";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+type Session = {
+  id: string;
+  activeSeconds: number;
+  rateHourly: unknown;
+  startedAt: Date;
+  lastHeartbeatAt: Date | null;
+};
+async function authorizedAdmin() {
+  const user = await requireEmployee();
+  const employee = await prisma.employeeProfile.findUnique({
+    where: { authUserId: user.id }, select: { id: true, role: true, status: true },
+  });
+  return employee?.role === "ADMIN" && employee.status === "ACTIVE" ? employee : null;
+}
+function blocked() { return NextResponse.json({ error: "Administrator only" }, { status: 403 }); }
+
+export async function POST(request: Request) {
+  const employee = await authorizedAdmin();
+  if (!employee) return blocked();
+  // A visible tab with recent interaction may request a heartbeat. Server time, not client seconds,
+  // determines what gets credited. Browser activity isn't proof of productive work.
+  const origin = request.headers.get("origin");
+  if (origin && new URL(origin).host !== new URL(request.url).host)
+    return NextResponse.json({ error: "Origin rejected" }, { status: 403 });
+  const rows = await prisma.$queryRaw<Session[]>`
+    SELECT id, "activeSeconds", "rateHourly", "startedAt", "lastHeartbeatAt"
+    FROM public."AdminTimeSession"
+    WHERE "employeeId" = ${employee.id}::uuid AND "endedAt" IS NULL
+    ORDER BY "startedAt" DESC LIMIT 1`;
+  const last = rows[0];
+  const now = new Date();
+  if (last && (!last.lastHeartbeatAt || now.getTime() - new Date(last.lastHeartbeatAt).getTime() > 120_000)) {
+    await prisma.$executeRaw`UPDATE public."AdminTimeSession" SET "endedAt" = COALESCE("lastActiveAt", now())
+      WHERE id = ${last.id}::uuid AND "endedAt" IS NULL`;
+  }
+  if (!last || !last.lastHeartbeatAt || now.getTime() - new Date(last.lastHeartbeatAt).getTime() > 120_000) {
+    await prisma.$executeRaw`INSERT INTO public."AdminTimeSession"
+      ("employeeId", "rateHourly", "lastHeartbeatAt", "lastActiveAt", "activeSeconds")
+      VALUES (${employee.id}::uuid, 2.00, now(), now(), 0)`;
+  } else {
+    // A heartbeat every ~15s. Missing gaps above 35s are not compensated.
+    await prisma.$executeRaw`UPDATE public."AdminTimeSession" SET
+      "activeSeconds" = "activeSeconds" + CASE
+        WHEN "lastHeartbeatAt" >= now() - INTERVAL '35 seconds'
+        THEN LEAST(20, GREATEST(0, EXTRACT(EPOCH FROM (now()-"lastHeartbeatAt"))::integer))
+        ELSE 0 END,
+      "lastHeartbeatAt" = now(), "lastActiveAt" = now()
+      WHERE id = ${last.id}::uuid AND "endedAt" IS NULL`;
+  }
+  const latest = await prisma.$queryRaw<Session[]>`SELECT id, "activeSeconds", "rateHourly", "startedAt", "lastHeartbeatAt"
+    FROM public."AdminTimeSession" WHERE "employeeId"=${employee.id}::uuid AND "endedAt" IS NULL LIMIT 1`;
+  const session = latest[0];
+  return NextResponse.json({ activeSeconds: session?.activeSeconds ?? 0, rateHourly: Number(session?.rateHourly ?? 2), asOf: now.toISOString() });
+}
+export async function GET() {
+  const employee = await authorizedAdmin();
+  if (!employee) return blocked();
+  const [result] = await prisma.$queryRaw<Array<{ seconds: bigint; cents: unknown }>>`
+    SELECT COALESCE(SUM("activeSeconds"),0)::bigint AS seconds,
+      COALESCE(SUM(ROUND("activeSeconds"::numeric / 3600 * "rateHourly",2)),0) AS cents
+    FROM public."AdminTimeSession" WHERE "employeeId"=${employee.id}::uuid`;
+  return NextResponse.json({ activeSeconds: Number(result?.seconds ?? 0), accrued: Number(result?.cents ?? 0) });
+}

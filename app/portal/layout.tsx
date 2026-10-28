@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Suspense } from "react";
 import PortalDashboardReturn from "./PortalDashboardReturn";
+import AdminActivityTracker from "./AdminActivityTracker";
 
 export default function PortalLayout({
   children,
@@ -11,6 +12,7 @@ export default function PortalLayout({
     <>
       <Suspense fallback={null}>
         <PortalDashboardReturn />
+        <AdminActivityTracker />
       </Suspense>
       {children}
     </>
