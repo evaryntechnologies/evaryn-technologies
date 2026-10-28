@@ -52,6 +52,7 @@ async function AdminContent() {
   return (
     <div className="w-full max-w-none">
       <Link href="/portal"><Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={240} height={74} className="mb-5 h-auto max-h-28 w-auto max-w-[75vw] object-contain" /></Link>
+      <Link href="/portal/my-work" className="mb-4 inline-flex rounded-lg border border-cyan-400/30 px-4 py-2 text-sm font-semibold text-cyan-200 hover:bg-white/10">My Work: Tasker / Reviewer / QA / Admin Time</Link>
       <header className="flex flex-wrap items-start justify-between gap-5 border-b border-white/10 pb-7">
         <div>
           
