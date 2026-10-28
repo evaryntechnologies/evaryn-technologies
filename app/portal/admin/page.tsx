@@ -14,6 +14,13 @@ import {
 } from "lucide-react";
 
 const modules = [
+  {
+    title: "Review & QA Oversight",
+    description: "Monitor reviewer and QA work, pending approvals, and delivery progress.",
+    href: "/portal/admin/review-qa",
+    icon: ShieldCheck,
+    available: true,
+  },
   {title:"Task Hub",description:"Browse published orders.",href:"/portal/task-hub",icon:ClipboardList,available:true},
   {title:"Reassignment Requests",description:"Review task release requests.",href:"/portal/admin/reassignments",icon:ClipboardList,available:true},
   {title:"Fines and Penalties",description:"Review or waive fines.",href:"/portal/admin/fines",icon:ClipboardList,available:true},
