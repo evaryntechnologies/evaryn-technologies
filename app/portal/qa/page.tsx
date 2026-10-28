@@ -39,6 +39,7 @@ async function QAContent() {
           <h1 className="mt-4 text-3xl font-bold">
             Quality Assurance
           </h1>
+          <p className="mt-3 text-lg font-semibold text-cyan-200">Welcome back, {user.firstName}</p>
 
           <p className="mt-3 text-sm leading-7 text-slate-300">
             Monitor submissions, conduct final quality checks,

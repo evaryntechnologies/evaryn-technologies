@@ -32,6 +32,7 @@ export async function requireEmployee(
   id: string;
   email: string;
   role: PortalRole;
+  firstName: string;
 }> {
   const supabase = await createClient();
 
@@ -54,6 +55,7 @@ export async function requireEmployee(
     where: { authUserId: user.id },
     select: {
       email: true,
+      fullName: true,
       role: true,
       status: true,
       suspensionUntil: true,
@@ -90,5 +92,6 @@ export async function requireEmployee(
     id: user.id,
     email: user.email ?? employee.email,
     role,
+    firstName: employee.fullName.trim().split(/\s+/)[0] || 'Colleague',
   };
 }

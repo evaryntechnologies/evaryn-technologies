@@ -72,6 +72,7 @@ async function SuperAdminContent() {
           <h1 className="mt-4 text-3xl font-bold sm:text-4xl">
             Super Admin Dashboard
           </h1>
+          <p className="mt-3 text-lg font-semibold text-cyan-200">Welcome back, {employee.firstName}</p>
           <p className="mt-3 text-sm text-slate-300">
             System administration and operational oversight.
           </p>

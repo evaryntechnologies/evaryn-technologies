@@ -78,6 +78,7 @@ async function ReviewerContent() {
           <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
             Reviewer Dashboard
           </h1>
+          <p className="mt-3 text-lg font-semibold text-cyan-200">Welcome back, {user.firstName}</p>
 
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
             Monitor submitted work, assess quality, provide

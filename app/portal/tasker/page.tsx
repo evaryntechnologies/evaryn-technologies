@@ -89,7 +89,7 @@ async function TaskerContent() {
         </p>
 
         <h1 className="mt-3 text-3xl font-bold">
-          Welcome, {profile.fullName}
+          Welcome back, {user.firstName}
         </h1>
 
         <p className="mt-3 text-slate-300">
