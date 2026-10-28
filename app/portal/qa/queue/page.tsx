@@ -3,7 +3,7 @@ import { connection } from "next/server";
 import Link from "next/link";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
-import { qaDecision } from "./actions";
+import { qaDecision, claimQA } from "./actions";
 
 async function QAQueueContent({
   searchParams,
@@ -30,7 +30,7 @@ async function QAQueueContent({
   const submissions = await prisma.taskSubmission.findMany({
     where: {
       status: "PENDING_QA",
-      task: { status: "PENDING_QA" },
+      task: { status: "PENDING_QA", OR:[{claimedQaId:null},{claimedQaId:qaProfile.id}] },
       employeeId: { not: qaProfile.id },
     },
     include: {
@@ -39,6 +39,7 @@ async function QAQueueContent({
       },
       task: {
         select: {
+          claimedQaId: true,
           title: true,
           description: true,
           id: true,
@@ -101,6 +102,7 @@ async function QAQueueContent({
           </p>
         </section>
 
+        {params.result === "claimed" && <p role="status" className="mt-5 text-cyan-300">QA task claimed successfully.</p>}
         {params.result === "saved" && (
           <p
             role="status"
@@ -209,7 +211,12 @@ async function QAQueueContent({
 
                 <div className="mt-4 space-y-1 text-sm text-cyan-200"><p>Submission: {submission.task.deadline?.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"}) ?? "Not set"}</p><p>Review: {submission.task.reviewDeadline?.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"}) ?? "Not set"}</p><p>QA: {submission.task.qaDeadline?.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"}) ?? "Not set"}</p></div>
                 {submission.task.attachmentKey && <a className="mt-2 block text-sm text-cyan-300 underline" href={"/portal/attachments/"+submission.task.id}>Download: {submission.task.attachmentName}</a>}
-                <form action={qaDecision} className="mt-6 space-y-5">
+                {submission.task.claimedQaId === null ? (
+                  <form action={claimQA} className="mt-6">
+                    <input type="hidden" name="taskId" value={submission.task.id}/>
+                    <button className="rounded-xl bg-[#0052CC] px-5 py-3 font-semibold">Claim QA task</button>
+                  </form>
+                ) : <form action={qaDecision} className="mt-6 space-y-5">
                   <input
                     type="hidden"
                     name="submissionId"
@@ -246,7 +253,7 @@ async function QAQueueContent({
                       Return for Corrections
                     </button>
                   </div>
-                </form>
+                </form>}
               </article>
             ))}
           </div>

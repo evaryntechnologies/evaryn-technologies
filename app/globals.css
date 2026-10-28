@@ -77,3 +77,9 @@ main > div { min-width:0; }
 img, svg { max-width:100%; }
 input, select, textarea { max-width:100%; }
 @media (max-width: 640px) { main { overflow-wrap:anywhere; } main table { display:block; max-width:100%; overflow-x:auto; } }
+
+/* Light appearance for the historically dark portal surfaces. Dark mode remains untouched. */
+html:not(.dark) .bg-\[\#071327\] { background-color:#eaf8ff !important; color:#102746; }
+html:not(.dark) .bg-\[\#101F39\] { background-color:#ffffff !important; color:#102746; border-color:#c4e1f2; }
+html:not(.dark) main.text-white { color:#102746 !important; }
+html:not(.dark) .text-slate-300,html:not(.dark) .text-slate-400 { color:#395574 !important; }

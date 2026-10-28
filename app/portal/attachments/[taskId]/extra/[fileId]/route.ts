@@ -10,7 +10,8 @@ export async function GET(_request:NextRequest,{params}:{params:Promise<{taskId:
  const file=await prisma.taskExtraAttachment.findFirst({where:{id:fileId,taskId},include:{task:{select:{assignedToId:true,claimedReviewerId:true,status:true,category:true}}}});
  if(!file)return new NextResponse("File not found",{status:404});
  const task=file.task;
- const allowed=["ADMIN","SUPER_ADMIN"].includes(person.role)||(person.role==="TASKER"&&task.assignedToId===person.id)||(person.role==="REVIEWER"&&task.claimedReviewerId===person.id)||(person.role==="QA"&&["PENDING_QA","DELIVERED","COMPLETED","REWORK_REQUIRED"].includes(task.status));
+ const past=await prisma.taskSubmission.findFirst({where:{taskId,OR:[{employeeId:person.id},{reviews:{some:{reviewerId:person.id}}}]},select:{id:true}});
+ const allowed=["ADMIN","SUPER_ADMIN"].includes(person.role)||person.role==="QA"||(task.assignedToId===person.id)||(task.claimedReviewerId===person.id)||Boolean(past);
  if(!allowed)return new NextResponse("Access denied",{status:403});
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.SUPABASE_SERVICE_ROLE_KEY;
  if(!url||!key)return new NextResponse("Storage not configured",{status:503});

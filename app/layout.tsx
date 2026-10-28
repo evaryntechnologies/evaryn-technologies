@@ -2,6 +2,7 @@
 import type { ReactNode } from "react";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import EvarynThemePicker from "@/components/theme/EvarynThemePicker";
 
 export const metadata: Metadata = {
   title: {
@@ -20,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>{children}<EvarynThemePicker /></ThemeProvider>
       </body>
     </html>
   );

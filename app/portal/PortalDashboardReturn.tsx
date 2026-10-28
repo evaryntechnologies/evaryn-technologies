@@ -23,6 +23,7 @@ export default function PortalDashboardReturn() {
       className="flex w-full items-center justify-end border-b border-white/10 bg-[#071327] px-4 py-2 sm:px-8"
     >
       <Link href="/portal/earnings" className="mr-3 rounded-lg border border-cyan-400/30 px-4 py-2 text-sm font-semibold text-cyan-200 hover:bg-white/10">My Earnings</Link>
+      <Link href="/portal/notifications" className="mr-3 inline-flex items-center rounded-lg border border-cyan-400/30 px-3 py-2 text-sm font-semibold text-cyan-200">Notifications</Link>
       <Link
         href="/portal"
         className="inline-flex items-center rounded-lg border border-cyan-400/30 px-4 py-2 text-sm font-semibold text-cyan-200 hover:bg-white/10"

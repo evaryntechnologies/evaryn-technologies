@@ -5,6 +5,19 @@ import { revalidatePath } from "next/cache";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 
+export async function claimQA(formData: FormData): Promise<void> {
+  const auth = await requireEmployee(["QA"]);
+  const taskId = String(formData.get("taskId") ?? "");
+  const profile = await prisma.employeeProfile.findUnique({where:{authUserId:auth.id},select:{id:true,status:true,role:true}});
+  if (!profile || profile.status !== "ACTIVE" || profile.role !== "QA") redirect("/portal/unauthorized");
+  const changed = await prisma.workTask.updateMany({
+    where:{id:taskId,status:"PENDING_QA",claimedQaId:null,assignedToId:{not:profile.id}},
+    data:{claimedQaId:profile.id},
+  });
+  revalidatePath("/portal/qa/queue");
+  redirect(changed.count === 1 ? "/portal/qa/queue?result=claimed" : "/portal/qa/queue?error=processed");
+}
+
 export async function qaDecision(formData: FormData): Promise<void> {
   const user = await requireEmployee(["QA"]);
 
@@ -44,7 +57,7 @@ export async function qaDecision(formData: FormData): Promise<void> {
         taskId: true,
         employeeId: true,
         status: true,
-        task: { select: { status: true } },
+        task: { select: { status: true, claimedQaId: true } },
       },
     });
 
@@ -52,7 +65,8 @@ export async function qaDecision(formData: FormData): Promise<void> {
       !submission ||
       submission.status !== "PENDING_QA" ||
       submission.task.status !== "PENDING_QA" ||
-      submission.employeeId === qaEmployee.id
+      submission.employeeId === qaEmployee.id ||
+      submission.task.claimedQaId !== qaEmployee.id
     ) {
       return false;
     }
@@ -62,6 +76,7 @@ export async function qaDecision(formData: FormData): Promise<void> {
       where: {
         id: submissionId,
         status: "PENDING_QA",
+        task: { claimedQaId: qaEmployee.id },
       },
       data: { status: "QA_IN_PROGRESS" },
     });
@@ -73,6 +88,7 @@ export async function qaDecision(formData: FormData): Promise<void> {
       where: {
         id: submission.taskId,
         status: "PENDING_QA",
+        claimedQaId: qaEmployee.id,
       },
       data: { status: "QA_IN_PROGRESS" },
     });
@@ -101,7 +117,7 @@ export async function qaDecision(formData: FormData): Promise<void> {
 
     await tx.workTask.update({
       where: { id: submission.taskId },
-      data: { status: nextStatus },
+      data: { status: nextStatus, claimedQaId: null },
     });
 
     return true;
