@@ -34,13 +34,6 @@ const modules = [
     ready: true,
   },
   {
-    title: "Administration",
-    description: "Access the existing administrative workspace.",
-    href: "/portal/admin",
-    icon: LayoutDashboard,
-    ready: true,
-  },
-  {
    title: "Employee Management",
 description: "Manage staff accounts, roles and permissions.",
 href: "/portal/super-admin/employees",
@@ -50,16 +43,16 @@ ready: true,
   {
     title: "Review and QA",
     description: "Oversee the work approval process.",
-    href: "",
+    href: "/portal/qa/queue",
     icon: ShieldCheck,
-    ready: false,
+    ready: true,
   },
   {
     title: "Payroll",
     description: "Manage employee earnings and payments.",
-    href: "",
+    href: "/portal/super-admin/payroll",
     icon: Wallet,
-    ready: false,
+    ready: true,
   },
 ];
 
@@ -70,7 +63,7 @@ async function SuperAdminContent() {
 
   return (
     <div className="w-full max-w-none">
-      <Link href="/"><Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={240} height={74} className="mb-5 h-auto max-h-28 w-auto max-w-[75vw] object-contain" /></Link>
+      <Link href="/portal"><Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={240} height={74} className="mb-5 h-auto max-h-28 w-auto max-w-[75vw] object-contain" /></Link>
       <header className="flex flex-wrap items-center justify-between gap-5 border-b border-white/10 pb-7">
         <div>
           <p className="text-xs font-bold tracking-[0.2em] text-cyan-300">

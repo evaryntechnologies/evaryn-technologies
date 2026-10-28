@@ -33,22 +33,6 @@ const modules = [
     icon: Users,
     available: true,
   },
-  {
-    title: "Projects",
-    description:
-      "Review project activity and overall delivery progress.",
-    href: "#",
-    icon: FolderKanban,
-    available: false,
-  },
-  {
-    title: "Payroll",
-    description:
-      "Manage employee earnings, payments, and adjustments.",
-    href: "#",
-    icon: Wallet,
-    available: false,
-  },
 ];
 
 async function AdminContent() {
@@ -60,7 +44,7 @@ async function AdminContent() {
 
   return (
     <div className="w-full max-w-none">
-      <Link href="/"><Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={240} height={74} className="mb-5 h-auto max-h-28 w-auto max-w-[75vw] object-contain" /></Link>
+      <Link href="/portal"><Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={240} height={74} className="mb-5 h-auto max-h-28 w-auto max-w-[75vw] object-contain" /></Link>
       <header className="flex flex-wrap items-start justify-between gap-5 border-b border-white/10 pb-7">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
@@ -72,7 +56,7 @@ async function AdminContent() {
           </h1>
 
           <p className="mt-3 text-sm leading-6 text-slate-300">
-            Manage your workforce, projects, and business operations.
+            Manage your workforce, tasks, and business operations.
           </p>
         </div>
 
