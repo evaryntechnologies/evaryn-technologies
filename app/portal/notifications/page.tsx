@@ -4,6 +4,7 @@ import Link from "next/link";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 import { markNotificationRead } from "./actions";
+import { formatNotificationText } from "@/lib/notifications/format-notification";
 
 type Group = "orders"|"payments"|"general"|"account";
 const groups: {key:Group;label:string}[] = [
@@ -35,8 +36,8 @@ async function Content({searchParams}:{searchParams:Promise<{group?:string}>}) {
    return <Link key={g.key} href={`?group=${g.key}`} aria-current={selected===g.key?"page":undefined} className={`rounded-xl px-4 py-3 text-sm font-semibold ${selected===g.key?"bg-cyan-600 text-white":"border border-white/20 bg-[#101F39] text-cyan-100"}`}>{g.label}{count?` (${count})`:""}</Link>;
   })}</nav>
   <section className="mt-6 space-y-3">{notifications.filter(n=>bucket(n.title,n.href)===selected).map(n=><article key={n.id} className="rounded-xl border border-white/15 bg-[#101F39] p-5">
-   <p className="font-semibold">{n.title} {!n.readAt&&<span className="ml-2 text-cyan-300">New</span>}</p>
-   <p className="mt-2 whitespace-pre-wrap text-sm text-slate-300">{n.body}</p>
+   <p className="font-semibold">{formatNotificationText(n.title)} {!n.readAt&&<span className="ml-2 text-cyan-300">New</span>}</p>
+   <p className="mt-2 whitespace-pre-wrap text-sm text-slate-300">{formatNotificationText(n.body)}</p>
    <p className="mt-2 text-xs text-slate-400">{n.createdAt.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"})}</p>
    <div className="mt-3 flex gap-4">{n.href&&<Link href={n.href} className="text-cyan-300 underline">Open</Link>}{!n.readAt&&<form action={markNotificationRead}><input type="hidden" name="id" value={n.id}/><button className="text-cyan-300 underline">Mark read</button></form>}</div>
   </article>)}{notifications.filter(n=>bucket(n.title,n.href)===selected).length===0&&<p className="text-slate-300">No notifications in this category.</p>}</section>

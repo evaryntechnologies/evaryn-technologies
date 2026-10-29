@@ -34,3 +34,28 @@ export async function requestPaymentChange(form:FormData) {
   revalidatePath("/portal/payment-method");
   revalidatePath("/portal/admin/payment-approvals");
 }
+
+
+/** Keeps expected validation and configuration failures on the form instead of throwing an error page. */
+export async function requestPaymentChangeWithFeedback(
+  _previous: { error: string; success: string },
+  form: FormData
+): Promise<{ error: string; success: string }> {
+  try {
+    await requestPaymentChange(form);
+    return { error: "", success: "Your request has been submitted for approval." };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    if (message === "Payment encryption is not configured.") {
+      return { error: "Payment changes are temporarily unavailable. Please contact an administrator to configure secure payment details.", success: "" };
+    }
+    if (/Payment details cannot change|Employee access denied|Select a mobile provider|Specify the mobile provider|Enter a valid mobile money number|Enter valid bank details|Select mobile money or bank transfer/.test(message)) {
+      return { error: message, success: "" };
+    }
+    if (/unique constraint|duplicate key/i.test(message)) {
+      return { error: "You already have a payment method change request awaiting approval.", success: "" };
+    }
+    console.error("Payment method change submission failed", error);
+    return { error: "We could not submit your request. Please contact an administrator to verify payment request configuration.", success: "" };
+  }
+}
