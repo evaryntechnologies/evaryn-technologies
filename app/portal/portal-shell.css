@@ -1,0 +1,38 @@
+/* Shared Evaryn workspace shell. Content width, grids, and task workflows remain unchanged. */
+.ev-workspace { --ev-nav:#071327; --ev-panel:#101f39; --ev-accent:#33bce6; --ev-ink:#f0f9ff; --ev-muted:#adc5d7; min-height:100vh; min-width:0; width:100%; }
+.ev-topbar { position:sticky; z-index:80; top:0; min-height:64px; display:flex; align-items:center; gap:12px; padding:8px clamp(12px,2.2vw,32px); background:#071327; color:#eaf8ff; border-bottom:1px solid #294361; box-shadow:0 8px 25px #030a1833; }
+.ev-menu-trigger,.ev-top-icon { display:inline-flex; align-items:center; justify-content:center; height:39px; width:39px; border:1px solid #36516d; border-radius:11px; background:#122643; color:#bbebff; cursor:pointer; flex-shrink:0; }
+.ev-menu-trigger:hover,.ev-top-icon:hover { background:#1a395c; }
+.ev-brand { display:inline-flex; align-items:center; flex-shrink:0; }
+.ev-brand-image { width:auto; height:auto; max-height:43px; max-width:145px; object-fit:contain; }
+.ev-top-title { font-size:12px; font-weight:500; color:#b2cddd; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ev-top-actions { margin-left:auto; display:flex; align-items:center; gap:9px; }
+.ev-top-actions select { max-width:100px; }
+.ev-sidebar { position:fixed; top:64px; bottom:0; left:0; z-index:75; width:min(288px,85vw); display:flex; flex-direction:column; background:#08192f; color:#e9f6ff; border-right:1px solid #294361; box-shadow:14px 0 35px #0003; transform:translateX(-105%); visibility:hidden; transition:transform .2s ease,visibility .2s ease; }
+.ev-sidebar-open { transform:translateX(0); visibility:visible; }
+.ev-backdrop { position:fixed; z-index:70; inset:64px 0 0; background:#031126a3; cursor:pointer; border:0; }
+.ev-sidebar-heading { display:flex; align-items:center; justify-content:space-between; padding:18px 20px 12px; letter-spacing:1.5px; font-size:10px; font-weight:700; color:#78cde9; }
+.ev-sidebar-heading small { letter-spacing:0; font-size:12px; color:#bad8ec; }
+.ev-sidebar-links { display:flex; flex-direction:column; gap:3px; padding:2px 11px 18px; overflow-y:auto; flex:1; scrollbar-width:thin; scrollbar-color:#41617e transparent; }
+.ev-nav-link { display:flex; align-items:center; gap:12px; min-height:39px; padding:9px 12px; border-radius:10px; color:#caddea; font-size:12px; font-weight:500; text-decoration:none; border:1px solid transparent; }
+.ev-nav-link:hover { background:#152e4e; color:white; }
+.ev-nav-active { color:#e9faff; background:#19415f; border-color:#2d7397; }
+.ev-nav-chevron { margin-left:auto; }
+.ev-sidebar-footer { padding:14px; border-top:1px solid #25415f; }
+.ev-sidebar-footer button { width:100%; }
+.ev-menu-pending { padding:12px; font-size:12px; color:#c5d9e5; }
+.ev-workspace-main { width:100%; min-width:0; max-width:100%; margin:0; }
+/* Existing page layout stretch and scroll behaviour intentionally preserved. */
+.ev-workspace-main > * { min-width:0; }
+html:not(.dark) .ev-sidebar { background:#edf8ff; color:#12324e; border-color:#bed7e8; }
+html:not(.dark) .ev-sidebar-heading { color:#08638a; }
+html:not(.dark) .ev-sidebar-heading small { color:#335d77; }
+html:not(.dark) .ev-nav-link { color:#234d68; }
+html:not(.dark) .ev-nav-link:hover { background:#d6ecf8; color:#0b3458; }
+html:not(.dark) .ev-nav-active { background:#c0e5f8; color:#063d67; border-color:#73bbdf; }
+html:not(.dark) .ev-sidebar-footer { border-color:#bfd9e8; }
+html:not(.dark) .ev-topbar { background:#edf8ff; color:#12324e; border-color:#bed7e8; }
+html:not(.dark) .ev-top-title { color:#305776; }
+html:not(.dark) .ev-menu-trigger,html:not(.dark) .ev-top-icon { color:#0b5577; background:white; border-color:#bed7e8; }
+@media(max-width:640px){.ev-top-title{display:none}.ev-topbar{gap:8px}.ev-top-actions{gap:6px}.ev-top-actions select{max-width:74px}.ev-brand-image{max-width:115px}.ev-sidebar{top:60px}.ev-topbar{min-height:60px}.ev-backdrop{top:60px}}
+@media(prefers-reduced-motion:reduce){.ev-sidebar{transition:none}}
