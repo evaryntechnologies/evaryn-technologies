@@ -55,3 +55,21 @@ export async function markWorkforcePaid(form: FormData): Promise<void> {
   revalidatePath("/portal/super-admin/payroll");
   revalidatePath("/portal/earnings");
 }
+
+// A stateful version returns an actionable message instead of an error page.
+export async function approveWorkforcePayWithFeedback(
+  _previous: { ok: boolean; message: string },
+  form: FormData,
+): Promise<{ ok: boolean; message: string }> {
+  try {
+    await approveWorkforcePay(form);
+    return { ok: true, message: "Earnings approved and added to the employee ledger." };
+  } catch (error) {
+    // Show a user-safe message; internal database details stay on the server.
+    console.error("Workforce earnings approval failed", error);
+    if (error instanceof Error && /already been approved or is no longer eligible/i.test(error.message)) {
+      return { ok: false, message: "This entry is no longer eligible. Refresh the page to see its latest status." };
+    }
+    return { ok: false, message: "Approval failed. Please refresh the page and try again. If it continues, check the server logs." };
+  }
+}
