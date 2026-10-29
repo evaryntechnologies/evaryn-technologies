@@ -30,6 +30,7 @@ export type TaskMessageMinAggregateOutputType = {
   senderId: string | null
   body: string | null
   createdAt: Date | null
+  recipientRole: string | null
 }
 
 export type TaskMessageMaxAggregateOutputType = {
@@ -38,6 +39,7 @@ export type TaskMessageMaxAggregateOutputType = {
   senderId: string | null
   body: string | null
   createdAt: Date | null
+  recipientRole: string | null
 }
 
 export type TaskMessageCountAggregateOutputType = {
@@ -46,6 +48,7 @@ export type TaskMessageCountAggregateOutputType = {
   senderId: number
   body: number
   createdAt: number
+  recipientRole: number
   _all: number
 }
 
@@ -56,6 +59,7 @@ export type TaskMessageMinAggregateInputType = {
   senderId?: true
   body?: true
   createdAt?: true
+  recipientRole?: true
 }
 
 export type TaskMessageMaxAggregateInputType = {
@@ -64,6 +68,7 @@ export type TaskMessageMaxAggregateInputType = {
   senderId?: true
   body?: true
   createdAt?: true
+  recipientRole?: true
 }
 
 export type TaskMessageCountAggregateInputType = {
@@ -72,6 +77,7 @@ export type TaskMessageCountAggregateInputType = {
   senderId?: true
   body?: true
   createdAt?: true
+  recipientRole?: true
   _all?: true
 }
 
@@ -153,6 +159,7 @@ export type TaskMessageGroupByOutputType = {
   senderId: string
   body: string
   createdAt: Date
+  recipientRole: string
   _count: TaskMessageCountAggregateOutputType | null
   _min: TaskMessageMinAggregateOutputType | null
   _max: TaskMessageMaxAggregateOutputType | null
@@ -182,6 +189,7 @@ export type TaskMessageWhereInput = {
   senderId?: Prisma.UuidFilter<"TaskMessage"> | string
   body?: Prisma.StringFilter<"TaskMessage"> | string
   createdAt?: Prisma.DateTimeFilter<"TaskMessage"> | Date | string
+  recipientRole?: Prisma.StringFilter<"TaskMessage"> | string
   task?: Prisma.XOR<Prisma.WorkTaskScalarRelationFilter, Prisma.WorkTaskWhereInput>
   sender?: Prisma.XOR<Prisma.EmployeeProfileScalarRelationFilter, Prisma.EmployeeProfileWhereInput>
 }
@@ -192,6 +200,7 @@ export type TaskMessageOrderByWithRelationInput = {
   senderId?: Prisma.SortOrder
   body?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  recipientRole?: Prisma.SortOrder
   task?: Prisma.WorkTaskOrderByWithRelationInput
   sender?: Prisma.EmployeeProfileOrderByWithRelationInput
 }
@@ -205,6 +214,7 @@ export type TaskMessageWhereUniqueInput = Prisma.AtLeast<{
   senderId?: Prisma.UuidFilter<"TaskMessage"> | string
   body?: Prisma.StringFilter<"TaskMessage"> | string
   createdAt?: Prisma.DateTimeFilter<"TaskMessage"> | Date | string
+  recipientRole?: Prisma.StringFilter<"TaskMessage"> | string
   task?: Prisma.XOR<Prisma.WorkTaskScalarRelationFilter, Prisma.WorkTaskWhereInput>
   sender?: Prisma.XOR<Prisma.EmployeeProfileScalarRelationFilter, Prisma.EmployeeProfileWhereInput>
 }, "id">
@@ -215,6 +225,7 @@ export type TaskMessageOrderByWithAggregationInput = {
   senderId?: Prisma.SortOrder
   body?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  recipientRole?: Prisma.SortOrder
   _count?: Prisma.TaskMessageCountOrderByAggregateInput
   _max?: Prisma.TaskMessageMaxOrderByAggregateInput
   _min?: Prisma.TaskMessageMinOrderByAggregateInput
@@ -229,12 +240,14 @@ export type TaskMessageScalarWhereWithAggregatesInput = {
   senderId?: Prisma.UuidWithAggregatesFilter<"TaskMessage"> | string
   body?: Prisma.StringWithAggregatesFilter<"TaskMessage"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskMessage"> | Date | string
+  recipientRole?: Prisma.StringWithAggregatesFilter<"TaskMessage"> | string
 }
 
 export type TaskMessageCreateInput = {
   id?: string
   body: string
   createdAt?: Date | string
+  recipientRole?: string
   task: Prisma.WorkTaskCreateNestedOneWithoutMessagesInput
   sender: Prisma.EmployeeProfileCreateNestedOneWithoutTaskMessagesInput
 }
@@ -245,12 +258,14 @@ export type TaskMessageUncheckedCreateInput = {
   senderId: string
   body: string
   createdAt?: Date | string
+  recipientRole?: string
 }
 
 export type TaskMessageUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipientRole?: Prisma.StringFieldUpdateOperationsInput | string
   task?: Prisma.WorkTaskUpdateOneRequiredWithoutMessagesNestedInput
   sender?: Prisma.EmployeeProfileUpdateOneRequiredWithoutTaskMessagesNestedInput
 }
@@ -261,6 +276,7 @@ export type TaskMessageUncheckedUpdateInput = {
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipientRole?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TaskMessageCreateManyInput = {
@@ -269,12 +285,14 @@ export type TaskMessageCreateManyInput = {
   senderId: string
   body: string
   createdAt?: Date | string
+  recipientRole?: string
 }
 
 export type TaskMessageUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipientRole?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TaskMessageUncheckedUpdateManyInput = {
@@ -283,6 +301,7 @@ export type TaskMessageUncheckedUpdateManyInput = {
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipientRole?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TaskMessageListRelationFilter = {
@@ -301,6 +320,7 @@ export type TaskMessageCountOrderByAggregateInput = {
   senderId?: Prisma.SortOrder
   body?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  recipientRole?: Prisma.SortOrder
 }
 
 export type TaskMessageMaxOrderByAggregateInput = {
@@ -309,6 +329,7 @@ export type TaskMessageMaxOrderByAggregateInput = {
   senderId?: Prisma.SortOrder
   body?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  recipientRole?: Prisma.SortOrder
 }
 
 export type TaskMessageMinOrderByAggregateInput = {
@@ -317,6 +338,7 @@ export type TaskMessageMinOrderByAggregateInput = {
   senderId?: Prisma.SortOrder
   body?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  recipientRole?: Prisma.SortOrder
 }
 
 export type TaskMessageCreateNestedManyWithoutSenderInput = {
@@ -407,6 +429,7 @@ export type TaskMessageCreateWithoutSenderInput = {
   id?: string
   body: string
   createdAt?: Date | string
+  recipientRole?: string
   task: Prisma.WorkTaskCreateNestedOneWithoutMessagesInput
 }
 
@@ -415,6 +438,7 @@ export type TaskMessageUncheckedCreateWithoutSenderInput = {
   taskId: string
   body: string
   createdAt?: Date | string
+  recipientRole?: string
 }
 
 export type TaskMessageCreateOrConnectWithoutSenderInput = {
@@ -452,12 +476,14 @@ export type TaskMessageScalarWhereInput = {
   senderId?: Prisma.UuidFilter<"TaskMessage"> | string
   body?: Prisma.StringFilter<"TaskMessage"> | string
   createdAt?: Prisma.DateTimeFilter<"TaskMessage"> | Date | string
+  recipientRole?: Prisma.StringFilter<"TaskMessage"> | string
 }
 
 export type TaskMessageCreateWithoutTaskInput = {
   id?: string
   body: string
   createdAt?: Date | string
+  recipientRole?: string
   sender: Prisma.EmployeeProfileCreateNestedOneWithoutTaskMessagesInput
 }
 
@@ -466,6 +492,7 @@ export type TaskMessageUncheckedCreateWithoutTaskInput = {
   senderId: string
   body: string
   createdAt?: Date | string
+  recipientRole?: string
 }
 
 export type TaskMessageCreateOrConnectWithoutTaskInput = {
@@ -499,12 +526,14 @@ export type TaskMessageCreateManySenderInput = {
   taskId: string
   body: string
   createdAt?: Date | string
+  recipientRole?: string
 }
 
 export type TaskMessageUpdateWithoutSenderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipientRole?: Prisma.StringFieldUpdateOperationsInput | string
   task?: Prisma.WorkTaskUpdateOneRequiredWithoutMessagesNestedInput
 }
 
@@ -513,6 +542,7 @@ export type TaskMessageUncheckedUpdateWithoutSenderInput = {
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipientRole?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TaskMessageUncheckedUpdateManyWithoutSenderInput = {
@@ -520,6 +550,7 @@ export type TaskMessageUncheckedUpdateManyWithoutSenderInput = {
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipientRole?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TaskMessageCreateManyTaskInput = {
@@ -527,12 +558,14 @@ export type TaskMessageCreateManyTaskInput = {
   senderId: string
   body: string
   createdAt?: Date | string
+  recipientRole?: string
 }
 
 export type TaskMessageUpdateWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipientRole?: Prisma.StringFieldUpdateOperationsInput | string
   sender?: Prisma.EmployeeProfileUpdateOneRequiredWithoutTaskMessagesNestedInput
 }
 
@@ -541,6 +574,7 @@ export type TaskMessageUncheckedUpdateWithoutTaskInput = {
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipientRole?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TaskMessageUncheckedUpdateManyWithoutTaskInput = {
@@ -548,6 +582,7 @@ export type TaskMessageUncheckedUpdateManyWithoutTaskInput = {
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipientRole?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -558,6 +593,7 @@ export type TaskMessageSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   senderId?: boolean
   body?: boolean
   createdAt?: boolean
+  recipientRole?: boolean
   task?: boolean | Prisma.WorkTaskDefaultArgs<ExtArgs>
   sender?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskMessage"]>
@@ -568,6 +604,7 @@ export type TaskMessageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   senderId?: boolean
   body?: boolean
   createdAt?: boolean
+  recipientRole?: boolean
   task?: boolean | Prisma.WorkTaskDefaultArgs<ExtArgs>
   sender?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskMessage"]>
@@ -578,6 +615,7 @@ export type TaskMessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   senderId?: boolean
   body?: boolean
   createdAt?: boolean
+  recipientRole?: boolean
   task?: boolean | Prisma.WorkTaskDefaultArgs<ExtArgs>
   sender?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskMessage"]>
@@ -588,9 +626,10 @@ export type TaskMessageSelectScalar = {
   senderId?: boolean
   body?: boolean
   createdAt?: boolean
+  recipientRole?: boolean
 }
 
-export type TaskMessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "taskId" | "senderId" | "body" | "createdAt", ExtArgs["result"]["taskMessage"]>
+export type TaskMessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "taskId" | "senderId" | "body" | "createdAt" | "recipientRole", ExtArgs["result"]["taskMessage"]>
 export type TaskMessageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   task?: boolean | Prisma.WorkTaskDefaultArgs<ExtArgs>
   sender?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
@@ -616,6 +655,7 @@ export type $TaskMessagePayload<ExtArgs extends runtime.Types.Extensions.Interna
     senderId: string
     body: string
     createdAt: Date
+    recipientRole: string
   }, ExtArgs["result"]["taskMessage"]>
   composites: {}
 }
@@ -1046,6 +1086,7 @@ export interface TaskMessageFieldRefs {
   readonly senderId: Prisma.FieldRef<"TaskMessage", 'String'>
   readonly body: Prisma.FieldRef<"TaskMessage", 'String'>
   readonly createdAt: Prisma.FieldRef<"TaskMessage", 'DateTime'>
+  readonly recipientRole: Prisma.FieldRef<"TaskMessage", 'String'>
 }
     
 

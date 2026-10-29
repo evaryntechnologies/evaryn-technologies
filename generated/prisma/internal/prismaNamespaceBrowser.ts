@@ -165,6 +165,7 @@ export type WorkProjectScalarFieldEnum = (typeof WorkProjectScalarFieldEnum)[key
 
 
 export const WorkTaskScalarFieldEnum = {
+  cancellationReason: 'cancellationReason',
   id: 'id',
   projectId: 'projectId',
   orderId: 'orderId',
@@ -173,6 +174,7 @@ export const WorkTaskScalarFieldEnum = {
   reviewDeadline: 'reviewDeadline',
   qaDeadline: 'qaDeadline',
   claimedReviewerId: 'claimedReviewerId',
+  claimedQaId: 'claimedQaId',
   attachmentKey: 'attachmentKey',
   attachmentName: 'attachmentName',
   title: 'title',
@@ -255,7 +257,8 @@ export const TaskMessageScalarFieldEnum = {
   taskId: 'taskId',
   senderId: 'senderId',
   body: 'body',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  recipientRole: 'recipientRole'
 } as const
 
 export type TaskMessageScalarFieldEnum = (typeof TaskMessageScalarFieldEnum)[keyof typeof TaskMessageScalarFieldEnum]

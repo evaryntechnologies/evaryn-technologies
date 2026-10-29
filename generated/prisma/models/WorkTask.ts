@@ -49,6 +49,7 @@ export type WorkTaskSumAggregateOutputType = {
 }
 
 export type WorkTaskMinAggregateOutputType = {
+  cancellationReason: string | null
   id: string | null
   projectId: string | null
   orderId: string | null
@@ -57,6 +58,7 @@ export type WorkTaskMinAggregateOutputType = {
   reviewDeadline: Date | null
   qaDeadline: Date | null
   claimedReviewerId: string | null
+  claimedQaId: string | null
   attachmentKey: string | null
   attachmentName: string | null
   title: string | null
@@ -84,6 +86,7 @@ export type WorkTaskMinAggregateOutputType = {
 }
 
 export type WorkTaskMaxAggregateOutputType = {
+  cancellationReason: string | null
   id: string | null
   projectId: string | null
   orderId: string | null
@@ -92,6 +95,7 @@ export type WorkTaskMaxAggregateOutputType = {
   reviewDeadline: Date | null
   qaDeadline: Date | null
   claimedReviewerId: string | null
+  claimedQaId: string | null
   attachmentKey: string | null
   attachmentName: string | null
   title: string | null
@@ -119,6 +123,7 @@ export type WorkTaskMaxAggregateOutputType = {
 }
 
 export type WorkTaskCountAggregateOutputType = {
+  cancellationReason: number
   id: number
   projectId: number
   orderId: number
@@ -127,6 +132,7 @@ export type WorkTaskCountAggregateOutputType = {
   reviewDeadline: number
   qaDeadline: number
   claimedReviewerId: number
+  claimedQaId: number
   attachmentKey: number
   attachmentName: number
   title: number
@@ -178,6 +184,7 @@ export type WorkTaskSumAggregateInputType = {
 }
 
 export type WorkTaskMinAggregateInputType = {
+  cancellationReason?: true
   id?: true
   projectId?: true
   orderId?: true
@@ -186,6 +193,7 @@ export type WorkTaskMinAggregateInputType = {
   reviewDeadline?: true
   qaDeadline?: true
   claimedReviewerId?: true
+  claimedQaId?: true
   attachmentKey?: true
   attachmentName?: true
   title?: true
@@ -213,6 +221,7 @@ export type WorkTaskMinAggregateInputType = {
 }
 
 export type WorkTaskMaxAggregateInputType = {
+  cancellationReason?: true
   id?: true
   projectId?: true
   orderId?: true
@@ -221,6 +230,7 @@ export type WorkTaskMaxAggregateInputType = {
   reviewDeadline?: true
   qaDeadline?: true
   claimedReviewerId?: true
+  claimedQaId?: true
   attachmentKey?: true
   attachmentName?: true
   title?: true
@@ -248,6 +258,7 @@ export type WorkTaskMaxAggregateInputType = {
 }
 
 export type WorkTaskCountAggregateInputType = {
+  cancellationReason?: true
   id?: true
   projectId?: true
   orderId?: true
@@ -256,6 +267,7 @@ export type WorkTaskCountAggregateInputType = {
   reviewDeadline?: true
   qaDeadline?: true
   claimedReviewerId?: true
+  claimedQaId?: true
   attachmentKey?: true
   attachmentName?: true
   title?: true
@@ -370,6 +382,7 @@ export type WorkTaskGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 export type WorkTaskGroupByOutputType = {
+  cancellationReason: string | null
   id: string
   projectId: string | null
   orderId: string | null
@@ -378,6 +391,7 @@ export type WorkTaskGroupByOutputType = {
   reviewDeadline: Date | null
   qaDeadline: Date | null
   claimedReviewerId: string | null
+  claimedQaId: string | null
   attachmentKey: string | null
   attachmentName: string | null
   title: string
@@ -428,6 +442,7 @@ export type WorkTaskWhereInput = {
   AND?: Prisma.WorkTaskWhereInput | Prisma.WorkTaskWhereInput[]
   OR?: Prisma.WorkTaskWhereInput[]
   NOT?: Prisma.WorkTaskWhereInput | Prisma.WorkTaskWhereInput[]
+  cancellationReason?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   id?: Prisma.UuidFilter<"WorkTask"> | string
   projectId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
   orderId?: Prisma.StringNullableFilter<"WorkTask"> | string | null
@@ -436,6 +451,7 @@ export type WorkTaskWhereInput = {
   reviewDeadline?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
   qaDeadline?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
   claimedReviewerId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
+  claimedQaId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
   attachmentKey?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   attachmentName?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   title?: Prisma.StringFilter<"WorkTask"> | string
@@ -472,6 +488,7 @@ export type WorkTaskWhereInput = {
 }
 
 export type WorkTaskOrderByWithRelationInput = {
+  cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrderInput | Prisma.SortOrder
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -480,6 +497,7 @@ export type WorkTaskOrderByWithRelationInput = {
   reviewDeadline?: Prisma.SortOrderInput | Prisma.SortOrder
   qaDeadline?: Prisma.SortOrderInput | Prisma.SortOrder
   claimedReviewerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  claimedQaId?: Prisma.SortOrderInput | Prisma.SortOrder
   attachmentKey?: Prisma.SortOrderInput | Prisma.SortOrder
   attachmentName?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -521,12 +539,14 @@ export type WorkTaskWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.WorkTaskWhereInput | Prisma.WorkTaskWhereInput[]
   OR?: Prisma.WorkTaskWhereInput[]
   NOT?: Prisma.WorkTaskWhereInput | Prisma.WorkTaskWhereInput[]
+  cancellationReason?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   projectId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
   orderId?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   category?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   reviewDeadline?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
   qaDeadline?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
   claimedReviewerId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
+  claimedQaId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
   attachmentKey?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   attachmentName?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   title?: Prisma.StringFilter<"WorkTask"> | string
@@ -563,6 +583,7 @@ export type WorkTaskWhereUniqueInput = Prisma.AtLeast<{
 }, "id" | "publicTaskId">
 
 export type WorkTaskOrderByWithAggregationInput = {
+  cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrderInput | Prisma.SortOrder
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -571,6 +592,7 @@ export type WorkTaskOrderByWithAggregationInput = {
   reviewDeadline?: Prisma.SortOrderInput | Prisma.SortOrder
   qaDeadline?: Prisma.SortOrderInput | Prisma.SortOrder
   claimedReviewerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  claimedQaId?: Prisma.SortOrderInput | Prisma.SortOrder
   attachmentKey?: Prisma.SortOrderInput | Prisma.SortOrder
   attachmentName?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -606,6 +628,7 @@ export type WorkTaskScalarWhereWithAggregatesInput = {
   AND?: Prisma.WorkTaskScalarWhereWithAggregatesInput | Prisma.WorkTaskScalarWhereWithAggregatesInput[]
   OR?: Prisma.WorkTaskScalarWhereWithAggregatesInput[]
   NOT?: Prisma.WorkTaskScalarWhereWithAggregatesInput | Prisma.WorkTaskScalarWhereWithAggregatesInput[]
+  cancellationReason?: Prisma.StringNullableWithAggregatesFilter<"WorkTask"> | string | null
   id?: Prisma.UuidWithAggregatesFilter<"WorkTask"> | string
   projectId?: Prisma.UuidNullableWithAggregatesFilter<"WorkTask"> | string | null
   orderId?: Prisma.StringNullableWithAggregatesFilter<"WorkTask"> | string | null
@@ -614,6 +637,7 @@ export type WorkTaskScalarWhereWithAggregatesInput = {
   reviewDeadline?: Prisma.DateTimeNullableWithAggregatesFilter<"WorkTask"> | Date | string | null
   qaDeadline?: Prisma.DateTimeNullableWithAggregatesFilter<"WorkTask"> | Date | string | null
   claimedReviewerId?: Prisma.UuidNullableWithAggregatesFilter<"WorkTask"> | string | null
+  claimedQaId?: Prisma.UuidNullableWithAggregatesFilter<"WorkTask"> | string | null
   attachmentKey?: Prisma.StringNullableWithAggregatesFilter<"WorkTask"> | string | null
   attachmentName?: Prisma.StringNullableWithAggregatesFilter<"WorkTask"> | string | null
   title?: Prisma.StringWithAggregatesFilter<"WorkTask"> | string
@@ -641,6 +665,7 @@ export type WorkTaskScalarWhereWithAggregatesInput = {
 }
 
 export type WorkTaskCreateInput = {
+  cancellationReason?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -648,6 +673,7 @@ export type WorkTaskCreateInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -682,6 +708,7 @@ export type WorkTaskCreateInput = {
 }
 
 export type WorkTaskUncheckedCreateInput = {
+  cancellationReason?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -690,6 +717,7 @@ export type WorkTaskUncheckedCreateInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -723,6 +751,7 @@ export type WorkTaskUncheckedCreateInput = {
 }
 
 export type WorkTaskUpdateInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -730,6 +759,7 @@ export type WorkTaskUpdateInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -764,6 +794,7 @@ export type WorkTaskUpdateInput = {
 }
 
 export type WorkTaskUncheckedUpdateInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -772,6 +803,7 @@ export type WorkTaskUncheckedUpdateInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -805,6 +837,7 @@ export type WorkTaskUncheckedUpdateInput = {
 }
 
 export type WorkTaskCreateManyInput = {
+  cancellationReason?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -813,6 +846,7 @@ export type WorkTaskCreateManyInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -840,6 +874,7 @@ export type WorkTaskCreateManyInput = {
 }
 
 export type WorkTaskUpdateManyMutationInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -847,6 +882,7 @@ export type WorkTaskUpdateManyMutationInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -872,6 +908,7 @@ export type WorkTaskUpdateManyMutationInput = {
 }
 
 export type WorkTaskUncheckedUpdateManyInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -880,6 +917,7 @@ export type WorkTaskUncheckedUpdateManyInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -917,6 +955,7 @@ export type WorkTaskOrderByRelationAggregateInput = {
 }
 
 export type WorkTaskCountOrderByAggregateInput = {
+  cancellationReason?: Prisma.SortOrder
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
@@ -925,6 +964,7 @@ export type WorkTaskCountOrderByAggregateInput = {
   reviewDeadline?: Prisma.SortOrder
   qaDeadline?: Prisma.SortOrder
   claimedReviewerId?: Prisma.SortOrder
+  claimedQaId?: Prisma.SortOrder
   attachmentKey?: Prisma.SortOrder
   attachmentName?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -963,6 +1003,7 @@ export type WorkTaskAvgOrderByAggregateInput = {
 }
 
 export type WorkTaskMaxOrderByAggregateInput = {
+  cancellationReason?: Prisma.SortOrder
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
@@ -971,6 +1012,7 @@ export type WorkTaskMaxOrderByAggregateInput = {
   reviewDeadline?: Prisma.SortOrder
   qaDeadline?: Prisma.SortOrder
   claimedReviewerId?: Prisma.SortOrder
+  claimedQaId?: Prisma.SortOrder
   attachmentKey?: Prisma.SortOrder
   attachmentName?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -998,6 +1040,7 @@ export type WorkTaskMaxOrderByAggregateInput = {
 }
 
 export type WorkTaskMinOrderByAggregateInput = {
+  cancellationReason?: Prisma.SortOrder
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
@@ -1006,6 +1049,7 @@ export type WorkTaskMinOrderByAggregateInput = {
   reviewDeadline?: Prisma.SortOrder
   qaDeadline?: Prisma.SortOrder
   claimedReviewerId?: Prisma.SortOrder
+  claimedQaId?: Prisma.SortOrder
   attachmentKey?: Prisma.SortOrder
   attachmentName?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -1291,6 +1335,7 @@ export type WorkTaskUpdateOneRequiredWithoutDisputesNestedInput = {
 }
 
 export type WorkTaskCreateWithoutAssignedToInput = {
+  cancellationReason?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -1298,6 +1343,7 @@ export type WorkTaskCreateWithoutAssignedToInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -1331,6 +1377,7 @@ export type WorkTaskCreateWithoutAssignedToInput = {
 }
 
 export type WorkTaskUncheckedCreateWithoutAssignedToInput = {
+  cancellationReason?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -1339,6 +1386,7 @@ export type WorkTaskUncheckedCreateWithoutAssignedToInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -1381,6 +1429,7 @@ export type WorkTaskCreateManyAssignedToInputEnvelope = {
 }
 
 export type WorkTaskCreateWithoutCreatedByInput = {
+  cancellationReason?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -1388,6 +1437,7 @@ export type WorkTaskCreateWithoutCreatedByInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -1421,6 +1471,7 @@ export type WorkTaskCreateWithoutCreatedByInput = {
 }
 
 export type WorkTaskUncheckedCreateWithoutCreatedByInput = {
+  cancellationReason?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -1429,6 +1480,7 @@ export type WorkTaskUncheckedCreateWithoutCreatedByInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -1490,6 +1542,7 @@ export type WorkTaskScalarWhereInput = {
   AND?: Prisma.WorkTaskScalarWhereInput | Prisma.WorkTaskScalarWhereInput[]
   OR?: Prisma.WorkTaskScalarWhereInput[]
   NOT?: Prisma.WorkTaskScalarWhereInput | Prisma.WorkTaskScalarWhereInput[]
+  cancellationReason?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   id?: Prisma.UuidFilter<"WorkTask"> | string
   projectId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
   orderId?: Prisma.StringNullableFilter<"WorkTask"> | string | null
@@ -1498,6 +1551,7 @@ export type WorkTaskScalarWhereInput = {
   reviewDeadline?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
   qaDeadline?: Prisma.DateTimeNullableFilter<"WorkTask"> | Date | string | null
   claimedReviewerId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
+  claimedQaId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
   attachmentKey?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   attachmentName?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   title?: Prisma.StringFilter<"WorkTask"> | string
@@ -1541,6 +1595,7 @@ export type WorkTaskUpdateManyWithWhereWithoutCreatedByInput = {
 }
 
 export type WorkTaskCreateWithoutProjectInput = {
+  cancellationReason?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -1548,6 +1603,7 @@ export type WorkTaskCreateWithoutProjectInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -1581,6 +1637,7 @@ export type WorkTaskCreateWithoutProjectInput = {
 }
 
 export type WorkTaskUncheckedCreateWithoutProjectInput = {
+  cancellationReason?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -1588,6 +1645,7 @@ export type WorkTaskUncheckedCreateWithoutProjectInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -1647,6 +1705,7 @@ export type WorkTaskUpdateManyWithWhereWithoutProjectInput = {
 }
 
 export type WorkTaskCreateWithoutSubmissionsInput = {
+  cancellationReason?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -1654,6 +1713,7 @@ export type WorkTaskCreateWithoutSubmissionsInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -1687,6 +1747,7 @@ export type WorkTaskCreateWithoutSubmissionsInput = {
 }
 
 export type WorkTaskUncheckedCreateWithoutSubmissionsInput = {
+  cancellationReason?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -1695,6 +1756,7 @@ export type WorkTaskUncheckedCreateWithoutSubmissionsInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -1743,6 +1805,7 @@ export type WorkTaskUpdateToOneWithWhereWithoutSubmissionsInput = {
 }
 
 export type WorkTaskUpdateWithoutSubmissionsInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1750,6 +1813,7 @@ export type WorkTaskUpdateWithoutSubmissionsInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1783,6 +1847,7 @@ export type WorkTaskUpdateWithoutSubmissionsInput = {
 }
 
 export type WorkTaskUncheckedUpdateWithoutSubmissionsInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1791,6 +1856,7 @@ export type WorkTaskUncheckedUpdateWithoutSubmissionsInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1823,6 +1889,7 @@ export type WorkTaskUncheckedUpdateWithoutSubmissionsInput = {
 }
 
 export type WorkTaskCreateWithoutMessagesInput = {
+  cancellationReason?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -1830,6 +1897,7 @@ export type WorkTaskCreateWithoutMessagesInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -1863,6 +1931,7 @@ export type WorkTaskCreateWithoutMessagesInput = {
 }
 
 export type WorkTaskUncheckedCreateWithoutMessagesInput = {
+  cancellationReason?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -1871,6 +1940,7 @@ export type WorkTaskUncheckedCreateWithoutMessagesInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -1919,6 +1989,7 @@ export type WorkTaskUpdateToOneWithWhereWithoutMessagesInput = {
 }
 
 export type WorkTaskUpdateWithoutMessagesInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1926,6 +1997,7 @@ export type WorkTaskUpdateWithoutMessagesInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1959,6 +2031,7 @@ export type WorkTaskUpdateWithoutMessagesInput = {
 }
 
 export type WorkTaskUncheckedUpdateWithoutMessagesInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1967,6 +2040,7 @@ export type WorkTaskUncheckedUpdateWithoutMessagesInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1999,6 +2073,7 @@ export type WorkTaskUncheckedUpdateWithoutMessagesInput = {
 }
 
 export type WorkTaskCreateWithoutReassignmentRequestsInput = {
+  cancellationReason?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -2006,6 +2081,7 @@ export type WorkTaskCreateWithoutReassignmentRequestsInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -2039,6 +2115,7 @@ export type WorkTaskCreateWithoutReassignmentRequestsInput = {
 }
 
 export type WorkTaskUncheckedCreateWithoutReassignmentRequestsInput = {
+  cancellationReason?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -2047,6 +2124,7 @@ export type WorkTaskUncheckedCreateWithoutReassignmentRequestsInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -2095,6 +2173,7 @@ export type WorkTaskUpdateToOneWithWhereWithoutReassignmentRequestsInput = {
 }
 
 export type WorkTaskUpdateWithoutReassignmentRequestsInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2102,6 +2181,7 @@ export type WorkTaskUpdateWithoutReassignmentRequestsInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2135,6 +2215,7 @@ export type WorkTaskUpdateWithoutReassignmentRequestsInput = {
 }
 
 export type WorkTaskUncheckedUpdateWithoutReassignmentRequestsInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2143,6 +2224,7 @@ export type WorkTaskUncheckedUpdateWithoutReassignmentRequestsInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2175,6 +2257,7 @@ export type WorkTaskUncheckedUpdateWithoutReassignmentRequestsInput = {
 }
 
 export type WorkTaskCreateWithoutPenaltiesInput = {
+  cancellationReason?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -2182,6 +2265,7 @@ export type WorkTaskCreateWithoutPenaltiesInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -2215,6 +2299,7 @@ export type WorkTaskCreateWithoutPenaltiesInput = {
 }
 
 export type WorkTaskUncheckedCreateWithoutPenaltiesInput = {
+  cancellationReason?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -2223,6 +2308,7 @@ export type WorkTaskUncheckedCreateWithoutPenaltiesInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -2271,6 +2357,7 @@ export type WorkTaskUpdateToOneWithWhereWithoutPenaltiesInput = {
 }
 
 export type WorkTaskUpdateWithoutPenaltiesInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2278,6 +2365,7 @@ export type WorkTaskUpdateWithoutPenaltiesInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2311,6 +2399,7 @@ export type WorkTaskUpdateWithoutPenaltiesInput = {
 }
 
 export type WorkTaskUncheckedUpdateWithoutPenaltiesInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2319,6 +2408,7 @@ export type WorkTaskUncheckedUpdateWithoutPenaltiesInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2351,6 +2441,7 @@ export type WorkTaskUncheckedUpdateWithoutPenaltiesInput = {
 }
 
 export type WorkTaskCreateWithoutExtraAttachmentsInput = {
+  cancellationReason?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -2358,6 +2449,7 @@ export type WorkTaskCreateWithoutExtraAttachmentsInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -2391,6 +2483,7 @@ export type WorkTaskCreateWithoutExtraAttachmentsInput = {
 }
 
 export type WorkTaskUncheckedCreateWithoutExtraAttachmentsInput = {
+  cancellationReason?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -2399,6 +2492,7 @@ export type WorkTaskUncheckedCreateWithoutExtraAttachmentsInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -2447,6 +2541,7 @@ export type WorkTaskUpdateToOneWithWhereWithoutExtraAttachmentsInput = {
 }
 
 export type WorkTaskUpdateWithoutExtraAttachmentsInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2454,6 +2549,7 @@ export type WorkTaskUpdateWithoutExtraAttachmentsInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2487,6 +2583,7 @@ export type WorkTaskUpdateWithoutExtraAttachmentsInput = {
 }
 
 export type WorkTaskUncheckedUpdateWithoutExtraAttachmentsInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2495,6 +2592,7 @@ export type WorkTaskUncheckedUpdateWithoutExtraAttachmentsInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2527,6 +2625,7 @@ export type WorkTaskUncheckedUpdateWithoutExtraAttachmentsInput = {
 }
 
 export type WorkTaskCreateWithoutDisputesInput = {
+  cancellationReason?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -2534,6 +2633,7 @@ export type WorkTaskCreateWithoutDisputesInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -2567,6 +2667,7 @@ export type WorkTaskCreateWithoutDisputesInput = {
 }
 
 export type WorkTaskUncheckedCreateWithoutDisputesInput = {
+  cancellationReason?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -2575,6 +2676,7 @@ export type WorkTaskUncheckedCreateWithoutDisputesInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -2623,6 +2725,7 @@ export type WorkTaskUpdateToOneWithWhereWithoutDisputesInput = {
 }
 
 export type WorkTaskUpdateWithoutDisputesInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2630,6 +2733,7 @@ export type WorkTaskUpdateWithoutDisputesInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2663,6 +2767,7 @@ export type WorkTaskUpdateWithoutDisputesInput = {
 }
 
 export type WorkTaskUncheckedUpdateWithoutDisputesInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2671,6 +2776,7 @@ export type WorkTaskUncheckedUpdateWithoutDisputesInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2703,6 +2809,7 @@ export type WorkTaskUncheckedUpdateWithoutDisputesInput = {
 }
 
 export type WorkTaskCreateManyAssignedToInput = {
+  cancellationReason?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -2711,6 +2818,7 @@ export type WorkTaskCreateManyAssignedToInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -2737,6 +2845,7 @@ export type WorkTaskCreateManyAssignedToInput = {
 }
 
 export type WorkTaskCreateManyCreatedByInput = {
+  cancellationReason?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -2745,6 +2854,7 @@ export type WorkTaskCreateManyCreatedByInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -2771,6 +2881,7 @@ export type WorkTaskCreateManyCreatedByInput = {
 }
 
 export type WorkTaskUpdateWithoutAssignedToInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2778,6 +2889,7 @@ export type WorkTaskUpdateWithoutAssignedToInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2811,6 +2923,7 @@ export type WorkTaskUpdateWithoutAssignedToInput = {
 }
 
 export type WorkTaskUncheckedUpdateWithoutAssignedToInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2819,6 +2932,7 @@ export type WorkTaskUncheckedUpdateWithoutAssignedToInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2851,6 +2965,7 @@ export type WorkTaskUncheckedUpdateWithoutAssignedToInput = {
 }
 
 export type WorkTaskUncheckedUpdateManyWithoutAssignedToInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2859,6 +2974,7 @@ export type WorkTaskUncheckedUpdateManyWithoutAssignedToInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2885,6 +3001,7 @@ export type WorkTaskUncheckedUpdateManyWithoutAssignedToInput = {
 }
 
 export type WorkTaskUpdateWithoutCreatedByInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2892,6 +3009,7 @@ export type WorkTaskUpdateWithoutCreatedByInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2925,6 +3043,7 @@ export type WorkTaskUpdateWithoutCreatedByInput = {
 }
 
 export type WorkTaskUncheckedUpdateWithoutCreatedByInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2933,6 +3052,7 @@ export type WorkTaskUncheckedUpdateWithoutCreatedByInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2965,6 +3085,7 @@ export type WorkTaskUncheckedUpdateWithoutCreatedByInput = {
 }
 
 export type WorkTaskUncheckedUpdateManyWithoutCreatedByInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2973,6 +3094,7 @@ export type WorkTaskUncheckedUpdateManyWithoutCreatedByInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2999,6 +3121,7 @@ export type WorkTaskUncheckedUpdateManyWithoutCreatedByInput = {
 }
 
 export type WorkTaskCreateManyProjectInput = {
+  cancellationReason?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -3006,6 +3129,7 @@ export type WorkTaskCreateManyProjectInput = {
   reviewDeadline?: Date | string | null
   qaDeadline?: Date | string | null
   claimedReviewerId?: string | null
+  claimedQaId?: string | null
   attachmentKey?: string | null
   attachmentName?: string | null
   title: string
@@ -3033,6 +3157,7 @@ export type WorkTaskCreateManyProjectInput = {
 }
 
 export type WorkTaskUpdateWithoutProjectInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3040,6 +3165,7 @@ export type WorkTaskUpdateWithoutProjectInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3073,6 +3199,7 @@ export type WorkTaskUpdateWithoutProjectInput = {
 }
 
 export type WorkTaskUncheckedUpdateWithoutProjectInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3080,6 +3207,7 @@ export type WorkTaskUncheckedUpdateWithoutProjectInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3113,6 +3241,7 @@ export type WorkTaskUncheckedUpdateWithoutProjectInput = {
 }
 
 export type WorkTaskUncheckedUpdateManyWithoutProjectInput = {
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3120,6 +3249,7 @@ export type WorkTaskUncheckedUpdateManyWithoutProjectInput = {
   reviewDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   qaDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   claimedReviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimedQaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3223,6 +3353,7 @@ export type WorkTaskCountOutputTypeCountPenaltiesArgs<ExtArgs extends runtime.Ty
 
 
 export type WorkTaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  cancellationReason?: boolean
   id?: boolean
   projectId?: boolean
   orderId?: boolean
@@ -3231,6 +3362,7 @@ export type WorkTaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   reviewDeadline?: boolean
   qaDeadline?: boolean
   claimedReviewerId?: boolean
+  claimedQaId?: boolean
   attachmentKey?: boolean
   attachmentName?: boolean
   title?: boolean
@@ -3268,6 +3400,7 @@ export type WorkTaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
 }, ExtArgs["result"]["workTask"]>
 
 export type WorkTaskSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  cancellationReason?: boolean
   id?: boolean
   projectId?: boolean
   orderId?: boolean
@@ -3276,6 +3409,7 @@ export type WorkTaskSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   reviewDeadline?: boolean
   qaDeadline?: boolean
   claimedReviewerId?: boolean
+  claimedQaId?: boolean
   attachmentKey?: boolean
   attachmentName?: boolean
   title?: boolean
@@ -3306,6 +3440,7 @@ export type WorkTaskSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
 }, ExtArgs["result"]["workTask"]>
 
 export type WorkTaskSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  cancellationReason?: boolean
   id?: boolean
   projectId?: boolean
   orderId?: boolean
@@ -3314,6 +3449,7 @@ export type WorkTaskSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   reviewDeadline?: boolean
   qaDeadline?: boolean
   claimedReviewerId?: boolean
+  claimedQaId?: boolean
   attachmentKey?: boolean
   attachmentName?: boolean
   title?: boolean
@@ -3344,6 +3480,7 @@ export type WorkTaskSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 }, ExtArgs["result"]["workTask"]>
 
 export type WorkTaskSelectScalar = {
+  cancellationReason?: boolean
   id?: boolean
   projectId?: boolean
   orderId?: boolean
@@ -3352,6 +3489,7 @@ export type WorkTaskSelectScalar = {
   reviewDeadline?: boolean
   qaDeadline?: boolean
   claimedReviewerId?: boolean
+  claimedQaId?: boolean
   attachmentKey?: boolean
   attachmentName?: boolean
   title?: boolean
@@ -3378,7 +3516,7 @@ export type WorkTaskSelectScalar = {
   reinstatementCount?: boolean
 }
 
-export type WorkTaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "orderId" | "publicTaskId" | "category" | "reviewDeadline" | "qaDeadline" | "claimedReviewerId" | "attachmentKey" | "attachmentName" | "title" | "description" | "instructions" | "status" | "priority" | "deadline" | "assignedToId" | "createdById" | "createdAt" | "updatedAt" | "unitsOrdered" | "unitRate" | "totalOrderCost" | "billingUnit" | "submissionHours" | "reviewHours" | "qaHours" | "clientRating" | "clientActionAt" | "reinstatedAt" | "reinstatedById" | "reinstatementCount", ExtArgs["result"]["workTask"]>
+export type WorkTaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"cancellationReason" | "id" | "projectId" | "orderId" | "publicTaskId" | "category" | "reviewDeadline" | "qaDeadline" | "claimedReviewerId" | "claimedQaId" | "attachmentKey" | "attachmentName" | "title" | "description" | "instructions" | "status" | "priority" | "deadline" | "assignedToId" | "createdById" | "createdAt" | "updatedAt" | "unitsOrdered" | "unitRate" | "totalOrderCost" | "billingUnit" | "submissionHours" | "reviewHours" | "qaHours" | "clientRating" | "clientActionAt" | "reinstatedAt" | "reinstatedById" | "reinstatementCount", ExtArgs["result"]["workTask"]>
 export type WorkTaskInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   disputes?: boolean | Prisma.WorkTask$disputesArgs<ExtArgs>
   extraAttachments?: boolean | Prisma.WorkTask$extraAttachmentsArgs<ExtArgs>
@@ -3416,6 +3554,7 @@ export type $WorkTaskPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     penalties: Prisma.$TaskPenaltyPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
+    cancellationReason: string | null
     id: string
     projectId: string | null
     orderId: string | null
@@ -3424,6 +3563,7 @@ export type $WorkTaskPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     reviewDeadline: Date | null
     qaDeadline: Date | null
     claimedReviewerId: string | null
+    claimedQaId: string | null
     attachmentKey: string | null
     attachmentName: string | null
     title: string
@@ -3531,8 +3671,8 @@ export interface WorkTaskDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * // Get first 10 WorkTasks
    * const workTasks = await prisma.workTask.findMany({ take: 10 })
    * 
-   * // Only select the `id`
-   * const workTaskWithIdOnly = await prisma.workTask.findMany({ select: { id: true } })
+   * // Only select the `cancellationReason`
+   * const workTaskWithCancellationReasonOnly = await prisma.workTask.findMany({ select: { cancellationReason: true } })
    * 
    */
   findMany<T extends WorkTaskFindManyArgs>(args?: Prisma.SelectSubset<T, WorkTaskFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -3576,9 +3716,9 @@ export interface WorkTaskDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    *   ]
    * })
    * 
-   * // Create many WorkTasks and only return the `id`
-   * const workTaskWithIdOnly = await prisma.workTask.createManyAndReturn({
-   *   select: { id: true },
+   * // Create many WorkTasks and only return the `cancellationReason`
+   * const workTaskWithCancellationReasonOnly = await prisma.workTask.createManyAndReturn({
+   *   select: { cancellationReason: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -3667,9 +3807,9 @@ export interface WorkTaskDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    *   ]
    * })
    * 
-   * // Update zero or more WorkTasks and only return the `id`
-   * const workTaskWithIdOnly = await prisma.workTask.updateManyAndReturn({
-   *   select: { id: true },
+   * // Update zero or more WorkTasks and only return the `cancellationReason`
+   * const workTaskWithCancellationReasonOnly = await prisma.workTask.updateManyAndReturn({
+   *   select: { cancellationReason: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -3880,6 +4020,7 @@ export interface Prisma__WorkTaskClient<T, Null = never, ExtArgs extends runtime
  * Fields of the WorkTask model
  */
 export interface WorkTaskFieldRefs {
+  readonly cancellationReason: Prisma.FieldRef<"WorkTask", 'String'>
   readonly id: Prisma.FieldRef<"WorkTask", 'String'>
   readonly projectId: Prisma.FieldRef<"WorkTask", 'String'>
   readonly orderId: Prisma.FieldRef<"WorkTask", 'String'>
@@ -3888,6 +4029,7 @@ export interface WorkTaskFieldRefs {
   readonly reviewDeadline: Prisma.FieldRef<"WorkTask", 'DateTime'>
   readonly qaDeadline: Prisma.FieldRef<"WorkTask", 'DateTime'>
   readonly claimedReviewerId: Prisma.FieldRef<"WorkTask", 'String'>
+  readonly claimedQaId: Prisma.FieldRef<"WorkTask", 'String'>
   readonly attachmentKey: Prisma.FieldRef<"WorkTask", 'String'>
   readonly attachmentName: Prisma.FieldRef<"WorkTask", 'String'>
   readonly title: Prisma.FieldRef<"WorkTask", 'String'>
