@@ -40,15 +40,25 @@ function roleMenu(role:Role): MenuItem[] {
     links.push({name:"Review Queue",href:"/portal/reviewer/queue",icon:ShieldCheck});
   if (role === "QA" || role === "ADMIN" || role === "SUPER_ADMIN")
     links.push({name:"QA Queue",href:"/portal/qa/queue",icon:ShieldCheck});
+  if (role === "QA" || role === "SUPER_ADMIN")
+    links.push({name:"Client Actions",href:"/portal/qa/client-actions",icon:ClipboardList});
+  if (role === "QA")
+    links.push({name:"Fines",href:"/portal/admin/fines",icon:Settings2});
   if (role === "ADMIN" || role === "SUPER_ADMIN")
     links.push(
       {name:"Task Management",href:"/portal/admin/task-management",icon:ClipboardList},
       {name:"Task Summary",href:"/portal/admin/task-summary",icon:PanelsTopLeft},
       {name:"Force Reassign",href:"/portal/admin/force-reassign",icon:Settings2},
+      {name:"Reassignment Requests",href:"/portal/admin/reassignments",icon:Settings2},
+      {name:"Fines & Penalties",href:"/portal/admin/fines",icon:Settings2},
       {name:"Recruitment",href:"/portal/admin/recruitment",icon:Users},
       {name:"Payment Approvals",href:"/portal/admin/payment-approvals",icon:CreditCard},
     );
-  if (role === "ADMIN") links.push({name:"Time Tracker",href:"/portal/admin/time-tracker",icon:Clock3});
+  if (role === "ADMIN") links.push(
+    {name:"Review & QA Oversight",href:"/portal/admin/review-qa",icon:ShieldCheck},
+    {name:"Employee Management",href:"/portal/admin/employees",icon:Users},
+    {name:"Time Tracker",href:"/portal/admin/time-tracker",icon:Clock3},
+  );
   if (role === "SUPER_ADMIN") links.push(
     {name:"Employees",href:"/portal/super-admin/employees",icon:Users},
     {name:"Payroll",href:"/portal/super-admin/payroll",icon:Wallet},

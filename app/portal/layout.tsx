@@ -1,20 +1,18 @@
 import type { ReactNode } from "react";
 import { Suspense } from "react";
-import PortalDashboardReturn from "./PortalDashboardReturn";
 import AdminActivityTracker from "./AdminActivityTracker";
+import PortalShell from "./PortalShell";
+import "./portal-shell.css";
 
-export default function PortalLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function PortalLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <Suspense fallback={null}>
-        <PortalDashboardReturn />
         <AdminActivityTracker />
       </Suspense>
-      {children}
+      <Suspense fallback={null}>
+        <PortalShell>{children}</PortalShell>
+      </Suspense>
     </>
   );
 }
