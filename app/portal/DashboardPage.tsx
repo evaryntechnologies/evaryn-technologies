@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 
-interface DashboardMetric {
+export interface DashboardMetric {
   label: string;
   value: string | number;
   subtext?: string;
@@ -9,8 +9,9 @@ interface DashboardMetric {
   accent?: "blue" | "emerald" | "amber" | "purple";
 }
 
-interface DashboardPageProps {
+export interface DashboardPageProps {
   role?: string;
+  roles?: string[];
   userName?: string;
   metrics?: DashboardMetric[];
   recentTasks?: Array<{
@@ -21,14 +22,19 @@ interface DashboardPageProps {
     payout?: string;
     deadline?: string;
   }>;
+  [key: string]: any;
 }
 
 export default function DashboardPage({
-  role = "TASKER",
+  role,
+  roles,
   userName = "Team Member",
   metrics,
   recentTasks = [],
 }: DashboardPageProps) {
+  const activeRole =
+    roles && roles.length > 0 ? roles.join(" / ") : role || "TASKER";
+
   const defaultMetrics: DashboardMetric[] = metrics || [
     {
       label: "Available Tasks",
@@ -68,7 +74,7 @@ export default function DashboardPage({
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium">
               <span>Evaryn Workforce Portal</span>
               <span>•</span>
-              <span className="uppercase">{role} VIEW</span>
+              <span className="uppercase">{activeRole} VIEW</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
               Welcome back, {userName}
