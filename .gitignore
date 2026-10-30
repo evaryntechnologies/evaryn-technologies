@@ -46,3 +46,11 @@ next-env.d.ts
 *.bak
 *.ts.bak
 
+
+# Ignore local backups and source archives
+*.backup
+*.backup-*
+.evaryn-backup-*/
+phase*-backup*/
+*.zip
+evaryn-task-source.txt
