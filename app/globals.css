@@ -4,17 +4,17 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #f3f7fc;
-  --foreground: #071327;
+  --background: #e6f8ff;
+  --foreground: #06264f;
   --surface: #ffffff;
-  --border-color: #dce5f0;
+  --border-color: #b5e3f6;
 }
 
 .dark {
-  --background: #071327;
-  --foreground: #f3f7fc;
-  --surface: #101f39;
-  --border-color: #273d60;
+  --background: #001c52;
+  --foreground: #eef8ff;
+  --surface: #002b7f;
+  --border-color: #1d4a9a;
 }
 
 html {
@@ -106,3 +106,21 @@ html:not(.dark) .border-white\/20 {border-color:#c4dbea!important;}
 html:not(.dark) .bg-\[\#0052CC\],html:not(.dark) .bg-blue-600 {color:#fff!important;}
 html:not(.dark) input,html:not(.dark) select,html:not(.dark) textarea {color:#102746;}
 html:not(.dark) input::placeholder,html:not(.dark) textarea::placeholder {color:#58718a;}
+
+/* ===== EVARYN BRAND REVAMP — colours + background only. No layout, text or features changed. =====
+   Light mode = logo cyan (EV RYN letters, #00AEEF). Dark mode = logo dark blue (#002B7F). */
+body { position: relative; isolation: isolate; }
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: url("/backgrounds/evaryn-pattern-light-mode.svg") center / cover no-repeat;
+  opacity: .55;
+}
+.dark body::before { background-image: url("/backgrounds/evaryn-pattern-dark-mode.svg"); opacity: .45; }
+
+/* Let the pattern show through the existing dark page/panel colours */
+.dark [class*="bg-[#071327]"] { background-color: rgba(0, 28, 82, .78) !important; }
+.dark [class*="bg-[#101F39]"], .dark [class*="bg-[#101f39]"] { background-color: rgba(0, 43, 127, .72) !important; border-color: #1d4a9a; }
+.dark [class*="bg-[#0052CC]"] { background-color: #0047ab !important; }
+html:not(.dark) [class*="bg-[#071327]"] { background-color: rgba(214, 244, 255, .80) !important; }
+html:not(.dark) [class*="bg-[#101F39]"] { background-color: rgba(255, 255, 255, .88) !important; border-color: #9fdcf5; }
+html:not(.dark) [class*="bg-[#0052CC]"], html:not(.dark) .bg-blue-600 { background-color: #00aeef !important; color: #fff !important; }
