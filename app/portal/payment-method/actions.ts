@@ -30,8 +30,27 @@ export async function requestPaymentChange(form:FormData) {
     details=JSON.stringify({bankName:bank,accountHolder:owner,accountNumber:number});
   } else throw new Error("Select mobile money or bank transfer.");
   const encrypted=encryptPaymentDetails(details);
-  // DB unique partial index prevents simultaneous duplicate pending requests.
-  await prisma.$executeRaw`INSERT INTO public."PaymentChangeRequest" ("employeeId","method","accountName","details") VALUES (${profile.id}::uuid,${method},${accountName},${encrypted})`;
+  // Transactional pending record + administrator notifications. No account numbers in notifications.
+  await prisma.$transaction(async tx => {
+    const pending = await tx.$queryRaw<Array<{ id: string }>>`
+      INSERT INTO public."PaymentChangeRequest" ("employeeId","method","accountName","details")
+      VALUES (${profile.id}::uuid, ${method}, ${accountName}, ${encrypted})
+      RETURNING "id"`;
+    if (!pending[0]) throw new Error("Could not create the payment request.");
+    const recipients = await tx.employeeProfile.findMany({
+      where: { status: "ACTIVE", role: { in: ["ADMIN", "SUPER_ADMIN"] } },
+      select: { id: true },
+    });
+    if (recipients.length) {
+      await tx.portalNotification.createMany({ data: recipients.map(recipient => ({
+        recipientId: recipient.id,
+        title: "Payment method approval required",
+        body: `An employee submitted a ${existing[0]?.present ? "payment method change" : "first payment method"} for your approval.`,
+        href: "/portal/admin/payment-approvals",
+      })) });
+    }
+  });
   revalidatePath("/portal/payment-method");
   revalidatePath("/portal/admin/payment-approvals");
 }
+

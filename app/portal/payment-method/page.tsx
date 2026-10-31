@@ -3,9 +3,9 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
-import { requestPaymentChange } from "./actions";
+
 import { canChangePaymentNow, paymentChangeWindowMessage } from "./payment-utils";
-import PaymentChangeFields from "./PaymentChangeFields";
+import PaymentRequestForm from "./PaymentRequestForm";
 
 type Current={method:string;accountName:string;updatedAt:Date};
 type Pending={id:string;method:string;requestedAt:Date};
@@ -20,7 +20,7 @@ async function Content(){
  {current[0]&&<p className="mt-5 rounded-xl bg-[#101F39] p-4">Current: {current[0].method} — {current[0].accountName} (approved {current[0].updatedAt.toLocaleDateString("en-KE")})</p>}
  {pending[0]&&<p className="mt-5 rounded-xl border border-amber-400/30 p-4">A {pending[0].method} {current.length ? "change" : "registration"} request submitted on {pending[0].requestedAt.toLocaleDateString("en-KE")} is awaiting approval.</p>}
  {!allowed&&<p className="mt-5 rounded-xl border border-amber-400/30 p-4">{paymentChangeWindowMessage()}</p>}
- {allowed&&!pending.length&&<form action={requestPaymentChange} className="mt-6 max-w-2xl rounded-xl border border-white/10 bg-[#101F39] p-5"><PaymentChangeFields/><button className="mt-5 rounded-lg bg-[#0052CC] px-5 py-3 font-semibold">{current.length ? "Request payment method change" : "Submit payment method for approval"}</button></form>}
+ {allowed&&!pending.length&&<PaymentRequestForm hasCurrent={!!current.length} />}
  </main>;
 }
 export default function Page(){return <Suspense fallback={<p>Loading payment methods…</p>}><Content/></Suspense>}
