@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CalendarCheck2, ClipboardCheck, Clock3, TrendingUp, Users } from "lucide-react";
-import { careers } from "@/lib/careers";
-import { getOpenCareerSlugs } from "@/lib/recruitment-openings";
+import { getHiringCategories } from "@/lib/recruitment-openings";
 import { connection } from "next/server";
 import { Suspense } from "react";
 
@@ -20,8 +19,8 @@ const benefits = [
 
 async function CareerContent() {
   await connection();
-  const openSlugs = new Set(await getOpenCareerSlugs());
-  const openCareers = careers.filter(job => openSlugs.has(job.slug));
+  const careers = await getHiringCategories();
+  const openCareers = careers.filter(job => job.isOpen);
   return (
     <main className="min-h-screen bg-[#F3F7FC] text-[#071327] dark:bg-[#071327] dark:text-white">
       <section className="relative isolate overflow-hidden bg-gradient-to-br from-[#071327] via-[#002B7F] to-[#0052CC] px-6 py-20 text-white md:py-28">

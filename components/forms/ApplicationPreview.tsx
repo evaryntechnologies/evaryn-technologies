@@ -2,12 +2,12 @@
 import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
 import { submitApplication } from "@/app/(public)/apply/actions";
-import { careers } from "@/lib/careers";
+import type { HiringCategory } from "@/lib/recruitment-openings";
 const field="mt-2 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[#071327] dark:bg-[#101F39] dark:text-white";
-export default function ApplicationPreview({openSlugs}:{openSlugs:string[]}) {
+export default function ApplicationPreview({openCareers}:{openCareers:HiringCategory[]}) {
  const [state,action,pending]=useActionState(submitApplication,{success:false,message:""});
  const params=useSearchParams();
- const active=careers.filter(job=>openSlugs.includes(job.slug));
+ const active=openCareers;
  if(state.success) return <p role="status" className="rounded-xl bg-emerald-50 p-6 text-emerald-950">{state.message}</p>;
  if(!active.length) return <p className="rounded-xl bg-white p-6 text-[#071327]">Applications are currently closed.</p>;
  return <form action={action} className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-6 text-[#071327] sm:grid-cols-2 dark:border-slate-700 dark:bg-[#101F39] dark:text-white">
