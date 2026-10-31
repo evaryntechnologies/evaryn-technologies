@@ -30,13 +30,14 @@ export async function getEarningsReport() {
   // Server filters by authenticated employee ID; query parameters NEVER select an employee.
   const modern = await prisma.$queryRaw<DbRow[]>`
     SELECT l.id,l."sourceType",COALESCE(t.title,'Admin activity') AS label,
-      t.category,l."grossAmount",l."fineAmount",l."payableAmount",l."payoutDate",l.status,l."paidAt"
+      t.category,l."grossAmount",l."fineAmount",COALESCE(a."paidAmount",l."payableAmount") AS "payableAmount",l."payoutDate",l.status,l."paidAt"
     FROM public."WorkforcePayLedger" l
+    LEFT JOIN public."PayTeamAllocation" a ON a."ledgerId"=l.id
     LEFT JOIN public."WorkTask" t ON t.id=l."taskId"
     WHERE l."employeeId"=${employee.id}::uuid ORDER BY l."payoutDate" DESC LIMIT 5000`;
   const legacy = await prisma.$queryRaw<DbRow[]>`
     SELECT l.id,'LEGACY'::text AS "sourceType",t.title AS label,t.category,
-      l."grossAmount",l."fineAmount",l."payableAmount",l."payoutDate",l.status,l."paidAt"
+      l."grossAmount",l."fineAmount",COALESCE(a."paidAmount",l."payableAmount") AS "payableAmount",l."payoutDate",l.status,l."paidAt"
     FROM public."PayrollEntry" l JOIN public."WorkTask" t ON t.id=l."taskId"
     WHERE l."employeeId"=${employee.id}::uuid ORDER BY l."payoutDate" DESC LIMIT 5000`;
   const rows: EarningsRow[] = [...modern, ...legacy].map(x => ({
