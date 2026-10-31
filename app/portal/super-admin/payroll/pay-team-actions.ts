@@ -8,7 +8,7 @@ const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 const uuidPattern = /^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i;
 type Payable = { id: string; payableAmount: unknown };
 
-export async function settleTeamBalance(form: FormData): Promise<void> {
+async function performSettlement(form: FormData): Promise<void> {
   const user = await requireEmployee(["SUPER_ADMIN"]);
   const employeeId = String(form.get("employeeId") || "");
   const payoutDate = String(form.get("payoutDate") || "");
@@ -30,9 +30,12 @@ export async function settleTeamBalance(form: FormData): Promise<void> {
     const rows = await tx.$queryRaw<Payable[]>`
       SELECT l.id, l."payableAmount" FROM public."WorkforcePayLedger" l
       WHERE l."employeeId"=${employeeId}::uuid AND l."payoutDate"=${payoutDate}::date AND l.status='PENDING'
-        AND l."payoutDate" <= (now() AT TIME ZONE 'Africa/Nairobi')::date
         AND (l."taskId" IS NULL OR EXISTS (SELECT 1 FROM public."WorkTask" t WHERE t.id=l."taskId" AND t.status='COMPLETED' AND t."clientActionAt" IS NOT NULL))
         AND NOT EXISTS (SELECT 1 FROM public."PayTeamAllocation" a WHERE a."ledgerId"=l.id)
+        AND NOT EXISTS (SELECT 1 FROM public."WorkforcePayDecision" d WHERE d."ledgerId"=l.id)
+        AND NOT EXISTS (SELECT 1 FROM public."WorkforcePayLedger" prior
+          WHERE prior.id<>l.id AND prior.status='PAID' AND l."taskId" IS NOT NULL
+            AND prior."taskId"=l."taskId" AND prior."employeeId"=l."employeeId" AND prior."sourceType"=l."sourceType")
       ORDER BY l."createdAt",l.id FOR UPDATE OF l`;
     if (!rows.length) throw new Error("Nothing payable for this employee and period. Refresh the page.");
     const methods=await tx.$queryRaw<Array<{hasMethod:boolean}>>`
@@ -68,4 +71,26 @@ export async function settleTeamBalance(form: FormData): Promise<void> {
   revalidatePath("/portal/super-admin/payroll");
   revalidatePath("/portal/earnings");
   revalidatePath("/portal/notifications");
+}
+
+
+export type SettlementFeedback = { status: "idle" | "success" | "error"; message: string };
+
+/** Return the validation/database message to the form instead of an opaque failed Server Action. */
+export async function settleTeamBalance(
+  _previous: SettlementFeedback,
+  form: FormData,
+): Promise<SettlementFeedback> {
+  try {
+    await performSettlement(form);
+    return {status:"success", message:"Payment recorded. This employee's selected payout-period balance is now settled."};
+  } catch (error) {
+    console.error("Pay Team settlement failed", error);
+    const message = error instanceof Error ? error.message : "Unable to record payment. Check the server logs.";
+    // Do not expose raw SQL and internal stack traces to the browser.
+    const safe = /^(Invalid payment request|Enter |Nothing payable|Employee has no approved payment method|Not authorized|Amount must|Invalid outstanding balance|Settlement allocation|A payroll entry was updated)/.test(message)
+      ? message
+      : "Payment could not be recorded. Verify the Pay Team migration and review the server logs.";
+    return {status:"error", message:safe};
+  }
 }
