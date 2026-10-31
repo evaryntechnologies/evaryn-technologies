@@ -21,7 +21,7 @@ import {
 
 type Props = { searchParams: Promise<{ tab?: string }> };
 type Session = { id: string; startedAt: Date; endedAt: Date | null; activeSeconds: number; rateHourly: unknown };
-type Work = { id: string; title: string; category: string; status: string; type: string };
+type Work = { id: string; title: string; category: string; status: string; type: string; assignedForTasking?: boolean };
 
 const typeTone = { "Tasker Task": "cyan", "Reviewer Task": "blue", "QA Task": "violet" } as const;
 
@@ -69,7 +69,7 @@ async function Content({ searchParams }: Props) {
     const id = t.publicTaskId ?? t.id;
     const base = { id: t.id, title: `${id} · ${t.title}`, category: t.category ?? "Uncategorized", status: t.status };
     if (t.assignedToId === person.id || t.submissions.some((s) => s.employeeId === person.id))
-      work.set(t.id + ":TASKER", { ...base, type: "Tasker Task" });
+      work.set(t.id + ":TASKER", { ...base, type: "Tasker Task", assignedForTasking: t.assignedToId === person.id });
     if (t.claimedReviewerId === person.id || t.submissions.some((s) => s.reviews.some((r) => r.reviewerId === person.id && r.stage === "REVIEWER")))
       work.set(t.id + ":REVIEWER", { ...base, type: "Reviewer Task" });
     if (t.submissions.some((s) => s.reviews.some((r) => r.reviewerId === person.id && r.stage === "QA")))
@@ -130,7 +130,14 @@ async function Content({ searchParams }: Props) {
                 </div>
                 <h2 className="mt-3 text-lg font-bold leading-snug">{w.title}</h2>
                 <p className="mt-1 text-sm text-[var(--ev-muted)]">{w.category}</p>
-                <div className="mt-4 flex flex-1 items-end">
+                <div className="mt-4 flex flex-1 flex-wrap items-end gap-2">
+                  {w.type === "Tasker Task" && w.assignedForTasking && (
+                    <Link href={`/portal/tasker/tasks/${w.id}`} className={btnPrimary}>
+                      {w.status === "ASSIGNED" || w.status === "REWORK_REQUIRED"
+                        ? "Open & Submit Work"
+                        : "View Tasker Work"}
+                    </Link>
+                  )}
                   <Link href={`/portal/tasks/${w.id}/discussion`} className={btnGhost}>
                     <MessageSquare size={15} aria-hidden="true" /> Order discussion
                   </Link>
