@@ -90,6 +90,8 @@ async function TaskContent({
           <h2 className="text-xl font-bold">Task Details</h2>
           {task.attachmentKey && <p className="mt-4"><a className="text-cyan-300 underline" href={`/portal/attachments/${task.id}`}>Download reference: {task.attachmentName ?? "Attachment"}</a></p>}
           {task.extraAttachments.map(file => <p key={file.id} className="mt-3"><a className="text-cyan-300 underline" href={`/portal/attachments/${task.id}/extra/${file.id}`}>Additional file: {file.fileName}</a></p>)}
+          {task.clientRevisionNote && task.status === "REWORK_REQUIRED" && <div className="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 p-4"><strong className="text-amber-100">Client requested revision</strong><p className="mt-2 whitespace-pre-wrap text-sm text-amber-50">{task.clientRevisionNote}</p></div>}
+          {task.clientPaidPercent != null && Number(task.clientPaidPercent) > 0 && Number(task.clientPaidPercent) < 100 && <p className="mt-3 rounded-lg border border-cyan-400/30 bg-cyan-400/10 p-3 text-sm text-cyan-100">Client paid partially: {Number(task.clientPaidPercent)}%. Eligible earnings are prorated to this percentage.</p>}
           <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-slate-300">
             {task.description}
           </p>

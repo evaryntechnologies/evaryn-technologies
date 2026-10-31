@@ -17,14 +17,14 @@ export async function saveOrderAttachment(form: FormData, taskId: string, employ
   if (!url || !secret) throw new Error("Private attachment storage is not configured.");
   const client = createClient(url, secret, {auth:{autoRefreshToken:false,persistSession:false}});
   const key = `${taskId}/${randomUUID()}`;
-  const {error} = await client.storage.from("task-attachments").upload(key,file,{
-    contentType:"application/octet-stream",upsert:false
+  const {error} = await client.storage.from("task-attachments").upload(key,new Uint8Array(await file.arrayBuffer()),{
+    contentType:file.type || "application/octet-stream",upsert:false
   });
-  if (error) throw new Error("Could not store attachment.");
+  if (error) throw new Error(`Attachment upload failed: ${error.message}. Check the private task-attachments bucket and Vercel SUPABASE_SERVICE_ROLE_KEY.`);
   try {
     return await prisma.taskExtraAttachment.create({data:{
       taskId,uploadedById:employeeId,storageKey:key,fileName:file.name,
-      contentType:"application/octet-stream"
+      contentType:file.type || "application/octet-stream"
     }});
   } catch (e) {
     await client.storage.from("task-attachments").remove([key]);
