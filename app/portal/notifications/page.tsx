@@ -3,7 +3,7 @@ import { connection } from "next/server";
 import Link from "next/link";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
-import { markNotificationRead } from "./actions";
+import { markNotificationRead, markAllNotificationsRead } from "./actions";
 
 type Group = "orders"|"payments"|"general"|"account";
 const groups: {key:Group;label:string}[] = [
@@ -28,7 +28,7 @@ async function Content({searchParams}:{searchParams:Promise<{group?:string}>}) {
  const selected:Group = groups.some(g=>g.key===requested) ? requested as Group : "orders";
  return <main className="min-h-screen bg-[#071327] px-4 py-8 text-white sm:px-8">
   <Link href="/portal" className="text-cyan-300 underline">Dashboard</Link>
-  <h1 className="mt-5 text-3xl font-bold">Notifications</h1>
+  <div className="mt-5 flex flex-wrap items-center justify-between gap-3"><h1 className="text-3xl font-bold">Notifications</h1><form action={markAllNotificationsRead}><button type="submit" className="rounded-xl border border-cyan-400/40 px-4 py-2 text-sm font-semibold text-cyan-100 hover:bg-cyan-500/10">Mark all as read</button></form></div>
   <p className="mt-2 text-sm text-slate-300">Your task updates, payment information, announcements and account notices.</p>
   <nav aria-label="Notification categories" className="mt-6 flex flex-wrap gap-2">{groups.map(g=>{
    const count=notifications.filter(n=>bucket(n.title,n.href)===g.key && !n.readAt).length;
@@ -38,7 +38,7 @@ async function Content({searchParams}:{searchParams:Promise<{group?:string}>}) {
    <p className="font-semibold">{n.title} {!n.readAt&&<span className="ml-2 text-cyan-300">New</span>}</p>
    <p className="mt-2 whitespace-pre-wrap text-sm text-slate-300">{n.body}</p>
    <p className="mt-2 text-xs text-slate-400">{n.createdAt.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"})}</p>
-   <div className="mt-3 flex gap-4">{n.href&&<Link href={n.href} className="text-cyan-300 underline">Open</Link>}{!n.readAt&&<form action={markNotificationRead}><input type="hidden" name="id" value={n.id}/><button className="text-cyan-300 underline">Mark read</button></form>}</div>
+   <div className="mt-3 flex gap-4">{<Link href={`/portal/notifications/${n.id}`} className="text-cyan-300 underline">Open notification</Link>}{!n.readAt&&<form action={markNotificationRead}><input type="hidden" name="id" value={n.id}/><button className="text-cyan-300 underline">Mark read</button></form>}</div>
   </article>)}{notifications.filter(n=>bucket(n.title,n.href)===selected).length===0&&<p className="text-slate-300">No notifications in this category.</p>}</section>
  </main>;
 }

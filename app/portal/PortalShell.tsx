@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { Bell } from "lucide-react";
 
 export interface NavItem {
   label: string;
@@ -219,10 +220,11 @@ export default function PortalShell({
               href="/portal/notifications"
               className="relative px-3 py-1.5 rounded-xl bg-[#12141C] border border-white/[0.08] hover:border-white/20 text-xs font-medium text-slate-200 transition"
             >
-              Alerts
+              <Bell size={17} aria-hidden="true" />
+              <span className="sr-only">Notifications</span>
               {unreadNotifications > 0 && (
-                <span className="ml-1.5 px-1.5 py-0.2 bg-blue-600 text-white rounded-full text-[10px]">
-                  {unreadNotifications}
+                <span className="absolute -right-2 -top-2 min-w-5 rounded-full bg-blue-500 px-1.5 py-0.5 text-center text-[10px] font-bold text-white" aria-label={`${unreadNotifications} unread notifications`}>
+                  {unreadNotifications > 99 ? "99+" : unreadNotifications}
                 </span>
               )}
             </Link>

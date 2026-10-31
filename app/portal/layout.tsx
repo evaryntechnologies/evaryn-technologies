@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Suspense } from "react";
 import AdminActivityTracker from "./AdminActivityTracker";
-import PortalShell from "./PortalShell";
+import PortalShellWithNotifications from "./PortalShellWithNotifications";
 import "./portal-shell.css";
 
 export default function PortalLayout({ children }: { children: ReactNode }) {
@@ -11,7 +11,7 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
         <AdminActivityTracker />
       </Suspense>
       <Suspense fallback={null}>
-        <PortalShell>{children}</PortalShell>
+        <PortalShellWithNotifications>{children}</PortalShellWithNotifications>
       </Suspense>
     </div>
   );
