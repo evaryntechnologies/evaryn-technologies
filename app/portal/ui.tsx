@@ -109,9 +109,16 @@ export function TabNav({
           href={t.href}
           aria-current={t.active ? "page" : undefined}
           className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold no-underline transition ${
-            t.active
-              ? "bg-[var(--ev-primary)] text-[var(--ev-on-primary)]"
-              : "text-[var(--ev-ink)] hover:bg-[var(--ev-surface-2)]"
+            ({
+              progress: "bg-yellow-300/25 text-yellow-800 dark:text-yellow-200",
+              revision: "bg-orange-400/20 text-orange-800 dark:text-orange-200",
+              completed: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+              cancelled: "bg-red-400/20 text-red-700 dark:text-red-200",
+            } as Record<string, string>)[t.key]
+              ? `${({ progress: "bg-yellow-300/25 text-yellow-800 dark:text-yellow-200", revision: "bg-orange-400/20 text-orange-800 dark:text-orange-200", completed: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300", cancelled: "bg-red-400/20 text-red-700 dark:text-red-200" } as Record<string, string>)[t.key]} ${t.active ? "ring-2 ring-current/30" : "opacity-80 hover:opacity-100"}`
+              : t.active
+                ? "bg-[var(--ev-primary)] text-[var(--ev-on-primary)]"
+                : "text-[var(--ev-ink)] hover:bg-[var(--ev-surface-2)]"
           }`}
         >
           {t.label}
@@ -134,8 +141,9 @@ export function TabNav({
 const pillTones = {
   cyan: "bg-cyan-500/15 text-[#0369a1] dark:text-[#7dd8ff]",
   green: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
-  amber: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
-  rose: "bg-rose-500/15 text-rose-700 dark:text-rose-300",
+  amber: "bg-yellow-300/25 text-yellow-800 dark:bg-yellow-300/20 dark:text-yellow-200",
+  orange: "bg-orange-400/20 text-orange-800 dark:bg-orange-400/20 dark:text-orange-200",
+  rose: "bg-red-400/20 text-red-700 dark:bg-red-400/20 dark:text-red-200",
   slate: "bg-slate-500/15 text-slate-600 dark:text-slate-300",
   violet: "bg-violet-500/15 text-violet-700 dark:text-violet-300",
   blue: "bg-blue-500/15 text-blue-700 dark:text-blue-300",
@@ -161,8 +169,10 @@ export function Pill({
 export function statusTone(status: string): PillTone {
   const s = status.toUpperCase();
   if (s === "COMPLETED" || s === "PAID" || s === "APPROVED") return "green";
-  if (s.startsWith("CANCEL") || s === "REJECTED") return "slate";
-  if (s.includes("REWORK") || s.includes("REVISION") || s === "PENDING") return "amber";
+  if (s.startsWith("CANCEL") || s === "REJECTED") return "rose";
+  if (s.includes("REWORK") || s.includes("REVISION")) return "orange";
+  if (s === "ASSIGNED" || s === "IN_PROGRESS" || s === "WORK_IN_PROGRESS" || s === "REVIEW_IN_PROGRESS" || s === "QA_IN_PROGRESS") return "amber";
+  if (s === "PENDING") return "amber";
   if (s.includes("QA")) return "violet";
   if (s.includes("REVIEW")) return "blue";
   if (s.includes("DELIVERED")) return "cyan";
