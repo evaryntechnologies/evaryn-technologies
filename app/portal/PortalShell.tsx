@@ -77,46 +77,66 @@ function roleMenu(role:Role): MenuItem[] {
   links.push(...baseMenu.slice(1), {name:"Ratings & Rubrics",href:"/portal/ratings",icon:Star});
   return links;
 }
-// Super Admin navigation is grouped here; routes and authorization stay unchanged.
+// Navigation presentation only: authorization remains enforced by the destination routes.
 type NavigationGroup = { name: string; icon: typeof LayoutDashboard; items: MenuItem[] };
-const superAdminNavigation: (MenuItem | NavigationGroup)[] = [
-  {name:"Dashboard",href:"/portal/super-admin",icon:LayoutDashboard},
-  {name:"All My Orders",href:"/portal/my-work",icon:PanelsTopLeft},
-  {name:"Order Queues",icon:ClipboardList,items:[
-    {name:"Review Queue",href:"/portal/reviewer/queue",icon:ShieldCheck},
-    {name:"QA Queue",href:"/portal/qa/queue",icon:ShieldCheck},
-    {name:"Client Actions",href:"/portal/qa/client-actions",icon:ClipboardList},
-  ]},
-  {name:"Operations Hub",icon:Compass,items:[
-    {name:"Operations Overview",href:"/portal/admin/operations",icon:Compass},
-    {name:"Task Management",href:"/portal/admin/task-management",icon:ClipboardList},
-    {name:"Task Summary",href:"/portal/admin/task-summary",icon:PanelsTopLeft},
-    {name:"Force Reassign",href:"/portal/admin/force-reassign",icon:Settings2},
-    {name:"Reassignment Requests",href:"/portal/admin/reassignments",icon:Settings2},
-    {name:"Categories",href:"/portal/super-admin/categories",icon:Settings2},
-    {name:"Ratings & Rubrics",href:"/portal/ratings",icon:Star},
-    {name:"Fines & Penalties",href:"/portal/admin/fines",icon:Settings2},
-  ]},
-  {name:"Disputes",href:"/portal/admin/disputes",icon:Gavel},
-  {name:"People Management",icon:Users,items:[
-    {name:"Employees",href:"/portal/super-admin/employees",icon:Users},
-    {name:"Recruitment",href:"/portal/admin/recruitment",icon:Users},
-  ]},
-  {name:"Finances",icon:Wallet,items:[
-    {name:"Payment Approvals",href:"/portal/admin/payment-approvals",icon:CreditCard},
-    {name:"Payment Adjustments",href:"/portal/super-admin/payment-adjustments",icon:SlidersHorizontal},
-    {name:"Pay Team",href:"/portal/super-admin/payroll/pay-team",icon:HandCoins},
-    {name:"Payroll",href:"/portal/super-admin/payroll",icon:Wallet},
-    {name:"Admin Hours",href:"/portal/super-admin/payroll/admin-hours",icon:Clock3},
-    {name:"Payment Method",href:"/portal/payment-method",icon:CreditCard},
-    {name:"My Earnings",href:"/portal/earnings",icon:Wallet},
-  ]},
-  {name:"Other Operations",icon:MessageSquare,items:[
-    {name:"Inquiries",href:"/portal/super-admin/inquiries",icon:MessageSquare},
-    {name:"Audit Log",href:"/portal/super-admin/audit-log",icon:ShieldCheck},
-    {name:"Team Memos",href:"/portal/announcements",icon:MessageSquare},
-  ]},
-];
+type NavigationEntry = MenuItem | NavigationGroup;
+
+function groupedNavigation(role: Role): NavigationEntry[] {
+  const links = roleMenu(role);
+  const used = new Set<string>();
+  const single = (name: string): MenuItem | undefined => {
+    const link = links.find(item => item.name === name && !used.has(item.href));
+    if (link) used.add(link.href);
+    return link;
+  };
+  const section = (name: string, icon: typeof LayoutDashboard, names: string[]): NavigationGroup | undefined => {
+    const items = names.map(single).filter((item): item is MenuItem => Boolean(item));
+    return items.length ? {name, icon, items} : undefined;
+  };
+  const navigation: (NavigationEntry | undefined)[] = [
+    single("Dashboard"),
+    single("All My Orders"),
+    single("Task Hub"),
+    section("My Orders", ClipboardList, ["In Progress", "In Revision", "Completed", "Canceled Orders"]),
+  ];
+  if (role !== "TASKER") {
+    navigation.push(section("Order Queues", ShieldCheck, ["Review Queue", "QA Queue", "Client Actions"]));
+  }
+  if (role === "SUPER_ADMIN" || role === "ADMIN") {
+    navigation.push(
+      section("Operations Hub", Compass, [
+        "Operations Hub", "Task Management", "Task Summary", "Force Reassign",
+        "Reassignment Requests", "Categories", "Review & QA Oversight",
+        "Fines & Penalties", "Disputes", "Ratings & Rubrics",
+      ]),
+      section("People Management", Users, ["Employees", "Employee Management", "Recruitment"]),
+      section("Finance & Payroll", Wallet, [
+        "Payment Approvals", "Payment Adjustments", "Payroll", "Pay Team",
+        "Admin Hours", "Time Tracker", "My Earnings", "Payment Method",
+      ]),
+    );
+    if (role === "SUPER_ADMIN") {
+      navigation.push(section("Administration", Settings2, ["Inquiries", "Audit Log"]));
+    }
+    // Team memos is a shared page, linked here without changing any role permissions.
+    navigation.push({name:"Team Memos",href:"/portal/announcements",icon:MessageSquare});
+  } else if (role === "QA") {
+    navigation.push(section("Quality & Oversight", ShieldCheck, ["Fines", "Disputes", "Ratings & Rubrics"]));
+    navigation.push({name:"Team Memos",href:"/portal/announcements",icon:MessageSquare});
+  } else if (role === "REVIEWER") {
+    navigation.push(section("Quality & Feedback", Star, ["Ratings & Rubrics"]));
+    navigation.push({name:"Team Memos",href:"/portal/announcements",icon:MessageSquare});
+  } else {
+    navigation.push(section("Feedback", Star, ["Ratings & Rubrics"]));
+  }
+  if (role !== "ADMIN" && role !== "SUPER_ADMIN") {
+    navigation.push(section("Finances", Wallet, ["My Earnings", "Payment Method"]));
+  }
+  // Notifications are available through the persistent header bell, not duplicated in the sidebar.
+  const remaining = links.filter(item => !used.has(item.href) && item.name !== "Notifications");
+  if (remaining.length) navigation.push({name:"Additional Tools",icon:PanelsTopLeft,items:remaining});
+  return navigation.filter((item): item is NavigationEntry => Boolean(item));
+}
 function isNavigationGroup(item:MenuItem | NavigationGroup): item is NavigationGroup {
   return "items" in item;
 }
@@ -171,7 +191,7 @@ export default function PortalShell({children,unreadNotifications=0}:{children:R
   },[]);
   useEffect(()=>{setCmdOpen(false)},[pathname]);
   if(isAuth) return <>{children}</>;
-  const navigation=role === "SUPER_ADMIN" ? superAdminNavigation : role ? roleMenu(role) : [];
+  const navigation=role ? groupedNavigation(role) : [];
   const entries:MenuItem[]=navigation.flatMap(item=>isNavigationGroup(item)?item.items:[item]);
   const results=entries.filter(e=>e.name.toLowerCase().includes(query.trim().toLowerCase())).slice(0,9);
   const go=(href:string)=>{setCmdOpen(false);router.push(href);};
