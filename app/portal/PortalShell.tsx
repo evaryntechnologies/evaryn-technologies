@@ -203,7 +203,7 @@ export default function PortalShell({children,unreadNotifications=0}:{children:R
           const Icon=item.icon;
           if(isNavigationGroup(item)){
             const active=item.items.some(child=>isActive(child.href));
-            return <details key={item.name} className="ev-nav-group" defaultOpen={active}>
+            return <details key={item.name} className="ev-nav-group" open={active}>
               <summary className={`ev-nav-link ev-nav-group-trigger ${active?"ev-nav-group-active":""}`}><Icon size={17}/><span>{item.name}</span><ChevronDown size={15} className="ev-nav-chevron ev-nav-group-arrow"/></summary>
               <div className="ev-nav-group-items">{item.items.map(child=>{
                 const ChildIcon=child.icon;
