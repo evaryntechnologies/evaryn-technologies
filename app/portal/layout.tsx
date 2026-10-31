@@ -6,13 +6,13 @@ import "./portal-shell.css";
 
 export default function PortalLayout({ children }: { children: ReactNode }) {
   return (
-    <>
+    <div className="ev-portal">
       <Suspense fallback={null}>
         <AdminActivityTracker />
       </Suspense>
       <Suspense fallback={null}>
         <PortalShell>{children}</PortalShell>
       </Suspense>
-    </>
+    </div>
   );
 }

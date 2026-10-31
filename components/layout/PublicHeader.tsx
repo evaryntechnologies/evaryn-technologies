@@ -24,21 +24,21 @@ export default function PublicHeader() {
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/55 backdrop-blur-lg dark:border-slate-800 dark:bg-[#071327]/55">
-      <div className="mx-auto flex h-24 w-full items-center justify-between gap-4 px-5 md:px-8">
+    <header className="sticky top-0 z-50 border-b-[3px] border-[var(--ev-cyan)] bg-[color-mix(in_srgb,var(--ev-nav)_92%,transparent)] shadow-[var(--ev-shadow)] backdrop-blur-lg">
+      <div className="mx-auto flex h-20 w-full max-w-[1400px] items-center justify-between gap-4 px-5 md:px-8">
         <Link
           href="/"
           onClick={closeMenu}
-          className="flex min-w-0 items-center gap-3"
+          className="flex min-w-0 items-center gap-3 rounded-xl dark:bg-[#f3fbff] dark:px-3 dark:py-1"
           aria-label="Evaryn Technologies Limited - Home"
         >
-          <Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={320} height={95} className="h-auto max-h-20 w-auto max-w-[min(62vw,320px)] object-contain" priority />
+          <Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={320} height={95} className="h-auto max-h-14 w-auto max-w-[min(62vw,260px)] object-contain" priority />
         </Link>
 
         {/* Desktop navigation */}
         <nav
           aria-label="Main navigation"
-          className="hidden items-center gap-5 lg:flex"
+          className="hidden items-center gap-1 lg:flex"
         >
           {links.map((link) => {
             const active =
@@ -50,10 +50,10 @@ export default function PublicHeader() {
                 key={link.href}
                 href={link.href}
                 aria-current={active ? "page" : undefined}
-                className={`text-sm font-medium transition hover:text-[#0052CC] dark:hover:text-cyan-300 ${
+                className={`rounded-lg px-3 py-2 text-sm font-semibold transition hover:bg-[var(--ev-surface-2)] hover:text-[var(--ev-accent-text)] ${
                   active
-                    ? "text-[#0052CC] dark:text-cyan-300"
-                    : "text-slate-600 dark:text-slate-300"
+                    ? "bg-[var(--ev-surface-2)] text-[var(--ev-accent-text)]"
+                    : "text-[var(--ev-ink)]"
                 }`}
               >
                 {link.label}
@@ -71,7 +71,7 @@ export default function PublicHeader() {
             aria-current={
               pathname === STAFF_LOGIN_URL ? "page" : undefined
             }
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#003F9E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0052CC]"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#003F9E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ev-cyan)]"
           >
             <LockKeyhole size={16} aria-hidden="true" />
             Staff Login
@@ -87,7 +87,7 @@ export default function PublicHeader() {
           aria-expanded={menuOpen}
           aria-controls="mobile-navigation"
           onClick={() => setMenuOpen((previous) => !previous)}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 text-[#071327] dark:border-slate-700 dark:text-white lg:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--ev-border)] bg-[var(--ev-surface)] text-[var(--ev-ink)] lg:hidden"
         >
           {menuOpen ? (
             <X size={22} aria-hidden="true" />
@@ -102,7 +102,7 @@ export default function PublicHeader() {
         <nav
           id="mobile-navigation"
           aria-label="Mobile navigation"
-          className="border-t border-slate-200 bg-white px-5 py-5 dark:border-slate-800 dark:bg-[#071327] lg:hidden"
+          className="border-t border-[var(--ev-border)] bg-[var(--ev-nav)] px-5 py-5 lg:hidden"
         >
           <div className="mx-auto flex w-full flex-col gap-2">
             {links.map((link) => {
@@ -116,10 +116,10 @@ export default function PublicHeader() {
                   href={link.href}
                   onClick={closeMenu}
                   aria-current={active ? "page" : undefined}
-                  className={`rounded-lg px-3 py-3 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800 ${
+                  className={`rounded-lg px-3 py-3 text-sm font-semibold transition hover:bg-[var(--ev-surface-2)] ${
                     active
-                      ? "bg-blue-50 text-[#0052CC] dark:bg-slate-800 dark:text-cyan-300"
-                      : "text-slate-700 dark:text-slate-200"
+                      ? "bg-[var(--ev-surface-2)] text-[var(--ev-accent-text)]"
+                      : "text-[var(--ev-ink)]"
                   }`}
                 >
                   {link.label}
@@ -127,7 +127,7 @@ export default function PublicHeader() {
               );
             })}
 
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-5 dark:border-slate-800">
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ev-border)] pt-5">
               <ThemeSwitcher />
 
               <Link
@@ -138,7 +138,7 @@ export default function PublicHeader() {
                     ? "page"
                     : undefined
                 }
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#003F9E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0052CC]"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#003F9E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ev-cyan)]"
               >
                 <LockKeyhole size={16} aria-hidden="true" />
                 Staff Login

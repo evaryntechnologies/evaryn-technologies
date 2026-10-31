@@ -1,20 +1,68 @@
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
 @import "@fontsource/inter/700.css";
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* =====================================================================
+   EVARYN BRAND THEME
+   Brand colours sampled from the logo:
+     cyan  #00B0F8  (the EVARYN lettering)
+     blue  #0048A8  (the "A" mark and the tagline)
+   Light mode  -> airy cyan-blue surfaces (tints of the cyan)
+   Dark mode   -> deep logo-blue surfaces (shades of the blue, never black)
+   Everything below is driven by these variables.
+   ===================================================================== */
 :root {
-  --background: #f3f7fc;
-  --foreground: #071327;
-  --surface: #ffffff;
-  --border-color: #dce5f0;
+  --ev-cyan: #00b0f8;
+  --ev-blue: #0048a8;
+
+  --ev-page: #d6f1fe;
+  --ev-page-2: #c3e9fb;
+  --ev-surface: #f3fbff;
+  --ev-surface-2: #e2f5fe;
+  --ev-inset: #e6f7ff;
+  --ev-nav: #eaf8ff;
+  --ev-border: #9ed8f2;
+  --ev-border-soft: #bde5f6;
+  --ev-ink: #052b5c;
+  --ev-muted: #2d5b85;
+  --ev-accent-text: #0048a8;
+  --ev-primary: #0048a8;
+  --ev-primary-hover: #003a8a;
+  --ev-on-primary: #ffffff;
+  --ev-hero-from: #003a8a;
+  --ev-hero-via: #0058be;
+  --ev-hero-to: #0096e0;
+  --ev-shadow: 0 14px 34px -16px rgba(0, 72, 168, 0.35);
+
+  --background: var(--ev-page);
+  --foreground: var(--ev-ink);
+  --surface: var(--ev-surface);
+  --border-color: var(--ev-border);
 }
 
 .dark {
-  --background: #071327;
-  --foreground: #f3f7fc;
-  --surface: #101f39;
-  --border-color: #273d60;
+  --ev-page: #002a66;
+  --ev-page-2: #00235a;
+  --ev-surface: #00388c;
+  --ev-surface-2: #00449f;
+  --ev-inset: #002f78;
+  --ev-nav: #00214f;
+  --ev-border: #1e64bc;
+  --ev-border-soft: #154f9c;
+  --ev-ink: #f2faff;
+  --ev-muted: #bbdcf6;
+  --ev-accent-text: #52caff;
+  --ev-primary: #00b0f8;
+  --ev-primary-hover: #38c4ff;
+  --ev-on-primary: #00224f;
+  --ev-hero-from: #001b45;
+  --ev-hero-via: #00388c;
+  --ev-hero-to: #0a62c8;
+  --ev-shadow: 0 14px 34px -16px rgba(0, 12, 40, 0.6);
 }
 
 html {
@@ -23,13 +71,11 @@ html {
 
 body {
   margin: 0;
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--ev-page);
+  color: var(--ev-ink);
   font-family:
-    -apple-system, BlinkMacSystemFont,
-    "SF Pro Text", "SF Pro Display",
-    "Helvetica Neue", system-ui,
-    "Segoe UI", Roboto, Arial, sans-serif;
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -49,16 +95,16 @@ textarea {
 }
 
 :focus-visible {
-  outline: 2px solid #00aeef;
+  outline: 2px solid var(--ev-cyan);
   outline-offset: 3px;
 }
 
 ::selection {
-  background: #00aeef;
-  color: #071327;
+  background: var(--ev-cyan);
+  color: #00224f;
 }
 
-/* Evaryn unified typography */
+/* Unified typography */
 html,
 body,
 button,
@@ -67,42 +113,244 @@ textarea,
 select,
 option {
   font-family: "Inter", Arial, sans-serif !important;
-  font-weight: 700;
 }
-/* Responsive application layout: allow grids and tables to shrink without clipping. */
-html, body { width:100%; max-width:100%; overflow-x:clip; }
-main { width:100%; min-width:0; }
-main > div { min-width:0; }
-.grid > * { min-width:0; }
-img, svg { max-width:100%; }
-input, select, textarea { max-width:100%; }
-@media (max-width: 640px) { main { overflow-wrap:anywhere; } main table { display:block; max-width:100%; overflow-x:auto; } }
-
-/* Light appearance for the historically dark portal surfaces. Dark mode remains untouched. */
-html:not(.dark) .bg-\[\#071327\] { background-color:#eaf8ff !important; color:#102746; }
-html:not(.dark) .bg-\[\#101F39\] { background-color:#ffffff !important; color:#102746; border-color:#c4e1f2; }
-html:not(.dark) main.text-white { color:#102746 !important; }
-html:not(.dark) .text-slate-300,html:not(.dark) .text-slate-400 { color:#395574 !important; }
-
-/* EVARYN ACCESSIBLE LIGHT PORTAL â€” scoped; no dark-mode or grid/stretch changes. */
-html:not(.dark) body:has(a[href="/portal/task-hub"]) .bg-\[\#101F39\],
-html:not(.dark) body:has(a[href="/portal/task-hub"]) .bg-\[\#071327\] {
-  background-color: #ffffff !important;
-  color: #102746;
-  border-color: #c4e1f2;
+html,
+body {
+  font-weight: 500;
 }
-html:not(.dark) [class*="bg-[#101F39]"] {background-color:#fff!important;color:#102746;}
-html:not(.dark) [class*="bg-[#071327]"] {background-color:#eef8fd!important;color:#102746;}
-html:not(.dark) .text-slate-200,
-html:not(.dark) .text-slate-300,
-html:not(.dark) .text-slate-400 {color:#3b5771!important;}
-html:not(.dark) .text-cyan-200,
-html:not(.dark) .text-cyan-300,
-html:not(.dark) .text-cyan-400 {color:#075a89!important;}
-html:not(.dark) .border-white\/10,
-html:not(.dark) .border-white\/15,
-html:not(.dark) .border-white\/20 {border-color:#c4dbea!important;}
-/* Keep white text on branded action buttons, not on pale card surfaces. */
-html:not(.dark) .bg-\[\#0052CC\],html:not(.dark) .bg-blue-600 {color:#fff!important;}
-html:not(.dark) input,html:not(.dark) select,html:not(.dark) textarea {color:#102746;}
-html:not(.dark) input::placeholder,html:not(.dark) textarea::placeholder {color:#58718a;}
+button {
+  font-weight: 600;
+}
+h1,
+h2,
+h3 {
+  letter-spacing: -0.015em;
+}
+
+/* Responsive application layout */
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+main {
+  width: 100%;
+  min-width: 0;
+}
+main > div {
+  min-width: 0;
+}
+.grid > * {
+  min-width: 0;
+}
+img,
+svg {
+  max-width: 100%;
+}
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+@media (max-width: 640px) {
+  main {
+    overflow-wrap: anywhere;
+  }
+  main table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* =====================================================================
+   PUBLIC WEBSITE  (wrapper: .ev-public)
+   Pages use paired light / dark utilities, so we only swap the surface
+   colours for the brand tokens.
+   ===================================================================== */
+.ev-public .bg-white,
+.ev-public .bg-\[\#F3F7FC\],
+.ev-public .bg-slate-50 {
+  background-color: var(--ev-page);
+}
+.ev-public .bg-white {
+  background-color: var(--ev-surface);
+}
+.ev-public .bg-\[\#E7F6FF\] {
+  background-color: var(--ev-surface-2);
+}
+.ev-public .border-slate-200,
+.ev-public .border-slate-300,
+.ev-public .border-cyan-200 {
+  border-color: var(--ev-border);
+}
+.ev-public .from-\[\#E7F6FF\] {
+  --tw-gradient-from: var(--ev-surface-2);
+}
+.ev-public .to-\[\#D5E9FB\] {
+  --tw-gradient-to: var(--ev-page-2);
+}
+
+/* dark variants -> logo blue */
+.dark .ev-public .dark\:bg-\[\#071327\] {
+  background-color: var(--ev-page);
+}
+.dark .ev-public .dark\:bg-\[\#0C1B33\] {
+  background-color: var(--ev-page-2);
+}
+.dark .ev-public .dark\:bg-\[\#101F39\],
+.dark .ev-public .dark\:bg-\[\#101f39\] {
+  background-color: var(--ev-surface);
+}
+.dark .ev-public .dark\:bg-\[\#102D4D\],
+.dark .ev-public .dark\:bg-\[\#102442\],
+.dark .ev-public .dark\:bg-\[\#17365B\],
+.dark .ev-public .dark\:bg-\[\#18385D\],
+.dark .ev-public .dark\:bg-slate-800 {
+  background-color: var(--ev-surface-2);
+}
+.dark .ev-public .dark\:border-slate-700,
+.dark .ev-public .dark\:border-slate-800,
+.dark .ev-public .dark\:border-slate-600,
+.dark .ev-public .dark\:border-\[\#24496E\] {
+  border-color: var(--ev-border);
+}
+.dark .ev-public .dark\:from-\[\#102D4D\] {
+  --tw-gradient-from: var(--ev-surface-2);
+}
+.dark .ev-public .dark\:to-\[\#071327\] {
+  --tw-gradient-to: var(--ev-page);
+}
+.dark .ev-public .dark\:text-slate-300,
+.dark .ev-public .dark\:text-slate-200 {
+  color: var(--ev-muted);
+}
+
+/* Hero / call-to-action gradients (both modes) */
+.ev-public .from-\[\#071327\],
+.ev-portal .from-\[\#071327\] {
+  --tw-gradient-from: var(--ev-hero-from);
+}
+.ev-public .via-\[\#002B7F\],
+.ev-portal .via-\[\#002B7F\] {
+  --tw-gradient-via: var(--ev-hero-via);
+}
+.ev-public .to-\[\#002B7F\] {
+  --tw-gradient-to: var(--ev-hero-via);
+}
+.ev-public .to-\[\#0052CC\],
+.ev-portal .to-\[\#0052CC\] {
+  --tw-gradient-to: var(--ev-hero-to);
+}
+
+/* Brand buttons (solid) */
+.ev-public .bg-\[\#0052CC\],
+.ev-portal .bg-\[\#0052CC\],
+.ev-public .bg-\[\#00AEEF\],
+.ev-public .bg-\[\#00C6FF\] {
+  background-color: var(--ev-primary);
+  color: var(--ev-on-primary) !important;
+}
+.ev-public .hover\:bg-\[\#003F9E\]:hover,
+.ev-portal .hover\:bg-\[\#003F9E\]:hover,
+.ev-public .hover\:bg-\[\#00C6FF\]:hover,
+.ev-public .group:hover .group-hover\:bg-\[\#003F9E\],
+.ev-portal .group:hover .group-hover\:bg-\[\#003F9E\] {
+  background-color: var(--ev-primary-hover);
+}
+/* On dark hero bands the call-to-action stays cyan with navy text in both modes */
+.ev-public [class*="bg-gradient"] .bg-\[\#00AEEF\],
+.ev-public [class*="bg-gradient"] .bg-\[\#0052CC\] {
+  background-color: #00b0f8;
+  color: #00224f !important;
+}
+.ev-public [class*="bg-gradient"] .bg-\[\#00AEEF\]:hover,
+.ev-public [class*="bg-gradient"] .bg-\[\#0052CC\]:hover {
+  background-color: #38c4ff;
+}
+
+/* =====================================================================
+   STAFF PORTAL  (wrapper: .ev-portal)
+   The portal pages were written dark-first with hard-coded colours.
+   Those colours are remapped to the brand tokens for BOTH modes.
+   ===================================================================== */
+.ev-portal .bg-\[\#071327\] {
+  background-color: var(--ev-page);
+}
+.ev-portal .bg-\[\#071327\]\/60,
+.ev-portal .bg-\[\#071327\]\/70,
+.ev-portal .bg-\[\#071327\]\/95 {
+  background-color: var(--ev-inset);
+}
+.ev-portal .bg-\[\#101F39\] {
+  background-color: var(--ev-surface);
+  border-color: var(--ev-border-soft);
+  box-shadow: var(--ev-shadow);
+}
+.ev-portal .bg-\[\#0B1B34\],
+.ev-portal .bg-\[\#08162d\],
+.ev-portal .bg-\[\#102442\] {
+  background-color: var(--ev-nav);
+}
+.ev-portal .bg-\[\#002B7F\] {
+  background-color: var(--ev-hero-via);
+}
+.ev-portal .hover\:bg-\[\#15294B\]:hover {
+  background-color: var(--ev-surface-2);
+}
+.ev-portal main.text-white {
+  color: var(--ev-ink);
+}
+.ev-portal .border-white\/10,
+.ev-portal .border-white\/15,
+.ev-portal .border-white\/20 {
+  border-color: var(--ev-border-soft);
+}
+.ev-portal .text-slate-200,
+.ev-portal .text-slate-300,
+.ev-portal .text-slate-400 {
+  color: var(--ev-muted);
+}
+.ev-portal input,
+.ev-portal select,
+.ev-portal textarea {
+  color: var(--ev-ink);
+}
+.ev-portal input::placeholder,
+.ev-portal textarea::placeholder {
+  color: var(--ev-muted);
+  opacity: 0.75;
+}
+.ev-portal .bg-white\/5,
+.ev-portal .bg-white\/10 {
+  background-color: color-mix(in srgb, var(--ev-cyan) 10%, transparent);
+}
+
+/* Accent text: deep blue on light, bright cyan-blue on dark */
+.ev-portal .text-cyan-100,
+.ev-portal .text-cyan-200,
+.ev-portal .text-cyan-300,
+.ev-portal .text-cyan-400,
+.ev-portal .text-cyan-600 {
+  color: var(--ev-accent-text);
+}
+
+/* Light mode only: status colours need darker shades on pale surfaces */
+html:not(.dark) .ev-portal .text-emerald-200,
+html:not(.dark) .ev-portal .text-emerald-300 {
+  color: #047857;
+}
+html:not(.dark) .ev-portal .text-amber-200,
+html:not(.dark) .ev-portal .text-amber-300 {
+  color: #92400e;
+}
+html:not(.dark) .ev-portal .text-red-200 {
+  color: #b91c1c;
+}
+html:not(.dark) .ev-portal .bg-amber-950\/30 {
+  background-color: #fef3c7;
+}
+html:not(.dark) .ev-portal .bg-emerald-950\/30 {
+  background-color: #d1fae5;
+}

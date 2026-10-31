@@ -26,14 +26,14 @@ async function CareerContent() {
     <main className="min-h-screen bg-[#F3F7FC] text-[#071327] dark:bg-[#071327] dark:text-white">
       <section className="relative isolate overflow-hidden bg-gradient-to-br from-[#071327] via-[#002B7F] to-[#0052CC] px-6 py-20 text-white md:py-28">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[url('/watermarks/evaryn-watermark.svg')] bg-right bg-no-repeat opacity-10" />
-        <div className="relative mx-auto w-full">
+        <div className="relative mx-auto w-full max-w-[1400px]">
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-cyan-200">Careers at Evaryn</p>
           <h1 className="mt-5 max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">Join the Evaryn team</h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">Bring your skills to a team built around innovation, people and progress. Explore what working with Evaryn can look like.</p>
         </div>
       </section>
 
-      <section className="mx-auto w-full px-6 py-16 md:px-8">
+      <section className="mx-auto w-full max-w-[1400px] px-6 py-16 md:px-8">
         <div className="mb-8 flex items-center gap-3"><Users className="text-[#0052CC] dark:text-cyan-300" /><h2 className="text-3xl font-bold">Why work with us?</h2></div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {benefits.map(({ title, detail, Icon }) => (
@@ -45,7 +45,7 @@ async function CareerContent() {
         </div>
       </section>
 
-      <section className="mx-auto w-full px-6 pb-20 md:px-8">
+      <section className="mx-auto w-full max-w-[1400px] px-6 pb-20 md:px-8">
         <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#0052CC] dark:text-cyan-300">Opportunities</p>
         <h2 className="mt-3 text-3xl font-bold">Current openings</h2>
         {openCareers.length === 0 ? (

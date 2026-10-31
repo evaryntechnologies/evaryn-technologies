@@ -1,5 +1,5 @@
 import DashboardPage from "../DashboardPage";
 
 export default function Page() {
-  return <DashboardPage roles={["TASKER"]} />;
+  return <DashboardPage variant="tasker" roles={["TASKER"]} />;
 }

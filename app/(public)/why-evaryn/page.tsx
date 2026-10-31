@@ -24,13 +24,13 @@ export default function WhyEvarynPage() {
     <main className="bg-[#F3F7FC] text-[#071327] dark:bg-[#071327] dark:text-white">
       <section className="relative isolate overflow-hidden bg-gradient-to-br from-[#071327] via-[#002B7F] to-[#0052CC] px-6 py-20 text-white md:py-28">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[url('/watermarks/evaryn-watermark.svg')] bg-right bg-no-repeat opacity-15" />
-        <div className="relative mx-auto w-full">
+        <div className="relative mx-auto w-full max-w-[1400px]">
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-cyan-300">The Evaryn difference</p>
           <h1 className="mt-5 max-w-3xl text-4xl font-bold tracking-tight md:text-6xl">Why Evaryn?</h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">Innovation. People. Progress. More than a tagline, these ideas shape how we approach work and quality.</p>
         </div>
       </section>
-      <section className="mx-auto w-full px-6 py-20 md:px-8">
+      <section className="mx-auto w-full max-w-[1400px] px-6 py-20 md:px-8">
         <p className="text-sm font-bold uppercase tracking-widest text-[#0052CC] dark:text-cyan-300">Our commitments</p>
         <h2 className="mt-4 text-3xl font-bold md:text-4xl">Quality at every stage</h2>
         <p className="mt-4 max-w-2xl leading-7 text-slate-600 dark:text-slate-300">These principles guide the way we organize, review and deliver project work.</p>
@@ -45,7 +45,7 @@ export default function WhyEvarynPage() {
         </div>
       </section>
       <section className="bg-white px-6 py-20 dark:bg-[#0C1B33] md:px-8">
-        <div className="mx-auto w-full">
+        <div className="mx-auto w-full max-w-[1400px]">
           <p className="text-sm font-bold uppercase tracking-widest text-[#0052CC] dark:text-cyan-300">What drives us</p>
           <h2 className="mt-4 text-3xl font-bold md:text-4xl">Our three core values</h2>
           <div className="mt-11 grid gap-6 md:grid-cols-3">
@@ -61,7 +61,7 @@ export default function WhyEvarynPage() {
         </div>
       </section>
       <section className="px-6 py-20 md:px-8">
-        <div className="mx-auto flex w-full flex-col items-start justify-between gap-8 rounded-3xl bg-gradient-to-r from-[#071327] to-[#002B7F] p-9 text-white md:flex-row md:items-center md:p-14">
+        <div className="mx-auto flex w-full max-w-[1400px] flex-col items-start justify-between gap-8 rounded-3xl bg-gradient-to-r from-[#071327] to-[#002B7F] p-9 text-white md:flex-row md:items-center md:p-14">
           <div><h2 className="text-3xl font-bold">Let's work together</h2><p className="mt-4 max-w-xl leading-7 text-slate-200">Tell us what you need, and we can discuss a suitable way forward.</p></div>
           <Link href="/contact" className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#00AEEF] px-7 py-4 font-semibold text-[#071327] hover:bg-[#00C6FF]">Get in touch <ArrowRight size={18} /></Link>
         </div>

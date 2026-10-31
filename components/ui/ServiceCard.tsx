@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import {
   ArrowUpRight,
   FileText,
@@ -25,8 +25,9 @@ export default function ServiceCard({
   return (
     <Link
       href={`/services/${service.slug}`}
-      className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#00AEEF] hover:shadow-xl dark:border-slate-700 dark:bg-[#101F39]"
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#00AEEF] hover:shadow-xl dark:border-slate-700 dark:bg-[#101F39]"
     >
+      <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-[#0048A8] to-[#00B0F8] transition-transform duration-300 group-hover:scale-x-100" />
       <div className="flex items-start justify-between">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E7F6FF] text-[#0052CC] dark:bg-[#17365B] dark:text-[#00C6FF]">
           <Icon size={27} strokeWidth={1.8} />

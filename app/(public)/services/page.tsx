@@ -14,7 +14,7 @@ export default function ServicesPage() {
   return (
     <main className="min-h-screen bg-[#F3F7FC] text-[#071327] dark:bg-[#071327] dark:text-white">
       <section className="bg-gradient-to-br from-[#071327] via-[#002B7F] to-[#0052CC] px-6 py-20 text-white md:py-28">
-        <div className="mx-auto w-full">
+        <div className="mx-auto w-full max-w-[1400px]">
           <p className="text-sm font-bold uppercase tracking-[0.22em] text-cyan-300">
             What we offer
           </p>
@@ -35,7 +35,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section className="mx-auto w-full px-6 py-20 md:px-8">
+      <section className="mx-auto w-full max-w-[1400px] px-6 py-20 md:px-8">
         <div className="mb-10">
           <p className="text-sm font-bold uppercase tracking-widest text-[#0052CC] dark:text-cyan-300">
             Explore our expertise
@@ -60,7 +60,7 @@ export default function ServicesPage() {
       </section>
 
       <section className="px-6 pb-20 md:px-8">
-        <div className="mx-auto w-full rounded-3xl bg-[#002B7F] px-7 py-12 text-white md:px-14 md:py-16">
+        <div className="mx-auto w-full max-w-[1400px] rounded-3xl bg-[#002B7F] px-7 py-12 text-white md:px-14 md:py-16">
           <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
             <div>
               <p className="text-sm font-bold uppercase tracking-widest text-cyan-300">

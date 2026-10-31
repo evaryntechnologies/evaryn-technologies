@@ -1,5 +1,5 @@
 import DashboardPage from "../DashboardPage";
 
 export default function Page() {
-  return <DashboardPage roles={["ADMIN", "SUPER_ADMIN"]} />;
+  return <DashboardPage variant="admin" roles={["ADMIN", "SUPER_ADMIN"]} />;
 }
