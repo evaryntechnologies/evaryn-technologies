@@ -185,20 +185,35 @@ export async function POST(request: Request) {
       );
     }
 
-    // The production submission switch above remains OFF.
-    // Rate limiting must be added before activating this route.
     const { prisma } = await import("@/lib/db/prisma");
 
-    const inquiry = await prisma.clientInquiry.create({
-      data: result.data,
-      select: { id: true },
+    const inquiry = await prisma.$transaction(async (tx) => {
+      const created = await tx.clientInquiry.create({
+        data: result.data,
+        select: { id: true },
+      });
+      const admins = await tx.employeeProfile.findMany({
+        where: { role: { in: ["ADMIN", "SUPER_ADMIN"] }, status: "ACTIVE" },
+        select: { id: true },
+      });
+      if (admins.length) {
+        await tx.portalNotification.createMany({
+          data: admins.map((admin) => ({
+            recipientId: admin.id,
+            title: "New website contact inquiry",
+            body: `${result.data.name} submitted an inquiry about ${result.data.service}.`,
+            href: "/portal/super-admin/inquiries",
+          })),
+        });
+      }
+      return created;
     });
 
     return NextResponse.json(
       {
         success: true,
         reference: inquiry.id,
-        message: "Your inquiry has been received.",
+        message: "Thank you for contacting us. Our team will reach out to you soon.",
       },
       { status: 201 }
     );

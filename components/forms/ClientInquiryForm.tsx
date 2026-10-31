@@ -1,8 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useState, type FormEvent } from "react";
+import { Turnstile } from "@marsidev/react-turnstile";
 import { useSearchParams } from "next/navigation";
-import { AlertCircle, CheckCircle2, ShieldCheck } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { services } from "@/lib/services";
 
 type Kind = "contact" | "custom";
@@ -14,19 +15,51 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
   const matchingService = services.find((service) => service.title === requestedService);
   const defaultService = matchingService?.title ?? "";
   const [feedback, setFeedback] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    // Backend intentionally not yet connected. Do not read or send private data here.
-    setFeedback(true);
+    if (kind === "custom") { setFeedback(true); return; }
+    setErrorMessage("");
+    if (!turnstileToken) { setErrorMessage("Please complete the security verification."); return; }
+    setSubmitting(true);
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    try {
+      const response = await fetch("/api/public/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.get("name"), email: data.get("email"),
+          service: data.get("service"), details: data.get("details"),
+          turnstileToken, website: data.get("website") ?? "",
+        }),
+      });
+      const result: { error?: string } = await response.json();
+      if (!response.ok) throw new Error(result.error || "We could not submit your message. Please try again.");
+      setSubmitted(true);
+      form.reset();
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Unable to submit your message.");
+      setTurnstileToken("");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
-    <form onSubmit={handleSubmit} onChange={() => setFeedback(false)} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-[#0C1B33] sm:p-9">
-      <div className="mb-7 flex items-start gap-3 rounded-xl border border-cyan-200 bg-cyan-50 p-4 text-sm leading-6 text-[#003F7F] dark:border-cyan-900 dark:bg-[#102D4D] dark:text-cyan-100">
-        <ShieldCheck className="mt-0.5 shrink-0" size={21} aria-hidden="true" />
-        <p>This is a website preview. Forms are not being sent or saved yet. Please do not enter sensitive information.</p>
-      </div>
+    <form onSubmit={handleSubmit} onChange={() => { setFeedback(false); setErrorMessage(""); }} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-[#0C1B33] sm:p-9">
+      {submitted && kind === "contact" ? (
+        <div role="status" className="rounded-xl border border-cyan-300 bg-cyan-50 p-6 text-[#003F7F] dark:border-cyan-800 dark:bg-[#102D4D] dark:text-cyan-100">
+          <CheckCircle2 className="mb-3" aria-hidden="true" />
+          Thank you for contacting us. Our team will reach out to you soon.
+        </div>
+      ) : <>
+      <input name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[10000px] h-px w-px opacity-0" />
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="block text-sm font-semibold">Full name <span className="text-red-600">*</span>
           <input name="name" autoComplete="name" required maxLength={120} className={inputStyle} placeholder="Your full name" />
@@ -68,18 +101,24 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
           <textarea name="details" required minLength={15} maxLength={5000} rows={6} className={inputStyle} placeholder="Describe what you need, your goals and any important requirements." />
         </label>
       </div>
+      {kind === "contact" && turnstileSiteKey && (
+        <div className="mt-6"><Turnstile siteKey={turnstileSiteKey} options={{ action: "contact" }} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken("")} onError={() => setTurnstileToken("")} /></div>
+      )}
+      {kind === "contact" && !turnstileSiteKey && <p role="alert" className="mt-4 text-sm text-red-700">Contact submissions are temporarily unavailable. Please try again later.</p>}
+      {errorMessage && <p role="alert" className="mt-5 rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800">{errorMessage}</p>}
       {feedback && (
         <div role="status" className="mt-6 flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-100">
           <AlertCircle className="mt-0.5 shrink-0" size={19} aria-hidden="true" />
-          <p>Your form is valid, but it has <strong>not been submitted</strong>. Submission will be enabled after we connect secure storage.</p>
+          <p>This custom service request form is not yet accepting submissions.</p>
         </div>
       )}
       <div className="mt-7 flex flex-wrap items-center justify-between gap-4">
         <p className="text-xs text-slate-500 dark:text-slate-400">Fields marked * are required.</p>
-        <button type="submit" className="inline-flex items-center gap-2 rounded-xl bg-[#0052CC] px-7 py-3.5 font-semibold text-white transition hover:bg-[#003F9E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400">
-          <CheckCircle2 size={18} aria-hidden="true" /> Check my details
+        <button type="submit" disabled={submitting || (kind === "contact" && (!turnstileSiteKey || !turnstileToken))} className="inline-flex items-center gap-2 rounded-xl bg-[#0052CC] px-7 py-3.5 font-semibold text-white transition hover:bg-[#003F9E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400">
+          <CheckCircle2 size={18} aria-hidden="true" /> {submitting ? "Sending..." : kind === "contact" ? "Send message" : "Check my details"}
         </button>
       </div>
+      </>}
     </form>
   );
 }
