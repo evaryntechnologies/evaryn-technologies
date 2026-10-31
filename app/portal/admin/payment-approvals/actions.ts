@@ -9,10 +9,12 @@ export async function decidePaymentChange(form:FormData){
  if(!actor||actor.status!=="ACTIVE"||!["ADMIN","SUPER_ADMIN"].includes(actor.role))throw new Error("Not authorized.");
  const id=String(form.get("id")??"");const decision=String(form.get("decision")??"");const note=String(form.get("note")??"").trim();
  if(!/^[0-9a-f-]{36}$/i.test(id)||!["APPROVED","REJECTED"].includes(decision)||note.length>2000)throw new Error("Invalid request.");
- if(!canChangePaymentNow())throw new Error("Payment details are locked before the payout date.");
+ // Initial registration and rejection remain possible during payout locks; changes cannot be approved then.
  await prisma.$transaction(async tx=>{
   const rows=await tx.$queryRaw<Array<{id:string;employeeId:string;method:string;accountName:string;details:string}>>`SELECT "id","employeeId","method","accountName","details" FROM public."PaymentChangeRequest" WHERE "id"=${id}::uuid AND "status"='PENDING' FOR UPDATE`;
   const req=rows[0];if(!req)throw new Error("Request already processed.");
+  const existing=await tx.$queryRaw<Array<{present:boolean}>>`SELECT EXISTS(SELECT 1 FROM public."EmployeePaymentMethod" WHERE "employeeId"=${req.employeeId}::uuid) AS present`;
+  if(decision==="APPROVED" && existing[0]?.present && !canChangePaymentNow())throw new Error("Existing payment method changes cannot be approved during the payout lock.");
   if(decision==="APPROVED")await tx.$executeRaw`INSERT INTO public."EmployeePaymentMethod" ("employeeId","method","accountName","details") VALUES (${req.employeeId}::uuid,${req.method},${req.accountName},${req.details}) ON CONFLICT ("employeeId") DO UPDATE SET "method"=EXCLUDED."method","accountName"=EXCLUDED."accountName","details"=EXCLUDED."details","updatedAt"=now()`;
   await tx.$executeRaw`UPDATE public."PaymentChangeRequest" SET "status"=${decision},"reviewedById"=${actor.id}::uuid,"reviewNote"=${note||null},"reviewedAt"=now() WHERE "id"=${id}::uuid`;
  });

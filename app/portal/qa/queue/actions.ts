@@ -58,7 +58,7 @@ export async function qaDecision(formData: FormData): Promise<void> {
   if (!candidate || candidate.status !== "PENDING_QA" || candidate.task.status !== "PENDING_QA" || candidate.task.claimedQaId !== qaEmployee.id) {
     redirect("/portal/qa/queue?error=processed");
   }
-  const attachment = await saveOrderAttachment(formData, candidate.taskId, qaEmployee.id);
+  const attachment = await saveOrderAttachment(formData, candidate.taskId, qaEmployee.id, false);
   let outcome: boolean;
   try {
     outcome = await prisma.$transaction(async (tx) => {
