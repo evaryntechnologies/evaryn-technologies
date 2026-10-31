@@ -1,3 +1,4 @@
+import { BackLink } from "@/app/portal/ui";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import Link from "next/link";
@@ -198,12 +199,7 @@ async function HistoryContent({
 
   return (
     <div className="w-full max-w-none">
-      <Link
-        href={user.role === "SUPER_ADMIN" ? "/portal/super-admin" : "/portal/admin"}
-        className="text-sm font-semibold text-cyan-300 hover:underline"
-      >
-        Back to Administration
-      </Link>
+      <BackLink href={user.role === "SUPER_ADMIN" ? "/portal/super-admin" : "/portal/admin"} label="Dashboard" />
 
       <header className="mt-8">
         <p className="text-xs font-bold tracking-widest text-cyan-300">

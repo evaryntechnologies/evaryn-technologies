@@ -1,3 +1,4 @@
+import { BackLink } from "@/app/portal/ui";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import Link from "next/link";
@@ -47,9 +48,7 @@ async function ReviewQueueContent({
   return (
     <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
       <div className="w-full max-w-none">
-        <Link href="/portal/reviewer" className="text-sm font-semibold text-cyan-300 hover:underline">
-          Back to Reviewer Dashboard
-        </Link>
+        <BackLink href="/portal/reviewer" label="Dashboard" />
 
         <header className="mt-8">
           <p className="text-xs font-bold tracking-widest text-cyan-300">

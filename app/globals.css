@@ -354,3 +354,118 @@ html:not(.dark) .ev-portal .bg-amber-950\/30 {
 html:not(.dark) .ev-portal .bg-emerald-950\/30 {
   background-color: #d1fae5;
 }
+
+/* =====================================================================
+   PORTAL DESIGN LAYER
+   Applies one consistent look to every staff page, including the ones
+   that still use their original markup: forms, tables, headings, links.
+   ===================================================================== */
+.ev-portal main h1 {
+  letter-spacing: -0.02em;
+  font-weight: 800;
+}
+.ev-portal main h2 {
+  letter-spacing: -0.01em;
+}
+.ev-portal main > div:only-child {
+  max-width: 1400px;
+  margin-inline: auto;
+}
+
+/* form controls */
+.ev-portal input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="file"]),
+.ev-portal select,
+.ev-portal textarea {
+  border: 1px solid var(--ev-border);
+  border-radius: 0.75rem;
+  background-color: var(--ev-surface);
+  color: var(--ev-ink);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.ev-portal input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="file"]):focus,
+.ev-portal select:focus,
+.ev-portal textarea:focus {
+  outline: none;
+  border-color: var(--ev-cyan);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ev-cyan) 28%, transparent);
+}
+.ev-portal input[type="checkbox"],
+.ev-portal input[type="radio"] {
+  accent-color: var(--ev-primary);
+}
+.ev-portal input[type="file"] {
+  color: var(--ev-muted);
+}
+.ev-portal input[type="file"]::file-selector-button {
+  margin-right: 0.75rem;
+  border: 0;
+  border-radius: 0.6rem;
+  background: var(--ev-primary);
+  color: var(--ev-on-primary);
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ev-portal option {
+  background: var(--ev-surface);
+  color: var(--ev-ink);
+}
+
+/* buttons: consistent shape and feedback */
+.ev-portal main button:not(:disabled) {
+  cursor: pointer;
+}
+.ev-portal main button {
+  transition: background-color 0.15s, transform 0.1s, opacity 0.15s;
+}
+.ev-portal main button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* inline links */
+.ev-portal main a.underline {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  font-weight: 600;
+}
+
+/* tables */
+.ev-portal main table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ev-portal main th {
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ev-muted);
+}
+.ev-portal main th,
+.ev-portal main td {
+  padding: 0.8rem 0.9rem;
+  border-bottom: 1px solid var(--ev-border-soft);
+}
+.ev-portal main tbody tr:hover {
+  background: var(--ev-inset);
+}
+
+/* disclosure rows */
+.ev-portal summary {
+  cursor: pointer;
+}
+
+/* soft card lift on the original card markup */
+.ev-portal article.bg-\[\#101F39\] {
+  transition: transform 0.15s, border-color 0.15s;
+}
+.ev-portal article.bg-\[\#101F39\]:hover {
+  border-color: var(--ev-cyan);
+}
+
+/* thin, themed scrollbars */
+.ev-portal * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ev-border) transparent;
+}

@@ -1,3 +1,4 @@
+import { BackLink } from "@/app/portal/ui";
 import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
@@ -21,7 +22,7 @@ async function Content(){
  const ready=rows.filter(t=>t.status==='COMPLETED'&&!!t.clientActionAt&&!!t.assignedToId&&Number(t.totalOrderCost??0)>0);
  const missing=ready.filter(t=>Number(t.paidEntries)===0);
  return <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-9">
- <Link href="/portal/super-admin/payroll" className="text-cyan-300 underline">Back to Payroll</Link>
+ <BackLink href="/portal/super-admin/payroll" label="Payroll" />
  <h1 className="mt-5 text-3xl font-bold">Payroll readiness audit</h1>
  <p className="mt-2 text-sm text-slate-300">Read-only. This report does not approve or release money. Review and QA work must be allocated separately before final settlement.</p>
  <div className="mt-6 grid gap-3 sm:grid-cols-3">{[["Eligible completed orders",ready.length],["Awaiting first approval",missing.length],["Other closed/delivered records",rows.length-ready.length]].map(([label,n])=><section key={String(label)} className="rounded-xl bg-[#101F39] p-4"><p className="text-sm text-slate-300">{label}</p><p className="mt-2 text-2xl font-bold">{n}</p></section>)}</div>

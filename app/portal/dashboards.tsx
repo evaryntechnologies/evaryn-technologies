@@ -467,7 +467,7 @@ export function SuperAdminDashboard({
         <HeroButton href="/portal/super-admin/employees" primary>
           <UserPlus size={16} aria-hidden="true" /> Add employee
         </HeroButton>
-        <HeroButton href="/portal/super-admin/payroll">
+        <HeroButton href="/portal/super-admin/payroll/pay-team">
           <HandCoins size={16} aria-hidden="true" /> Pay team
         </HeroButton>
       </Hero>

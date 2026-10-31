@@ -1,10 +1,31 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
-import { getEarningsReport, cleanFilters, applyEarningsFilters, summarize } from "@/lib/earnings/report";
+import { Download, Receipt, SlidersHorizontal, Wallet } from "lucide-react";
+import {
+  getEarningsReport,
+  cleanFilters,
+  applyEarningsFilters,
+  summarize,
+} from "@/lib/earnings/report";
+import {
+  PageShell,
+  PageHeader,
+  EmptyState,
+  Pill,
+  Metric,
+  card,
+  inputCls,
+  btnPrimary,
+  btnGhost,
+  moneyFmt,
+} from "@/app/portal/ui";
 
-type Props = { searchParams: Promise<Record<string,string|undefined>> };
-const money = (n:number) => n.toFixed(2);
+type Props = { searchParams: Promise<Record<string, string | undefined>> };
+
+const levelLabel = (s: string) =>
+  s === "ADMIN_TIME" ? "Admin time" : s.replaceAll("_", " ").toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+
 async function Content({ searchParams }: Props) {
   await connection();
   const filters = cleanFilters(await searchParams);
@@ -12,36 +33,135 @@ async function Content({ searchParams }: Props) {
   const selected = applyEarningsFilters(rows, filters);
   const totals = summarize(selected);
   const lifetime = summarize(rows);
-  const categories = Array.from(new Set(rows.map(r=>r.category))).sort();
-  const roles = Array.from(new Set(rows.map(r=>r.sourceType))).sort();
-  const byRole = roles.map(role=>({ role, ...summarize(selected.filter(r=>r.sourceType===role)) }));
-  const byCategory = categories.map(category=>({category,...summarize(selected.filter(r=>r.category===category))}));
+  const categories = Array.from(new Set(rows.map((r) => r.category))).sort();
+  const roles = Array.from(new Set(rows.map((r) => r.sourceType))).sort();
+  const byRole = roles.map((role) => ({ role, ...summarize(selected.filter((r) => r.sourceType === role)) }));
+  const byCategory = categories.map((category) => ({ category, ...summarize(selected.filter((r) => r.category === category)) }));
   const params = new URLSearchParams();
-  Object.entries(filters).forEach(([k,v])=>{ if(v) params.set(k,v); });
-  return <main className="min-h-screen bg-[#071327] p-4 text-white sm:p-8">
-    <div className="w-full space-y-6">
-      <Link href="/portal" className="text-cyan-300 underline">← My Dashboard</Link>
-      <header><h1 className="text-3xl font-bold">My Earnings</h1><p className="mt-2 text-slate-300">{employee.fullName} · {employee.role.replaceAll("_"," ")} · USD (confirm compensation currency)</p></header>
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          ["Pending payments",totals.pending],
-          ["Completed payments",totals.paid],
-          ["Lifetime earnings (paid + pending)",lifetime.paid + lifetime.pending],
-          ["Lifetime completed payments",lifetime.paid],
-        ].map(([label,value])=><div key={String(label)} className="rounded-xl bg-[#101F39] p-5"><p className="text-sm text-slate-300">{label}</p><p className="mt-2 text-2xl font-bold">{money(Number(value))}</p></div>)}
+  Object.entries(filters).forEach(([k, v]) => { if (v) params.set(k, v); });
+  const filtering = Object.values(filters).some(Boolean);
+
+  return (
+    <>
+      <PageHeader
+        eyebrow="My earnings"
+        title="Earnings"
+        subtitle={`${employee.fullName} · ${employee.role.replaceAll("_", " ")} · USD (confirm compensation currency)`}
+        actions={
+          <Link href={`/api/portal/earnings/pdf?${params.toString()}`} className={btnPrimary}>
+            <Download size={16} aria-hidden="true" /> Download statement (PDF)
+          </Link>
+        }
+      />
+
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Metric label="Pending payments" value={moneyFmt(totals.pending)} accent="#10b981" note="Approved, not yet paid" />
+        <Metric label="Completed payments" value={moneyFmt(totals.paid)} accent="#00b0f8" />
+        <Metric label="Lifetime earnings" value={moneyFmt(lifetime.paid + lifetime.pending)} accent="#8b5cf6" note="Paid plus pending" />
+        <Metric label="Lifetime completed payments" value={moneyFmt(lifetime.paid)} accent="#f59e0b" />
       </section>
-      <form method="GET" className="grid gap-3 rounded-xl bg-[#101F39] p-5 sm:grid-cols-2 lg:grid-cols-5">
-        <label className="text-sm">Payout month<input name="month" type="month" defaultValue={filters.month} className="mt-1 w-full rounded-lg bg-[#071327] p-3"/></label>
-        <label className="text-sm">Category<select name="category" defaultValue={filters.category} className="mt-1 w-full rounded-lg bg-[#071327] p-3"><option value="">All categories</option>{categories.map(x=><option key={x}>{x}</option>)}</select></label>
-        <label className="text-sm">Work level<select name="role" defaultValue={filters.role} className="mt-1 w-full rounded-lg bg-[#071327] p-3"><option value="">All levels</option>{roles.map(x=><option key={x} value={x}>{x.replaceAll("_"," ")}</option>)}</select></label>
-        <label className="text-sm">Payment status<select name="status" defaultValue={filters.status} className="mt-1 w-full rounded-lg bg-[#071327] p-3"><option value="">All</option><option value="PENDING">Pending</option><option value="PAID">Paid</option></select></label>
-        <button className="self-end rounded-lg bg-[#0052CC] px-5 py-3 font-semibold">Apply filters</button>
+
+      <form method="GET" className={`${card} mt-6 grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-[repeat(4,minmax(0,1fr))_auto]`}>
+        <label className="text-xs font-semibold text-[var(--ev-muted)]">Payout month
+          <input name="month" type="month" defaultValue={filters.month} className={`${inputCls} mt-1.5`} />
+        </label>
+        <label className="text-xs font-semibold text-[var(--ev-muted)]">Category
+          <select name="category" defaultValue={filters.category} className={`${inputCls} mt-1.5`}>
+            <option value="">All categories</option>
+            {categories.map((x) => <option key={x}>{x}</option>)}
+          </select>
+        </label>
+        <label className="text-xs font-semibold text-[var(--ev-muted)]">Work level
+          <select name="role" defaultValue={filters.role} className={`${inputCls} mt-1.5`}>
+            <option value="">All levels</option>
+            {roles.map((x) => <option key={x} value={x}>{levelLabel(x)}</option>)}
+          </select>
+        </label>
+        <label className="text-xs font-semibold text-[var(--ev-muted)]">Payment status
+          <select name="status" defaultValue={filters.status} className={`${inputCls} mt-1.5`}>
+            <option value="">All</option>
+            <option value="PENDING">Pending</option>
+            <option value="PAID">Paid</option>
+          </select>
+        </label>
+        <div className="flex items-end gap-2">
+          <button className={`${btnPrimary} h-11`}><SlidersHorizontal size={15} aria-hidden="true" /> Apply</button>
+          {filtering && <Link href="/portal/earnings" className={`${btnGhost} h-11`}>Clear</Link>}
+        </div>
       </form>
-      <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-slate-300">{selected.length} earning entries · Gross {money(totals.gross)} · Fines {money(totals.fines)} · Net {money(totals.net)}</p><Link className="rounded-lg bg-[#0052CC] px-5 py-3 font-semibold" href={`/api/portal/earnings/pdf?${params.toString()}`}>Download branded PDF statement</Link></div>
-      <div className="grid gap-3 md:grid-cols-2"><section className="rounded-xl bg-[#101F39] p-5"><h2 className="font-bold">Earnings by work level</h2>{byRole.filter(r=>r.net>0).map(r=><p className="mt-2 flex justify-between gap-2" key={r.role}><span>{r.role.replaceAll("_"," ")}</span><strong>{money(r.net)}</strong></p>)}</section><section className="rounded-xl bg-[#101F39] p-5"><h2 className="font-bold">Earnings by task category</h2>{byCategory.filter(r=>r.net>0).map(r=><p className="mt-2 flex justify-between gap-2" key={r.category}><span>{r.category}</span><strong>{money(r.net)}</strong></p>)}</section></div>
-      <section className="space-y-3"><h2 className="text-xl font-semibold">Payment history</h2>{selected.map(r=><article key={`${r.sourceType}:${r.id}`} className="rounded-xl border border-white/10 bg-[#101F39] p-4"><div className="flex flex-wrap justify-between gap-2"><strong>{r.label}</strong><span className={r.status === "PAID" ? "text-emerald-300" : r.status === "PENDING" ? "text-amber-300" : "text-slate-400"}>{r.status === "PAID" ? "Completed payment" : r.status === "PENDING" ? "Pending payment" : r.status.replaceAll("_", " ")}</span></div><p className="mt-1 text-sm text-slate-300">{r.category} · {r.sourceType.replaceAll("_"," ")} · Payout cycle {r.cycle}</p><p className="mt-2">{r.status === "PAID" ? "Amount recorded as paid" : "Amount payable"}: ${money(r.net)}</p>{r.status === "PAID" && Math.abs(r.originalNet-r.net)>0.001 && <p className="mt-1 text-sm text-cyan-200">Original approved: ${money(r.originalNet)} · Final adjusted payment: ${money(r.net)}</p>}{r.adjustmentReason && <p className="mt-1 text-sm text-slate-300">Adjustment reason: {r.adjustmentReason}</p>}</article>)}{selected.length===0&&<p className="text-slate-300">No approved earnings match the selected filters.</p>}</section>
-      <p className="text-xs text-slate-400">Unapproved work and unsettled active Admin time are not included in the ledger totals. Lifetime earnings represent recorded completed payments plus approved, still-pending payments; a final adjusted settlement counts only the amount actually recorded as paid. Unapproved work is excluded.</p>
-    </div>
-  </main>;
+
+      <section className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className={`${card} p-5`}>
+          <h2 className="font-bold">Earnings by work level</h2>
+          <ul className="mt-3 divide-y divide-[var(--ev-border-soft)]">
+            {byRole.filter((r) => r.net > 0).map((r) => (
+              <li key={r.role} className="flex justify-between gap-3 py-2.5 text-sm">
+                <span>{levelLabel(r.role)}</span><strong className="tabular-nums">{moneyFmt(r.net)}</strong>
+              </li>
+            ))}
+            {byRole.filter((r) => r.net > 0).length === 0 && <li className="py-2.5 text-sm text-[var(--ev-muted)]">Nothing in this view.</li>}
+          </ul>
+        </div>
+        <div className={`${card} p-5`}>
+          <h2 className="font-bold">Earnings by category</h2>
+          <ul className="mt-3 divide-y divide-[var(--ev-border-soft)]">
+            {byCategory.filter((r) => r.net > 0).map((r) => (
+              <li key={r.category} className="flex justify-between gap-3 py-2.5 text-sm">
+                <span>{r.category}</span><strong className="tabular-nums">{moneyFmt(r.net)}</strong>
+              </li>
+            ))}
+            {byCategory.filter((r) => r.net > 0).length === 0 && <li className="py-2.5 text-sm text-[var(--ev-muted)]">Nothing in this view.</li>}
+          </ul>
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="flex items-center gap-2 text-lg font-bold"><Receipt size={19} className="text-[var(--ev-accent-text)]" aria-hidden="true" /> Payment history</h2>
+          <p className="text-sm text-[var(--ev-muted)]">{selected.length} entries · Gross {moneyFmt(totals.gross)} · Fines {moneyFmt(totals.fines)}</p>
+        </div>
+        {selected.length === 0 ? (
+          <EmptyState icon={Wallet} title="No earnings to show" text="Approved earnings appear here once payroll has processed your completed work." />
+        ) : (
+          <ul className="space-y-3">
+            {selected.map((r) => (
+              <li key={`${r.sourceType}:${r.id}`} className={`${card} flex flex-wrap items-center justify-between gap-4 p-4`}>
+                <div className="min-w-0">
+                  <p className="truncate font-semibold">{r.label}</p>
+                  <p className="mt-1 text-xs text-[var(--ev-muted)]">{r.category} · {levelLabel(r.sourceType)} · cycle {r.cycle}</p>
+                  {r.status === "PAID" && Math.abs(r.originalNet - r.net) > 0.001 && (
+                    <p className="mt-1 text-xs font-semibold text-[var(--ev-accent-text)]">Originally approved {moneyFmt(r.originalNet)} · final adjusted payment {moneyFmt(r.net)}</p>
+                  )}
+                  {r.adjustmentReason && <p className="mt-1 text-xs text-[var(--ev-muted)]">Adjustment reason: {r.adjustmentReason}</p>}
+                </div>
+                <div className="flex items-center gap-5">
+                  <div className="hidden text-right text-xs text-[var(--ev-muted)] sm:block">
+                    Gross {moneyFmt(r.gross)}<br />Fines {moneyFmt(r.fines)}
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-bold tabular-nums">{moneyFmt(r.net)}</p>
+                    <p className="text-[11px] text-[var(--ev-muted)]">{r.status === "PAID" ? "Recorded as paid" : "Payable"}</p>
+                  </div>
+                  <Pill tone={r.status === "PAID" ? "green" : r.status === "PENDING" ? "amber" : "slate"}>{r.status === "PAID" ? "Completed payment" : r.status === "PENDING" ? "Pending payment" : r.status.replaceAll("_", " ")}</Pill>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="mt-4 text-xs text-[var(--ev-muted)]">
+          Unapproved work and unsettled active Admin time are not included in these totals. Lifetime earnings are completed payments plus approved, still-pending payments; a final adjusted settlement counts only the amount actually recorded as paid.
+        </p>
+      </section>
+    </>
+  );
 }
-export default function Page(props: Props){ return <Suspense fallback={<p className="p-6">Loading earnings…</p>}><Content {...props}/></Suspense>; }
+
+export default function Page(props: Props) {
+  return (
+    <PageShell>
+      <Suspense fallback={<div className={`${card} p-8 text-[var(--ev-muted)]`}>Loading earnings…</div>}>
+        <Content {...props} />
+      </Suspense>
+    </PageShell>
+  );
+}

@@ -312,7 +312,7 @@ export async function getPayrollPosition() {
   const [awaitingApproval, pendingEntries, pendingTotal] = await Promise.all([
     safe(
       prisma
-        .$queryRaw<{ n: bigint }[]>`SELECT count(*)::bigint AS n FROM public."WorkforcePayCandidates"`
+        .$queryRaw<{ n: bigint }[]>`SELECT count(*)::bigint AS n FROM public."WorkforcePayCandidates" WHERE ("grossAmount" - "fineAmount") > 0`
         .then((r) => Number(r[0]?.n ?? 0)),
       0
     ),

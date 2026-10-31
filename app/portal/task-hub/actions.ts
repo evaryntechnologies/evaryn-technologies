@@ -1,5 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 
@@ -17,4 +18,6 @@ export async function claimHubTask(formData:FormData):Promise<void> {
   const result=await prisma.workTask.updateMany({where:{id,status:"OPEN",assignedToId:null},data:{assignedToId:profile.id,status:"ASSIGNED",deadline:new Date(now+hours[0]!*3600000),reviewDeadline:new Date(now+hours[1]!*3600000),qaDeadline:new Date(now+hours[2]!*3600000)}});
   if(result.count!==1) throw new Error("Someone else has already claimed this order.");
   revalidatePath("/portal/task-hub");revalidatePath("/portal/tasker");revalidatePath("/portal/admin/task-management");
+  // Show the confirmation banner on the Hub (redirect must stay outside any try/catch).
+  redirect("/portal/task-hub?claimed=1");
 }

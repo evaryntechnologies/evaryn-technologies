@@ -1,3 +1,4 @@
+import { BackLink } from "@/app/portal/ui";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { notFound } from "next/navigation";
@@ -59,9 +60,7 @@ async function TaskContent({
   return (
     <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
       <div className="w-full max-w-none">
-        <Link href="/portal/tasker" className="text-sm font-semibold text-cyan-300 hover:underline">
-          Back to My Tasks
-        </Link>
+        <BackLink href="/portal/tasker" label="Dashboard" />
 
         <Link href={`/portal/tasks/${task.id}/issues`} className="mt-5 mr-5 inline-block rounded-lg border border-amber-400/40 px-4 py-2 text-amber-200">Raise Issue</Link>
         <Link href={`/portal/tasks/${task.id}/discussion`} className="mt-5 inline-block text-cyan-300 underline">Task discussion and reassignment request</Link>

@@ -1,3 +1,4 @@
+import { BackLink } from "@/app/portal/ui";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -17,7 +18,7 @@ async function Content({searchParams}:{searchParams:Promise<{message?:string;ok?
   async function submit(data:FormData) {"use server";const result = await manageCategory(data);redirect("/portal/super-admin/categories?ok="+(result.ok?"1":"0")+"&message="+encodeURIComponent(result.message));}
   return <main className="min-h-screen w-full bg-[#071327] px-4 py-8 text-white sm:px-8 lg:px-12">
     <div className="w-full">
-      <Link href="/portal/super-admin" className="text-cyan-300 hover:underline">Back to Super Admin</Link>
+      <BackLink href="/portal/super-admin" label="Super Admin" />
       <h1 className="mt-5 text-3xl font-bold">Task Categories</h1>
       <p className="mt-2 text-slate-300">Manage the categories available when creating tasks. Existing tasks remain protected.</p>
       {params.message && <p role="status" className="mt-5 rounded-xl border border-white/20 p-4">{params.ok==="1"?"Success: ":"Error: "}{params.message}</p>}

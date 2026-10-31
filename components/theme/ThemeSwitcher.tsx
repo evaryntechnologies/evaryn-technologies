@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
@@ -6,50 +6,63 @@ import { Monitor, Moon, Sun } from "lucide-react";
 
 const subscribe = () => () => {};
 
+const options = [
+  { value: "light", label: "Light", Icon: Sun },
+  { value: "system", label: "System", Icon: Monitor },
+  { value: "dark", label: "Dark", Icon: Moon },
+] as const;
+
+/**
+ * Three-way appearance toggle with a sliding highlight.
+ * Light = airy cyan-blue, Dark = deep logo blue, System = follow the device.
+ */
 export default function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
-
   const mounted = useSyncExternalStore(
     subscribe,
     () => true,
     () => false
   );
 
-  if (!mounted) {
-    return (
-      <div
-        className="h-10 w-32 rounded-xl border border-slate-200 dark:border-slate-700"
-        aria-hidden="true"
-      />
-    );
-  }
+  const active = mounted ? (theme ?? "system") : "system";
+  const index = Math.max(
+    0,
+    options.findIndex((o) => o.value === active)
+  );
 
   return (
-    <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 dark:border-slate-700 dark:bg-[#101f39]">
-      {theme === "light" ? (
-        <Sun size={16} aria-hidden="true" />
-      ) : theme === "dark" ? (
-        <Moon size={16} aria-hidden="true" />
-      ) : (
-        <Monitor size={16} aria-hidden="true" />
-      )}
-
-      <select
-        aria-label="Website appearance"
-        value={theme ?? "system"}
-        onChange={(event) => setTheme(event.target.value)}
-        className="h-10 min-w-20 cursor-pointer bg-transparent text-sm text-[#071327] outline-none dark:text-white"
-      >
-        <option value="light" className="text-slate-900">
-          Light
-        </option>
-        <option value="dark" className="text-slate-900">
-          Dark
-        </option>
-        <option value="system" className="text-slate-900">
-          System
-        </option>
-      </select>
+    <div
+      role="radiogroup"
+      aria-label="Appearance"
+      className="relative inline-grid h-10 grid-cols-3 items-center rounded-full border border-[var(--ev-border)] bg-[var(--ev-surface)] p-1 shadow-inner"
+    >
+      {/* sliding highlight */}
+      <span
+        aria-hidden="true"
+        className="absolute left-1 top-1 h-8 w-8 rounded-full bg-[var(--ev-primary)] shadow-md transition-transform duration-300 ease-out motion-reduce:transition-none"
+        style={{ transform: `translateX(${index * 100}%)`, opacity: mounted ? 1 : 0 }}
+      />
+      {options.map(({ value, label, Icon }) => {
+        const selected = mounted && active === value;
+        return (
+          <button
+            key={value}
+            type="button"
+            role="radio"
+            aria-checked={selected}
+            aria-label={`${label} appearance`}
+            title={label}
+            onClick={() => setTheme(value)}
+            className={`relative z-10 inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-200 ${
+              selected
+                ? "text-[var(--ev-on-primary)]"
+                : "text-[var(--ev-muted)] hover:text-[var(--ev-ink)]"
+            }`}
+          >
+            <Icon size={15} aria-hidden="true" />
+          </button>
+        );
+      })}
     </div>
   );
 }

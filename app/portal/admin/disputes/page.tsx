@@ -1,3 +1,55 @@
-import {Suspense} from "react";import {connection} from "next/server";import Link from "next/link";import {prisma} from "@/lib/db/prisma";import {requireEmployee} from "@/lib/auth/require-employee";import {resolveTaskIssue} from "@/app/portal/tasks/[taskId]/issues/actions";
-async function Content(){await connection();await requireEmployee(["QA","ADMIN","SUPER_ADMIN"]);const issues=await prisma.taskDispute.findMany({where:{status:"OPEN"},include:{task:{select:{title:true,publicTaskId:true}},raisedBy:{select:{fullName:true}}},orderBy:{createdAt:"asc"},take:100});return <main className="min-h-screen bg-[#071327] p-6 text-white"><Link href="/portal" className="text-cyan-300 underline">Dashboard</Link><h1 className="my-5 text-3xl font-bold">Task Disputes</h1><p className="text-slate-300">Resolve review concerns without changing the task status. Only authorized QA and management can resolve.</p><div className="mt-6 space-y-4">{issues.map(i=><article key={i.id} className="rounded-xl bg-[#101F39] p-5"><h2 className="font-semibold">{i.task.publicTaskId??i.taskId} · {i.task.title}</h2><p className="mt-2 text-sm">Raised by {i.raisedBy.fullName}</p><p className="mt-3 whitespace-pre-wrap">{i.reason}</p><form action={resolveTaskIssue} className="mt-3 flex flex-col gap-3"><input type="hidden" name="id" value={i.id}/><textarea required minLength={10} maxLength={5000} name="resolution" rows={3} className="rounded-lg bg-[#071327] p-3 text-white" placeholder="Explain the resolution"/><button className="self-start rounded-lg bg-[#0052CC] px-5 py-3">Resolve Issue</button></form></article>)}{!issues.length&&<p>No unresolved disputes.</p>}</div></main>}
-export default function Page(){return <Suspense fallback={<p>Loading disputes...</p>}><Content/></Suspense>}
+import { Suspense } from "react";
+import { connection } from "next/server";
+import { Gavel, ShieldCheck } from "lucide-react";
+import { prisma } from "@/lib/db/prisma";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { resolveTaskIssue } from "@/app/portal/tasks/[taskId]/issues/actions";
+import {
+  PageShell, PageHeader, EmptyState, Pill, card, textareaCls, btnPrimary, dateTimeFmt,
+} from "@/app/portal/ui";
+
+async function Content() {
+  await connection();
+  await requireEmployee(["QA", "ADMIN", "SUPER_ADMIN"]);
+  const issues = await prisma.taskDispute.findMany({
+    where: { status: "OPEN" },
+    include: { task: { select: { title: true, publicTaskId: true } }, raisedBy: { select: { fullName: true } } },
+    orderBy: { createdAt: "asc" },
+    take: 100,
+  });
+
+  return (
+    <>
+      <PageHeader
+        eyebrow="Quality"
+        title="Task disputes"
+        subtitle="Resolve review concerns without changing the task status. Only authorised QA and management can resolve."
+      />
+      {issues.length === 0 ? (
+        <EmptyState icon={ShieldCheck} title="No unresolved disputes" text="Open disputes raised on orders will appear here." />
+      ) : (
+        <div className="grid gap-5 xl:grid-cols-2">
+          {issues.map((i) => (
+            <article key={i.id} className={`${card} p-5`}>
+              <div className="flex flex-wrap items-center gap-2">
+                <Pill tone="rose"><Gavel size={12} className="mr-1" aria-hidden="true" /> Open</Pill>
+                <span className="text-xs font-semibold text-[var(--ev-muted)]">{i.task.publicTaskId ?? i.taskId.slice(0, 8)}</span>
+              </div>
+              <h2 className="mt-3 text-lg font-bold leading-snug">{i.task.title}</h2>
+              <p className="mt-1 text-xs text-[var(--ev-muted)]">Raised by {i.raisedBy.fullName}{` · ${dateTimeFmt(i.createdAt)}`}</p>
+              <p className="mt-3 whitespace-pre-wrap rounded-xl bg-[var(--ev-inset)] p-3 text-sm leading-7">{i.reason}</p>
+              <form action={resolveTaskIssue} className="mt-4 flex flex-col gap-3">
+                <input type="hidden" name="id" value={i.id} />
+                <textarea required minLength={10} maxLength={5000} name="resolution" rows={3} className={textareaCls} placeholder="Explain the resolution" />
+                <button className={`${btnPrimary} self-start`}>Resolve issue</button>
+              </form>
+            </article>
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+export default function Page() {
+  return <PageShell><Suspense fallback={<div className={`${card} p-8 text-[var(--ev-muted)]`}>Loading disputes…</div>}><Content /></Suspense></PageShell>;
+}

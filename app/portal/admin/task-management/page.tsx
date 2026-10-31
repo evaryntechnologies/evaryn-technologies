@@ -1,3 +1,4 @@
+import { BackLink } from "@/app/portal/ui";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -22,7 +23,7 @@ async function Content({searchParams}:{searchParams:Promise<{message?:string;ok?
     prisma.taskCategory.findMany({where:{active:true},select:{id:true,name:true,rate:true,billingUnit:true},orderBy:{name:"asc"}}),
   ]);
   return <main className="min-h-screen bg-[#071327] px-5 py-10 text-white sm:px-10"><div className="w-full max-w-none">
-    <Link href={profile.role==="QA"?"/portal/qa":"/portal/admin"} className="text-cyan-300 hover:underline">Back to dashboard</Link>
+    <BackLink href={profile.role==="QA"?"/portal/qa":"/portal/admin"} label="Dashboard" />
     <h1 className="mt-6 text-3xl font-bold">Task Management</h1>
     {profile.role==="SUPER_ADMIN" && <Link href="/portal/super-admin/categories" className="mt-3 inline-block text-cyan-300 underline">Manage Task Categories</Link>}<p className="mt-2 text-slate-300">Save drafts, publish orders to Task Hub, or assign work directly.</p><Link href="/portal/task-hub" className="mt-3 inline-block text-cyan-300 underline">Open Task Hub</Link> <Link href="/portal/admin/task-summary?tab=closed" className="mt-3 ml-5 inline-block text-cyan-300 underline">Closed tasks / Reinstate</Link>
     {params.message && <p role="status" className="mt-5 rounded-xl border border-white/20 p-4">{params.ok==="1"?"Success: ":"Error: "}{params.message}</p>}

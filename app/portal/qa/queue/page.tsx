@@ -1,3 +1,4 @@
+import { BackLink } from "@/app/portal/ui";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import Link from "next/link";
@@ -72,12 +73,7 @@ async function QAQueueContent({
   return (
     <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
       <div className="w-full max-w-none">
-        <Link
-          href="/portal/qa"
-          className="text-sm font-semibold text-cyan-300 hover:underline"
-        >
-          Back to QA Dashboard
-        </Link>
+        <BackLink href="/portal/qa" label="Dashboard" />
 
         <header className="mt-8">
           <p className="text-xs font-bold tracking-widest text-cyan-300">

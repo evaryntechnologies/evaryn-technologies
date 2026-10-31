@@ -1,3 +1,4 @@
+import { BackLink } from "@/app/portal/ui";
 import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
@@ -18,7 +19,7 @@ async function ReviewQAContent() {
   return (
     <main className="min-h-screen bg-[#071327] px-4 py-8 text-white sm:px-8">
       <div className="w-full">
-        <Link href="/portal" className="text-sm font-semibold text-cyan-300 hover:underline">Back to Dashboard</Link>
+        <BackLink href="/portal" label="Dashboard" />
         <header className="mt-6 border-b border-white/10 pb-6">
           <p className="text-xs font-semibold uppercase tracking-widest text-cyan-300">EVARYN TECHNOLOGIES LIMITED</p>
           <h1 className="mt-3 text-3xl font-bold">Review &amp; QA Oversight</h1>

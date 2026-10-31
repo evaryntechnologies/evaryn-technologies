@@ -1,3 +1,4 @@
+import { BackLink } from "@/app/portal/ui";
 import Link from "next/link";
 import { signOut } from "../actions";
 
@@ -20,12 +21,7 @@ export default function UnauthorizedPage() {
         </p>
 
         <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link
-            href="/portal"
-            className="rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold text-white"
-          >
-            Back to Portal
-          </Link>
+          <BackLink href="/portal" label="Dashboard" />
 
           <form action={signOut}>
             <button
