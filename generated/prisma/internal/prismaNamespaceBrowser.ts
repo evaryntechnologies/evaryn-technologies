@@ -166,6 +166,8 @@ export type WorkProjectScalarFieldEnum = (typeof WorkProjectScalarFieldEnum)[key
 
 export const WorkTaskScalarFieldEnum = {
   cancellationReason: 'cancellationReason',
+  clientPaidPercent: 'clientPaidPercent',
+  clientRevisionNote: 'clientRevisionNote',
   id: 'id',
   projectId: 'projectId',
   orderId: 'orderId',

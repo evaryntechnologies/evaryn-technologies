@@ -27,6 +27,7 @@ export type AggregateWorkTask = {
 }
 
 export type WorkTaskAvgAggregateOutputType = {
+  clientPaidPercent: runtime.Decimal | null
   unitsOrdered: runtime.Decimal | null
   unitRate: runtime.Decimal | null
   totalOrderCost: runtime.Decimal | null
@@ -38,6 +39,7 @@ export type WorkTaskAvgAggregateOutputType = {
 }
 
 export type WorkTaskSumAggregateOutputType = {
+  clientPaidPercent: runtime.Decimal | null
   unitsOrdered: runtime.Decimal | null
   unitRate: runtime.Decimal | null
   totalOrderCost: runtime.Decimal | null
@@ -50,6 +52,8 @@ export type WorkTaskSumAggregateOutputType = {
 
 export type WorkTaskMinAggregateOutputType = {
   cancellationReason: string | null
+  clientPaidPercent: runtime.Decimal | null
+  clientRevisionNote: string | null
   id: string | null
   projectId: string | null
   orderId: string | null
@@ -87,6 +91,8 @@ export type WorkTaskMinAggregateOutputType = {
 
 export type WorkTaskMaxAggregateOutputType = {
   cancellationReason: string | null
+  clientPaidPercent: runtime.Decimal | null
+  clientRevisionNote: string | null
   id: string | null
   projectId: string | null
   orderId: string | null
@@ -124,6 +130,8 @@ export type WorkTaskMaxAggregateOutputType = {
 
 export type WorkTaskCountAggregateOutputType = {
   cancellationReason: number
+  clientPaidPercent: number
+  clientRevisionNote: number
   id: number
   projectId: number
   orderId: number
@@ -162,6 +170,7 @@ export type WorkTaskCountAggregateOutputType = {
 
 
 export type WorkTaskAvgAggregateInputType = {
+  clientPaidPercent?: true
   unitsOrdered?: true
   unitRate?: true
   totalOrderCost?: true
@@ -173,6 +182,7 @@ export type WorkTaskAvgAggregateInputType = {
 }
 
 export type WorkTaskSumAggregateInputType = {
+  clientPaidPercent?: true
   unitsOrdered?: true
   unitRate?: true
   totalOrderCost?: true
@@ -185,6 +195,8 @@ export type WorkTaskSumAggregateInputType = {
 
 export type WorkTaskMinAggregateInputType = {
   cancellationReason?: true
+  clientPaidPercent?: true
+  clientRevisionNote?: true
   id?: true
   projectId?: true
   orderId?: true
@@ -222,6 +234,8 @@ export type WorkTaskMinAggregateInputType = {
 
 export type WorkTaskMaxAggregateInputType = {
   cancellationReason?: true
+  clientPaidPercent?: true
+  clientRevisionNote?: true
   id?: true
   projectId?: true
   orderId?: true
@@ -259,6 +273,8 @@ export type WorkTaskMaxAggregateInputType = {
 
 export type WorkTaskCountAggregateInputType = {
   cancellationReason?: true
+  clientPaidPercent?: true
+  clientRevisionNote?: true
   id?: true
   projectId?: true
   orderId?: true
@@ -383,6 +399,8 @@ export type WorkTaskGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type WorkTaskGroupByOutputType = {
   cancellationReason: string | null
+  clientPaidPercent: runtime.Decimal | null
+  clientRevisionNote: string | null
   id: string
   projectId: string | null
   orderId: string | null
@@ -443,6 +461,8 @@ export type WorkTaskWhereInput = {
   OR?: Prisma.WorkTaskWhereInput[]
   NOT?: Prisma.WorkTaskWhereInput | Prisma.WorkTaskWhereInput[]
   cancellationReason?: Prisma.StringNullableFilter<"WorkTask"> | string | null
+  clientPaidPercent?: Prisma.DecimalNullableFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   id?: Prisma.UuidFilter<"WorkTask"> | string
   projectId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
   orderId?: Prisma.StringNullableFilter<"WorkTask"> | string | null
@@ -489,6 +509,8 @@ export type WorkTaskWhereInput = {
 
 export type WorkTaskOrderByWithRelationInput = {
   cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientPaidPercent?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientRevisionNote?: Prisma.SortOrderInput | Prisma.SortOrder
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrderInput | Prisma.SortOrder
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -540,6 +562,8 @@ export type WorkTaskWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.WorkTaskWhereInput[]
   NOT?: Prisma.WorkTaskWhereInput | Prisma.WorkTaskWhereInput[]
   cancellationReason?: Prisma.StringNullableFilter<"WorkTask"> | string | null
+  clientPaidPercent?: Prisma.DecimalNullableFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   projectId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
   orderId?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   category?: Prisma.StringNullableFilter<"WorkTask"> | string | null
@@ -584,6 +608,8 @@ export type WorkTaskWhereUniqueInput = Prisma.AtLeast<{
 
 export type WorkTaskOrderByWithAggregationInput = {
   cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientPaidPercent?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientRevisionNote?: Prisma.SortOrderInput | Prisma.SortOrder
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrderInput | Prisma.SortOrder
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -629,6 +655,8 @@ export type WorkTaskScalarWhereWithAggregatesInput = {
   OR?: Prisma.WorkTaskScalarWhereWithAggregatesInput[]
   NOT?: Prisma.WorkTaskScalarWhereWithAggregatesInput | Prisma.WorkTaskScalarWhereWithAggregatesInput[]
   cancellationReason?: Prisma.StringNullableWithAggregatesFilter<"WorkTask"> | string | null
+  clientPaidPercent?: Prisma.DecimalNullableWithAggregatesFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.StringNullableWithAggregatesFilter<"WorkTask"> | string | null
   id?: Prisma.UuidWithAggregatesFilter<"WorkTask"> | string
   projectId?: Prisma.UuidNullableWithAggregatesFilter<"WorkTask"> | string | null
   orderId?: Prisma.StringNullableWithAggregatesFilter<"WorkTask"> | string | null
@@ -666,6 +694,8 @@ export type WorkTaskScalarWhereWithAggregatesInput = {
 
 export type WorkTaskCreateInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -709,6 +739,8 @@ export type WorkTaskCreateInput = {
 
 export type WorkTaskUncheckedCreateInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -752,6 +784,8 @@ export type WorkTaskUncheckedCreateInput = {
 
 export type WorkTaskUpdateInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -795,6 +829,8 @@ export type WorkTaskUpdateInput = {
 
 export type WorkTaskUncheckedUpdateInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -838,6 +874,8 @@ export type WorkTaskUncheckedUpdateInput = {
 
 export type WorkTaskCreateManyInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -875,6 +913,8 @@ export type WorkTaskCreateManyInput = {
 
 export type WorkTaskUpdateManyMutationInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -909,6 +949,8 @@ export type WorkTaskUpdateManyMutationInput = {
 
 export type WorkTaskUncheckedUpdateManyInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -956,6 +998,8 @@ export type WorkTaskOrderByRelationAggregateInput = {
 
 export type WorkTaskCountOrderByAggregateInput = {
   cancellationReason?: Prisma.SortOrder
+  clientPaidPercent?: Prisma.SortOrder
+  clientRevisionNote?: Prisma.SortOrder
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
@@ -992,6 +1036,7 @@ export type WorkTaskCountOrderByAggregateInput = {
 }
 
 export type WorkTaskAvgOrderByAggregateInput = {
+  clientPaidPercent?: Prisma.SortOrder
   unitsOrdered?: Prisma.SortOrder
   unitRate?: Prisma.SortOrder
   totalOrderCost?: Prisma.SortOrder
@@ -1004,6 +1049,8 @@ export type WorkTaskAvgOrderByAggregateInput = {
 
 export type WorkTaskMaxOrderByAggregateInput = {
   cancellationReason?: Prisma.SortOrder
+  clientPaidPercent?: Prisma.SortOrder
+  clientRevisionNote?: Prisma.SortOrder
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
@@ -1041,6 +1088,8 @@ export type WorkTaskMaxOrderByAggregateInput = {
 
 export type WorkTaskMinOrderByAggregateInput = {
   cancellationReason?: Prisma.SortOrder
+  clientPaidPercent?: Prisma.SortOrder
+  clientRevisionNote?: Prisma.SortOrder
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
@@ -1077,6 +1126,7 @@ export type WorkTaskMinOrderByAggregateInput = {
 }
 
 export type WorkTaskSumOrderByAggregateInput = {
+  clientPaidPercent?: Prisma.SortOrder
   unitsOrdered?: Prisma.SortOrder
   unitRate?: Prisma.SortOrder
   totalOrderCost?: Prisma.SortOrder
@@ -1336,6 +1386,8 @@ export type WorkTaskUpdateOneRequiredWithoutDisputesNestedInput = {
 
 export type WorkTaskCreateWithoutAssignedToInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -1378,6 +1430,8 @@ export type WorkTaskCreateWithoutAssignedToInput = {
 
 export type WorkTaskUncheckedCreateWithoutAssignedToInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -1430,6 +1484,8 @@ export type WorkTaskCreateManyAssignedToInputEnvelope = {
 
 export type WorkTaskCreateWithoutCreatedByInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -1472,6 +1528,8 @@ export type WorkTaskCreateWithoutCreatedByInput = {
 
 export type WorkTaskUncheckedCreateWithoutCreatedByInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -1543,6 +1601,8 @@ export type WorkTaskScalarWhereInput = {
   OR?: Prisma.WorkTaskScalarWhereInput[]
   NOT?: Prisma.WorkTaskScalarWhereInput | Prisma.WorkTaskScalarWhereInput[]
   cancellationReason?: Prisma.StringNullableFilter<"WorkTask"> | string | null
+  clientPaidPercent?: Prisma.DecimalNullableFilter<"WorkTask"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.StringNullableFilter<"WorkTask"> | string | null
   id?: Prisma.UuidFilter<"WorkTask"> | string
   projectId?: Prisma.UuidNullableFilter<"WorkTask"> | string | null
   orderId?: Prisma.StringNullableFilter<"WorkTask"> | string | null
@@ -1596,6 +1656,8 @@ export type WorkTaskUpdateManyWithWhereWithoutCreatedByInput = {
 
 export type WorkTaskCreateWithoutProjectInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -1638,6 +1700,8 @@ export type WorkTaskCreateWithoutProjectInput = {
 
 export type WorkTaskUncheckedCreateWithoutProjectInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -1706,6 +1770,8 @@ export type WorkTaskUpdateManyWithWhereWithoutProjectInput = {
 
 export type WorkTaskCreateWithoutSubmissionsInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -1748,6 +1814,8 @@ export type WorkTaskCreateWithoutSubmissionsInput = {
 
 export type WorkTaskUncheckedCreateWithoutSubmissionsInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -1806,6 +1874,8 @@ export type WorkTaskUpdateToOneWithWhereWithoutSubmissionsInput = {
 
 export type WorkTaskUpdateWithoutSubmissionsInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1848,6 +1918,8 @@ export type WorkTaskUpdateWithoutSubmissionsInput = {
 
 export type WorkTaskUncheckedUpdateWithoutSubmissionsInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1890,6 +1962,8 @@ export type WorkTaskUncheckedUpdateWithoutSubmissionsInput = {
 
 export type WorkTaskCreateWithoutMessagesInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -1932,6 +2006,8 @@ export type WorkTaskCreateWithoutMessagesInput = {
 
 export type WorkTaskUncheckedCreateWithoutMessagesInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -1990,6 +2066,8 @@ export type WorkTaskUpdateToOneWithWhereWithoutMessagesInput = {
 
 export type WorkTaskUpdateWithoutMessagesInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2032,6 +2110,8 @@ export type WorkTaskUpdateWithoutMessagesInput = {
 
 export type WorkTaskUncheckedUpdateWithoutMessagesInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2074,6 +2154,8 @@ export type WorkTaskUncheckedUpdateWithoutMessagesInput = {
 
 export type WorkTaskCreateWithoutReassignmentRequestsInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -2116,6 +2198,8 @@ export type WorkTaskCreateWithoutReassignmentRequestsInput = {
 
 export type WorkTaskUncheckedCreateWithoutReassignmentRequestsInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -2174,6 +2258,8 @@ export type WorkTaskUpdateToOneWithWhereWithoutReassignmentRequestsInput = {
 
 export type WorkTaskUpdateWithoutReassignmentRequestsInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2216,6 +2302,8 @@ export type WorkTaskUpdateWithoutReassignmentRequestsInput = {
 
 export type WorkTaskUncheckedUpdateWithoutReassignmentRequestsInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2258,6 +2346,8 @@ export type WorkTaskUncheckedUpdateWithoutReassignmentRequestsInput = {
 
 export type WorkTaskCreateWithoutPenaltiesInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -2300,6 +2390,8 @@ export type WorkTaskCreateWithoutPenaltiesInput = {
 
 export type WorkTaskUncheckedCreateWithoutPenaltiesInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -2358,6 +2450,8 @@ export type WorkTaskUpdateToOneWithWhereWithoutPenaltiesInput = {
 
 export type WorkTaskUpdateWithoutPenaltiesInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2400,6 +2494,8 @@ export type WorkTaskUpdateWithoutPenaltiesInput = {
 
 export type WorkTaskUncheckedUpdateWithoutPenaltiesInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2442,6 +2538,8 @@ export type WorkTaskUncheckedUpdateWithoutPenaltiesInput = {
 
 export type WorkTaskCreateWithoutExtraAttachmentsInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -2484,6 +2582,8 @@ export type WorkTaskCreateWithoutExtraAttachmentsInput = {
 
 export type WorkTaskUncheckedCreateWithoutExtraAttachmentsInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -2542,6 +2642,8 @@ export type WorkTaskUpdateToOneWithWhereWithoutExtraAttachmentsInput = {
 
 export type WorkTaskUpdateWithoutExtraAttachmentsInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2584,6 +2686,8 @@ export type WorkTaskUpdateWithoutExtraAttachmentsInput = {
 
 export type WorkTaskUncheckedUpdateWithoutExtraAttachmentsInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2626,6 +2730,8 @@ export type WorkTaskUncheckedUpdateWithoutExtraAttachmentsInput = {
 
 export type WorkTaskCreateWithoutDisputesInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -2668,6 +2774,8 @@ export type WorkTaskCreateWithoutDisputesInput = {
 
 export type WorkTaskUncheckedCreateWithoutDisputesInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -2726,6 +2834,8 @@ export type WorkTaskUpdateToOneWithWhereWithoutDisputesInput = {
 
 export type WorkTaskUpdateWithoutDisputesInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2768,6 +2878,8 @@ export type WorkTaskUpdateWithoutDisputesInput = {
 
 export type WorkTaskUncheckedUpdateWithoutDisputesInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2810,6 +2922,8 @@ export type WorkTaskUncheckedUpdateWithoutDisputesInput = {
 
 export type WorkTaskCreateManyAssignedToInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -2846,6 +2960,8 @@ export type WorkTaskCreateManyAssignedToInput = {
 
 export type WorkTaskCreateManyCreatedByInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   projectId?: string | null
   orderId?: string | null
@@ -2882,6 +2998,8 @@ export type WorkTaskCreateManyCreatedByInput = {
 
 export type WorkTaskUpdateWithoutAssignedToInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2924,6 +3042,8 @@ export type WorkTaskUpdateWithoutAssignedToInput = {
 
 export type WorkTaskUncheckedUpdateWithoutAssignedToInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2966,6 +3086,8 @@ export type WorkTaskUncheckedUpdateWithoutAssignedToInput = {
 
 export type WorkTaskUncheckedUpdateManyWithoutAssignedToInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3002,6 +3124,8 @@ export type WorkTaskUncheckedUpdateManyWithoutAssignedToInput = {
 
 export type WorkTaskUpdateWithoutCreatedByInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3044,6 +3168,8 @@ export type WorkTaskUpdateWithoutCreatedByInput = {
 
 export type WorkTaskUncheckedUpdateWithoutCreatedByInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3086,6 +3212,8 @@ export type WorkTaskUncheckedUpdateWithoutCreatedByInput = {
 
 export type WorkTaskUncheckedUpdateManyWithoutCreatedByInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3122,6 +3250,8 @@ export type WorkTaskUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type WorkTaskCreateManyProjectInput = {
   cancellationReason?: string | null
+  clientPaidPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: string | null
   id?: string
   orderId?: string | null
   publicTaskId?: string | null
@@ -3158,6 +3288,8 @@ export type WorkTaskCreateManyProjectInput = {
 
 export type WorkTaskUpdateWithoutProjectInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3200,6 +3332,8 @@ export type WorkTaskUpdateWithoutProjectInput = {
 
 export type WorkTaskUncheckedUpdateWithoutProjectInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3242,6 +3376,8 @@ export type WorkTaskUncheckedUpdateWithoutProjectInput = {
 
 export type WorkTaskUncheckedUpdateManyWithoutProjectInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPaidPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  clientRevisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3354,6 +3490,8 @@ export type WorkTaskCountOutputTypeCountPenaltiesArgs<ExtArgs extends runtime.Ty
 
 export type WorkTaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   cancellationReason?: boolean
+  clientPaidPercent?: boolean
+  clientRevisionNote?: boolean
   id?: boolean
   projectId?: boolean
   orderId?: boolean
@@ -3401,6 +3539,8 @@ export type WorkTaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
 
 export type WorkTaskSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   cancellationReason?: boolean
+  clientPaidPercent?: boolean
+  clientRevisionNote?: boolean
   id?: boolean
   projectId?: boolean
   orderId?: boolean
@@ -3441,6 +3581,8 @@ export type WorkTaskSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
 
 export type WorkTaskSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   cancellationReason?: boolean
+  clientPaidPercent?: boolean
+  clientRevisionNote?: boolean
   id?: boolean
   projectId?: boolean
   orderId?: boolean
@@ -3481,6 +3623,8 @@ export type WorkTaskSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 
 export type WorkTaskSelectScalar = {
   cancellationReason?: boolean
+  clientPaidPercent?: boolean
+  clientRevisionNote?: boolean
   id?: boolean
   projectId?: boolean
   orderId?: boolean
@@ -3516,7 +3660,7 @@ export type WorkTaskSelectScalar = {
   reinstatementCount?: boolean
 }
 
-export type WorkTaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"cancellationReason" | "id" | "projectId" | "orderId" | "publicTaskId" | "category" | "reviewDeadline" | "qaDeadline" | "claimedReviewerId" | "claimedQaId" | "attachmentKey" | "attachmentName" | "title" | "description" | "instructions" | "status" | "priority" | "deadline" | "assignedToId" | "createdById" | "createdAt" | "updatedAt" | "unitsOrdered" | "unitRate" | "totalOrderCost" | "billingUnit" | "submissionHours" | "reviewHours" | "qaHours" | "clientRating" | "clientActionAt" | "reinstatedAt" | "reinstatedById" | "reinstatementCount", ExtArgs["result"]["workTask"]>
+export type WorkTaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"cancellationReason" | "clientPaidPercent" | "clientRevisionNote" | "id" | "projectId" | "orderId" | "publicTaskId" | "category" | "reviewDeadline" | "qaDeadline" | "claimedReviewerId" | "claimedQaId" | "attachmentKey" | "attachmentName" | "title" | "description" | "instructions" | "status" | "priority" | "deadline" | "assignedToId" | "createdById" | "createdAt" | "updatedAt" | "unitsOrdered" | "unitRate" | "totalOrderCost" | "billingUnit" | "submissionHours" | "reviewHours" | "qaHours" | "clientRating" | "clientActionAt" | "reinstatedAt" | "reinstatedById" | "reinstatementCount", ExtArgs["result"]["workTask"]>
 export type WorkTaskInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   disputes?: boolean | Prisma.WorkTask$disputesArgs<ExtArgs>
   extraAttachments?: boolean | Prisma.WorkTask$extraAttachmentsArgs<ExtArgs>
@@ -3555,6 +3699,8 @@ export type $WorkTaskPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     cancellationReason: string | null
+    clientPaidPercent: runtime.Decimal | null
+    clientRevisionNote: string | null
     id: string
     projectId: string | null
     orderId: string | null
@@ -4021,6 +4167,8 @@ export interface Prisma__WorkTaskClient<T, Null = never, ExtArgs extends runtime
  */
 export interface WorkTaskFieldRefs {
   readonly cancellationReason: Prisma.FieldRef<"WorkTask", 'String'>
+  readonly clientPaidPercent: Prisma.FieldRef<"WorkTask", 'Decimal'>
+  readonly clientRevisionNote: Prisma.FieldRef<"WorkTask", 'String'>
   readonly id: Prisma.FieldRef<"WorkTask", 'String'>
   readonly projectId: Prisma.FieldRef<"WorkTask", 'String'>
   readonly orderId: Prisma.FieldRef<"WorkTask", 'String'>
