@@ -63,8 +63,22 @@ export async function checkContactRateLimit(
     }
 
     return { allowed: true };
-  } catch {
+  } catch (error) {
     // Never bypass limiting when Redis cannot be contacted.
+    const message = error instanceof Error
+      ? error.message
+      : "Unknown Redis error";
+
+    const safeMessage = message
+      .replace(process.env.UPSTASH_REDIS_REST_TOKEN ?? "", "[REDACTED]")
+      .replace(process.env.UPSTASH_REDIS_REST_URL ?? "", "[REDACTED]");
+
+    console.error(
+      "[Contact rate limit] Redis request failed:",
+      error instanceof Error ? error.name : "UnknownError",
+      safeMessage.slice(0, 500)
+    );
+
     return { allowed: false, status: 503 };
   }
 }
