@@ -358,7 +358,7 @@ function AttentionGrid({ a, extra }: { a: Attention; extra?: ReactNode }) {
       <ActionTile title="Disputes" description="Open issues raised on orders." href="/portal/admin/disputes" icon={Gavel} tone="rose" badge={a.disputes} />
       <ActionTile title="Payment-method changes" description="Approve or reject payout detail changes." href="/portal/admin/payment-approvals" icon={Stamp} tone="amber" badge={a.paymentChanges} />
       <ActionTile title="New applicants" description="Review applications from the Careers page." href="/portal/admin/recruitment" icon={UserCheck} tone="teal" badge={a.applications} />
-      <ActionTile title="Overdue orders" description="Assigned work past its deadline." href="/portal/admin/task-summary" icon={Clock} tone="rose" badge={a.overdue} />
+      <ActionTile title="Manage All Undelivered Orders" description="Overdue and other orders not delivered to the client." href="/portal/admin/task-summary?tab=progress" icon={Clock} tone="rose" badge={a.overdue} />
       {extra}
     </section>
   );

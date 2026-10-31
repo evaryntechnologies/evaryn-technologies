@@ -16,8 +16,17 @@ export default async function NotificationDetail({ params }: { params: Promise<{
   if (!employee) notFound();
   const notification = await prisma.portalNotification.findFirst({ where: { id, recipientId: employee.id } });
   if (!notification) notFound();
-  const related =
-    notification.href?.startsWith("/portal/") && !notification.href.startsWith("//") ? notification.href : null;
+  const rawHref = notification.href;
+  // Older messages can contain obsolete links. Keep a safe, role-neutral route
+  // instead of sending employees straight into an old 404 destination.
+  const aliases: Record<string, string> = {
+    "/portal/tasker/tasks": "/portal/tasker/my-tasks",
+    "/portal/admin/force-reassign": "/portal/admin/task-summary?tab=progress",
+  };
+  const related = rawHref && rawHref.startsWith("/portal/") && !rawHref.startsWith("//")
+    && !rawHref.includes("\\") && !rawHref.includes("..")
+    ? (aliases[rawHref] ?? rawHref)
+    : null;
 
   return (
     <PageShell>

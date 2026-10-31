@@ -11,6 +11,15 @@ export async function claimQA(formData: FormData): Promise<void> {
   const taskId = String(formData.get("taskId") ?? "");
   const profile = await prisma.employeeProfile.findUnique({where:{authUserId:auth.id},select:{id:true,status:true,role:true}});
   if (!profile || profile.status !== "ACTIVE" || profile.role !== "QA") redirect("/portal/unauthorized");
+  // Never allow QA on work this employee authored or previously reviewed.
+  const conflict = await prisma.taskSubmission.findFirst({
+    where: { taskId, OR: [
+      { employeeId: profile.id },
+      { reviews: { some: { reviewerId: profile.id } } },
+    ] },
+    select: { id: true },
+  });
+  if (conflict) redirect("/portal/qa/queue?error=conflict");
   const changed = await prisma.workTask.updateMany({
     where:{id:taskId,status:"PENDING_QA",claimedQaId:null,assignedToId:{not:profile.id}},
     data:{claimedQaId:profile.id},
@@ -58,6 +67,13 @@ export async function qaDecision(formData: FormData): Promise<void> {
   if (!candidate || candidate.status !== "PENDING_QA" || candidate.task.status !== "PENDING_QA" || candidate.task.claimedQaId !== qaEmployee.id) {
     redirect("/portal/qa/queue?error=processed");
   }
+  const priorParticipation = await prisma.taskSubmission.findFirst({
+    where: { taskId: candidate.taskId, OR: [
+      { employeeId: qaEmployee.id },
+      { reviews: { some: { reviewerId: qaEmployee.id } } },
+    ] }, select: { id: true },
+  });
+  if (priorParticipation) redirect("/portal/qa/queue?error=conflict");
   const attachment = await saveOrderAttachment(formData, candidate.taskId, qaEmployee.id, false);
   let outcome: boolean;
   try {
@@ -78,6 +94,7 @@ export async function qaDecision(formData: FormData): Promise<void> {
       submission.status !== "PENDING_QA" ||
       submission.task.status !== "PENDING_QA" ||
       submission.employeeId === qaEmployee.id ||
+      Boolean(await tx.taskSubmission.findFirst({where:{taskId:submission.taskId,OR:[{employeeId:qaEmployee.id},{reviews:{some:{reviewerId:qaEmployee.id}}}]},select:{id:true}})) ||
       submission.task.claimedQaId !== qaEmployee.id
     ) {
       return false;

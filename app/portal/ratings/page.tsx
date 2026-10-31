@@ -15,7 +15,10 @@ async function RatingsContent() {
 
   const reviews = profile
     ? await prisma.taskReview.findMany({
-        where: { submission: { employeeId: profile.id } },
+        where: { OR: [
+          { submission: { employeeId: profile.id } },
+          { submission: { reviews: { some: { reviewerId: profile.id } } } },
+        ] },
         select: {
           id: true,
           stage: true,
@@ -28,6 +31,8 @@ async function RatingsContent() {
                 select: {
                   title: true,
                   publicTaskId: true,
+                  clientRating: true,
+                  clientPaidPercent: true,
                 },
               },
             },
@@ -56,7 +61,7 @@ async function RatingsContent() {
         {reviews.map((review) => (
           <article
             key={review.id}
-            className="rounded-2xl border border-slate-200 bg-white p-5 text-slate-900 dark:border-white/10 dark:bg-[#102442] dark:text-white"
+            className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 text-slate-900 dark:border-white/10 dark:bg-[#102442] dark:text-white"
           >
             <div className="flex flex-wrap justify-between gap-3">
               <div>
@@ -75,7 +80,13 @@ async function RatingsContent() {
               </span>
             </div>
 
-            <p className="mt-4 whitespace-pre-wrap text-sm opacity-80">
+            {review.submission.task.clientRating != null && (
+            <p className="mt-2 text-xs font-semibold text-cyan-700 dark:text-cyan-300">
+              Client rating: {review.submission.task.clientRating}/5
+              {review.submission.task.clientPaidPercent != null ? ` · Client paid ${review.submission.task.clientPaidPercent}%` : ""}
+            </p>
+          )}
+          <p className="mt-3 whitespace-pre-wrap text-sm opacity-80">
               {review.feedback || "No written feedback provided."}
             </p>
 

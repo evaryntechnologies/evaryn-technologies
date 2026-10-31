@@ -13,6 +13,8 @@ export async function claimReview(formData: FormData): Promise<void> {
   if (!reviewer || !["REVIEWER","QA"].includes(reviewer.role) || reviewer.status !== "ACTIVE") redirect("/portal/unauthorized");
   const task = await prisma.workTask.findFirst({where:{id:taskId,status:"PENDING_REVIEW",claimedReviewerId:null},select:{assignedToId:true}});
   if (!task || task.assignedToId === reviewer.id) redirect("/portal/reviewer/queue?error=processed");
+  const previous = await prisma.taskSubmission.findFirst({where:{taskId,OR:[{employeeId:reviewer.id},{reviews:{some:{reviewerId:reviewer.id}}}]},select:{id:true}});
+  if (previous) redirect("/portal/reviewer/queue?error=conflict");
   const updated = await prisma.workTask.updateMany({where:{id:taskId,status:"PENDING_REVIEW",claimedReviewerId:null,assignedToId:{not:reviewer.id}},data:{claimedReviewerId:reviewer.id}});
   revalidatePath("/portal/reviewer/queue");
   redirect(updated.count === 1 ? "/portal/reviewer/queue" : "/portal/reviewer/queue?error=processed");
@@ -48,6 +50,8 @@ export async function reviewSubmission(formData: FormData): Promise<void> {
   // Identify the work item before uploading; the transaction re-checks claim ownership.
   const candidate = await prisma.taskSubmission.findUnique({where:{id:submissionId},select:{taskId:true,status:true,task:{select:{claimedReviewerId:true,status:true}}}});
   if(!candidate || candidate.status!=="PENDING_REVIEW" || candidate.task.status!=="PENDING_REVIEW" || candidate.task.claimedReviewerId!==reviewer.id) redirect("/portal/reviewer/queue?error=processed");
+  const previous = await prisma.taskSubmission.findFirst({where:{taskId:candidate.taskId,OR:[{employeeId:reviewer.id},{reviews:{some:{reviewerId:reviewer.id}}}]},select:{id:true}});
+  if(previous) redirect("/portal/reviewer/queue?error=conflict");
   const attachment = await saveOrderAttachment(formData,candidate.taskId,reviewer.id,false);
   let outcome=false;
   try { outcome = await prisma.$transaction(async (tx) => {
@@ -67,6 +71,7 @@ export async function reviewSubmission(formData: FormData): Promise<void> {
       submission.status !== "PENDING_REVIEW" ||
       submission.task.status !== "PENDING_REVIEW" ||
       submission.employeeId === reviewer.id ||
+      Boolean(await tx.taskSubmission.findFirst({where:{taskId:submission.taskId,OR:[{employeeId:reviewer.id},{reviews:{some:{reviewerId:reviewer.id}}}]},select:{id:true}})) ||
       submission.task.claimedReviewerId !== reviewer.id
     ) {
       return false;

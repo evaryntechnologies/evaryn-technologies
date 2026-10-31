@@ -74,6 +74,8 @@ function roleMenu(role:Role): MenuItem[] {
     {name:"Inquiries",href:"/portal/super-admin/inquiries",icon:MessageSquare},
     {name:"Audit Log",href:"/portal/super-admin/audit-log",icon:ShieldCheck},
   );
+  if (["REVIEWER", "QA", "ADMIN", "SUPER_ADMIN"].includes(role))
+    links.push({name:"Team Memos",href:"/portal/announcements",icon:MessageSquare});
   links.push(...baseMenu.slice(1), {name:"Ratings & Rubrics",href:"/portal/ratings",icon:Star});
   return links;
 }

@@ -54,7 +54,7 @@ export async function getTaskerExtras(authUserId: string) {
         prisma.workTask.findMany({
           where: {
             assignedToId: id,
-            status: { in: ["ASSIGNED", "REWORK_REQUIRED"] },
+            status: { in: ["ASSIGNED", "CLAIMED", "IN_PROGRESS", "REWORK_REQUIRED", "PENDING_REVIEW", "PENDING_QA", "QA_IN_PROGRESS"] },
           },
           select: {
             id: true,
@@ -260,7 +260,7 @@ export async function getAttention(): Promise<Attention> {
         prisma.workTask.count({
           where: {
             deadline: { lt: new Date() },
-            status: { in: ["ASSIGNED", "REWORK_REQUIRED"] },
+            status: { in: ["ASSIGNED", "CLAIMED", "IN_PROGRESS", "REWORK_REQUIRED", "PENDING_REVIEW", "PENDING_QA", "QA_IN_PROGRESS"] },
           },
         }),
         0
