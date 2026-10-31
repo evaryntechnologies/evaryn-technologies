@@ -45,15 +45,17 @@ async function performSettlement(form: FormData): Promise<void> {
     const due=rows.reduce((a,r)=>a+toCents(r.payableAmount),0);
     if (!Number.isSafeInteger(due)||due<=0) throw new Error("Invalid outstanding balance.");
     const requested=mode==="FULL"?due:Math.round(Number(enteredAmount)*100);
-    if (!Number.isSafeInteger(requested)||requested<=0||requested>due) throw new Error("Amount must be above zero and not exceed the employee's payable balance.");
+    if (!Number.isSafeInteger(requested)||requested<=0) throw new Error("Final payment must be greater than zero.");
     const batch=await tx.$queryRaw<Array<{id:string}>>`
       INSERT INTO public."PayTeamSettlement" ("employeeId","payoutDate","approvedTotal","paidTotal","reason","paymentReference","paidById")
       VALUES (${employeeId}::uuid,${payoutDate}::date,${(due/100).toFixed(2)}::numeric,${(requested/100).toFixed(2)}::numeric,${mode==="FULL"?null:reason},${reference},${actor.id}::uuid)
       RETURNING id`;
-    // Distribute actual funds across entries in order and preserve differences as documented adjustments.
+    // Allocate a final settlement across all approved entries. For overpayments,
+    // allocate the positive adjustment to the last row rather than opening employee debt.
+    // The settlement approvedTotal/paidTotal preserves the original vs final totals.
     let remaining=requested;
-    for (const row of rows) {
-      const cents=Math.min(toCents(row.payableAmount),remaining);
+    for (const [index, row] of rows.entries()) {
+      const cents=index === rows.length-1 ? remaining : Math.min(toCents(row.payableAmount),remaining);
       remaining-=cents;
       await tx.$executeRaw`
         INSERT INTO public."PayTeamAllocation" ("settlementId","ledgerId","paidAmount")
@@ -88,7 +90,7 @@ export async function settleTeamBalance(
     console.error("Pay Team settlement failed", error);
     const message = error instanceof Error ? error.message : "Unable to record payment. Check the server logs.";
     // Do not expose raw SQL and internal stack traces to the browser.
-    const safe = /^(Invalid payment request|Enter |Nothing payable|Employee has no approved payment method|Not authorized|Amount must|Invalid outstanding balance|Settlement allocation|A payroll entry was updated)/.test(message)
+    const safe = /^(Invalid payment request|Enter |Nothing payable|Employee has no approved payment method|Not authorized|Final payment must|Invalid outstanding balance|Settlement allocation|A payroll entry was updated)/.test(message)
       ? message
       : "Payment could not be recorded. Verify the Pay Team migration and review the server logs.";
     return {status:"error", message:safe};
