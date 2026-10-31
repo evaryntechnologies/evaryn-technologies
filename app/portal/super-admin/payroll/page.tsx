@@ -19,6 +19,7 @@ async function Content() {
     FROM public."WorkforcePayCandidates" c
     JOIN public."EmployeeProfile" e ON e.id=c."employeeId"
     LEFT JOIN public."WorkTask" t ON t.id=c."taskId"
+    WHERE (c."grossAmount" - c."fineAmount") > 0
     ORDER BY c."payoutDate" ASC,c."eventKey" LIMIT 250`;
   const entries = await prisma.$queryRaw<Ledger[]>`
     SELECT l.id,l."sourceType",e."fullName",COALESCE(t.title,'Admin time session') AS label,

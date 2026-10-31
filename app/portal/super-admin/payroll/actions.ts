@@ -25,7 +25,7 @@ export async function approveWorkforcePay(form: FormData): Promise<void> {
       ("eventKey","sourceType","taskId","submissionId","reviewId","sessionId","employeeId","eligibleAt","payoutDate","grossAmount","fineAmount","approvedById")
     SELECT c."eventKey", c."sourceType", c."taskId", c."submissionId", c."reviewId", c."sessionId", c."employeeId", c."eligibleAt", c."payoutDate", c."grossAmount", c."fineAmount", ${actor}::uuid
     FROM public."WorkforcePayCandidates" c
-    WHERE c."eventKey" = ${key} AND c."grossAmount" > 0
+    WHERE c."eventKey" = ${key} AND (c."grossAmount" - c."fineAmount") > 0
     ON CONFLICT ("eventKey") DO NOTHING`;
   if (inserted !== 1) throw new Error("Entry has already been approved or is no longer eligible.");
   revalidatePath("/portal/super-admin/payroll");

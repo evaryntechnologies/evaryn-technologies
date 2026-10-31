@@ -8,7 +8,8 @@ export async function requestPaymentChange(form:FormData) {
   const auth=await requireEmployee();
   const profile=await prisma.employeeProfile.findUnique({where:{authUserId:auth.id},select:{id:true,status:true}});
   if(!profile || profile.status!=="ACTIVE") throw new Error("Employee access denied.");
-  if(!canChangePaymentNow()) throw new Error("Payment details cannot change within four days before a payout.");
+  const existing = await prisma.$queryRaw<Array<{present:boolean}>>`SELECT EXISTS(SELECT 1 FROM public."EmployeePaymentMethod" WHERE "employeeId"=${profile.id}::uuid) AS present`;
+  if(existing[0]?.present && !canChangePaymentNow()) throw new Error("Payment method changes close four days before payout. Initial registration remains available.");
   const method=String(form.get("method")??"");
   const provider=String(form.get("provider")??"");
   const other=String(form.get("otherProvider")??"").trim();

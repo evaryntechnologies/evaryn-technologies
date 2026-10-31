@@ -48,7 +48,7 @@ export async function reviewSubmission(formData: FormData): Promise<void> {
   // Identify the work item before uploading; the transaction re-checks claim ownership.
   const candidate = await prisma.taskSubmission.findUnique({where:{id:submissionId},select:{taskId:true,status:true,task:{select:{claimedReviewerId:true,status:true}}}});
   if(!candidate || candidate.status!=="PENDING_REVIEW" || candidate.task.status!=="PENDING_REVIEW" || candidate.task.claimedReviewerId!==reviewer.id) redirect("/portal/reviewer/queue?error=processed");
-  const attachment = await saveOrderAttachment(formData,candidate.taskId,reviewer.id);
+  const attachment = await saveOrderAttachment(formData,candidate.taskId,reviewer.id,false);
   let outcome=false;
   try { outcome = await prisma.$transaction(async (tx) => {
     const submission = await tx.taskSubmission.findUnique({

@@ -45,7 +45,7 @@ export async function submitTask(formData: FormData): Promise<void> {
     redirect(`${taskUrl}?error=closed`);
   }
 
-  const attachment = await saveOrderAttachment(formData, taskId, employee.id);
+  const attachment = await saveOrderAttachment(formData, taskId, employee.id, false);
   let outcome = false;
   try { outcome = await prisma.$transaction(async (tx) => {
     const changed = await tx.workTask.updateMany({
