@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { requestPaymentChange } from "@/app/portal/payment-method/actions";
 
-export const runtime = "nodejs";
 export async function POST(request: Request) {
   try {
     const data = await request.formData();
