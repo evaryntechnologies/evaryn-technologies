@@ -1,79 +1,108 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "@fontsource/inter/700.css";
+@import "tailwindcss";
 
-@layer base {
-  :root {
-    --font-sf: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
-    --bg-primary: #f8fafc;
-    --bg-surface: #ffffff;
-    --bg-elevated: #f1f5f9;
-    --border-subtle: rgba(15, 23, 42, 0.08);
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --accent-primary: #2563eb;
-    --accent-glow: rgba(37, 99, 235, 0.15);
-  }
+@custom-variant dark (&:where(.dark, .dark *));
 
-  .dark, [data-theme="dark"] {
-    --bg-primary: #090a0f;
-    --bg-surface: #12141c;
-    --bg-elevated: #181b26;
-    --border-subtle: rgba(255, 255, 255, 0.08);
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --accent-primary: #3b82f6;
-    --accent-glow: rgba(59, 130, 246, 0.18);
-  }
-
-  body {
-    font-family: var(--font-sf);
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
-  }
+:root {
+  --background: #f3f7fc;
+  --foreground: #071327;
+  --surface: #ffffff;
+  --border-color: #dce5f0;
 }
 
-@layer utilities {
-  .glass-panel {
-    background: rgba(18, 20, 28, 0.78);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--border-subtle);
-  }
-
-  .light .glass-panel {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(15, 23, 42, 0.08);
-  }
-
-  .bento-card {
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: 1rem;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .bento-card:hover {
-    border-color: rgba(59, 130, 246, 0.35);
-    box-shadow: 0 8px 30px -4px var(--accent-glow);
-  }
+.dark {
+  --background: #071327;
+  --foreground: #f3f7fc;
+  --surface: #101f39;
+  --border-color: #273d60;
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+html {
+  scroll-behavior: smooth;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    -apple-system, BlinkMacSystemFont,
+    "SF Pro Text", "SF Pro Display",
+    "Helvetica Neue", system-ui,
+    "Segoe UI", Roboto, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
-::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.25);
-  border-radius: 9999px;
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.45);
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
 }
+
+:focus-visible {
+  outline: 2px solid #00aeef;
+  outline-offset: 3px;
+}
+
+::selection {
+  background: #00aeef;
+  color: #071327;
+}
+
+/* Evaryn unified typography */
+html,
+body,
+button,
+input,
+textarea,
+select,
+option {
+  font-family: "Inter", Arial, sans-serif !important;
+  font-weight: 700;
+}
+/* Responsive application layout: allow grids and tables to shrink without clipping. */
+html, body { width:100%; max-width:100%; overflow-x:clip; }
+main { width:100%; min-width:0; }
+main > div { min-width:0; }
+.grid > * { min-width:0; }
+img, svg { max-width:100%; }
+input, select, textarea { max-width:100%; }
+@media (max-width: 640px) { main { overflow-wrap:anywhere; } main table { display:block; max-width:100%; overflow-x:auto; } }
+
+/* Light appearance for the historically dark portal surfaces. Dark mode remains untouched. */
+html:not(.dark) .bg-\[\#071327\] { background-color:#eaf8ff !important; color:#102746; }
+html:not(.dark) .bg-\[\#101F39\] { background-color:#ffffff !important; color:#102746; border-color:#c4e1f2; }
+html:not(.dark) main.text-white { color:#102746 !important; }
+html:not(.dark) .text-slate-300,html:not(.dark) .text-slate-400 { color:#395574 !important; }
+
+/* EVARYN ACCESSIBLE LIGHT PORTAL â€” scoped; no dark-mode or grid/stretch changes. */
+html:not(.dark) body:has(a[href="/portal/task-hub"]) .bg-\[\#101F39\],
+html:not(.dark) body:has(a[href="/portal/task-hub"]) .bg-\[\#071327\] {
+  background-color: #ffffff !important;
+  color: #102746;
+  border-color: #c4e1f2;
+}
+html:not(.dark) [class*="bg-[#101F39]"] {background-color:#fff!important;color:#102746;}
+html:not(.dark) [class*="bg-[#071327]"] {background-color:#eef8fd!important;color:#102746;}
+html:not(.dark) .text-slate-200,
+html:not(.dark) .text-slate-300,
+html:not(.dark) .text-slate-400 {color:#3b5771!important;}
+html:not(.dark) .text-cyan-200,
+html:not(.dark) .text-cyan-300,
+html:not(.dark) .text-cyan-400 {color:#075a89!important;}
+html:not(.dark) .border-white\/10,
+html:not(.dark) .border-white\/15,
+html:not(.dark) .border-white\/20 {border-color:#c4dbea!important;}
+/* Keep white text on branded action buttons, not on pale card surfaces. */
+html:not(.dark) .bg-\[\#0052CC\],html:not(.dark) .bg-blue-600 {color:#fff!important;}
+html:not(.dark) input,html:not(.dark) select,html:not(.dark) textarea {color:#102746;}
+html:not(.dark) input::placeholder,html:not(.dark) textarea::placeholder {color:#58718a;}

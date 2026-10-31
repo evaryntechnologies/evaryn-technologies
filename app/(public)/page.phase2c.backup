@@ -1,0 +1,99 @@
+﻿import Link from "next/link";
+import { services } from "@/lib/services";
+import ServiceCard from "@/components/ui/ServiceCard";
+import {
+  ArrowRight,
+} from "lucide-react";
+
+
+
+export default function Home() {
+  return (
+    <main className="bg-[#F3F7FC] text-[#071327] dark:bg-[#071327] dark:text-white">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#071327] via-[#002B7F] to-[#0052CC] px-6 py-24 text-white md:py-32">
+        <div className="relative mx-auto max-w-7xl">
+          <p className="mb-5 text-sm font-bold uppercase tracking-[0.2em] text-cyan-300">
+            Innovation. People. Progress.
+          </p>
+
+          <h1 className="max-w-4xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+            Technology-driven solutions.
+            <span className="mt-3 block text-[#00C6FF]">
+              People-powered excellence.
+            </span>
+          </h1>
+
+          <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-200">
+            We bring together skilled people and modern
+            workflows to deliver professional writing,
+            data annotation and video editing services.
+          </p>
+
+          <div className="mt-9 flex flex-wrap gap-4">
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#00AEEF] px-7 py-4 font-semibold text-[#071327] transition hover:bg-[#00C6FF]"
+            >
+              Request a quote
+              <ArrowRight size={18} />
+            </Link>
+
+            <Link
+              href="/services"
+              className="rounded-xl border border-white/40 px-7 py-4 font-semibold text-white transition hover:bg-white/10"
+            >
+              Explore our services
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 py-20 md:px-8">
+        <div className="mb-11 max-w-2xl">
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#0052CC] dark:text-cyan-300">
+            What we do
+          </p>
+          <h2 className="mt-3 text-3xl font-bold md:text-4xl">
+            Professional services built around your needs
+          </h2>
+          <p className="mt-4 leading-7 text-slate-600 dark:text-slate-300">
+            Explore the solutions we provide to clients
+            locally and internationally.
+          </p>
+        </div>
+
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {services.map((service) => (
+            <ServiceCard
+              key={service.slug}
+              service={service}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-white px-6 py-20 text-center dark:bg-[#101F39]">
+        <div className="mx-auto max-w-3xl">
+          <p className="text-sm font-bold uppercase tracking-widest text-[#0052CC] dark:text-cyan-300">
+            Careers at Evaryn
+          </p>
+          <h2 className="mt-4 text-3xl font-bold md:text-4xl">
+            Grow with a team that values your skills
+          </h2>
+          <p className="mt-5 text-slate-600 dark:text-slate-300">
+            Discover opportunities in writing,
+            data annotation and video editing.
+          </p>
+          <Link
+            href="/careers"
+            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#0052CC] px-7 py-4 font-semibold text-white hover:bg-[#003F9E]"
+          >
+            Explore Careers
+            <ArrowRight size={18} />
+          </Link>
+        </div>
+      </section>
+    </main>
+  );
+}
+

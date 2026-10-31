@@ -1,47 +1,59 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { Menu, X, LockKeyhole } from "lucide-react";
+import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
 
-const NAV_LINKS = [
+const STAFF_LOGIN_URL = "/portal/login";
+
+const links = [
   { label: "Services", href: "/services" },
-  { label: "How We Work", href: "/how-we-work" },
+  { label: "How we work", href: "/how-we-work" },
   { label: "Why Evaryn", href: "/why-evaryn" },
   { label: "Careers", href: "/careers" },
   { label: "Contact", href: "/contact" },
 ];
 
 export default function PublicHeader() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#090A0F]/85 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/25">
-            E
-          </div>
-          <div>
-            <span className="text-base font-bold tracking-tight text-white block leading-none">
-              EVARYN
-            </span>
-            <span className="text-[10px] font-medium tracking-widest uppercase text-blue-400">
-              Technologies Ltd
-            </span>
-          </div>
+    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/55 backdrop-blur-lg dark:border-slate-800 dark:bg-[#071327]/55">
+      <div className="mx-auto flex h-24 w-full items-center justify-between gap-4 px-5 md:px-8">
+        <Link
+          href="/"
+          onClick={closeMenu}
+          className="flex min-w-0 items-center gap-3"
+          aria-label="Evaryn Technologies Limited - Home"
+        >
+          <Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={320} height={95} className="h-auto max-h-20 w-auto max-w-[min(62vw,320px)] object-contain" priority />
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8">
-          {NAV_LINKS.map((link) => {
-            const active = pathname === link.href;
+        {/* Desktop navigation */}
+        <nav
+          aria-label="Main navigation"
+          className="hidden items-center gap-5 lg:flex"
+        >
+          {links.map((link) => {
+            const active =
+              pathname === link.href ||
+              pathname.startsWith(link.href + "/");
+
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-xs font-medium transition ${
-                  active ? "text-blue-400" : "text-slate-300 hover:text-white"
+                aria-current={active ? "page" : undefined}
+                className={`text-sm font-medium transition hover:text-[#0052CC] dark:hover:text-cyan-300 ${
+                  active
+                    ? "text-[#0052CC] dark:text-cyan-300"
+                    : "text-slate-600 dark:text-slate-300"
                 }`}
               >
                 {link.label}
@@ -50,56 +62,90 @@ export default function PublicHeader() {
           })}
         </nav>
 
-        <div className="hidden md:flex items-center gap-3">
+        {/* Desktop actions */}
+        <div className="hidden items-center gap-3 lg:flex">
+          <ThemeSwitcher />
+
           <Link
-            href="/portal/login"
-            className="px-4 py-2 rounded-xl border border-white/15 hover:border-white/30 text-xs font-medium text-slate-200 transition"
+            href={STAFF_LOGIN_URL}
+            aria-current={
+              pathname === STAFF_LOGIN_URL ? "page" : undefined
+            }
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#003F9E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0052CC]"
           >
-            Operator Portal
-          </Link>
-          <Link
-            href="/custom-request"
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-lg shadow-blue-600/25 transition"
-          >
-            Request Custom Pipeline
+            <LockKeyhole size={16} aria-hidden="true" />
+            Staff Login
           </Link>
         </div>
 
+        {/* Mobile menu button */}
         <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden px-3 py-2 rounded-lg border border-white/10 text-xs text-slate-200"
+          type="button"
+          aria-label={
+            menuOpen ? "Close navigation" : "Open navigation"
+          }
+          aria-expanded={menuOpen}
+          aria-controls="mobile-navigation"
+          onClick={() => setMenuOpen((previous) => !previous)}
+          className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 text-[#071327] dark:border-slate-700 dark:text-white lg:hidden"
         >
-          {mobileOpen ? "Close" : "Menu"}
+          {menuOpen ? (
+            <X size={22} aria-hidden="true" />
+          ) : (
+            <Menu size={22} aria-hidden="true" />
+          )}
         </button>
       </div>
 
-      {mobileOpen && (
-        <div className="md:hidden border-t border-white/10 bg-[#0D0F17] px-4 py-5 space-y-3">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileOpen(false)}
-              className="block py-2 text-sm font-medium text-slate-200 hover:text-blue-400"
-            >
-              {link.label}
-            </Link>
-          ))}
-          <div className="pt-3 border-t border-white/10 flex flex-col gap-2.5">
-            <Link
-              href="/portal/login"
-              className="w-full py-2.5 text-center rounded-xl border border-white/15 text-xs font-medium text-white"
-            >
-              Operator Portal
-            </Link>
-            <Link
-              href="/custom-request"
-              className="w-full py-2.5 text-center rounded-xl bg-blue-600 text-xs font-semibold text-white"
-            >
-              Request Custom Pipeline
-            </Link>
+      {/* Mobile navigation */}
+      {menuOpen && (
+        <nav
+          id="mobile-navigation"
+          aria-label="Mobile navigation"
+          className="border-t border-slate-200 bg-white px-5 py-5 dark:border-slate-800 dark:bg-[#071327] lg:hidden"
+        >
+          <div className="mx-auto flex w-full flex-col gap-2">
+            {links.map((link) => {
+              const active =
+                pathname === link.href ||
+                pathname.startsWith(link.href + "/");
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={closeMenu}
+                  aria-current={active ? "page" : undefined}
+                  className={`rounded-lg px-3 py-3 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800 ${
+                    active
+                      ? "bg-blue-50 text-[#0052CC] dark:bg-slate-800 dark:text-cyan-300"
+                      : "text-slate-700 dark:text-slate-200"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-5 dark:border-slate-800">
+              <ThemeSwitcher />
+
+              <Link
+                href={STAFF_LOGIN_URL}
+                onClick={closeMenu}
+                aria-current={
+                  pathname === STAFF_LOGIN_URL
+                    ? "page"
+                    : undefined
+                }
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#003F9E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0052CC]"
+              >
+                <LockKeyhole size={16} aria-hidden="true" />
+                Staff Login
+              </Link>
+            </div>
           </div>
-        </div>
+        </nav>
       )}
     </header>
   );

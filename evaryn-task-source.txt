@@ -1,0 +1,2110 @@
+
+========== prisma/schema.prisma ==========
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum InquiryStatus {
+  NEW
+  IN_DISCUSSION
+  CLOSED
+}
+
+enum ApplicationStatus {
+  NEW
+  SHORTLISTED
+  HIRED
+  REJECTED
+}
+
+model ClientInquiry {
+  id        String        @id @default(uuid()) @db.Uuid
+  name      String
+  email     String
+  service   String
+  details   String        @db.Text
+  status    InquiryStatus @default(NEW)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([status, createdAt])
+}
+
+model CustomServiceRequest {
+  id             String        @id @default(uuid()) @db.Uuid
+  name           String
+  email          String
+  phoneOrCompany String?
+  serviceArea    String
+  requestTitle   String
+  details        String        @db.Text
+  expectedVolume String?
+  neededBy       DateTime?
+  exampleLink    String?
+  status         InquiryStatus @default(NEW)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([status, createdAt])
+}
+
+model JobApplication {
+  id            String            @id @default(uuid()) @db.Uuid
+  name          String
+  email         String
+  phone         String
+  role          String
+  experience    String
+  portfolioLink String?
+  note          String            @db.Text
+  cvStorageKey  String?
+  status        ApplicationStatus @default(NEW)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([status, createdAt])
+}
+
+// =====================================================
+// EVARYN TECHNOLOGIES — EMPLOYEE AND TASK MANAGEMENT
+// =====================================================
+
+// One profile per authorized Supabase Auth user.
+// authUserId corresponds to auth.users.id.
+
+model EmployeeProfile {
+  id         String   @id @default(uuid()) @db.Uuid
+  authUserId String   @unique @db.Uuid
+  email      String   @unique
+  fullName   String
+  role       String
+  status     String   @default("ACTIVE")
+  department String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  assignedTasks WorkTask[]       @relation("TaskAssignee")
+  createdTasks  WorkTask[]       @relation("TaskCreator")
+  submissions   TaskSubmission[]
+  reviews       TaskReview[]
+
+  @@index([role, status])
+}
+
+model WorkProject {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  description String   @db.Text
+  status      String   @default("ACTIVE")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tasks WorkTask[]
+
+  @@index([status])
+}
+
+model WorkTask {
+  id           String    @id @default(uuid()) @db.Uuid
+  projectId    String    @db.Uuid
+  title        String
+  description  String    @db.Text
+  instructions String?   @db.Text
+  status       String    @default("ASSIGNED")
+  priority     String    @default("NORMAL")
+  deadline     DateTime?
+  assignedToId String    @db.Uuid
+  createdById  String    @db.Uuid
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  project     WorkProject      @relation(fields: [projectId], references: [id])
+  assignedTo  EmployeeProfile  @relation("TaskAssignee", fields: [assignedToId], references: [id])
+  createdBy   EmployeeProfile  @relation("TaskCreator", fields: [createdById], references: [id])
+  submissions TaskSubmission[]
+
+  @@index([projectId, status])
+  @@index([assignedToId, status])
+  @@index([deadline])
+}
+
+model TaskSubmission {
+  id          String   @id @default(uuid()) @db.Uuid
+  taskId      String   @db.Uuid
+  employeeId  String   @db.Uuid
+  content     String   @db.Text
+  fileUrl     String?
+  status      String   @default("PENDING_REVIEW")
+  submittedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  task     WorkTask        @relation(fields: [taskId], references: [id])
+  employee EmployeeProfile @relation(fields: [employeeId], references: [id])
+  reviews  TaskReview[]
+
+  @@index([taskId, submittedAt])
+  @@index([employeeId, status])
+}
+
+model TaskReview {
+  id           String   @id @default(uuid()) @db.Uuid
+  submissionId String   @db.Uuid
+  reviewerId   String   @db.Uuid
+  stage        String
+  decision     String
+  feedback     String?  @db.Text
+  createdAt    DateTime @default(now())
+
+  submission TaskSubmission  @relation(fields: [submissionId], references: [id])
+  reviewer   EmployeeProfile @relation(fields: [reviewerId], references: [id])
+
+  @@index([submissionId, stage])
+  @@index([reviewerId, createdAt])
+}
+
+
+========== app/portal/admin/task-management/actions.ts ==========
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { prisma } from "@/lib/db/prisma";
+
+type Result = {
+  success: boolean;
+  message: string;
+};
+
+async function requireActiveAdmin() {
+  const user = await requireEmployee(["ADMIN", "SUPER_ADMIN"]);
+
+  const profile = await prisma.employeeProfile.findUnique({
+    where: { authUserId: user.id },
+    select: { status: true, role: true },
+  });
+
+  if (
+    !profile ||
+    profile.status !== "ACTIVE" ||
+    !["ADMIN", "SUPER_ADMIN"].includes(profile.role)
+  ) {
+    throw new Error("Administrator access is not active.");
+  }
+
+  return user;
+}
+
+export async function createProject(
+  formData: FormData
+): Promise<Result> {
+  await requireActiveAdmin();
+
+  const title = String(formData.get("title") ?? "").trim();
+  const description = String(
+    formData.get("description") ?? ""
+  ).trim();
+
+  if (
+    title.length < 3 ||
+    title.length > 160 ||
+    description.length < 10 ||
+    description.length > 10000
+  ) {
+    return {
+      success: false,
+      message: "Enter a valid project title and description.",
+    };
+  }
+
+  await prisma.workProject.create({
+    data: {
+      title,
+      description,
+      status: "ACTIVE",
+    },
+  });
+
+  revalidatePath("/portal/admin/task-management");
+
+  return {
+    success: true,
+    message: "Project created successfully.",
+  };
+}
+
+export async function assignTask(
+  formData: FormData
+): Promise<Result> {
+  const administrator = await requireActiveAdmin();
+
+  const projectId = String(formData.get("projectId") ?? "");
+  const assignedToId = String(formData.get("assignedToId") ?? "");
+  const title = String(formData.get("title") ?? "").trim();
+  const description = String(
+    formData.get("description") ?? ""
+  ).trim();
+
+  const priority = String(formData.get("priority") ?? "NORMAL");
+  const deadlineValue = String(formData.get("deadline") ?? "");
+
+  const uuidPattern =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+  if (
+    !uuidPattern.test(projectId) ||
+    !uuidPattern.test(assignedToId)
+  ) {
+    return { success: false, message: "Invalid selection." };
+  }
+
+  if (
+    title.length < 3 ||
+    title.length > 160 ||
+    description.length < 10 ||
+    description.length > 10000
+  ) {
+    return {
+      success: false,
+      message: "Enter a valid task title and description.",
+    };
+  }
+
+  if (!["LOW", "NORMAL", "HIGH", "URGENT"].includes(priority)) {
+    return { success: false, message: "Invalid priority." };
+  }
+
+  const deadline = deadlineValue
+    ? new Date(deadlineValue + "T23:59:59+03:00")
+    : null;
+
+  if (deadlineValue && (!/^\d{4}-\d{2}-\d{2}$/.test(deadlineValue) || !deadline || Number.isNaN(deadline.getTime()))) {
+    return { success: false, message: "Invalid deadline." };
+  }
+
+  const [creator, assignee, project] = await Promise.all([
+    prisma.employeeProfile.findUnique({
+      where: { authUserId: administrator.id },
+      select: { id: true },
+    }),
+    prisma.employeeProfile.findUnique({
+      where: { id: assignedToId },
+      select: { status: true, role: true },
+    }),
+    prisma.workProject.findUnique({
+      where: { id: projectId },
+      select: { status: true },
+    }),
+  ]);
+
+  if (
+    !creator ||
+    !assignee ||
+    assignee.status !== "ACTIVE" ||
+    assignee.role !== "TASKER" ||
+    !project ||
+    project.status !== "ACTIVE"
+  ) {
+    return {
+      success: false,
+      message: "The selected project or employee is not eligible.",
+    };
+  }
+
+  await prisma.workTask.create({
+    data: {
+      projectId,
+      assignedToId,
+      createdById: creator.id,
+      title,
+      description,
+      priority,
+      status: "ASSIGNED",
+      deadline,
+    },
+  });
+
+  revalidatePath("/portal/admin/task-management");
+  revalidatePath("/portal/tasker");
+
+  return {
+    success: true,
+    message: "Task assigned successfully.",
+  };
+}
+
+========== app/portal/admin/task-management/page.tsx ==========
+import { connection } from "next/server";
+import { Suspense } from "react";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { prisma } from "@/lib/db/prisma";
+import { createProject, assignTask } from "./actions";
+
+const inputClass =
+  "mt-2 w-full rounded-xl border border-slate-600 bg-[#071327] px-4 py-3 text-white";
+
+async function AdminTaskContent() {
+  await connection();
+  const user = await requireEmployee(["ADMIN", "SUPER_ADMIN"]);
+
+  const administrator = await prisma.employeeProfile.findUnique({
+    where: { authUserId: user.id },
+    select: { role: true, status: true },
+  });
+
+  if (
+    !administrator ||
+    administrator.status !== "ACTIVE" ||
+    !["ADMIN", "SUPER_ADMIN"].includes(administrator.role)
+  ) {
+    return (
+      <p className="rounded-xl border border-amber-400/30 p-6 text-amber-200">
+        Your administrator profile is not active.
+      </p>
+    );
+  }
+
+  const [projects, workers, tasks] = await Promise.all([
+    prisma.workProject.findMany({
+      where: { status: "ACTIVE" },
+      select: { id: true, title: true },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    }),
+    prisma.employeeProfile.findMany({
+      where: { role: "TASKER", status: "ACTIVE" },
+      select: { id: true, fullName: true, email: true },
+      orderBy: { fullName: "asc" },
+      take: 200,
+    }),
+    prisma.workTask.findMany({
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        priority: true,
+        assignedTo: { select: { fullName: true } },
+        project: { select: { title: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 30,
+    }),
+  ]);
+
+  return (
+    <div className="mx-auto max-w-6xl">
+      <header className="mb-9">
+        <p className="text-sm font-semibold tracking-widest text-cyan-300">
+          EVARYN TECHNOLOGIES
+        </p>
+        <h1 className="mt-3 text-3xl font-bold">
+          Task Management
+        </h1>
+        <p className="mt-3 text-slate-300">
+          Create projects and assign work to authorized employees.
+        </p>
+      </header>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <section className="rounded-2xl border border-white/10 bg-[#101F39] p-6">
+          <h2 className="text-xl font-bold">Create Project</h2>
+
+          <form action={async (data: FormData) => { "use server"; await createProject(data); }} className="mt-5 space-y-5">
+            <label className="block text-sm font-medium">
+              Project title
+              <input
+                name="title"
+                required
+                minLength={3}
+                maxLength={160}
+                className={inputClass}
+              />
+            </label>
+
+            <label className="block text-sm font-medium">
+              Project description
+              <textarea
+                name="description"
+                required
+                minLength={10}
+                maxLength={10000}
+                rows={5}
+                className={inputClass}
+              />
+            </label>
+
+            <button
+              type="submit"
+              className="rounded-xl bg-[#0052CC] px-6 py-3 font-semibold hover:bg-[#003F9E]"
+            >
+              Create Project
+            </button>
+          </form>
+        </section>
+
+        <section className="rounded-2xl border border-white/10 bg-[#101F39] p-6">
+          <h2 className="text-xl font-bold">Assign Task</h2>
+
+          <form action={async (data: FormData) => { "use server"; await assignTask(data); }} className="mt-5 space-y-5">
+            <label className="block text-sm font-medium">
+              Project
+              <select name="projectId" required defaultValue="" className={inputClass}>
+                <option value="">Select project</option>
+                {projects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block text-sm font-medium">
+              Assigned employee
+              <select name="assignedToId" required defaultValue="" className={inputClass}>
+                <option value="">Select Tasker</option>
+                {workers.map((worker) => (
+                  <option key={worker.id} value={worker.id}>
+                    {worker.fullName} ({worker.email})
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block text-sm font-medium">
+              Task title
+              <input name="title" required minLength={3} maxLength={160} className={inputClass} />
+            </label>
+
+            <label className="block text-sm font-medium">
+              Instructions
+              <textarea name="description" required minLength={10} maxLength={10000} rows={4} className={inputClass} />
+            </label>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block text-sm font-medium">
+                Priority
+                <select name="priority" defaultValue="NORMAL" className={inputClass}>
+                  <option value="LOW">Low</option>
+                  <option value="NORMAL">Normal</option>
+                  <option value="HIGH">High</option>
+                  <option value="URGENT">Urgent</option>
+                </select>
+              </label>
+
+              <label className="block text-sm font-medium">
+                Deadline
+                <input type="date" name="deadline" className={inputClass} />
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              disabled={projects.length === 0 || workers.length === 0}
+              className="rounded-xl bg-[#0052CC] px-6 py-3 font-semibold hover:bg-[#003F9E] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Assign Task
+            </button>
+
+            {(projects.length === 0 || workers.length === 0) && (
+              <p className="text-sm text-amber-200">
+                Create a project and activate at least one Tasker before assigning work.
+              </p>
+            )}
+          </form>
+        </section>
+      </div>
+
+      <section className="mt-8 rounded-2xl border border-white/10 bg-[#101F39] p-6">
+        <h2 className="text-xl font-bold">Recent Assignments</h2>
+
+        {tasks.length === 0 ? (
+          <p className="mt-5 text-sm text-slate-300">
+            No tasks have been assigned yet.
+          </p>
+        ) : (
+          <div className="mt-5 space-y-3">
+            {tasks.map((task) => (
+              <article
+                key={task.id}
+                className="rounded-xl border border-white/10 p-4"
+              >
+                <h3 className="font-semibold">{task.title}</h3>
+                <p className="mt-2 text-sm text-slate-300">
+                  {task.project.title} Ã‚Â· {task.assignedTo.fullName}
+                </p>
+                <p className="mt-2 text-xs text-cyan-300">
+                  {task.status} Ã‚Â· {task.priority}
+                </p>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+export default function AdminTaskManagementPage() {
+  return (
+    <main className="min-h-screen bg-[#071327] px-5 py-10 text-white sm:px-10">
+      <Suspense fallback={<p>Loading task management...</p>}>
+        <AdminTaskContent />
+      </Suspense>
+    </main>
+  );
+}
+
+========== app/portal/reviewer/queue/page.tsx ==========
+import { Suspense } from "react";
+import { connection } from "next/server";
+import Link from "next/link";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { prisma } from "@/lib/db/prisma";
+import { reviewSubmission } from "./actions";
+
+async function ReviewQueueContent({
+  searchParams,
+}: {
+  searchParams: Promise<{ result?: string; error?: string }>;
+}) {
+  await connection();
+  await requireEmployee(["REVIEWER"]);
+
+  const submissions = await prisma.taskSubmission.findMany({
+    where: {
+      status: "PENDING_REVIEW",
+      task: { status: "PENDING_REVIEW" },
+    },
+    include: {
+      task: {
+        select: {
+          title: true,
+          description: true,
+          project: { select: { title: true } },
+        },
+      },
+      employee: {
+        select: { fullName: true, email: true },
+      },
+    },
+    orderBy: { submittedAt: "asc" },
+    take: 50,
+  });
+
+  const params = await searchParams;
+
+  return (
+    <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
+      <div className="mx-auto max-w-6xl">
+        <Link href="/portal/reviewer" className="text-sm font-semibold text-cyan-300 hover:underline">
+          Back to Reviewer Dashboard
+        </Link>
+
+        <header className="mt-8">
+          <p className="text-xs font-bold tracking-widest text-cyan-300">
+            EVARYN TECHNOLOGIES LIMITED
+          </p>
+          <h1 className="mt-4 text-3xl font-bold">Review Queue</h1>
+          <p className="mt-3 text-sm text-slate-300">
+            Examine employee submissions, provide feedback and approve work for Quality Assurance.
+          </p>
+        </header>
+
+        <div className="mt-7 rounded-xl border border-white/10 bg-[#101F39] p-5">
+          <span className="text-sm text-slate-300">Submissions awaiting review</span>
+          <p className="mt-2 text-3xl font-bold">{submissions.length}</p>
+          <p className="mt-1 text-xs text-slate-400">Showing up to 50 pending submissions</p>
+        </div>
+
+        {params.result === "saved" && (
+          <p role="status" className="mt-6 rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-4 text-sm text-emerald-200">
+            Review decision saved successfully.
+          </p>
+        )}
+
+        {params.error && (
+          <p role="alert" className="mt-6 rounded-xl border border-amber-500/30 bg-amber-950/30 p-4 text-sm text-amber-200">
+            {params.error === "invalid"
+              ? "Check your decision and feedback. Revisions require at least 10 characters of feedback."
+              : "This submission has already been processed or is no longer available."}
+          </p>
+        )}
+
+        {submissions.length === 0 ? (
+          <section className="mt-8 rounded-2xl border border-white/10 bg-[#101F39] p-10 text-center">
+            <h2 className="text-xl font-semibold">Nothing to review yet</h2>
+            <p className="mt-3 text-sm text-slate-300">
+              Submitted employee work will appear here automatically.
+            </p>
+          </section>
+        ) : (
+          <div className="mt-8 space-y-6">
+            {submissions.map((submission) => (
+              <article
+                key={submission.id}
+                className="rounded-2xl border border-white/10 bg-[#101F39] p-6 sm:p-8"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold text-cyan-300">
+                      {submission.task.project.title}
+                    </p>
+                    <h2 className="mt-2 text-xl font-bold">
+                      {submission.task.title}
+                    </h2>
+                    <p className="mt-2 text-sm text-slate-300">
+                      Submitted by {submission.employee.fullName}
+                    </p>
+                  </div>
+                  <span className="rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-xs font-semibold text-amber-200">
+                    PENDING REVIEW
+                  </span>
+                </div>
+
+                <p className="mt-5 whitespace-pre-wrap text-sm leading-7 text-slate-300">
+                  {submission.task.description}
+                </p>
+
+                <div className="mt-6 rounded-xl border border-white/10 bg-[#071327] p-5">
+                  <h3 className="font-semibold">Submitted Work</h3>
+                  <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-7">
+                    {submission.content}
+                  </p>
+                  <p className="mt-4 text-xs text-slate-400">
+                    Submitted {submission.submittedAt.toLocaleString("en-KE", { timeZone: "Africa/Nairobi" })}
+                  </p>
+                </div>
+
+                <form action={reviewSubmission} className="mt-6 space-y-4">
+                  <input type="hidden" name="submissionId" value={submission.id} />
+
+                  <label className="block text-sm font-semibold">
+                    Review Feedback
+                    <textarea
+                      name="feedback"
+                      rows={4}
+                      maxLength={5000}
+                      placeholder="Explain your findings. Feedback is required when requesting revisions."
+                      className="mt-2 w-full rounded-xl border border-slate-600 bg-[#071327] px-4 py-3 font-normal"
+                    />
+                  </label>
+
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      type="submit"
+                      name="decision"
+                      value="APPROVED"
+                      className="rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold hover:bg-[#003F9E]"
+                    >
+                      Approve for QA
+                    </button>
+                    <button
+                      type="submit"
+                      name="decision"
+                      value="REWORK_REQUIRED"
+                      className="rounded-xl border border-amber-400/40 px-5 py-3 text-sm font-semibold text-amber-200 hover:bg-amber-400/10"
+                    >
+                      Request Revisions
+                    </button>
+                  </div>
+                </form>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
+
+export default function ReviewQueuePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ result?: string; error?: string }>;
+}) {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-[#071327] p-8 text-slate-300">Loading review queue...</main>}>
+      <ReviewQueueContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+========== app/portal/reviewer/queue/actions.ts ==========
+"use server";
+
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { prisma } from "@/lib/db/prisma";
+
+export async function reviewSubmission(formData: FormData): Promise<void> {
+  const user = await requireEmployee(["REVIEWER"]);
+
+  const submissionId = String(formData.get("submissionId") ?? "");
+  const decision = String(formData.get("decision") ?? "");
+  const feedback = String(formData.get("feedback") ?? "").trim();
+
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+  if (
+    !uuid.test(submissionId) ||
+    !["APPROVED", "REWORK_REQUIRED"].includes(decision) ||
+    feedback.length > 5000 ||
+    (decision === "REWORK_REQUIRED" && feedback.length < 10)
+  ) {
+    redirect("/portal/reviewer/queue?error=invalid");
+  }
+
+  const reviewer = await prisma.employeeProfile.findUnique({
+    where: { authUserId: user.id },
+    select: { id: true, role: true, status: true },
+  });
+
+  if (!reviewer || reviewer.role !== "REVIEWER" || reviewer.status !== "ACTIVE") {
+    redirect("/portal/unauthorized");
+  }
+
+  const outcome = await prisma.$transaction(async (tx) => {
+    const submission = await tx.taskSubmission.findUnique({
+      where: { id: submissionId },
+      select: {
+        id: true,
+        status: true,
+        employeeId: true,
+        taskId: true,
+        task: { select: { status: true } },
+      },
+    });
+
+    if (
+      !submission ||
+      submission.status !== "PENDING_REVIEW" ||
+      submission.task.status !== "PENDING_REVIEW" ||
+      submission.employeeId === reviewer.id
+    ) {
+      return false;
+    }
+
+    const claimed = await tx.taskSubmission.updateMany({
+      where: { id: submissionId, status: "PENDING_REVIEW" },
+      data: { status: "REVIEW_IN_PROGRESS" },
+    });
+
+    if (claimed.count !== 1) return false;
+
+    await tx.taskReview.create({
+      data: {
+        submissionId,
+        reviewerId: reviewer.id,
+        stage: "REVIEWER",
+        decision,
+        feedback: feedback || null,
+      },
+    });
+
+    await tx.taskSubmission.update({
+      where: { id: submissionId },
+      data: {
+        status: decision === "APPROVED" ? "PENDING_QA" : "REWORK_REQUIRED",
+      },
+    });
+
+    await tx.workTask.update({
+      where: { id: submission.taskId },
+      data: {
+        status: decision === "APPROVED" ? "PENDING_QA" : "REWORK_REQUIRED",
+      },
+    });
+
+    return true;
+  });
+
+  if (!outcome) {
+    redirect("/portal/reviewer/queue?error=processed");
+  }
+
+  revalidatePath("/portal/reviewer/queue");
+  revalidatePath("/portal/tasker");
+  revalidatePath("/portal/qa");
+
+  redirect("/portal/reviewer/queue?result=saved");
+}
+
+========== app/portal/qa/queue/page.tsx ==========
+import { Suspense } from "react";
+import { connection } from "next/server";
+import Link from "next/link";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { prisma } from "@/lib/db/prisma";
+import { qaDecision } from "./actions";
+
+async function QAQueueContent({
+  searchParams,
+}: {
+  searchParams: Promise<{ result?: string; error?: string }>;
+}) {
+  await connection();
+
+  const user = await requireEmployee(["QA"]);
+
+  const qaProfile = await prisma.employeeProfile.findUnique({
+    where: { authUserId: user.id },
+    select: { id: true },
+  });
+
+  if (!qaProfile) {
+    return (
+      <p className="text-amber-200">
+        Your QA employee profile is unavailable.
+      </p>
+    );
+  }
+
+  const submissions = await prisma.taskSubmission.findMany({
+    where: {
+      status: "PENDING_QA",
+      task: { status: "PENDING_QA" },
+      employeeId: { not: qaProfile.id },
+    },
+    include: {
+      employee: {
+        select: { fullName: true },
+      },
+      task: {
+        select: {
+          title: true,
+          description: true,
+          instructions: true,
+          project: { select: { title: true } },
+        },
+      },
+      reviews: {
+        where: { stage: "REVIEWER" },
+        select: {
+          decision: true,
+          feedback: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      },
+    },
+    orderBy: { submittedAt: "asc" },
+    take: 50,
+  });
+
+  const params = await searchParams;
+
+  return (
+    <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
+      <div className="mx-auto max-w-6xl">
+        <Link
+          href="/portal/qa"
+          className="text-sm font-semibold text-cyan-300 hover:underline"
+        >
+          Back to QA Dashboard
+        </Link>
+
+        <header className="mt-8">
+          <p className="text-xs font-bold tracking-widest text-cyan-300">
+            EVARYN TECHNOLOGIES LIMITED
+          </p>
+
+          <h1 className="mt-4 text-3xl font-bold">
+            Quality Assurance
+          </h1>
+
+          <p className="mt-3 text-sm leading-7 text-slate-300">
+            Perform final quality checks on reviewer-approved work.
+            Approve completed work or return it with clear feedback.
+          </p>
+        </header>
+
+        <section className="mt-8 rounded-2xl border border-white/10 bg-[#101F39] p-6">
+          <p className="text-sm text-slate-300">Awaiting QA</p>
+          <p className="mt-3 text-3xl font-bold">{submissions.length}</p>
+          <p className="mt-2 text-xs text-slate-400">
+            Showing up to 50 pending submissions
+          </p>
+        </section>
+
+        {params.result === "saved" && (
+          <p
+            role="status"
+            className="mt-6 rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-4 text-sm text-emerald-200"
+          >
+            Quality Assurance decision saved successfully.
+          </p>
+        )}
+
+        {params.error && (
+          <p
+            role="alert"
+            className="mt-6 rounded-xl border border-amber-500/30 bg-amber-950/30 p-4 text-sm text-amber-200"
+          >
+            {params.error === "invalid"
+              ? "Please provide a valid decision. Corrections require at least 10 characters of feedback."
+              : "This submission is no longer available for QA review."}
+          </p>
+        )}
+
+        {submissions.length === 0 ? (
+          <section className="mt-8 rounded-2xl border border-white/10 bg-[#101F39] p-10 text-center">
+            <h2 className="text-xl font-semibold">
+              No submissions awaiting QA
+            </h2>
+            <p className="mt-3 text-sm text-slate-300">
+              Work approved by a Reviewer will appear here.
+            </p>
+          </section>
+        ) : (
+          <div className="mt-8 space-y-6">
+            {submissions.map((submission) => (
+              <article
+                key={submission.id}
+                className="rounded-2xl border border-white/10 bg-[#101F39] p-6 sm:p-8"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">
+                      {submission.task.project.title}
+                    </p>
+
+                    <h2 className="mt-2 text-xl font-bold">
+                      {submission.task.title}
+                    </h2>
+
+                    <p className="mt-2 text-sm text-slate-300">
+                      Submitted by {submission.employee.fullName}
+                    </p>
+                  </div>
+
+                  <span className="rounded-lg border border-sky-400/25 bg-sky-400/10 px-3 py-2 text-xs font-semibold text-sky-200">
+                    PENDING QA
+                  </span>
+                </div>
+
+                <div className="mt-6">
+                  <h3 className="font-semibold">Task Description</h3>
+                  <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-300">
+                    {submission.task.description}
+                  </p>
+
+                  {submission.task.instructions && (
+                    <>
+                      <h3 className="mt-5 font-semibold">Instructions</h3>
+                      <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-300">
+                        {submission.task.instructions}
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                <div className="mt-6 rounded-xl border border-white/10 bg-[#071327] p-5">
+                  <h3 className="font-semibold">Submitted Work</h3>
+                  <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-7">
+                    {submission.content}
+                  </p>
+                  <p className="mt-4 text-xs text-slate-400">
+                    Submitted{" "}
+                    {submission.submittedAt.toLocaleString("en-KE", {
+                      timeZone: "Africa/Nairobi",
+                    })}
+                  </p>
+                </div>
+
+                {submission.reviews.map((review, index) => (
+                  <div
+                    key={index}
+                    className="mt-5 rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-5"
+                  >
+                    <h3 className="text-sm font-semibold text-cyan-300">
+                      Reviewer Assessment
+                    </h3>
+
+                    <p className="mt-2 text-xs text-slate-300">
+                      Decision: {review.decision.replaceAll("_", " ")}
+                    </p>
+
+                    {review.feedback && (
+                      <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-300">
+                        {review.feedback}
+                      </p>
+                    )}
+                  </div>
+                ))}
+
+                <form action={qaDecision} className="mt-6 space-y-5">
+                  <input
+                    type="hidden"
+                    name="submissionId"
+                    value={submission.id}
+                  />
+
+                  <label className="block text-sm font-semibold">
+                    Quality Assurance Feedback
+                    <textarea
+                      name="feedback"
+                      rows={5}
+                      maxLength={5000}
+                      placeholder="Record your quality findings and any corrections required..."
+                      className="mt-2 w-full rounded-xl border border-slate-600 bg-[#071327] px-4 py-3 font-normal text-white"
+                    />
+                  </label>
+
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      type="submit"
+                      name="decision"
+                      value="APPROVED"
+                      className="rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold text-white hover:bg-[#003F9E]"
+                    >
+                      Approve & Complete
+                    </button>
+
+                    <button
+                      type="submit"
+                      name="decision"
+                      value="REWORK_REQUIRED"
+                      className="rounded-xl border border-amber-400/40 px-5 py-3 text-sm font-semibold text-amber-200 hover:bg-amber-400/10"
+                    >
+                      Return for Corrections
+                    </button>
+                  </div>
+                </form>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
+
+export default function QAQueuePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ result?: string; error?: string }>;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[#071327] p-8 text-slate-300">
+          Loading Quality Assurance queue...
+        </main>
+      }
+    >
+      <QAQueueContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+========== app/portal/qa/queue/actions.ts ==========
+"use server";
+
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { prisma } from "@/lib/db/prisma";
+
+export async function qaDecision(formData: FormData): Promise<void> {
+  const user = await requireEmployee(["QA"]);
+
+  const submissionId = String(formData.get("submissionId") ?? "");
+  const decision = String(formData.get("decision") ?? "");
+  const feedback = String(formData.get("feedback") ?? "").trim();
+
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+  if (
+    !uuid.test(submissionId) ||
+    !["APPROVED", "REWORK_REQUIRED"].includes(decision) ||
+    feedback.length > 5000 ||
+    (decision === "REWORK_REQUIRED" && feedback.length < 10)
+  ) {
+    redirect("/portal/qa/queue?error=invalid");
+  }
+
+  const qaEmployee = await prisma.employeeProfile.findUnique({
+    where: { authUserId: user.id },
+    select: { id: true, role: true, status: true },
+  });
+
+  if (
+    !qaEmployee ||
+    qaEmployee.role !== "QA" ||
+    qaEmployee.status !== "ACTIVE"
+  ) {
+    redirect("/portal/unauthorized");
+  }
+
+  const outcome = await prisma.$transaction(async (tx) => {
+    const submission = await tx.taskSubmission.findUnique({
+      where: { id: submissionId },
+      select: {
+        id: true,
+        taskId: true,
+        employeeId: true,
+        status: true,
+        task: { select: { status: true } },
+      },
+    });
+
+    if (
+      !submission ||
+      submission.status !== "PENDING_QA" ||
+      submission.task.status !== "PENDING_QA" ||
+      submission.employeeId === qaEmployee.id
+    ) {
+      return false;
+    }
+
+    // Claim submission once: only one QA decision can succeed.
+    const claimed = await tx.taskSubmission.updateMany({
+      where: {
+        id: submissionId,
+        status: "PENDING_QA",
+      },
+      data: { status: "QA_IN_PROGRESS" },
+    });
+
+    if (claimed.count !== 1) return false;
+
+    // Ensure task is still in the matching state.
+    const taskClaimed = await tx.workTask.updateMany({
+      where: {
+        id: submission.taskId,
+        status: "PENDING_QA",
+      },
+      data: { status: "QA_IN_PROGRESS" },
+    });
+
+    if (taskClaimed.count !== 1) {
+      throw new Error("Task state changed during QA review.");
+    }
+
+    await tx.taskReview.create({
+      data: {
+        submissionId,
+        reviewerId: qaEmployee.id,
+        stage: "QA",
+        decision,
+        feedback: feedback || null,
+      },
+    });
+
+    const nextStatus =
+      decision === "APPROVED" ? "COMPLETED" : "REWORK_REQUIRED";
+
+    await tx.taskSubmission.update({
+      where: { id: submissionId },
+      data: { status: nextStatus },
+    });
+
+    await tx.workTask.update({
+      where: { id: submission.taskId },
+      data: { status: nextStatus },
+    });
+
+    return true;
+  });
+
+  if (!outcome) {
+    redirect("/portal/qa/queue?error=processed");
+  }
+
+  revalidatePath("/portal/qa/queue");
+  revalidatePath("/portal/tasker");
+  revalidatePath("/portal/reviewer/queue");
+
+  redirect("/portal/qa/queue?result=saved");
+}
+
+========== app/portal/tasker/page.tsx ==========
+
+import { connection } from "next/server";
+import Link from "next/link";
+import { Suspense } from "react";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { prisma } from "@/lib/db/prisma";
+
+async function TaskerContent() {
+  await connection();
+
+  const user = await requireEmployee(["TASKER"]);
+
+  const profile = await prisma.employeeProfile.findUnique({
+    where: { authUserId: user.id },
+    select: {
+      id: true,
+      fullName: true,
+      status: true,
+    },
+  });
+
+  if (!profile || profile.status !== "ACTIVE") {
+    return (
+      <section className="rounded-2xl border border-amber-300/30 bg-[#101F39] p-8">
+        <h2 className="text-xl font-bold">
+          Employee Profile Unavailable
+        </h2>
+        <p className="mt-3 text-slate-300">
+          Your employee account has not been activated.
+          Contact your administrator.
+        </p>
+      </section>
+    );
+  }
+
+  const tasks = await prisma.workTask.findMany({
+    where: {
+      assignedToId: profile.id,
+    },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      status: true,
+      priority: true,
+      deadline: true,
+      project: {
+        select: {
+          title: true,
+        },
+      },
+    },
+    orderBy: [
+      { deadline: "asc" },
+      { createdAt: "desc" },
+    ],
+    take: 50,
+  });
+
+  const active = tasks.filter(
+    (task) => !["COMPLETED", "CANCELLED"].includes(task.status)
+  ).length;
+
+  const statusLabels: Record<string, string> = {
+    ASSIGNED: "Assigned",
+    PENDING_REVIEW: "Pending Review",
+    REVIEW_IN_PROGRESS: "Under Review",
+    REWORK_REQUIRED: "Revisions Required",
+    PENDING_QA: "Pending Quality Assurance",
+    COMPLETED: "Completed",
+    CANCELLED: "Cancelled",
+  };
+
+  function getTaskAction(status: string) {
+    if (status === "ASSIGNED") {
+      return "Open Task / Submit Work";
+    }
+
+    if (status === "REWORK_REQUIRED") {
+      return "Review Feedback / Resubmit";
+    }
+
+    return "View Task Details";
+  }
+
+  return (
+    <>
+      {/* Workspace heading */}
+      <div className="mb-8">
+        <p className="text-sm font-semibold tracking-widest text-cyan-300">
+          TASKER WORKSPACE
+        </p>
+
+        <h1 className="mt-3 text-3xl font-bold">
+          Welcome, {profile.fullName}
+        </h1>
+
+        <p className="mt-3 text-slate-300">
+          View and manage your assigned work.
+        </p>
+      </div>
+
+      {/* Task summary */}
+      <div className="mb-8 grid gap-4 sm:grid-cols-2">
+        <div className="rounded-2xl border border-white/10 bg-[#101F39] p-6">
+          <p className="text-sm text-slate-300">
+            Tasks loaded
+          </p>
+
+          <p className="mt-3 text-3xl font-bold">
+            {tasks.length}
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-[#101F39] p-6">
+          <p className="text-sm text-slate-300">
+            Active tasks
+          </p>
+
+          <p className="mt-3 text-3xl font-bold text-cyan-300">
+            {active}
+          </p>
+        </div>
+      </div>
+
+      {/* Assigned tasks */}
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-xl font-bold">
+          My Assigned Tasks
+        </h2>
+
+        <span className="rounded-lg border border-white/10 bg-[#101F39] px-3 py-2 text-xs text-slate-300">
+          Showing {tasks.length} tasks
+        </span>
+      </div>
+
+      {tasks.length === 0 ? (
+        <div className="rounded-2xl border border-white/10 bg-[#101F39] p-8 text-center">
+          <h3 className="text-lg font-semibold">
+            No tasks assigned yet
+          </h3>
+
+          <p className="mt-3 text-sm text-slate-300">
+            Tasks assigned by your administrator will appear here.
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {tasks.map((task) => {
+            const isRework = task.status === "REWORK_REQUIRED";
+            const isCompleted = task.status === "COMPLETED";
+            const isCancelled = task.status === "CANCELLED";
+
+            const statusStyle = isRework
+              ? "border-amber-400/30 bg-amber-400/10 text-amber-200"
+              : isCompleted
+                ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"
+                : isCancelled
+                  ? "border-slate-400/20 bg-slate-400/10 text-slate-300"
+                  : task.status === "PENDING_REVIEW" ||
+                      task.status === "PENDING_QA"
+                    ? "border-sky-400/30 bg-sky-400/10 text-sky-200"
+                    : "border-white/15 bg-white/5 text-slate-200";
+
+            return (
+              <article
+                key={task.id}
+                className="rounded-2xl border border-white/10 bg-[#101F39] p-6 transition-colors hover:border-white/20"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">
+                      {task.project.title}
+                    </p>
+
+                    <h3 className="mt-2 text-lg font-bold">
+                      <Link
+                        href={`/portal/tasker/tasks/${task.id}`}
+                        className="transition-colors hover:text-cyan-300 hover:underline"
+                      >
+                        {task.title}
+                      </Link>
+                    </h3>
+                  </div>
+
+                  <span
+                    className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${statusStyle}`}
+                  >
+                    {statusLabels[task.status] ??
+                      task.status.replaceAll("_", " ")}
+                  </span>
+                </div>
+
+                <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-slate-300">
+                  {task.description}
+                </p>
+
+                <div className="mt-5 flex flex-wrap gap-4 text-xs text-slate-300">
+                  <span>
+                    Priority: {task.priority}
+                  </span>
+
+                  <span>
+                    Deadline:{" "}
+                    {task.deadline
+                      ? task.deadline.toISOString().slice(0, 10)
+                      : "Not set"}
+                  </span>
+                </div>
+
+                <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-5">
+                  <p className="text-xs text-slate-400">
+                    {task.status === "ASSIGNED"
+                      ? "Ready for your submission."
+                      : isRework
+                        ? "Reviewer feedback is available. You can revise and resubmit your work."
+                        : task.status === "PENDING_REVIEW"
+                          ? "Your work is awaiting reviewer assessment."
+                          : task.status === "PENDING_QA"
+                            ? "Your work has passed review and is awaiting QA."
+                            : isCompleted
+                              ? "This task has been completed."
+                              : isCancelled
+                                ? "This task has been cancelled."
+                                : "Open the task to view its current progress."}
+                  </p>
+
+                  <Link
+                    href={`/portal/tasker/tasks/${task.id}`}
+                    className="inline-flex items-center justify-center rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#003F9E]"
+                  >
+                    {getTaskAction(task.status)}
+                  </Link>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Portal navigation */}
+      <div className="mt-10">
+        <Link
+          href="/portal"
+          className="text-sm font-semibold text-cyan-300 hover:underline"
+        >
+          Return to portal
+        </Link>
+      </div>
+    </>
+  );
+}
+
+export default function TaskerPage() {
+  return (
+    <main className="min-h-screen bg-[#071327] px-5 py-10 text-white sm:px-10">
+      <div className="mx-auto max-w-6xl">
+        <Suspense
+          fallback={
+            <div className="rounded-2xl border border-white/10 bg-[#101F39] p-8 text-slate-300">
+              Loading your assigned tasks...
+            </div>
+          }
+        >
+          <TaskerContent />
+        </Suspense>
+      </div>
+    </main>
+  );
+}
+
+
+========== app/portal/tasker/tasks/[taskId]/page.tsx ==========
+import { Suspense } from "react";
+import { connection } from "next/server";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { prisma } from "@/lib/db/prisma";
+import { submitTask } from "./actions";
+
+async function TaskContent({
+  taskId,
+  searchParams,
+}: {
+  taskId: string;
+  searchParams: Promise<{ error?: string; submitted?: string }>;
+}) {
+  await connection();
+
+  const user = await requireEmployee(["TASKER"]);
+
+  const employee = await prisma.employeeProfile.findUnique({
+    where: { authUserId: user.id },
+    select: { id: true },
+  });
+
+  if (!employee) notFound();
+
+  const task = await prisma.workTask.findFirst({
+    where: { id: taskId, assignedToId: employee.id },
+    include: {
+      project: { select: { title: true } },
+      submissions: {
+        where: { employeeId: employee.id },
+        orderBy: { submittedAt: "desc" },
+        select: {
+          id: true,
+          content: true,
+          status: true,
+          submittedAt: true,
+          reviews: {
+            orderBy: { createdAt: "desc" },
+            select: {
+              stage: true,
+              decision: true,
+              feedback: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!task) notFound();
+
+  const params = await searchParams;
+  const canSubmit = ["ASSIGNED", "REWORK_REQUIRED"].includes(task.status);
+
+  return (
+    <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
+      <div className="mx-auto max-w-4xl">
+        <Link href="/portal/tasker" className="text-sm font-semibold text-cyan-300 hover:underline">
+          Back to My Tasks
+        </Link>
+
+        <header className="mt-8">
+          <p className="text-xs font-bold tracking-widest text-cyan-300">
+            EVARYN TECHNOLOGIES LIMITED
+          </p>
+          <p className="mt-5 text-sm text-slate-300">{task.project.title}</p>
+          <h1 className="mt-2 text-3xl font-bold">{task.title}</h1>
+          <div className="mt-4 flex flex-wrap gap-3 text-xs">
+            <span className="rounded-lg border border-white/20 px-3 py-2">
+              {task.status.replaceAll("_", " ")}
+            </span>
+            <span className="rounded-lg border border-white/20 px-3 py-2">
+              Priority: {task.priority}
+            </span>
+            {task.deadline && (
+              <span className="rounded-lg border border-white/20 px-3 py-2">
+                Deadline: {task.deadline.toLocaleDateString("en-KE", { timeZone: "Africa/Nairobi" })}
+              </span>
+            )}
+          </div>
+        </header>
+
+        <section className="mt-8 rounded-2xl border border-white/10 bg-[#101F39] p-6 sm:p-8">
+          <h2 className="text-xl font-bold">Task Details</h2>
+          <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-slate-300">
+            {task.description}
+          </p>
+          {task.instructions && (
+            <>
+              <h3 className="mt-7 font-semibold">Instructions</h3>
+              <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-300">
+                {task.instructions}
+              </p>
+            </>
+          )}
+        </section>
+
+        {params.submitted === "1" && (
+          <p role="status" className="mt-6 rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-4 text-sm text-emerald-200">
+            Your work has been submitted for review.
+          </p>
+        )}
+
+        {params.error && (
+          <p role="alert" className="mt-6 rounded-xl border border-amber-500/30 bg-amber-950/30 p-4 text-sm text-amber-200">
+            {params.error === "invalid"
+              ? "Please provide at least 20 characters of work details."
+              : "This task is not currently accepting submissions."}
+          </p>
+        )}
+
+        <section className="mt-8 rounded-2xl border border-white/10 bg-[#101F39] p-6 sm:p-8">
+          <h2 className="text-xl font-bold">
+            {task.status === "REWORK_REQUIRED" ? "Submit Revised Work" : "Submit Work"}
+          </h2>
+
+          {canSubmit ? (
+            <form action={submitTask} className="mt-6 space-y-5">
+              <input type="hidden" name="taskId" value={task.id} />
+
+              <label className="block text-sm font-medium">
+                Work completed / submission details
+                <textarea
+                  name="content"
+                  required
+                  minLength={20}
+                  maxLength={50000}
+                  rows={10}
+                  placeholder="Provide your completed work or detailed submission here..."
+                  className="mt-2 w-full rounded-xl border border-slate-600 bg-[#071327] px-4 py-3 text-white"
+                />
+              </label>
+
+              <button type="submit" className="rounded-xl bg-[#0052CC] px-6 py-3 font-semibold hover:bg-[#003F9E]">
+                Submit for Review
+              </button>
+            </form>
+          ) : (
+            <p className="mt-4 text-sm text-slate-300">
+              This task is currently in the {task.status.replaceAll("_", " ").toLowerCase()} stage.
+              You can view your previous submissions below.
+            </p>
+          )}
+        </section>
+
+        <section className="mt-8 rounded-2xl border border-white/10 bg-[#101F39] p-6 sm:p-8">
+          <h2 className="text-xl font-bold">Submission History</h2>
+          {task.submissions.length === 0 ? (
+            <p className="mt-4 text-sm text-slate-300">No submissions yet.</p>
+          ) : (
+            <div className="mt-6 space-y-4">
+              {task.submissions.map((submission) => (
+                <article key={submission.id} className="rounded-xl border border-white/10 bg-[#071327] p-5">
+                  <div className="flex flex-wrap justify-between gap-2 text-xs text-slate-300">
+                    <span>{submission.status.replaceAll("_", " ")}</span>
+                    <span>{submission.submittedAt.toLocaleString("en-KE", { timeZone: "Africa/Nairobi" })}</span>
+                  </div>
+
+                  <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-7">
+                    {submission.content}
+                  </p>
+
+                  {submission.reviews.map((review, i) => (
+                    <div key={i} className="mt-4 rounded-lg border border-cyan-400/20 p-4">
+                      <p className="text-xs font-semibold text-cyan-300">
+                        {review.stage}: {review.decision.replaceAll("_", " ")}
+                      </p>
+                      {review.feedback && (
+                        <p className="mt-2 whitespace-pre-wrap text-sm text-slate-300">{review.feedback}</p>
+                      )}
+                    </div>
+                  ))}
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    </main>
+  );
+}
+
+async function TaskPageContent({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ taskId: string }>;
+  searchParams: Promise<{ error?: string; submitted?: string }>;
+}) {
+  await connection();
+
+  const { taskId } = await params;
+
+  return (
+    <TaskContent
+      taskId={taskId}
+      searchParams={searchParams}
+    />
+  );
+}
+
+export default function TaskSubmissionPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ taskId: string }>;
+  searchParams: Promise<{ error?: string; submitted?: string }>;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[#071327] p-8 text-slate-300">
+          Loading task...
+        </main>
+      }
+    >
+      <TaskPageContent
+        params={params}
+        searchParams={searchParams}
+      />
+    </Suspense>
+  );
+}
+
+
+========== app/portal/tasker/tasks/[taskId]/actions.ts ==========
+"use server";
+
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { prisma } from "@/lib/db/prisma";
+
+export async function submitTask(formData: FormData): Promise<void> {
+  const user = await requireEmployee(["TASKER"]);
+
+  const taskId = String(formData.get("taskId") ?? "");
+  const content = String(formData.get("content") ?? "").trim();
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+  if (!uuid.test(taskId)) {
+    redirect("/portal/tasker");
+  }
+
+  const taskUrl = `/portal/tasker/tasks/${taskId}`;
+
+  if (content.length < 20 || content.length > 50000) {
+    redirect(`${taskUrl}?error=invalid`);
+  }
+
+  const employee = await prisma.employeeProfile.findUnique({
+    where: { authUserId: user.id },
+    select: { id: true, status: true, role: true },
+  });
+
+  if (!employee || employee.status !== "ACTIVE" || employee.role !== "TASKER") {
+    redirect("/portal/unauthorized");
+  }
+
+  const task = await prisma.workTask.findUnique({
+    where: { id: taskId },
+    select: { id: true, assignedToId: true, status: true },
+  });
+
+  if (!task || task.assignedToId !== employee.id) {
+    redirect("/portal/tasker");
+  }
+
+  if (!["ASSIGNED", "REWORK_REQUIRED"].includes(task.status)) {
+    redirect(`${taskUrl}?error=closed`);
+  }
+
+  const outcome = await prisma.$transaction(async (tx) => {
+    const changed = await tx.workTask.updateMany({
+      where: {
+        id: taskId,
+        assignedToId: employee.id,
+        status: { in: ["ASSIGNED", "REWORK_REQUIRED"] },
+      },
+      data: { status: "PENDING_REVIEW" },
+    });
+
+    if (changed.count !== 1) return false;
+
+    await tx.taskSubmission.create({
+      data: {
+        taskId,
+        employeeId: employee.id,
+        content,
+        status: "PENDING_REVIEW",
+      },
+    });
+
+    return true;
+  });
+
+  if (!outcome) {
+    redirect(`${taskUrl}?error=closed`);
+  }
+
+  revalidatePath("/portal/tasker");
+  revalidatePath("/portal/reviewer");
+
+  redirect(`${taskUrl}?submitted=1`);
+}
+
+========== app/portal/actions.ts ==========
+"use server";
+
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+
+export async function signIn(formData: FormData) {
+  const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+
+  if (!email || !password) {
+    redirect("/portal/login?error=missing");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    redirect("/portal/login?error=invalid");
+  }
+
+  redirect("/portal");
+}
+
+export async function signOut() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/portal/login");
+}
+
+========== app/layout.tsx ==========
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
+
+export const metadata: Metadata = {
+  title: {
+    default: "Evaryn Technologies Limited",
+    template: "%s | Evaryn Technologies",
+  },
+  description:
+    "Innovation. People. Progress. Professional writing, data annotation and video editing solutions.",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className="antialiased">
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
+    </html>
+  );
+}
+
+
+========== app/globals.css ==========
+@import "@fontsource/inter/700.css";
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #f3f7fc;
+  --foreground: #071327;
+  --surface: #ffffff;
+  --border-color: #dce5f0;
+}
+
+.dark {
+  --background: #071327;
+  --foreground: #f3f7fc;
+  --surface: #101f39;
+  --border-color: #273d60;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    -apple-system, BlinkMacSystemFont,
+    "SF Pro Text", "SF Pro Display",
+    "Helvetica Neue", system-ui,
+    "Segoe UI", Roboto, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid #00aeef;
+  outline-offset: 3px;
+}
+
+::selection {
+  background: #00aeef;
+  color: #071327;
+}
+
+/* Evaryn unified typography */
+html,
+body,
+button,
+input,
+textarea,
+select,
+option {
+  font-family: "Inter", Arial, sans-serif !important;
+  font-weight: 700;
+}
+
+========== lib/auth/require-employee.ts ==========
+import "server-only";
+
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/lib/db/prisma";
+
+export type PortalRole =
+  | "TASKER"
+  | "REVIEWER"
+  | "QA"
+  | "ADMIN"
+  | "SUPER_ADMIN";
+
+const ROLES: readonly PortalRole[] = [
+  "TASKER",
+  "REVIEWER",
+  "QA",
+  "ADMIN",
+  "SUPER_ADMIN",
+];
+
+function isPortalRole(value: unknown): value is PortalRole {
+  return (
+    typeof value === "string" &&
+    ROLES.some((role) => role === value)
+  );
+}
+
+export async function requireEmployee(
+  permittedRoles?: readonly PortalRole[]
+): Promise<{
+  id: string;
+  email: string;
+  role: PortalRole;
+}> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    redirect("/portal/login");
+  }
+
+  const role = user.app_metadata?.role;
+
+  if (!isPortalRole(role)) {
+    redirect("/portal/unauthorized");
+  }
+
+  const employee = await prisma.employeeProfile.findUnique({
+    where: { authUserId: user.id },
+    select: {
+      email: true,
+      role: true,
+      status: true,
+    },
+  });
+
+  if (
+    !employee ||
+    employee.status !== "ACTIVE" ||
+    employee.role !== role
+  ) {
+    redirect("/portal/unauthorized");
+  }
+
+  if (user.app_metadata?.must_change_password === true) {
+    redirect("/portal/change-password");
+  }
+
+  // Super Admin has access to all role-specific portals.
+  if (
+    permittedRoles &&
+    role !== "SUPER_ADMIN" &&
+    !permittedRoles.includes(role)
+  ) {
+    redirect("/portal/unauthorized");
+  }
+
+  return {
+    id: user.id,
+    email: user.email ?? employee.email,
+    role,
+  };
+}
+
+========== lib/supabase/server.ts ==========
+import "server-only";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+
+export async function createClient() {
+  const cookieStore = await cookies();
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(items) {
+          try {
+            items.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options);
+            });
+          } catch {
+            // Cookie updates in Server Components are handled by Proxy.
+          }
+        },
+      },
+    }
+  );
+}
+
+========== package.json ==========
+{
+  "name": "evaryn-technologies",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@marsidev/react-turnstile": "^1.6.3",
+    "@prisma/adapter-pg": "^7.10.1",
+    "@prisma/client": "^7.10.1",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
+    "@upstash/ratelimit": "^2.2.0",
+    "@upstash/redis": "^1.39.0",
+    "dotenv": "^18.0.9",
+    "lucide-react": "^1.61.0",
+    "next": "16.4.3",
+    "next-themes": "^0.4.6",
+    "pg": "^8.23.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "^4",
+    "@types/node": "^20",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.3",
+    "prisma": "^7.10.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+

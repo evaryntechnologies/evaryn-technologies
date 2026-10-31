@@ -1,0 +1,9 @@
+import { connection } from "next/server";
+import { requireEmployee } from "@/lib/auth/require-employee";
+import { prisma } from "@/lib/db/prisma";
+export default async function RatingsPage(){
+ await connection(); const user=await requireEmployee();
+ const profile=await prisma.employeeProfile.findUnique({where:{authUserId:user.id},select:{id:true}});
+ const reviews=profile?await prisma.taskReview.findMany({where:{submission:{employeeId:profile.id}},select:{id:true,stage:true,decision:true,feedback:true,createdAt:true,submission:{select:{task:{select:{title:true,publicTaskId:true}}}}},orderBy:{createdAt:"desc"},take:100}):[];
+ return <section className="space-y-6"><div><p className="text-xs font-bold uppercase tracking-[.25em] text-cyan-300">Quality & feedback</p><h1 className="mt-2 text-3xl font-bold">My ratings</h1><p className="mt-2 text-sm text-slate-400">Your latest 100 order evaluations, displayed read-only.</p></div><div className="grid gap-3">{reviews.map(r=><article key={r.id} className="rounded-2xl border border-white/10 bg-[#102442] p-5"><div className="flex flex-wrap justify-between gap-3"><div><p className="font-semibold">{r.submission.task.title}</p><p className="mt-1 text-xs text-slate-400">{r.submission.task.publicTaskId??"Order"} · {r.stage}</p></div><span className="h-fit rounded-full bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-cyan-200">{r.decision.replaceAll("_"," ")}</span></div><p className="mt-4 whitespace-pre-wrap text-sm text-slate-200">{r.feedback||"No written feedback provided."}</p><time className="mt-3 block text-xs text-slate-400">{r.createdAt.toLocaleDateString("en-GB")}</time></article>)}{reviews.length===0&&<p className="rounded-2xl border border-white/10 p-8 text-slate-400">No evaluations have been recorded for your submissions yet.</p>}</div></section>;
+}
