@@ -96,6 +96,11 @@ export function TaskerDashboard({
         <HeroButton href={base}>My orders</HeroButton>
       </Hero>
 
+      <SectionTitle title="Available work" hint="Tasks available for you to claim." />
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <StatCard label="Awaiting Tasker" value={metrics.available} icon={Inbox} tone="cyan" href="/portal/task-hub" cta="Open Task Hub" />
+      </section>
+
       <SectionTitle title="My orders" />
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="In progress" value={metrics.progress} icon={Loader2} tone="cyan" href={`${base}?tab=progress`} cta="View orders" />
@@ -199,6 +204,12 @@ export function ReviewerDashboard({
         <HeroButton href="/portal/task-hub">Task Hub ({metrics.available})</HeroButton>
       </Hero>
 
+      <SectionTitle title="Available work" hint="Choose a review or claim an open Tasker task." />
+      <section className="grid gap-4 sm:grid-cols-2">
+        <StatCard label="Awaiting Reviewer" value={extras.awaiting} icon={ClipboardCheck} tone="cyan" href="/portal/reviewer/queue" cta="Open review queue" />
+        <StatCard label="Awaiting Tasker" value={metrics.available} icon={Inbox} tone="blue" href="/portal/task-hub" cta="Open Task Hub" />
+      </section>
+
       <SectionTitle title="Your review activity" />
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Reviewing now" value={extras.inReview} icon={Hourglass} tone="cyan" href="/portal/reviewer/queue" cta="Continue" />
@@ -231,6 +242,7 @@ export function QaDashboard({
   money: MyMoney;
   extras: {
     awaiting: number;
+    awaitingReview: number;
     inQa: number;
     deliveredToClient: number;
     passed: number;
@@ -261,6 +273,13 @@ export function QaDashboard({
         </HeroButton>
         <HeroButton href="/portal/qa/client-actions">Client actions</HeroButton>
       </Hero>
+
+      <SectionTitle title="Available work" hint="Eligible orders are available in their respective queues." />
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <StatCard label="Awaiting QA" value={extras.awaiting} icon={ShieldCheck} tone="cyan" href="/portal/qa/queue" cta="Open QA queue" />
+        <StatCard label="Awaiting Reviewer" value={extras.awaitingReview} icon={ClipboardCheck} tone="blue" href="/portal/reviewer/queue" cta="Open review queue" />
+        <StatCard label="Awaiting Tasker" value={metrics.available} icon={Inbox} tone="green" href="/portal/task-hub" cta="Open Task Hub" />
+      </section>
 
       <SectionTitle title="Quality overview" />
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -358,7 +377,7 @@ function AttentionGrid({ a, extra }: { a: Attention; extra?: ReactNode }) {
       <ActionTile title="Disputes" description="Open issues raised on orders." href="/portal/admin/disputes" icon={Gavel} tone="rose" badge={a.disputes} />
       <ActionTile title="Payment-method changes" description="Approve or reject payout detail changes." href="/portal/admin/payment-approvals" icon={Stamp} tone="amber" badge={a.paymentChanges} />
       <ActionTile title="New applicants" description="Review applications from the Careers page." href="/portal/admin/recruitment" icon={UserCheck} tone="teal" badge={a.applications} />
-      <ActionTile title="Manage All Undelivered Orders" description="Overdue and other orders not delivered to the client." href="/portal/admin/task-summary?tab=progress" icon={Clock} tone="rose" badge={a.overdue} />
+      <ActionTile title="Overdue orders" description="Assigned work past its deadline." href="/portal/admin/task-summary" icon={Clock} tone="rose" badge={a.overdue} />
       {extra}
     </section>
   );

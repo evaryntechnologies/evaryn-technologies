@@ -64,8 +64,6 @@
 .ev-cmd-active { background:var(--ev-primary) !important; color:var(--ev-on-primary) !important; }
 .ev-cmd-empty { padding:24px; text-align:center; font-size:13px; color:var(--ev-muted); }
 @media(max-width:900px){.ev-search span,.ev-search kbd{display:none}.ev-search{width:40px;padding:0;justify-content:center}}
-
-/* Compact Super Admin navigation groups; retains existing theme tokens. */
 .ev-nav-group { min-width:0; }
 .ev-nav-group-trigger { cursor:pointer; list-style:none; user-select:none; }
 .ev-nav-group-trigger::-webkit-details-marker { display:none; }

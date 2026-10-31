@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X, LayoutDashboard, ClipboardList, PanelsTopLeft, Wallet, Bell, CreditCard, Users, ShieldCheck, Clock3, Settings2, MessageSquare, ChevronRight, LogOut, Search, Star, Gavel, Compass, HandCoins, SlidersHorizontal, CornerDownLeft } from "lucide-react";
+import { Menu, X, LayoutDashboard, ClipboardList, PanelsTopLeft, Wallet, Bell, CreditCard, Users, ChevronDown, ShieldCheck, Clock3, Settings2, MessageSquare, ChevronRight, LogOut, Search, Star, Gavel, Compass, HandCoins, SlidersHorizontal, CornerDownLeft } from "lucide-react";
 import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
 import RoleLogout from "./RoleLogout";
 import { signOut } from "./actions";
@@ -26,7 +26,7 @@ const baseMenu: MenuItem[] = [
   { name:"Payment Method", href:"/portal/payment-method", icon:CreditCard },
 ];
 const workMenu = (role:Role):MenuItem[] => {
-  const base = "/portal/tasker/my-tasks";
+  const base = role === "TASKER" ? "/portal/tasker/my-tasks" : "/portal/my-work";
   return [
     {name:"All My Orders",href:base,icon:PanelsTopLeft},
     {name:"In Progress",href:base+"?tab=progress",icon:Clock3},
@@ -76,6 +76,68 @@ function roleMenu(role:Role): MenuItem[] {
   );
   links.push(...baseMenu.slice(1), {name:"Ratings & Rubrics",href:"/portal/ratings",icon:Star});
   return links;
+}
+// Navigation presentation only: authorization remains enforced by the destination routes.
+type NavigationGroup = { name: string; icon: typeof LayoutDashboard; items: MenuItem[] };
+type NavigationEntry = MenuItem | NavigationGroup;
+
+function groupedNavigation(role: Role): NavigationEntry[] {
+  const links = roleMenu(role);
+  const used = new Set<string>();
+  const single = (name: string): MenuItem | undefined => {
+    const link = links.find(item => item.name === name && !used.has(item.href));
+    if (link) used.add(link.href);
+    return link;
+  };
+  const section = (name: string, icon: typeof LayoutDashboard, names: string[]): NavigationGroup | undefined => {
+    const items = names.map(single).filter((item): item is MenuItem => Boolean(item));
+    return items.length ? {name, icon, items} : undefined;
+  };
+  const navigation: (NavigationEntry | undefined)[] = [
+    single("Dashboard"),
+    single("All My Orders"),
+    section("My Orders", ClipboardList, ["Task Hub", "In Progress", "In Revision", "Completed", "Canceled Orders"]),
+  ];
+  if (role !== "TASKER") {
+    navigation.push(section("Order Queues", ShieldCheck, ["Review Queue", "QA Queue", "Client Actions"]));
+  }
+  if (role === "SUPER_ADMIN" || role === "ADMIN") {
+    navigation.push(
+      section("Operations Hub", Compass, [
+        "Operations Hub", "Task Management", "Task Summary", "Force Reassign",
+        "Reassignment Requests", "Categories", "Review & QA Oversight",
+        "Fines & Penalties", "Disputes", "Ratings & Rubrics",
+      ]),
+      section("People Management", Users, ["Employees", "Employee Management", "Recruitment"]),
+      section("Finance & Payroll", Wallet, [
+        "Payment Approvals", "Payment Adjustments", "Payroll", "Pay Team",
+        "Admin Hours", "Time Tracker", "My Earnings", "Payment Method",
+      ]),
+    );
+    if (role === "SUPER_ADMIN") {
+      navigation.push(section("Administration", Settings2, ["Inquiries", "Audit Log"]));
+    }
+    // Team memos is a shared page, linked here without changing any role permissions.
+    navigation.push({name:"Team Memos",href:"/portal/announcements",icon:MessageSquare});
+  } else if (role === "QA") {
+    navigation.push(section("Quality & Oversight", ShieldCheck, ["Fines", "Disputes", "Ratings & Rubrics"]));
+    navigation.push({name:"Team Memos",href:"/portal/announcements",icon:MessageSquare});
+  } else if (role === "REVIEWER") {
+    navigation.push(section("Quality & Feedback", Star, ["Ratings & Rubrics"]));
+    navigation.push({name:"Team Memos",href:"/portal/announcements",icon:MessageSquare});
+  } else {
+    navigation.push(section("Feedback", Star, ["Ratings & Rubrics"]));
+  }
+  if (role !== "ADMIN" && role !== "SUPER_ADMIN") {
+    navigation.push(section("Finances", Wallet, ["My Earnings", "Payment Method"]));
+  }
+  // Notifications are available through the persistent header bell, not duplicated in the sidebar.
+  const remaining = links.filter(item => !used.has(item.href) && item.name !== "Notifications");
+  if (remaining.length) navigation.push({name:"More Workspace Tools",icon:PanelsTopLeft,items:remaining});
+  return navigation.filter((item): item is NavigationEntry => Boolean(item));
+}
+function isNavigationGroup(item:MenuItem | NavigationGroup): item is NavigationGroup {
+  return "items" in item;
 }
 const authRoutes = ["/portal/login","/portal/register","/portal/change-password","/portal/unauthorized"];
 
@@ -128,7 +190,8 @@ export default function PortalShell({children,unreadNotifications=0}:{children:R
   },[]);
   useEffect(()=>{setCmdOpen(false)},[pathname]);
   if(isAuth) return <>{children}</>;
-  const entries=role?roleMenu(role):[];
+  const navigation=role ? groupedNavigation(role) : [];
+  const entries:MenuItem[]=navigation.flatMap(item=>isNavigationGroup(item)?item.items:[item]);
   const results=entries.filter(e=>e.name.toLowerCase().includes(query.trim().toLowerCase())).slice(0,9);
   const go=(href:string)=>{setCmdOpen(false);router.push(href);};
   const isActive=(href:string)=>{
@@ -155,7 +218,20 @@ export default function PortalShell({children,unreadNotifications=0}:{children:R
       <div className="ev-sidebar-card"><span className="ev-avatar ev-avatar-lg" aria-hidden="true">{firstName?firstName.charAt(0).toUpperCase():"E"}</span><div><strong>{firstName||"Welcome"}</strong><small>{role?roleTitle[role]:"Workspace"}</small></div></div>
       <div className="ev-sidebar-heading"><span>NAVIGATE</span></div>
       <nav className="ev-sidebar-links" aria-label="Your available pages">
-        {entries.map(({href,name,icon:Icon})=><Link tabIndex={open?0:-1} key={href} href={href} aria-current={isActive(href)?"page":undefined} className={`ev-nav-link ${isActive(href)?"ev-nav-active":""}`}><Icon size={17}/><span>{name}</span>{isActive(href)&&<ChevronRight size={14} className="ev-nav-chevron"/>}</Link>)}
+        {navigation.map(item=>{
+          const Icon=item.icon;
+          if(isNavigationGroup(item)){
+            const active=item.items.some(child=>isActive(child.href));
+            return <details key={item.name} className="ev-nav-group" open={active}>
+              <summary className={`ev-nav-link ev-nav-group-trigger ${active?"ev-nav-group-active":""}`}><Icon size={17}/><span>{item.name}</span><ChevronDown size={15} className="ev-nav-chevron ev-nav-group-arrow"/></summary>
+              <div className="ev-nav-group-items">{item.items.map(child=>{
+                const ChildIcon=child.icon;
+                return <Link tabIndex={open?0:-1} key={child.href} href={child.href} aria-current={isActive(child.href)?"page":undefined} className={`ev-nav-link ev-nav-sub-link ${isActive(child.href)?"ev-nav-active":""}`}><ChildIcon size={15}/><span>{child.name}</span>{isActive(child.href)&&<ChevronRight size={13} className="ev-nav-chevron"/>}</Link>;
+              })}</div>
+            </details>;
+          }
+          return <Link tabIndex={open?0:-1} key={item.href} href={item.href} aria-current={isActive(item.href)?"page":undefined} className={`ev-nav-link ${isActive(item.href)?"ev-nav-active":""}`}><Icon size={17}/><span>{item.name}</span>{isActive(item.href)&&<ChevronRight size={14} className="ev-nav-chevron"/>}</Link>;
+        })}
         {!role && <div className="ev-menu-pending">{loading?"Loading your navigation…":"Please sign in to access your workspace."}</div>}
       </nav>
       <div className="ev-sidebar-footer"><RoleLogout/></div>

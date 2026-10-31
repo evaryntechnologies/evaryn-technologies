@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { requireEmployee, type PortalRole } from "@/lib/auth/require-employee";
+import { getEligibleDashboardQueues } from "@/lib/tasks/eligible-dashboard-queues";
 import { getDashboardMetrics } from "@/lib/tasks/dashboard-metrics";
 import {
   getAdminClockState,
@@ -110,30 +111,32 @@ async function DashboardContent({
   }
 
   if (variant === "reviewer") {
-    const [money, extras] = await Promise.all([
+    const [money, extras, queues] = await Promise.all([
       getMyMoney(),
       getReviewerExtras(user.id),
+      getEligibleDashboardQueues(user.id, user.role),
     ]);
     return (
       <ReviewerDashboard
         firstName={firstName}
         metrics={metrics}
         money={money}
-        extras={extras}
+        extras={{...extras, awaiting: queues.awaitingReview}}
       />
     );
   }
 
-  const [money, extras] = await Promise.all([
+  const [money, extras, queues] = await Promise.all([
     getMyMoney(),
     getQaExtras(user.id),
+    getEligibleDashboardQueues(user.id, user.role),
   ]);
   return (
     <QaDashboard
       firstName={firstName}
       metrics={metrics}
       money={money}
-      extras={extras}
+      extras={{...extras, awaiting: queues.awaitingQa, awaitingReview: queues.awaitingReview}}
     />
   );
 }
