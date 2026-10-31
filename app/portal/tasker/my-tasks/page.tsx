@@ -23,7 +23,7 @@ type Props = { searchParams: Promise<{ tab?: string }> };
 
 async function Content({ searchParams }: Props) {
   await connection();
-  const user = await requireEmployee(["TASKER", "REVIEWER", "QA", "ADMIN"]);
+  const user = await requireEmployee(["TASKER", "REVIEWER", "QA", "ADMIN", "SUPER_ADMIN"]);
   const profile = await prisma.employeeProfile.findUnique({
     where: { authUserId: user.id },
     select: { id: true, role: true, status: true },

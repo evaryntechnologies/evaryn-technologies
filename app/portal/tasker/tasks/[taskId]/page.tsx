@@ -16,7 +16,7 @@ async function TaskContent({
 }) {
   await connection();
 
-  const user = await requireEmployee(["TASKER","REVIEWER","QA"]);
+  const user = await requireEmployee(["TASKER", "REVIEWER", "QA", "ADMIN", "SUPER_ADMIN"]);
 
   const employee = await prisma.employeeProfile.findUnique({
     where: { authUserId: user.id },

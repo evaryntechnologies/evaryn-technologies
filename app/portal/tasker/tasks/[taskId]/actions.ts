@@ -7,7 +7,7 @@ import { prisma } from "@/lib/db/prisma";
 import {saveOrderAttachment,removeOrderAttachment} from "@/lib/tasks/order-attachment";
 
 export async function submitTask(formData: FormData): Promise<void> {
-  const user = await requireEmployee(["TASKER","REVIEWER","QA"]);
+  const user = await requireEmployee(["TASKER", "REVIEWER", "QA", "ADMIN", "SUPER_ADMIN"]);
 
   const taskId = String(formData.get("taskId") ?? "");
   const content = String(formData.get("content") ?? "").trim();
@@ -28,7 +28,7 @@ export async function submitTask(formData: FormData): Promise<void> {
     select: { id: true, status: true, role: true },
   });
 
-  if (!employee || employee.status !== "ACTIVE" || !["TASKER","REVIEWER","QA"].includes(employee.role)) {
+  if (!employee || employee.status !== "ACTIVE" || !["TASKER", "REVIEWER", "QA", "ADMIN", "SUPER_ADMIN"].includes(employee.role)) {
     redirect("/portal/unauthorized");
   }
 

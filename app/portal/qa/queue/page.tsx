@@ -13,7 +13,7 @@ async function QAQueueContent({
 }) {
   await connection();
 
-  const user = await requireEmployee(["QA"]);
+  const user = await requireEmployee(["QA","ADMIN","SUPER_ADMIN"]);
 
   const qaProfile = await prisma.employeeProfile.findUnique({
     where: { authUserId: user.id },
@@ -32,8 +32,8 @@ async function QAQueueContent({
     where: {
       status: "PENDING_QA",
       employeeId: { not: qaProfile.id },
-      task: { status: "PENDING_QA", OR: [{ claimedQaId: null }, { claimedQaId: qaProfile.id }],
-        submissions: { none: { OR: [{ employeeId: qaProfile.id }, { reviews: { some: { reviewerId: qaProfile.id } } }] } } },
+      task: { status: "PENDING_QA", OR:[{claimedQaId:null},{claimedQaId:qaProfile.id}], submissions: { none: { OR: [{ employeeId: qaProfile.id }, { reviews: { some: { reviewerId: qaProfile.id } } }] } } },
+      reviews: { none: { reviewerId: qaProfile.id } },
     },
     include: {
       employee: {
@@ -114,7 +114,7 @@ async function QAQueueContent({
             role="alert"
             className="mt-6 rounded-xl border border-amber-500/30 bg-amber-950/30 p-4 text-sm text-amber-200"
           >
-            {params.error === "conflict" ? "You cannot quality-check an order you previously submitted or reviewed." : params.error === "invalid"
+            {params.error === "invalid"
               ? "Please provide a valid decision. Corrections require at least 10 characters of feedback."
               : "This submission is no longer available for QA review."}
           </p>

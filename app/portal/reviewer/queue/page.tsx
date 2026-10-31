@@ -12,13 +12,14 @@ async function ReviewQueueContent({
   searchParams: Promise<{ result?: string; error?: string }>;
 }) {
   await connection();
-  const reviewerUser = await requireEmployee(["REVIEWER","QA"]);
+  const reviewerUser = await requireEmployee(["REVIEWER","QA","ADMIN","SUPER_ADMIN"]);
   const reviewerProfile = await prisma.employeeProfile.findUnique({where:{authUserId:reviewerUser.id},select:{id:true}});
 
   const submissions = await prisma.taskSubmission.findMany({
     where: {
       status: "PENDING_REVIEW",
-      task: { status: "PENDING_REVIEW" },
+      task: { status: "PENDING_REVIEW", submissions: { none: { employeeId: reviewerProfile?.id ?? "" } } },
+      employeeId: { not: reviewerProfile?.id ?? "" },
     },
     include: {
       task: {
