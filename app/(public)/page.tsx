@@ -13,13 +13,13 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
-import { services } from "@/lib/services";
-import ServiceCard from "@/components/ui/ServiceCard";
+import { Suspense } from "react";
+import { ExpertiseHeroList, ExpertiseServiceGrid } from "@/components/public/DynamicExpertise";
 
 export const metadata: Metadata = {
   title: "Home | Evaryn Technologies Limited",
   description:
-    "Evaryn Technologies Limited provides technical writing, content writing, data annotation and video editing services from Nairobi, Kenya.",
+    "Evaryn Technologies Limited provides evolving professional services supported by skilled teams and quality-focused workflows from Nairobi, Kenya.",
 };
 
 const navigationCards = [
@@ -90,8 +90,7 @@ export default function Home() {
             <p className="mt-7 max-w-xl text-base leading-8 text-slate-200 md:text-lg">
               We combine skilled professionals, structured
               workflows and a commitment to quality to deliver
-              writing, data annotation and video editing
-              services for clients around the world.
+              evolving professional services for clients around the world.
             </p>
 
             <div className="mt-9 flex flex-wrap gap-4">
@@ -134,20 +133,9 @@ export default function Home() {
               <Globe2 className="text-[#00C6FF]" size={28} />
             </div>
 
-            <div className="space-y-3">
-              {services.map((service) => (
-                <Link
-                  key={service.slug}
-                  href={`/services/${service.slug}`}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/10 p-4 transition hover:bg-white/20"
-                >
-                  <span className="text-sm font-semibold">
-                    {service.title}
-                  </span>
-                  <ArrowRight size={17} className="shrink-0 text-cyan-200" />
-                </Link>
-              ))}
-            </div>
+            <Suspense fallback={<p className="text-sm text-cyan-100">Loading expertise…</p>}>
+              <ExpertiseHeroList />
+            </Suspense>
 
             <p className="mt-6 text-sm leading-6 text-slate-200">
               Delivered through clear communication,
@@ -173,11 +161,9 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {services.map((service) => (
-            <ServiceCard key={service.slug} service={service} />
-          ))}
-        </div>
+        <Suspense fallback={<p className="text-sm text-[#0052CC] dark:text-cyan-200">Loading services…</p>}>
+          <ExpertiseServiceGrid />
+        </Suspense>
       </section>
 
       {/* CAREERS */}

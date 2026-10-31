@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { services } from "@/lib/services";
-import ServiceCard from "@/components/ui/ServiceCard";
+import { Suspense } from "react";
+import { ExpertiseServiceGrid } from "@/components/public/DynamicExpertise";
 
 export const metadata: Metadata = {
   title: "Our Services",
@@ -27,8 +27,7 @@ export default function ServicesPage() {
           </h1>
 
           <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-200">
-            From technical documentation to advanced data
-            annotation and video post-production, we bring
+            Our services evolve with our teams and capabilities. We bring
             together skilled professionals and clear workflows
             to support your projects.
           </p>
@@ -49,14 +48,9 @@ export default function ServicesPage() {
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {services.map((service) => (
-            <ServiceCard
-              key={service.slug}
-              service={service}
-            />
-          ))}
-        </div>
+        <Suspense fallback={<p className="text-sm text-[#0052CC] dark:text-cyan-200">Loading services…</p>}>
+          <ExpertiseServiceGrid />
+        </Suspense>
       </section>
 
       <section className="px-6 pb-20 md:px-8">
