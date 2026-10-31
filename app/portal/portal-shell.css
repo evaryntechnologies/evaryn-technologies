@@ -64,3 +64,15 @@
 .ev-cmd-active { background:var(--ev-primary) !important; color:var(--ev-on-primary) !important; }
 .ev-cmd-empty { padding:24px; text-align:center; font-size:13px; color:var(--ev-muted); }
 @media(max-width:900px){.ev-search span,.ev-search kbd{display:none}.ev-search{width:40px;padding:0;justify-content:center}}
+
+/* Compact Super Admin navigation groups; retains existing theme tokens. */
+.ev-nav-group { min-width:0; }
+.ev-nav-group-trigger { cursor:pointer; list-style:none; user-select:none; }
+.ev-nav-group-trigger::-webkit-details-marker { display:none; }
+.ev-nav-group-trigger:focus-visible, .ev-nav-link:focus-visible { outline:2px solid var(--ev-accent-text); outline-offset:2px; }
+.ev-nav-group-active { background:var(--ev-surface-2); font-weight:650; }
+.ev-nav-group-arrow { transition:transform .16s ease; }
+.ev-nav-group[open] .ev-nav-group-arrow { transform:rotate(180deg); }
+.ev-nav-group-items { margin:2px 0 5px 19px; padding-left:8px; border-left:1px solid var(--ev-border); display:grid; gap:2px; }
+.ev-nav-sub-link { min-height:35px; padding:7px 9px; font-size:12px; }
+@media(prefers-reduced-motion:reduce){ .ev-nav-group-arrow{transition:none;} }

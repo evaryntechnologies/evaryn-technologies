@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X, LayoutDashboard, ClipboardList, PanelsTopLeft, Wallet, Bell, CreditCard, Users, ShieldCheck, Clock3, Settings2, MessageSquare, ChevronRight, LogOut, Search, Star, Gavel, Compass, HandCoins, SlidersHorizontal, CornerDownLeft } from "lucide-react";
+import { Menu, X, LayoutDashboard, ClipboardList, PanelsTopLeft, Wallet, Bell, CreditCard, Users, ChevronDown, ShieldCheck, Clock3, Settings2, MessageSquare, ChevronRight, LogOut, Search, Star, Gavel, Compass, HandCoins, SlidersHorizontal, CornerDownLeft } from "lucide-react";
 import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
 import RoleLogout from "./RoleLogout";
 import { signOut } from "./actions";
@@ -74,10 +74,51 @@ function roleMenu(role:Role): MenuItem[] {
     {name:"Inquiries",href:"/portal/super-admin/inquiries",icon:MessageSquare},
     {name:"Audit Log",href:"/portal/super-admin/audit-log",icon:ShieldCheck},
   );
-  if (["REVIEWER", "QA", "ADMIN", "SUPER_ADMIN"].includes(role))
-    links.push({name:"Team Memos",href:"/portal/announcements",icon:MessageSquare});
   links.push(...baseMenu.slice(1), {name:"Ratings & Rubrics",href:"/portal/ratings",icon:Star});
   return links;
+}
+// Super Admin navigation is grouped here; routes and authorization stay unchanged.
+type NavigationGroup = { name: string; icon: typeof LayoutDashboard; items: MenuItem[] };
+const superAdminNavigation: (MenuItem | NavigationGroup)[] = [
+  {name:"Dashboard",href:"/portal/super-admin",icon:LayoutDashboard},
+  {name:"All My Orders",href:"/portal/my-work",icon:PanelsTopLeft},
+  {name:"Order Queues",icon:ClipboardList,items:[
+    {name:"Review Queue",href:"/portal/reviewer/queue",icon:ShieldCheck},
+    {name:"QA Queue",href:"/portal/qa/queue",icon:ShieldCheck},
+    {name:"Client Actions",href:"/portal/qa/client-actions",icon:ClipboardList},
+  ]},
+  {name:"Operations Hub",icon:Compass,items:[
+    {name:"Operations Overview",href:"/portal/admin/operations",icon:Compass},
+    {name:"Task Management",href:"/portal/admin/task-management",icon:ClipboardList},
+    {name:"Task Summary",href:"/portal/admin/task-summary",icon:PanelsTopLeft},
+    {name:"Force Reassign",href:"/portal/admin/force-reassign",icon:Settings2},
+    {name:"Reassignment Requests",href:"/portal/admin/reassignments",icon:Settings2},
+    {name:"Categories",href:"/portal/super-admin/categories",icon:Settings2},
+    {name:"Ratings & Rubrics",href:"/portal/ratings",icon:Star},
+    {name:"Fines & Penalties",href:"/portal/admin/fines",icon:Settings2},
+  ]},
+  {name:"Disputes",href:"/portal/admin/disputes",icon:Gavel},
+  {name:"People Management",icon:Users,items:[
+    {name:"Employees",href:"/portal/super-admin/employees",icon:Users},
+    {name:"Recruitment",href:"/portal/admin/recruitment",icon:Users},
+  ]},
+  {name:"Finances",icon:Wallet,items:[
+    {name:"Payment Approvals",href:"/portal/admin/payment-approvals",icon:CreditCard},
+    {name:"Payment Adjustments",href:"/portal/super-admin/payment-adjustments",icon:SlidersHorizontal},
+    {name:"Pay Team",href:"/portal/super-admin/payroll/pay-team",icon:HandCoins},
+    {name:"Payroll",href:"/portal/super-admin/payroll",icon:Wallet},
+    {name:"Admin Hours",href:"/portal/super-admin/payroll/admin-hours",icon:Clock3},
+    {name:"Payment Method",href:"/portal/payment-method",icon:CreditCard},
+    {name:"My Earnings",href:"/portal/earnings",icon:Wallet},
+  ]},
+  {name:"Other Operations",icon:MessageSquare,items:[
+    {name:"Inquiries",href:"/portal/super-admin/inquiries",icon:MessageSquare},
+    {name:"Audit Log",href:"/portal/super-admin/audit-log",icon:ShieldCheck},
+    {name:"Team Memos",href:"/portal/announcements",icon:MessageSquare},
+  ]},
+];
+function isNavigationGroup(item:MenuItem | NavigationGroup): item is NavigationGroup {
+  return "items" in item;
 }
 const authRoutes = ["/portal/login","/portal/register","/portal/change-password","/portal/unauthorized"];
 
@@ -130,7 +171,8 @@ export default function PortalShell({children,unreadNotifications=0}:{children:R
   },[]);
   useEffect(()=>{setCmdOpen(false)},[pathname]);
   if(isAuth) return <>{children}</>;
-  const entries=role?roleMenu(role):[];
+  const navigation=role === "SUPER_ADMIN" ? superAdminNavigation : role ? roleMenu(role) : [];
+  const entries:MenuItem[]=navigation.flatMap(item=>isNavigationGroup(item)?item.items:[item]);
   const results=entries.filter(e=>e.name.toLowerCase().includes(query.trim().toLowerCase())).slice(0,9);
   const go=(href:string)=>{setCmdOpen(false);router.push(href);};
   const isActive=(href:string)=>{
@@ -157,7 +199,20 @@ export default function PortalShell({children,unreadNotifications=0}:{children:R
       <div className="ev-sidebar-card"><span className="ev-avatar ev-avatar-lg" aria-hidden="true">{firstName?firstName.charAt(0).toUpperCase():"E"}</span><div><strong>{firstName||"Welcome"}</strong><small>{role?roleTitle[role]:"Workspace"}</small></div></div>
       <div className="ev-sidebar-heading"><span>NAVIGATE</span></div>
       <nav className="ev-sidebar-links" aria-label="Your available pages">
-        {entries.map(({href,name,icon:Icon})=><Link tabIndex={open?0:-1} key={href} href={href} aria-current={isActive(href)?"page":undefined} className={`ev-nav-link ${isActive(href)?"ev-nav-active":""}`}><Icon size={17}/><span>{name}</span>{isActive(href)&&<ChevronRight size={14} className="ev-nav-chevron"/>}</Link>)}
+        {navigation.map(item=>{
+          const Icon=item.icon;
+          if(isNavigationGroup(item)){
+            const active=item.items.some(child=>isActive(child.href));
+            return <details key={item.name} className="ev-nav-group" defaultOpen={active}>
+              <summary className={`ev-nav-link ev-nav-group-trigger ${active?"ev-nav-group-active":""}`}><Icon size={17}/><span>{item.name}</span><ChevronDown size={15} className="ev-nav-chevron ev-nav-group-arrow"/></summary>
+              <div className="ev-nav-group-items">{item.items.map(child=>{
+                const ChildIcon=child.icon;
+                return <Link tabIndex={open?0:-1} key={child.href} href={child.href} aria-current={isActive(child.href)?"page":undefined} className={`ev-nav-link ev-nav-sub-link ${isActive(child.href)?"ev-nav-active":""}`}><ChildIcon size={15}/><span>{child.name}</span>{isActive(child.href)&&<ChevronRight size={13} className="ev-nav-chevron"/>}</Link>;
+              })}</div>
+            </details>;
+          }
+          return <Link tabIndex={open?0:-1} key={item.href} href={item.href} aria-current={isActive(item.href)?"page":undefined} className={`ev-nav-link ${isActive(item.href)?"ev-nav-active":""}`}><Icon size={17}/><span>{item.name}</span>{isActive(item.href)&&<ChevronRight size={14} className="ev-nav-chevron"/>}</Link>;
+        })}
         {!role && <div className="ev-menu-pending">{loading?"Loading your navigation…":"Please sign in to access your workspace."}</div>}
       </nav>
       <div className="ev-sidebar-footer"><RoleLogout/></div>
