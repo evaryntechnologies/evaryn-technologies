@@ -28,17 +28,18 @@ async function Content({searchParams}:{searchParams:Promise<{group?:string}>}) {
  const selected:Group = groups.some(g=>g.key===requested) ? requested as Group : "orders";
  return <main className="min-h-screen bg-[#071327] px-4 py-8 text-white sm:px-8">
   <Link href="/portal" className="text-cyan-300 underline">Dashboard</Link>
-  <div className="mt-5 flex flex-wrap items-center justify-between gap-3"><h1 className="text-3xl font-bold">Notifications</h1><form action={markAllNotificationsRead}><button type="submit" className="rounded-xl border border-cyan-400/40 px-4 py-2 text-sm font-semibold text-cyan-100 hover:bg-cyan-500/10">Mark all as read</button></form></div>
+  <h1 className="mt-5 text-3xl font-bold">Notifications</h1>
   <p className="mt-2 text-sm text-slate-300">Your task updates, payment information, announcements and account notices.</p>
   <nav aria-label="Notification categories" className="mt-6 flex flex-wrap gap-2">{groups.map(g=>{
    const count=notifications.filter(n=>bucket(n.title,n.href)===g.key && !n.readAt).length;
    return <Link key={g.key} href={`?group=${g.key}`} aria-current={selected===g.key?"page":undefined} className={`rounded-xl px-4 py-3 text-sm font-semibold ${selected===g.key?"bg-cyan-600 text-white":"border border-white/20 bg-[#101F39] text-cyan-100"}`}>{g.label}{count?` (${count})`:""}</Link>;
   })}</nav>
+  <form action={markAllNotificationsRead} className="mt-5"><button className="rounded-lg border border-cyan-500/50 px-4 py-2 text-sm text-cyan-200 hover:bg-cyan-900/30">Mark all as read</button></form>
   <section className="mt-6 space-y-3">{notifications.filter(n=>bucket(n.title,n.href)===selected).map(n=><article key={n.id} className="rounded-xl border border-white/15 bg-[#101F39] p-5">
    <p className="font-semibold">{n.title} {!n.readAt&&<span className="ml-2 text-cyan-300">New</span>}</p>
    <p className="mt-2 whitespace-pre-wrap text-sm text-slate-300">{n.body}</p>
    <p className="mt-2 text-xs text-slate-400">{n.createdAt.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"})}</p>
-   <div className="mt-3 flex gap-4">{<Link href={`/portal/notifications/${n.id}`} className="text-cyan-300 underline">Open notification</Link>}{!n.readAt&&<form action={markNotificationRead}><input type="hidden" name="id" value={n.id}/><button className="text-cyan-300 underline">Mark read</button></form>}</div>
+   <div className="mt-3 flex gap-4"><Link href={`/portal/notifications/${n.id}`} className="text-cyan-300 underline">Open full notification</Link>{!n.readAt&&<form action={markNotificationRead}><input type="hidden" name="id" value={n.id}/><button className="text-cyan-300 underline">Mark read</button></form>}</div>
   </article>)}{notifications.filter(n=>bucket(n.title,n.href)===selected).length===0&&<p className="text-slate-300">No notifications in this category.</p>}</section>
  </main>;
 }

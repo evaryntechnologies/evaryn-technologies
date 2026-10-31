@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell } from "lucide-react";
 
 export interface NavItem {
   label: string;
@@ -50,6 +49,20 @@ export default function PortalShell({
   unreadNotifications = 0,
 }: PortalShellProps) {
   const pathname = usePathname();
+  const [liveUnread, setLiveUnread] = useState(unreadNotifications);
+  useEffect(() => {
+    let active = true;
+    const update = async () => {
+      try {
+        const res = await fetch("/api/portal/notifications/unread", { cache: "no-store" });
+        if (res.ok) { const data = await res.json(); if(active) setLiveUnread(Number(data.count) || 0); }
+      } catch { /* Preserve previous badge if temporarily offline. */ }
+    };
+    void update();
+    window.addEventListener("focus", update);
+    const refresh = window.setInterval(update, 45000);
+    return () => {active=false;window.removeEventListener("focus", update);window.clearInterval(refresh);};
+  }, [pathname]);
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
@@ -220,11 +233,10 @@ export default function PortalShell({
               href="/portal/notifications"
               className="relative px-3 py-1.5 rounded-xl bg-[#12141C] border border-white/[0.08] hover:border-white/20 text-xs font-medium text-slate-200 transition"
             >
-              <Bell size={17} aria-hidden="true" />
-              <span className="sr-only">Notifications</span>
-              {unreadNotifications > 0 && (
-                <span className="absolute -right-2 -top-2 min-w-5 rounded-full bg-blue-500 px-1.5 py-0.5 text-center text-[10px] font-bold text-white" aria-label={`${unreadNotifications} unread notifications`}>
-                  {unreadNotifications > 99 ? "99+" : unreadNotifications}
+              <span className="inline-flex items-center gap-2"><span aria-hidden="true">🔔</span> Alerts</span>
+              {liveUnread > 0 && (
+                <span className="ml-1.5 px-1.5 py-0.2 bg-blue-600 text-white rounded-full text-[10px]">
+                  {liveUnread > 99 ? "99+" : liveUnread}
                 </span>
               )}
             </Link>
