@@ -1,0 +1,1 @@
+Fixes the /portal/login reload loop by bypassing the protected portal shell on login, register and unauthorized routes. Only proxy.ts and app/portal/layout.tsx changed. No interface or payroll files changed.

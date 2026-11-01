@@ -1,0 +1,27 @@
+Evaryn client outcome update — October 31, 2026
+
+This ZIP is a PATCH meant to overlay an existing checkout that ALREADY contains the previous workflow-payroll repair patch. Do not replace the entire repository with the ZIP.
+
+Files:
+- Reviewer/Tasker/QA attachments: existing private bucket auto-created by SQL migration if missing; upload sends raw Uint8Array and now includes Supabase storage's error text to aid diagnosis. Must configure Vercel NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY correctly.
+- Client actions: full payment, partial payment, cancellation, and client revision with optional file.
+- For partial payment, <50% => CANCELED, >=50% => COMPLETED; cancellation at 0% => no payout.
+- A revision returns task to REWORK_REQUIRED with instructions attached and notifies assigned tasker.
+- DB fields track client paid percentage and revision note.
+- SQL candidate view prorates all tasker, reviewer and QA payout candidates and retains historical legacy completed orders as 100%. Existing approved/paid ledger entries stay untouched.
+
+IMPORTANT: This update has not been tested against production Supabase, and no production payments or live tasks were changed. Verify migration status before deploying application code. Use the production review procedure and keep a database backup. This patch assumes previous SQL payroll views exist. If migration errors because WorkforcePayCandidates does not exist or dependencies differ, stop rather than marking migration applied. Do not rerun the entire payroll-final-ledger.sql in production.
+
+Production steps from Linux repository root, clean main branch:
+  git switch main
+  git pull --ff-only origin main
+  unzip -o ~/Downloads/evaryn-client-action-fix.zip -d .
+  npm ci
+  npx prisma generate
+  npx prisma migrate deploy
+  git diff --check
+  git add app/portal/qa/client-actions app/portal/tasker/tasks app/portal/tasker/my-tasks lib/tasks/order-attachment.ts prisma/schema.prisma prisma/migrations/20261031090000_client_outcomes_partial_payment
+  git commit -m "Fix client actions, revision attachments and partial payouts"
+  git push origin main
+
+DO NOT run migrate deploy unless your .env points to the intended production database. If Prisma migrations are managed by Vercel or separate CI, do not apply twice or race deployment.
