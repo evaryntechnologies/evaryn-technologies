@@ -1,4 +1,4 @@
-import { BackLink } from "@/app/portal/ui";
+import { BackLink, TabNav } from "@/app/portal/ui";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -24,17 +24,23 @@ async function Content({searchParams}:{searchParams:Promise<{message?:string;ok?
   ]);
   return <main className="min-h-screen bg-[#071327] px-5 py-10 text-white sm:px-10"><div className="w-full max-w-none">
     <BackLink href={profile.role==="QA"?"/portal/qa":"/portal/admin"} label="Dashboard" />
-    <h1 className="mt-6 text-3xl font-bold">Task Hub</h1>
-    <h2 className="mt-3 text-xl font-bold">Task Management</h2>
+    <h1 className="mt-6 text-3xl font-bold">Task Management</h1>
     <p className="mt-2 text-slate-300">Save drafts, publish orders to Task Hub, or assign work directly.</p>
-    <nav aria-label="Task management sections" className="mt-5 flex w-full flex-nowrap gap-2 overflow-x-auto pb-2 text-sm">
-      <Link href="/portal/admin/task-management" aria-current="page" className="shrink-0 whitespace-nowrap rounded-xl border border-cyan-400/30 px-4 py-2 text-cyan-200">Task Management</Link>
-      <Link href="/portal/admin/task-history" className="shrink-0 whitespace-nowrap rounded-xl border border-cyan-400/30 px-4 py-2 text-cyan-200">Task History &amp; Reports</Link>
-      {profile.role==="SUPER_ADMIN" && <Link href="/portal/super-admin/categories" className="shrink-0 whitespace-nowrap rounded-xl border border-cyan-400/30 px-4 py-2 text-cyan-200">Task Categories (Super Admin)</Link>}
-      <Link href="/portal/admin/task-summary?tab=progress" className="shrink-0 whitespace-nowrap rounded-xl border border-cyan-400/30 px-4 py-2 text-cyan-200">Manage All Undelivered Orders</Link>
-      <Link href="/portal/admin/force-reassign" className="shrink-0 whitespace-nowrap rounded-xl border border-cyan-400/30 px-4 py-2 text-cyan-200">Reassign Claimed Work</Link>
-      <Link href="/portal/admin/task-summary?tab=closed" className="shrink-0 whitespace-nowrap rounded-xl border border-cyan-400/30 px-4 py-2 text-cyan-200">Delivered / Closed Orders</Link>
-    </nav>
+    <div className="mt-6">
+      <TabNav
+        label="Task management sections"
+        tabs={[
+          { key: "management", label: "Task Management", href: "/portal/admin/task-management", active: true },
+          { key: "undelivered", label: "Manage all undelivered orders", href: "/portal/admin/task-summary?tab=progress", active: false },
+          { key: "reassign", label: "Reassign claimed work", href: "/portal/admin/force-reassign", active: false },
+          { key: "closed", label: "Delivered / closed orders", href: "/portal/admin/task-summary?tab=closed", active: false },
+          { key: "history", label: "Task History & Reports", href: "/portal/admin/task-history", active: false },
+          ...(profile.role === "SUPER_ADMIN"
+            ? [{ key: "categories", label: "Task Categories", href: "/portal/super-admin/categories", active: false }]
+            : []),
+        ]}
+      />
+    </div>
     {params.message && <p role="status" className="mt-5 rounded-xl border border-white/20 p-4">{params.ok==="1"?"Success: ":"Error: "}{params.message}</p>}
     <section className="mt-7 rounded-2xl border border-white/10 bg-[#101F39] p-6"><h2 className="text-xl font-bold">Create Task</h2>
     <form className="mt-5 grid gap-5 sm:grid-cols-2" action={async(data:FormData)=>{"use server";const result=await assignTask(data);redirect("/portal/admin/task-management?ok="+(result.success?"1":"0")+"&message="+encodeURIComponent(result.message));}}>
