@@ -7,19 +7,19 @@ import { prisma } from "@/lib/db/prisma";
 import {saveOrderAttachment,removeOrderAttachment} from "@/lib/tasks/order-attachment";
 
 export async function claimReview(formData: FormData): Promise<void> {
-  const user = await requireEmployee(["REVIEWER","QA","ADMIN","SUPER_ADMIN"]);
+  const user = await requireEmployee(["REVIEWER","QA"]);
   const taskId = String(formData.get("taskId") ?? "");
   const reviewer = await prisma.employeeProfile.findUnique({where:{authUserId:user.id},select:{id:true,role:true,status:true}});
-  if (!reviewer || !["REVIEWER","QA","ADMIN","SUPER_ADMIN"].includes(reviewer.role) || reviewer.status !== "ACTIVE") redirect("/portal/unauthorized");
-  const task = await prisma.workTask.findFirst({where:{id:taskId,status:"PENDING_REVIEW",claimedReviewerId:null},select:{assignedToId:true,submissions:{where:{employeeId:reviewer.id},select:{id:true},take:1}}});
-  if (!task || task.assignedToId === reviewer.id || task.submissions.length > 0) redirect("/portal/reviewer/queue?error=processed");
-  const updated = await prisma.workTask.updateMany({where:{id:taskId,status:"PENDING_REVIEW",claimedReviewerId:null,assignedToId:{not:reviewer.id},submissions:{none:{employeeId:reviewer.id}}},data:{claimedReviewerId:reviewer.id}});
+  if (!reviewer || !["REVIEWER","QA"].includes(reviewer.role) || reviewer.status !== "ACTIVE") redirect("/portal/unauthorized");
+  const task = await prisma.workTask.findFirst({where:{id:taskId,status:"PENDING_REVIEW",claimedReviewerId:null},select:{assignedToId:true}});
+  if (!task || task.assignedToId === reviewer.id) redirect("/portal/reviewer/queue?error=processed");
+  const updated = await prisma.workTask.updateMany({where:{id:taskId,status:"PENDING_REVIEW",claimedReviewerId:null,assignedToId:{not:reviewer.id}},data:{claimedReviewerId:reviewer.id}});
   revalidatePath("/portal/reviewer/queue");
   redirect(updated.count === 1 ? "/portal/reviewer/queue" : "/portal/reviewer/queue?error=processed");
 }
 
 export async function reviewSubmission(formData: FormData): Promise<void> {
-  const user = await requireEmployee(["REVIEWER","QA","ADMIN","SUPER_ADMIN"]);
+  const user = await requireEmployee(["REVIEWER","QA"]);
 
   const submissionId = String(formData.get("submissionId") ?? "");
   const decision = String(formData.get("decision") ?? "");
@@ -41,13 +41,13 @@ export async function reviewSubmission(formData: FormData): Promise<void> {
     select: { id: true, role: true, status: true },
   });
 
-  if (!reviewer || !["REVIEWER","QA","ADMIN","SUPER_ADMIN"].includes(reviewer.role) || reviewer.status !== "ACTIVE") {
+  if (!reviewer || !["REVIEWER","QA"].includes(reviewer.role) || reviewer.status !== "ACTIVE") {
     redirect("/portal/unauthorized");
   }
 
   // Identify the work item before uploading; the transaction re-checks claim ownership.
-  const candidate = await prisma.taskSubmission.findUnique({where:{id:submissionId},select:{taskId:true,status:true,task:{select:{claimedReviewerId:true,status:true,submissions:{where:{employeeId:reviewer.id},select:{id:true},take:1}}}}});
-  if(!candidate || candidate.status!=="PENDING_REVIEW" || candidate.task.status!=="PENDING_REVIEW" || candidate.task.claimedReviewerId!==reviewer.id || candidate.task.submissions.length>0) redirect("/portal/reviewer/queue?error=processed");
+  const candidate = await prisma.taskSubmission.findUnique({where:{id:submissionId},select:{taskId:true,status:true,task:{select:{claimedReviewerId:true,status:true}}}});
+  if(!candidate || candidate.status!=="PENDING_REVIEW" || candidate.task.status!=="PENDING_REVIEW" || candidate.task.claimedReviewerId!==reviewer.id) redirect("/portal/reviewer/queue?error=processed");
   const attachment = await saveOrderAttachment(formData,candidate.taskId,reviewer.id,false);
   let outcome=false;
   try { outcome = await prisma.$transaction(async (tx) => {
@@ -58,7 +58,7 @@ export async function reviewSubmission(formData: FormData): Promise<void> {
         status: true,
         employeeId: true,
         taskId: true,
-        task: { select: { status: true, claimedReviewerId: true, submissions: { where: { employeeId: reviewer.id }, select: { id: true }, take: 1 } } },
+        task: { select: { status: true, claimedReviewerId: true } },
       },
     });
 
@@ -67,7 +67,6 @@ export async function reviewSubmission(formData: FormData): Promise<void> {
       submission.status !== "PENDING_REVIEW" ||
       submission.task.status !== "PENDING_REVIEW" ||
       submission.employeeId === reviewer.id ||
-      submission.task.submissions.length > 0 ||
       submission.task.claimedReviewerId !== reviewer.id
     ) {
       return false;
@@ -101,9 +100,15 @@ export async function reviewSubmission(formData: FormData): Promise<void> {
       where: { id: submission.taskId },
       data: {
         status: decision === "APPROVED" ? "PENDING_QA" : "REWORK_REQUIRED",
+        claimedReviewerId: null,
+        claimedQaId: decision === "REWORK_REQUIRED" ? null : undefined,
       },
     });
 
+    if (decision === "REWORK_REQUIRED") {
+      const current = await tx.workTask.findUnique({where:{id:submission.taskId},select:{assignedToId:true,publicTaskId:true}});
+      if(current?.assignedToId) await tx.portalNotification.create({data:{recipientId:current.assignedToId,title:"Revision requested",body:`Order ${current.publicTaskId??submission.taskId} returned directly to you. ${feedback}`,href:`/portal/tasker/tasks/${submission.taskId}`}});
+    }
     return true;
   }); } catch(e){await removeOrderAttachment(attachment);throw e;}
   if(!outcome) await removeOrderAttachment(attachment);

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
+import { cancellationDetail, notifyOrderParticipants } from "@/lib/tasks/order-outcome-notifications";
 
 type ActionResult = { success: boolean; message: string };
 const isUuid = (v: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
@@ -57,8 +58,13 @@ export async function closeReinstatedOrder(formData: FormData): Promise<ActionRe
   if (!isUuid(taskId) || !["COMPLETED", "CANCELED"].includes(outcome)) return {success:false,message:"Invalid closure request."};
   const task = await prisma.workTask.findUnique({where:{id:taskId},select:{status:true,reinstatedAt:true}});
   if (!task || !task.reinstatedAt || ["DRAFT","COMPLETED","CANCELED"].includes(task.status)) return {success:false,message:"Only an active reinstated order can be closed."};
-  // This is an administrative decision, not automatic proof of customer payment or new QA approval.
-  const result=await prisma.workTask.updateMany({where:{id:taskId,status:task.status,reinstatedAt:task.reinstatedAt},data:{status:outcome,clientActionAt:new Date()}});
+  const reason = outcome === "CANCELED" ? cancellationDetail(String(formData.get("cancellationCategory")??""),String(formData.get("cancellationExplanation")??"")) : null;
+  // An administrative decision does not create a second payment entitlement.
+  const result=await prisma.$transaction(async tx => {
+    const changed=await tx.workTask.updateMany({where:{id:taskId,status:task.status,reinstatedAt:task.reinstatedAt},data:{status:outcome,clientActionAt:new Date(),cancellationReason:reason}});
+    if(changed.count===1 && reason) await notifyOrderParticipants(tx,taskId,"Order canceled",`An administrator canceled this order. ${reason}`);
+    return changed;
+  });
   if (result.count!==1) return {success:false,message:"The order changed status. Refresh and retry."};
   refresh();
   return {success:true,message:outcome === "COMPLETED" ? "Reinstated order marked completed by administrator." : "Reinstated order canceled by administrator."};

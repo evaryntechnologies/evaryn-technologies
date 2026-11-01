@@ -7,12 +7,12 @@ import { prisma } from "@/lib/db/prisma";
 import { saveOrderAttachment, removeOrderAttachment } from "@/lib/tasks/order-attachment";
 
 export async function claimQA(formData: FormData): Promise<void> {
-  const auth = await requireEmployee(["QA","ADMIN","SUPER_ADMIN"]);
+  const auth = await requireEmployee(["QA"]);
   const taskId = String(formData.get("taskId") ?? "");
   const profile = await prisma.employeeProfile.findUnique({where:{authUserId:auth.id},select:{id:true,status:true,role:true}});
-  if (!profile || profile.status !== "ACTIVE" || !["QA","ADMIN","SUPER_ADMIN"].includes(profile.role)) redirect("/portal/unauthorized");
+  if (!profile || profile.status !== "ACTIVE" || profile.role !== "QA") redirect("/portal/unauthorized");
   const changed = await prisma.workTask.updateMany({
-    where:{id:taskId,status:"PENDING_QA",claimedQaId:null,assignedToId:{not:profile.id},submissions:{none:{OR:[{employeeId:profile.id},{reviews:{some:{reviewerId:profile.id}}}]}},},
+    where:{id:taskId,status:"PENDING_QA",claimedQaId:null,assignedToId:{not:profile.id}},
     data:{claimedQaId:profile.id},
   });
   revalidatePath("/portal/qa/queue");
@@ -20,7 +20,7 @@ export async function claimQA(formData: FormData): Promise<void> {
 }
 
 export async function qaDecision(formData: FormData): Promise<void> {
-  const user = await requireEmployee(["QA","ADMIN","SUPER_ADMIN"]);
+  const user = await requireEmployee(["QA"]);
 
   const submissionId = String(formData.get("submissionId") ?? "");
   const decision = String(formData.get("decision") ?? "");
@@ -44,7 +44,7 @@ export async function qaDecision(formData: FormData): Promise<void> {
 
   if (
     !qaEmployee ||
-    !["QA","ADMIN","SUPER_ADMIN"].includes(qaEmployee.role) ||
+    qaEmployee.role !== "QA" ||
     qaEmployee.status !== "ACTIVE"
   ) {
     redirect("/portal/unauthorized");
@@ -53,9 +53,9 @@ export async function qaDecision(formData: FormData): Promise<void> {
   // Require a fresh attachment for this QA decision, without relaxing QA claim ownership.
   const candidate = await prisma.taskSubmission.findUnique({
     where: { id: submissionId },
-    select: { taskId: true, status: true, task: { select: { status: true, claimedQaId: true, submissions:{where:{OR:[{employeeId:qaEmployee.id},{reviews:{some:{reviewerId:qaEmployee.id}}}]},select:{id:true},take:1} } } },
+    select: { taskId: true, status: true, task: { select: { status: true, claimedQaId: true } } },
   });
-  if (!candidate || candidate.status !== "PENDING_QA" || candidate.task.status !== "PENDING_QA" || candidate.task.claimedQaId !== qaEmployee.id || candidate.task.submissions.length > 0) {
+  if (!candidate || candidate.status !== "PENDING_QA" || candidate.task.status !== "PENDING_QA" || candidate.task.claimedQaId !== qaEmployee.id) {
     redirect("/portal/qa/queue?error=processed");
   }
   const attachment = await saveOrderAttachment(formData, candidate.taskId, qaEmployee.id, false);
@@ -69,7 +69,7 @@ export async function qaDecision(formData: FormData): Promise<void> {
         taskId: true,
         employeeId: true,
         status: true,
-        task: { select: { status: true, claimedQaId: true, submissions:{where:{OR:[{employeeId:qaEmployee.id},{reviews:{some:{reviewerId:qaEmployee.id}}}]},select:{id:true},take:1} } },
+        task: { select: { status: true, claimedQaId: true } },
       },
     });
 
@@ -78,7 +78,6 @@ export async function qaDecision(formData: FormData): Promise<void> {
       submission.status !== "PENDING_QA" ||
       submission.task.status !== "PENDING_QA" ||
       submission.employeeId === qaEmployee.id ||
-      submission.task.submissions.length > 0 ||
       submission.task.claimedQaId !== qaEmployee.id
     ) {
       return false;
@@ -130,9 +129,13 @@ export async function qaDecision(formData: FormData): Promise<void> {
 
     await tx.workTask.update({
       where: { id: submission.taskId },
-      data: { status: nextStatus, claimedQaId: null },
+      data: { status: nextStatus, claimedQaId: null, claimedReviewerId: decision === "REWORK_REQUIRED" ? null : undefined },
     });
 
+    if (decision === "REWORK_REQUIRED") {
+      const current=await tx.workTask.findUnique({where:{id:submission.taskId},select:{assignedToId:true,publicTaskId:true}});
+      if(current?.assignedToId) await tx.portalNotification.create({data:{recipientId:current.assignedToId,title:"Revision requested",body:`Order ${current.publicTaskId??submission.taskId} returned directly to you. ${feedback}`,href:`/portal/tasker/tasks/${submission.taskId}`}});
+    }
     return true;
     });
   } catch (error) {

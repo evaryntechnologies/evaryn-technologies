@@ -141,6 +141,16 @@ async function Content() {
                     <legend className="text-xs font-semibold text-[var(--ev-muted)]">Rating (needed when 50% or more)</legend>
                     <Stars />
                   </fieldset>
+                  <p className="mt-2 text-xs text-[var(--ev-muted)]">If less than 50% was paid, the order is canceled and you must select the cancellation reason below.</p>
+                  <label className="mt-3 text-xs font-semibold text-[var(--ev-muted)]">Primary cancellation reason
+                    <select name="cancellationCategory" className={`${inputCls} mt-1.5`}>
+                      <option value="">Select a reason</option>
+                      {!["Lateness", "AI-generated content", "No longer needed", "Bad quality", "Plagiarism", "Other reason"].map(reason => <option key={reason} value={reason}>{reason}</option>)}
+                    </select>
+                  </label>
+                  <label className="mt-3 text-xs font-semibold text-[var(--ev-muted)]">Optional explanation
+                    <textarea name="cancellationExplanation" maxLength={3000} rows={2} className={`${textareaCls} mt-1.5 block`} placeholder="Explain the cancellation decision" />
+                  </label>
                   <button name="action" value="PAID_PARTIAL" className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--ev-cyan)] px-5 py-2.5 text-sm font-semibold text-[var(--ev-accent-text)] transition hover:bg-[var(--ev-cyan)] hover:text-[#00224f]">
                     <Percent size={16} aria-hidden="true" /> Record partial payment
                   </button>
@@ -171,9 +181,17 @@ async function Content() {
                   <p className="flex items-center gap-2 text-sm font-bold">
                     <XCircle size={16} className="text-rose-500" aria-hidden="true" /> Client cancelled (0% paid)
                   </p>
-                  <label className="mt-3 flex-1 text-xs font-semibold text-[var(--ev-muted)]">
-                    Reason for cancellation (required)
-                    <textarea name="note" required minLength={10} maxLength={5000} rows={3} placeholder="Explain the grounds, with enough detail for investigation" className={`${textareaCls} mt-1.5 block`} />
+                  <label className="mt-3 text-xs font-semibold text-[var(--ev-muted)]">Primary cancellation reason
+                    <select name="cancellationCategory" required className={`${inputCls} mt-1.5`}>
+                      <option value="">Select a reason</option>
+                      {!["Lateness", "AI-generated content", "No longer needed", "Bad quality", "Plagiarism", "Other reason"].map(reason => <option key={reason} value={reason}>{reason}</option>)}
+                    </select>
+                  </label>
+                  <label className="mt-3 text-xs font-semibold text-[var(--ev-muted)]">Optional explanation
+                    <textarea name="cancellationExplanation" maxLength={3000} rows={2} className={`${textareaCls} mt-1.5 block`} placeholder="Explain the cancellation decision" />
+                  </label>
+                  <label className="mt-3 text-xs font-semibold text-[var(--ev-muted)]">Additional notes (optional)
+                    <textarea name="note" maxLength={1000} rows={2} className={`${textareaCls} mt-1.5 block`} placeholder="Additional context, if applicable" />
                   </label>
                   <button name="action" value="CANCELED" className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-rose-500/60 px-5 py-2.5 text-sm font-semibold text-rose-600 transition hover:bg-rose-500 hover:text-white dark:text-rose-300">
                     <XCircle size={16} aria-hidden="true" /> Mark cancelled
