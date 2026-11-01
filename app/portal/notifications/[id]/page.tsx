@@ -30,7 +30,7 @@ export default async function NotificationDetail({ params }: { params: Promise<{
 
   return (
     <PageShell>
-      <div className="mx-auto max-w-3xl">
+      <div className="max-w-5xl">
         <PageHeader back={{ href: "/portal/notifications", label: "All notifications" }} eyebrow="Notification" title={notification.title} subtitle={dateTimeFmt(notification.createdAt)} />
         <article className={`${card} p-6 sm:p-8`}>
           <div className="mb-4 flex items-center gap-2">

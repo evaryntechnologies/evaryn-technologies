@@ -20,7 +20,7 @@ export default function HowWeWorkPage() {
     <main className="bg-[#F3F7FC] text-[#071327] dark:bg-[#071327] dark:text-white">
       <section className="relative isolate overflow-hidden bg-gradient-to-br from-[#071327] via-[#002B7F] to-[#0052CC] px-6 py-20 text-white md:py-28">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[url('/watermarks/evaryn-watermark.svg')] bg-right bg-no-repeat opacity-15" />
-        <div className="relative mx-auto w-full max-w-[1400px]">
+        <div className="relative mx-auto w-full max-w-none">
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-cyan-300">Our delivery process</p>
           <h1 className="mt-5 max-w-3xl text-4xl font-bold tracking-tight md:text-6xl">How we work</h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">Five clear steps connect your brief to reviewed, quality-checked deliverables.</p>
@@ -28,7 +28,7 @@ export default function HowWeWorkPage() {
         </div>
       </section>
 
-      <section id="process" className="mx-auto w-full max-w-[1400px] scroll-mt-24 px-6 py-20 md:px-8">
+      <section id="process" className="mx-auto w-full max-w-none scroll-mt-24 px-6 py-20 md:px-8">
         <div className="mb-12 max-w-2xl">
           <p className="text-sm font-bold uppercase tracking-widest text-[#0052CC] dark:text-cyan-300">A structured approach</p>
           <h2 className="mt-4 text-3xl font-bold md:text-4xl">From idea to delivery</h2>
@@ -53,11 +53,13 @@ export default function HowWeWorkPage() {
           ))}
         </ol>
       </section>
-      <section className="bg-white px-6 py-16 text-center dark:bg-[#101F39]">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="text-3xl font-bold">Ready to discuss your project?</h2>
-          <p className="mt-4 leading-7 text-slate-600 dark:text-slate-300">Share your requirements and let us understand the scope of work.</p>
-          <Link href="/contact" className="mt-7 inline-flex items-center gap-2 rounded-xl bg-[#0052CC] px-7 py-4 font-semibold text-white hover:bg-[#003F9E]">Request a quote <ArrowRight size={18} /></Link>
+      <section className="bg-white px-6 py-16 dark:bg-[#101F39]">
+        <div className="flex w-full flex-wrap items-center justify-between gap-8">
+          <div className="min-w-0 max-w-3xl">
+            <h2 className="text-3xl font-bold">Ready to discuss your project?</h2>
+            <p className="mt-4 leading-7 text-slate-600 dark:text-slate-300">Share your requirements and let us understand the scope of work.</p>
+          </div>
+          <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl bg-[#0052CC] px-7 py-4 font-semibold text-white hover:bg-[#003F9E]">Request a quote <ArrowRight size={18} /></Link>
         </div>
       </section>
     </main>

@@ -45,7 +45,7 @@ export function BackLink({
 export function PageShell({ children }: { children: ReactNode }) {
   return (
     <main className="min-h-screen bg-[var(--ev-page)] px-4 py-6 text-[var(--ev-ink)] sm:px-8 sm:py-8">
-      <div className="mx-auto w-full max-w-[1400px]">{children}</div>
+      <div className="mx-auto w-full max-w-none">{children}</div>
     </main>
   );
 }

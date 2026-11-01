@@ -35,17 +35,15 @@
   --ev-primary: #0040a0;
   --ev-primary-hover: #003282;
   --ev-on-primary: #ffffff;
-  --ev-hero-from: #002f7a;
-  --ev-hero-via: #0052b8;
-  --ev-hero-to: #0096e0;
+  --ev-hero-from: #002a70;
+  --ev-hero-via: #0049a8;
+  --ev-hero-to: #005eae;
   --ev-shadow: 0 16px 36px -18px rgba(0, 64, 160, 0.38);
 
   /* atmosphere: glows, dot grid and the watermark artwork */
   --ev-glow-a: rgba(0, 176, 248, 0.34);
   --ev-glow-b: rgba(0, 64, 160, 0.16);
-  --ev-mark: #0040a0;
-  --ev-mark-opacity: 0.075;
-  --ev-grid: rgba(0, 64, 160, 0.13);
+  --ev-mark-opacity: 1;
 
   --background: var(--ev-page);
   --foreground: var(--ev-ink);
@@ -71,14 +69,12 @@
   --ev-on-primary: #00224f;
   --ev-hero-from: #001445;
   --ev-hero-via: #00328a;
-  --ev-hero-to: #0a62c8;
+  --ev-hero-to: #0a5cc0;
   --ev-shadow: 0 16px 36px -18px rgba(0, 10, 40, 0.65);
 
   --ev-glow-a: rgba(0, 176, 248, 0.2);
   --ev-glow-b: rgba(0, 64, 160, 0.55);
-  --ev-mark: #52caff;
-  --ev-mark-opacity: 0.09;
-  --ev-grid: rgba(82, 202, 255, 0.12);
+  --ev-mark-opacity: 1;
 }
 
 html {
@@ -387,8 +383,8 @@ html:not(.dark) .ev-portal .bg-emerald-950\/30 {
   letter-spacing: -0.01em;
 }
 .ev-portal main > div:only-child {
-  max-width: 1400px;
-  margin-inline: auto;
+  max-width: none;
+  margin-inline: 0;
 }
 
 /* form controls */
@@ -504,33 +500,20 @@ body::before {
   pointer-events: none;
   background:
     radial-gradient(1100px 720px at 92% -12%, var(--ev-glow-a), transparent 62%),
-    radial-gradient(920px 720px at -8% 108%, var(--ev-glow-b), transparent 60%),
-    radial-gradient(circle at 1px 1px, var(--ev-grid) 1px, transparent 1.5px) 0 0 / 30px 30px;
+    radial-gradient(920px 720px at -8% 108%, var(--ev-glow-b), transparent 60%);
 }
+/* the Evaryn artwork: honeycomb, orbits and network, full-page and fixed */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: var(--ev-mark);
+  background: url("/watermarks/evaryn-watermark.svg") center / cover no-repeat;
   opacity: var(--ev-mark-opacity);
-  -webkit-mask-image: url("/watermarks/evaryn-mark.svg"), url("/watermarks/evaryn-mark.svg");
-  mask-image: url("/watermarks/evaryn-mark.svg"), url("/watermarks/evaryn-mark.svg");
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: right -14vmin bottom -18vmin, left -22vmin top -24vmin;
-  mask-position: right -14vmin bottom -18vmin, left -22vmin top -24vmin;
-  -webkit-mask-size: min(88vmin, 980px) min(88vmin, 980px), min(56vmin, 620px) min(56vmin, 620px);
-  mask-size: min(88vmin, 980px) min(88vmin, 980px), min(56vmin, 620px) min(56vmin, 620px);
 }
-@media (max-width: 640px) {
-  body::after {
-    -webkit-mask-position: right -30vmin bottom -22vmin, left -40vmin top -30vmin;
-    mask-position: right -30vmin bottom -22vmin, left -40vmin top -30vmin;
-    -webkit-mask-size: 110vmin 110vmin, 70vmin 70vmin;
-    mask-size: 110vmin 110vmin, 70vmin 70vmin;
-  }
+.dark body::after {
+  background-image: url("/watermarks/evaryn-watermark-dark.svg");
 }
 
 /* page-level backgrounds become transparent so the backdrop shows */
@@ -605,7 +588,7 @@ html {
 
 /* gradient headline accent in the heroes */
 .ev-public section[class*="bg-gradient"] h1 span[class*="text-[#00C6FF]"] {
-  background: linear-gradient(90deg, #7be0ff, #00b0f8 45%, #8fe6ff 75%, #00b0f8);
+  background: linear-gradient(90deg, #8fe6ff, #38c4ff 45%, #a8ecff 75%, #38c4ff);
   background-size: 220% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -701,4 +684,90 @@ html {
   bottom: 0;
   height: 3px;
   background: linear-gradient(90deg, var(--ev-blue), var(--ev-cyan) 55%, var(--ev-blue));
+}
+
+/* =====================================================================
+   FULL-WIDTH LAYOUT
+   Content, menus and headers use the whole display. Side gutters grow smoothly with the screen
+   (24px on phones up to 80px on very wide monitors) instead of squeezing everything into the middle.
+   ===================================================================== */
+.ev-public section,
+.ev-public footer > div {
+  padding-inline: clamp(1.5rem, 4vw, 5rem);
+}
+.ev-public header > div {
+  padding-inline: clamp(1.25rem, 3.4vw, 4rem);
+}
+.ev-portal main {
+  padding-inline: clamp(1rem, 3vw, 3.5rem);
+}
+
+/* =====================================================================
+   READABILITY SAFETY NET
+   Many portal pages were written for a dark surface (white text everywhere). On the light theme
+   those colours would be invisible, so every light-mode text colour that depends on a dark
+   surface is remapped to a readable equivalent. Dark mode keeps its own light-on-deep-blue text.
+   Buttons, banners and hero bands that really are dark keep their white text.
+   ===================================================================== */
+html:not(.dark) .ev-portal :is(.text-white, [class*="text-white/"]):not(main):not([class*="bg-"]):not(:is(.ev-hero, [class*="bg-gradient"], [class*="bg-[#0052CC]"], [class*="bg-[#002B7F]"], [class*="bg-emerald-"], [class*="bg-red-"], [class*="bg-rose-"], [class*="bg-blue-"], [class*="bg-cyan-"], [class*="bg-violet-"], [class*="bg-amber-"]) *) {
+  color: var(--ev-ink);
+}
+html:not(.dark) .ev-portal [class*="text-white/"]:not([class*="bg-"]):not(:is(.ev-hero, [class*="bg-gradient"], [class*="bg-[#0052CC]"], [class*="bg-[#002B7F]"]) *) {
+  color: var(--ev-muted);
+}
+.ev-portal .text-slate-500 {
+  color: var(--ev-muted);
+}
+html:not(.dark) .ev-public .text-slate-500 {
+  color: var(--ev-muted);
+}
+html:not(.dark) .ev-public .placeholder\:text-slate-500::placeholder {
+  color: var(--ev-muted);
+  opacity: 0.85;
+}
+
+/* status colours: deeper shades on the pale light surfaces */
+html:not(.dark) .ev-portal :is(.text-amber-50, .text-amber-100, .text-amber-200, .text-amber-300) {
+  color: #92400e;
+}
+html:not(.dark) .ev-portal :is(.text-amber-500, .text-amber-600) {
+  color: #b45309;
+}
+html:not(.dark) .ev-portal :is(.text-rose-200, .text-rose-300, .text-rose-500) {
+  color: #be123c;
+}
+html:not(.dark) .ev-portal :is(.text-sky-200, .text-sky-300) {
+  color: #0369a1;
+}
+html:not(.dark) .ev-portal .text-cyan-500 {
+  color: #0e7490;
+}
+html:not(.dark) .ev-portal .text-emerald-500 {
+  color: #047857;
+}
+html:not(.dark) .ev-portal :is(.bg-amber-950, .bg-amber-950\/30, .bg-amber-950\/40) {
+  background-color: #fef3c7;
+}
+html:not(.dark) .ev-portal :is(.bg-emerald-950, .bg-emerald-950\/30) {
+  background-color: #d1fae5;
+}
+html:not(.dark) .ev-portal :is(.bg-red-950\/30, .bg-red-950\/40, .bg-rose-950) {
+  background-color: #fee2e2;
+}
+
+/* solid action buttons that only set a background: always white text (all pass 4.5:1) */
+.ev-portal :is(.bg-blue-600, .bg-blue-700, .bg-amber-700, .bg-emerald-600, .bg-emerald-700, .bg-red-700, .bg-red-800, .bg-rose-700, .bg-violet-700) {
+  color: #ffffff;
+}
+/* icons and spans inside primary buttons follow the button's text colour in both modes */
+:is(.ev-public, .ev-portal) .bg-\[\#0052CC\] :is(span, svg, b, strong, i) {
+  color: inherit !important;
+}
+/* required marks and errors */
+html:not(.dark) :is(.ev-public, .ev-portal) .text-red-600 {
+  color: #b91c1c;
+}
+/* safeguard: dark-on-light status text without its own dark variant becomes light on deep blue */
+.dark .ev-portal :is(.text-red-600, .text-red-700, .text-rose-600):not([class*="bg-"]) {
+  color: #fca5a5;
 }

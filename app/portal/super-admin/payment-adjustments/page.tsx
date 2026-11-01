@@ -26,7 +26,7 @@ async function Content(){
     JOIN public."EmployeeProfile" e ON e.id=l."employeeId"
     ORDER BY l."createdAt" DESC LIMIT 300`;
   return <main className="min-h-screen bg-[#071327] p-5 text-white sm:p-8">
-    <div className="mx-auto max-w-6xl space-y-8">
+    <div className="max-w-none space-y-8">
       <header className="space-y-3"><BackLink href="/portal/super-admin/payroll" label="Payroll" /><h1 className="text-3xl font-semibold">Client payment adjustments</h1><p className="max-w-3xl text-sm text-slate-300">Record updated client payment percentages and ratings, with a permanent audit trail. Positive differences require a separate external payment; negative differences require a documented recovery or waiver. Previously paid ledger records are never rewritten.</p></header>
       <section className="space-y-4"><h2 className="text-xl font-semibold">Update an order outcome</h2><div className="grid gap-4 lg:grid-cols-2">{tasks.map(t=>{
         const old= t.clientPaidPercent===null?(t.status==="COMPLETED"?100:0):Number(t.clientPaidPercent);

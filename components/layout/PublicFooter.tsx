@@ -16,7 +16,7 @@ const touch = [
 ];
 
 const linkCls =
-  "w-fit text-sm text-white/80 underline-offset-4 transition hover:text-[#52caff] hover:underline";
+  "w-fit text-sm text-white/80 underline-offset-4 transition hover:text-[#7bd8ff] hover:underline";
 
 export default function PublicFooter() {
   return (
@@ -24,7 +24,7 @@ export default function PublicFooter() {
       className="relative isolate overflow-hidden text-white"
       style={{
         background:
-          "linear-gradient(160deg,var(--ev-hero-from),var(--ev-hero-via) 70%,var(--ev-hero-to))",
+          "linear-gradient(160deg,var(--ev-hero-from),var(--ev-hero-via))",
       }}
     >
       <div
@@ -33,11 +33,11 @@ export default function PublicFooter() {
       />
       <div className="h-1 w-full bg-[#00b0f8]" aria-hidden="true" />
 
-      <div className="mx-auto grid w-full max-w-[1400px] gap-12 px-6 py-14 md:grid-cols-[1.4fr_1fr_1fr] md:px-8">
+      <div className="mx-auto grid w-full max-w-none gap-12 px-6 py-14 md:grid-cols-[1.4fr_1fr_1fr] md:px-8">
         <div>
           <BrandLogo tone="dark-surface" className="h-auto max-h-16 w-auto max-w-[260px] object-contain" />
 
-          <p className="mt-6 text-base font-semibold text-[#52caff]">
+          <p className="mt-6 text-base font-semibold text-[#7bd8ff]">
             Innovation. People. Progress.
           </p>
           <p className="mt-4 flex items-center gap-2 text-sm text-white/80">
@@ -47,7 +47,7 @@ export default function PublicFooter() {
         </div>
 
         <nav aria-label="Explore">
-          <h2 className="mb-5 text-sm font-bold uppercase tracking-widest text-[#52caff]">
+          <h2 className="mb-5 text-sm font-bold uppercase tracking-widest text-[#7bd8ff]">
             Explore
           </h2>
           <div className="flex flex-col gap-3">
@@ -60,7 +60,7 @@ export default function PublicFooter() {
         </nav>
 
         <nav aria-label="Get in touch">
-          <h2 className="mb-5 text-sm font-bold uppercase tracking-widest text-[#52caff]">
+          <h2 className="mb-5 text-sm font-bold uppercase tracking-widest text-[#7bd8ff]">
             Get in touch
           </h2>
           <div className="flex flex-col gap-3">
@@ -73,7 +73,7 @@ export default function PublicFooter() {
         </nav>
       </div>
 
-      <div className="border-t border-white/15 px-6 py-6 text-center text-xs text-white/65">
+      <div className="border-t border-white/15 px-6 py-6 text-center text-xs text-white/80">
         © 2026 Evaryn Technologies Limited. All rights reserved.
       </div>
     </footer>

@@ -61,10 +61,10 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
       ) : <>
       <input name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[10000px] h-px w-px opacity-0" />
       <div className="grid gap-5 sm:grid-cols-2">
-        <label className="block text-sm font-semibold">Full name <span className="text-red-600">*</span>
+        <label className="block text-sm font-semibold">Full name <span className="text-red-700 dark:text-red-300">*</span>
           <input name="name" autoComplete="name" required maxLength={120} className={inputStyle} placeholder="Your full name" />
         </label>
-        <label className="block text-sm font-semibold">Email address <span className="text-red-600">*</span>
+        <label className="block text-sm font-semibold">Email address <span className="text-red-700 dark:text-red-300">*</span>
           <input name="email" type="email" autoComplete="email" required maxLength={254} className={inputStyle} placeholder="you@example.com" />
         </label>
         {kind === "custom" && (
@@ -73,7 +73,7 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
           </label>
         )}
         <label className="block text-sm font-semibold sm:col-span-2">
-          {kind === "custom" ? "Closest service area" : "Service needed"} <span className="text-red-600">*</span>
+          {kind === "custom" ? "Closest service area" : "Service needed"} <span className="text-red-700 dark:text-red-300">*</span>
           <select name="service" key={defaultService} defaultValue={defaultService} required className={inputStyle}>
             <option value="">Select a service</option>
             {services.map((service) => <option key={service.slug} value={service.title}>{service.title}</option>)}
@@ -82,13 +82,13 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
         </label>
         {kind === "custom" && (
           <>
-            <label className="block text-sm font-semibold sm:col-span-2">What do you need? <span className="text-red-600">*</span>
+            <label className="block text-sm font-semibold sm:col-span-2">What do you need? <span className="text-red-700 dark:text-red-300">*</span>
               <input name="requestTitle" required maxLength={180} className={inputStyle} placeholder="A short project summary" />
             </label>
-            <label className="block text-sm font-semibold">Expected volume <span className="text-red-600">*</span>
+            <label className="block text-sm font-semibold">Expected volume <span className="text-red-700 dark:text-red-300">*</span>
               <input name="volume" required maxLength={120} className={inputStyle} placeholder="e.g. 50 pages or 20 hours" />
             </label>
-            <label className="block text-sm font-semibold">Needed by <span className="text-red-600">*</span>
+            <label className="block text-sm font-semibold">Needed by <span className="text-red-700 dark:text-red-300">*</span>
               <input name="neededBy" type="date" required className={inputStyle} />
             </label>
             <label className="block text-sm font-semibold sm:col-span-2">Example link (optional)
@@ -97,14 +97,14 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
           </>
         )}
         <label className="block text-sm font-semibold sm:col-span-2">
-          {kind === "custom" ? "Project details" : "Project details"} <span className="text-red-600">*</span>
+          {kind === "custom" ? "Project details" : "Project details"} <span className="text-red-700 dark:text-red-300">*</span>
           <textarea name="details" required minLength={15} maxLength={5000} rows={6} className={inputStyle} placeholder="Describe what you need, your goals and any important requirements." />
         </label>
       </div>
       {kind === "contact" && turnstileSiteKey && (
         <div className="mt-6"><Turnstile siteKey={turnstileSiteKey} options={{ action: "contact" }} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken("")} onError={() => setTurnstileToken("")} /></div>
       )}
-      {kind === "contact" && !turnstileSiteKey && <p role="alert" className="mt-4 text-sm text-red-700">Contact submissions are temporarily unavailable. Please try again later.</p>}
+      {kind === "contact" && !turnstileSiteKey && <p role="alert" className="mt-4 text-sm text-red-700 dark:text-red-300">Contact submissions are temporarily unavailable. Please try again later.</p>}
       {errorMessage && <p role="alert" className="mt-5 rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800">{errorMessage}</p>}
       {feedback && (
         <div role="status" className="mt-6 flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-100">

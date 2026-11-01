@@ -150,7 +150,7 @@ export default function DashboardPage({
 }) {
   return (
     <main className="min-h-screen bg-[var(--ev-page)] px-4 py-6 text-[var(--ev-ink)] sm:px-8 sm:py-8">
-      <div className="mx-auto w-full max-w-[1400px]">
+      <div className="mx-auto w-full max-w-none">
         <Suspense
           fallback={
             <div className="rounded-2xl border border-[var(--ev-border-soft)] bg-[var(--ev-surface)] p-8 text-[var(--ev-muted)]">

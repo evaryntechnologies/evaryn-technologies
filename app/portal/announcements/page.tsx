@@ -11,7 +11,7 @@ async function Content({searchParams}:{searchParams:Promise<{sent?:string}>}) {
   const sender = await prisma.employeeProfile.findUnique({where:{authUserId:auth.id},select:{role:true,status:true}});
   if (!sender || sender.status !== "ACTIVE" || !["REVIEWER","QA","ADMIN","SUPER_ADMIN"].includes(sender.role)) return <p>Access denied.</p>;
   const params = await searchParams;
-  return <main className="mx-auto w-full max-w-3xl px-4 py-6 text-[var(--ev-ink)] sm:px-6">
+  return <main className="w-full max-w-none px-4 py-6 text-[var(--ev-ink)] sm:px-6">
     <Link href="/portal" className="text-sm text-cyan-600 dark:text-cyan-300">← Dashboard</Link>
     <header className="mt-5"><p className="text-xs font-bold uppercase tracking-widest text-cyan-600 dark:text-cyan-300">EVARYN · Communications</p><h1 className="mt-2 text-2xl font-semibold sm:text-3xl">General messages & memos</h1><p className="mt-2 text-sm text-[var(--ev-muted)]">Send important information to all active employees, including administrators and the Super Admin. This is separate from order discussions.</p></header>
     {params.sent === "1" && <p role="status" className="mt-4 rounded-xl border border-emerald-500/30 p-3 text-sm">Message delivered to active employees' notification inboxes.</p>}

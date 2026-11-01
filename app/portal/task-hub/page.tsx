@@ -261,7 +261,7 @@ async function Hub({ searchParams }: Props) {
           className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-5 py-4 text-sm"
         >
           <span className="flex items-center gap-2 font-semibold text-[var(--ev-ink)]">
-            <CheckCircle2 size={18} className="text-emerald-500" aria-hidden="true" />
+            <CheckCircle2 size={18} className="text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
             Order claimed. Its deadlines are now running.
           </span>
           <Link
@@ -539,7 +539,7 @@ async function Hub({ searchParams }: Props) {
 export default function Page(props: Props) {
   return (
     <main className="min-h-screen bg-[var(--ev-page)] px-4 py-6 text-[var(--ev-ink)] sm:px-8 sm:py-8">
-      <div className="mx-auto w-full max-w-[1400px]">
+      <div className="mx-auto w-full max-w-none">
         <Suspense
           fallback={
             <div className="rounded-2xl border border-[var(--ev-border-soft)] bg-[var(--ev-surface)] p-8 text-[var(--ev-muted)]">

@@ -25,7 +25,7 @@ export default function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b-[3px] border-[var(--ev-cyan)] bg-[color-mix(in_srgb,var(--ev-nav)_92%,transparent)] shadow-[var(--ev-shadow)] backdrop-blur-lg">
-      <div className="mx-auto flex h-20 w-full max-w-[1400px] items-center justify-between gap-4 px-5 md:px-8">
+      <div className="mx-auto flex h-20 w-full max-w-none items-center justify-between gap-4 px-5 md:px-8">
         <Link
           href="/"
           onClick={closeMenu}

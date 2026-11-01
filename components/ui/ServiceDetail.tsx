@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
@@ -17,7 +17,7 @@ export default function ServiceDetail({
   return (
     <main className="min-h-screen bg-[#F3F7FC] text-[#071327] dark:bg-[#071327] dark:text-white">
       <section className="bg-gradient-to-br from-[#071327] via-[#002B7F] to-[#0052CC] px-6 py-20 text-white md:py-28">
-        <div className="mx-auto max-w-7xl">
+        <div className="max-w-none">
           <Link
             href="/services"
             className="inline-flex items-center gap-2 text-sm font-medium text-cyan-200 hover:text-white"
@@ -116,21 +116,25 @@ export default function ServiceDetail({
         </div>
       </section>
 
-      <section className="border-t border-slate-200 bg-white px-6 py-16 text-center dark:border-slate-800 dark:bg-[#101F39]">
-        <h2 className="text-3xl font-bold">
-          Have a project in mind?
-        </h2>
-        <p className="mx-auto mt-4 max-w-xl leading-7 text-slate-600 dark:text-slate-300">
-          Share your requirements with our team and
-          let us understand what you need.
-        </p>
-        <Link
-          href={`/contact?service=${encodeURIComponent(service.title)}`}
-          className="mt-7 inline-flex items-center gap-2 font-semibold text-[#0052CC] dark:text-cyan-300"
-        >
-          Get in touch
-          <ArrowRight size={18} />
-        </Link>
+      <section className="border-t border-slate-200 bg-white px-6 py-16 dark:border-slate-800 dark:bg-[#101F39]">
+        <div className="flex w-full flex-wrap items-center justify-between gap-8">
+          <div className="min-w-0 max-w-3xl">
+            <h2 className="text-3xl font-bold">
+              Have a project in mind?
+            </h2>
+            <p className="mt-4 leading-7 text-slate-600 dark:text-slate-300">
+              Share your requirements with our team and
+              let us understand what you need.
+            </p>
+          </div>
+          <Link
+            href={`/contact?service=${encodeURIComponent(service.title)}`}
+            className="inline-flex items-center gap-2 font-semibold text-[#0052CC] dark:text-cyan-300"
+          >
+            Get in touch
+            <ArrowRight size={18} />
+          </Link>
+        </div>
       </section>
     </main>
   );
