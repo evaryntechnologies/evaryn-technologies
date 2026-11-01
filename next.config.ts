@@ -5,6 +5,22 @@ const nextConfig: NextConfig = {
   // Use standard dynamic rendering for authenticated portal routes.
   // Cache Components/instant-navigation prerendering is disabled to avoid
   // build-time blocking-prerender failures on request-dependent pages.
+
+  async redirects() {
+    return [
+      {
+        source: "/portal",
+        destination: "/workspace",
+        permanent: false,
+      },
+      {
+        source: "/portal/:path*",
+        destination: "/:path*",
+        permanent: false,
+      },
+    ];
+  },
+
   turbopack: {
     rules: {
       "*.css": {

@@ -9,7 +9,7 @@ export default async function PortalLayout({ children }: { children: ReactNode }
   const path = (await headers()).get("x-evaryn-portal-path") ?? "";
   // Public auth routes must render without PortalShellWithNotifications,
   // which requires an authenticated employee and otherwise redirects to login.
-  if (["/portal/login", "/portal/register", "/portal/unauthorized"].some(
+  if (["/login", "/register", "/unauthorized"].some(
     (route) => path === route || path.startsWith(`${route}/`)
   )) {
     // Same visual theme as the rest of the portal (watermark, colours, light/dark).
