@@ -13,6 +13,7 @@ const links = [
   { label: "Services", href: "/services" },
   { label: "How we work", href: "/how-we-work" },
   { label: "Why Evaryn", href: "/why-evaryn" },
+  { label: "About Us", href: "/about" },
   { label: "Careers", href: "/careers" },
   { label: "Contact", href: "/contact" },
 ];
