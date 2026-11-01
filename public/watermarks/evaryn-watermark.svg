@@ -1,56 +1,27 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg"
-     viewBox="0 0 900 750"
-     fill="none"
-     aria-hidden="true">
-  <defs>
-    <linearGradient id="orbit" x1="120" y1="100" x2="750" y2="650">
-      <stop stop-color="#00C6FF"/>
-      <stop offset=".52" stop-color="#0052CC"/>
-      <stop offset="1" stop-color="#071327"/>
-    </linearGradient>
-    <radialGradient id="node">
-      <stop stop-color="#00C6FF"/>
-      <stop offset="1" stop-color="#0052CC" stop-opacity=".3"/>
-    </radialGradient>
-    <pattern id="hexagons" width="110" height="95"
-             patternUnits="userSpaceOnUse">
-      <path d="M27 5 L82 5 L108 47 L82 90 L27 90 L1 47 Z"
-            stroke="#00AEEF" stroke-width="1.2"
-            stroke-opacity=".23"/>
-    </pattern>
-  </defs>
-
-  <rect width="900" height="750" fill="url(#hexagons)"/>
-
-  <g stroke="url(#orbit)" stroke-width="3" opacity=".65">
-    <ellipse cx="455" cy="348" rx="320" ry="120"
-             transform="rotate(-28 455 348)"/>
-    <ellipse cx="455" cy="348" rx="320" ry="120"
-             transform="rotate(34 455 348)"/>
-    <ellipse cx="455" cy="348" rx="290" ry="110"
-             transform="rotate(85 455 348)"
-             stroke-dasharray="10 12"/>
-  </g>
-
-  <g fill="url(#node)">
-    <circle cx="255" cy="194" r="15"/>
-    <circle cx="670" cy="232" r="13"/>
-    <circle cx="358" cy="623" r="12"/>
-    <circle cx="590" cy="542" r="15"/>
-    <circle cx="455" cy="348" r="28"/>
-  </g>
-
-  <g stroke="#00AEEF" stroke-width="2" opacity=".45">
-    <path d="M75 595 L145 540 L215 580 L282 515 L340 565"/>
-    <path d="M145 540 L175 475 L282 515"/>
-  </g>
-
-  <g fill="#0052CC" opacity=".55">
-    <circle cx="75" cy="595" r="7"/>
-    <circle cx="145" cy="540" r="9"/>
-    <circle cx="215" cy="580" r="7"/>
-    <circle cx="282" cy="515" r="8"/>
-    <circle cx="340" cy="565" r="7"/>
-    <circle cx="175" cy="475" r="6"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" fill="none">
+<circle cx="600" cy="600" r="560" stroke="#ffffff" stroke-opacity="0.27" stroke-width="2"/>
+<circle cx="600" cy="600" r="640" stroke="#ffffff" stroke-opacity="0.198" stroke-width="2" stroke-dasharray="2 16" stroke-linecap="round"/>
+<circle cx="600" cy="600" r="470" stroke="#ffffff" stroke-opacity="0.14400000000000002" stroke-width="1.5"/>
+<line x1="180" y1="250" x2="250" y2="170" stroke="#ffffff" stroke-opacity="0.315" stroke-width="1.5"/>
+<line x1="250" y1="170" x2="340" y2="110" stroke="#ffffff" stroke-opacity="0.315" stroke-width="1.5"/>
+<line x1="1010" y1="300" x2="1070" y2="420" stroke="#ffffff" stroke-opacity="0.315" stroke-width="1.5"/>
+<line x1="1010" y1="300" x2="960" y2="200" stroke="#ffffff" stroke-opacity="0.315" stroke-width="1.5"/>
+<line x1="150" y1="880" x2="240" y2="970" stroke="#ffffff" stroke-opacity="0.315" stroke-width="1.5"/>
+<line x1="960" y1="950" x2="1040" y2="840" stroke="#ffffff" stroke-opacity="0.315" stroke-width="1.5"/>
+<circle cx="180" cy="250" r="5" fill="#ffffff" fill-opacity="0.63"/>
+<circle cx="250" cy="170" r="5" fill="#ffffff" fill-opacity="0.63"/>
+<circle cx="340" cy="110" r="5" fill="#ffffff" fill-opacity="0.63"/>
+<circle cx="1010" cy="300" r="5" fill="#ffffff" fill-opacity="0.63"/>
+<circle cx="1070" cy="420" r="5" fill="#ffffff" fill-opacity="0.63"/>
+<circle cx="960" cy="200" r="5" fill="#ffffff" fill-opacity="0.63"/>
+<circle cx="150" cy="880" r="5" fill="#ffffff" fill-opacity="0.63"/>
+<circle cx="240" cy="970" r="5" fill="#ffffff" fill-opacity="0.63"/>
+<circle cx="960" cy="950" r="5" fill="#ffffff" fill-opacity="0.63"/>
+<circle cx="1040" cy="840" r="5" fill="#ffffff" fill-opacity="0.63"/>
+<polygon points="600.0,250.0 903.1,425.0 903.1,775.0 600.0,950.0 296.9,775.0 296.9,425.0" stroke="#ffffff" stroke-opacity="0.855" stroke-width="16" stroke-linejoin="round"/>
+<polygon points="600.0,308.0 852.9,454.0 852.9,746.0 600.0,892.0 347.1,746.0 347.1,454.0" stroke="#ffffff" stroke-opacity="0.36000000000000004" stroke-width="3" stroke-linejoin="round"/>
+<g transform="translate(600 600) skewY(-26)" fill="#ffffff" fill-opacity="0.8280000000000001"><rect x="-120" y="-132" width="250" height="50" rx="8"/><rect x="-120" y="-25" width="190" height="50" rx="8"/><rect x="-120" y="82" width="250" height="50" rx="8"/><rect x="-120" y="-132" width="54" height="264" rx="8"/></g>
+<ellipse cx="600" cy="600" rx="470" ry="170" transform="rotate(-28 600 600)" stroke="#ffffff" stroke-opacity="0.765" stroke-width="7"/>
+<circle cx="877.9" cy="333.7" r="26" fill="#ffffff"/>
+<circle cx="877.9" cy="333.7" r="44" stroke="#ffffff" stroke-opacity="0.36000000000000004" stroke-width="3"/>
 </svg>

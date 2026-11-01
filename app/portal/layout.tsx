@@ -12,7 +12,8 @@ export default async function PortalLayout({ children }: { children: ReactNode }
   if (["/portal/login", "/portal/register", "/portal/unauthorized"].some(
     (route) => path === route || path.startsWith(`${route}/`)
   )) {
-    return <>{children}</>;
+    // Same visual theme as the rest of the portal (watermark, colours, light/dark).
+    return <div className="ev-portal">{children}</div>;
   }
 
   return (

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import BrandLogo from "@/components/brand/BrandLogo";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 
@@ -35,23 +35,7 @@ export default function PublicFooter() {
 
       <div className="mx-auto grid w-full max-w-[1400px] gap-12 px-6 py-14 md:grid-cols-[1.4fr_1fr_1fr] md:px-8">
         <div>
-          <div className="flex items-center gap-3">
-            <span className="rounded-xl bg-[#f3fbff] p-2">
-              <Image
-                src="/brand/evaryn-icon.png"
-                width={40}
-                height={40}
-                alt="Evaryn logo"
-                className="object-contain"
-              />
-            </span>
-            <div className="leading-tight">
-              <p className="text-lg font-bold tracking-wide">EVARYN</p>
-              <p className="text-xs font-semibold tracking-widest text-[#52caff]">
-                TECHNOLOGIES LIMITED
-              </p>
-            </div>
-          </div>
+          <BrandLogo tone="dark-surface" className="h-auto max-h-16 w-auto max-w-[260px] object-contain" />
 
           <p className="mt-6 text-base font-semibold text-[#52caff]">
             Innovation. People. Progress.

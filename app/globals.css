@@ -17,26 +17,35 @@
    ===================================================================== */
 :root {
   --ev-cyan: #00b0f8;
-  --ev-blue: #0048a8;
+  --ev-blue: #0040a0;
+  --ev-navy: #002080;
 
-  --ev-page: #d6f1fe;
-  --ev-page-2: #c3e9fb;
-  --ev-surface: #f3fbff;
-  --ev-surface-2: #e2f5fe;
-  --ev-inset: #e6f7ff;
+  /* LIGHT MODE: the light cyan-blue of the logo */
+  --ev-page: #d2effe;
+  --ev-page-2: #bde6fb;
+  --ev-surface: #f2fbff;
+  --ev-surface-2: #e0f4fe;
+  --ev-inset: #e4f6ff;
   --ev-nav: #eaf8ff;
-  --ev-border: #9ed8f2;
-  --ev-border-soft: #bde5f6;
-  --ev-ink: #052b5c;
-  --ev-muted: #2d5b85;
-  --ev-accent-text: #0048a8;
-  --ev-primary: #0048a8;
-  --ev-primary-hover: #003a8a;
+  --ev-border: #97d6f3;
+  --ev-border-soft: #b9e3f6;
+  --ev-ink: #04285a;
+  --ev-muted: #2a5883;
+  --ev-accent-text: #0040a0;
+  --ev-primary: #0040a0;
+  --ev-primary-hover: #003282;
   --ev-on-primary: #ffffff;
-  --ev-hero-from: #003a8a;
-  --ev-hero-via: #0058be;
+  --ev-hero-from: #002f7a;
+  --ev-hero-via: #0052b8;
   --ev-hero-to: #0096e0;
-  --ev-shadow: 0 14px 34px -16px rgba(0, 72, 168, 0.35);
+  --ev-shadow: 0 16px 36px -18px rgba(0, 64, 160, 0.38);
+
+  /* atmosphere: glows, dot grid and the watermark artwork */
+  --ev-glow-a: rgba(0, 176, 248, 0.34);
+  --ev-glow-b: rgba(0, 64, 160, 0.16);
+  --ev-mark: #0040a0;
+  --ev-mark-opacity: 0.075;
+  --ev-grid: rgba(0, 64, 160, 0.13);
 
   --background: var(--ev-page);
   --foreground: var(--ev-ink);
@@ -45,33 +54,43 @@
 }
 
 .dark {
-  --ev-page: #002a66;
-  --ev-page-2: #00235a;
-  --ev-surface: #00388c;
-  --ev-surface-2: #00449f;
-  --ev-inset: #002f78;
-  --ev-nav: #00214f;
-  --ev-border: #1e64bc;
-  --ev-border-soft: #154f9c;
+  /* DARK MODE: the deep blue of the logo (never black) */
+  --ev-page: #00236a;
+  --ev-page-2: #001b56;
+  --ev-surface: #003285;
+  --ev-surface-2: #003f9c;
+  --ev-inset: #002a75;
+  --ev-nav: #001a50;
+  --ev-border: #1b63c4;
+  --ev-border-soft: #124fa5;
   --ev-ink: #f2faff;
   --ev-muted: #bbdcf6;
   --ev-accent-text: #52caff;
   --ev-primary: #00b0f8;
   --ev-primary-hover: #38c4ff;
   --ev-on-primary: #00224f;
-  --ev-hero-from: #001b45;
-  --ev-hero-via: #00388c;
+  --ev-hero-from: #001445;
+  --ev-hero-via: #00328a;
   --ev-hero-to: #0a62c8;
-  --ev-shadow: 0 14px 34px -16px rgba(0, 12, 40, 0.6);
+  --ev-shadow: 0 16px 36px -18px rgba(0, 10, 40, 0.65);
+
+  --ev-glow-a: rgba(0, 176, 248, 0.2);
+  --ev-glow-b: rgba(0, 64, 160, 0.55);
+  --ev-mark: #52caff;
+  --ev-mark-opacity: 0.09;
+  --ev-grid: rgba(82, 202, 255, 0.12);
 }
 
 html {
   scroll-behavior: smooth;
 }
 
+html {
+  background-color: var(--ev-page);
+}
 body {
   margin: 0;
-  background: var(--ev-page);
+  background: transparent;
   color: var(--ev-ink);
   font-family:
     "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
@@ -468,4 +487,218 @@ html:not(.dark) .ev-portal .bg-emerald-950\/30 {
 .ev-portal * {
   scrollbar-width: thin;
   scrollbar-color: var(--ev-border) transparent;
+}
+
+/* =====================================================================
+   BRAND ATMOSPHERE
+   One fixed backdrop behind every page, public and portal:
+   cyan glow + deep-blue glow + fine dot grid + the Evaryn hexagon-E watermark.
+   Pages keep their own cards and bands on top; only page-level backgrounds are made
+   transparent so the artwork shows through the gutters and hero edges.
+   ===================================================================== */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(1100px 720px at 92% -12%, var(--ev-glow-a), transparent 62%),
+    radial-gradient(920px 720px at -8% 108%, var(--ev-glow-b), transparent 60%),
+    radial-gradient(circle at 1px 1px, var(--ev-grid) 1px, transparent 1.5px) 0 0 / 30px 30px;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--ev-mark);
+  opacity: var(--ev-mark-opacity);
+  -webkit-mask-image: url("/watermarks/evaryn-mark.svg"), url("/watermarks/evaryn-mark.svg");
+  mask-image: url("/watermarks/evaryn-mark.svg"), url("/watermarks/evaryn-mark.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: right -14vmin bottom -18vmin, left -22vmin top -24vmin;
+  mask-position: right -14vmin bottom -18vmin, left -22vmin top -24vmin;
+  -webkit-mask-size: min(88vmin, 980px) min(88vmin, 980px), min(56vmin, 620px) min(56vmin, 620px);
+  mask-size: min(88vmin, 980px) min(88vmin, 980px), min(56vmin, 620px) min(56vmin, 620px);
+}
+@media (max-width: 640px) {
+  body::after {
+    -webkit-mask-position: right -30vmin bottom -22vmin, left -40vmin top -30vmin;
+    mask-position: right -30vmin bottom -22vmin, left -40vmin top -30vmin;
+    -webkit-mask-size: 110vmin 110vmin, 70vmin 70vmin;
+    mask-size: 110vmin 110vmin, 70vmin 70vmin;
+  }
+}
+
+/* page-level backgrounds become transparent so the backdrop shows */
+.ev-portal main,
+.ev-public main,
+.ev-portal .ev-workspace {
+  background: transparent !important;
+}
+/* full-width public bands: frosted, so the artwork whispers through them */
+.ev-public section:where([class*="bg-white"], [class*="dark:bg-[#0C1B33]"], [class*="dark:bg-[#101F39]"]):not([class*="bg-gradient"]) {
+  background-color: color-mix(in srgb, var(--ev-surface) 74%, transparent) !important;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+/* =====================================================================
+   POLISH: type, motion, glow
+   ===================================================================== */
+h1,
+h2 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+::selection {
+  background: var(--ev-cyan);
+  color: #00224f;
+}
+html {
+  scrollbar-color: var(--ev-border) transparent;
+}
+
+/* ---- hero art: orbit rings on every deep-blue gradient hero (public + portal) ---- */
+.ev-public section[class*="bg-gradient"],
+.ev-portal .ev-hero {
+  position: relative;
+  isolation: isolate;
+}
+.ev-public section[class*="bg-gradient"]::after,
+.ev-portal .ev-hero::after {
+  content: "";
+  position: absolute;
+  right: -14%;
+  top: 50%;
+  z-index: -1;
+  width: min(62vw, 720px);
+  aspect-ratio: 1;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    radial-gradient(circle, transparent 0 63%, rgba(255, 255, 255, 0.17) 63.2%, transparent 63.8%),
+    radial-gradient(circle, transparent 0 47%, rgba(82, 202, 255, 0.38) 47.2%, transparent 47.9%),
+    radial-gradient(circle, transparent 0 31%, rgba(255, 255, 255, 0.12) 31.2%, transparent 31.8%),
+    radial-gradient(circle, rgba(0, 176, 248, 0.28), transparent 64%);
+  animation: ev-float 16s ease-in-out infinite;
+}
+.ev-portal .ev-hero::after {
+  width: min(70vw, 460px);
+  right: -8%;
+}
+@keyframes ev-float {
+  0%,
+  100% {
+    transform: translateY(-50%) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-53%) rotate(6deg) scale(1.03);
+  }
+}
+
+/* gradient headline accent in the heroes */
+.ev-public section[class*="bg-gradient"] h1 span[class*="text-[#00C6FF]"] {
+  background: linear-gradient(90deg, #7be0ff, #00b0f8 45%, #8fe6ff 75%, #00b0f8);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: ev-sheen 7s ease-in-out infinite;
+}
+@keyframes ev-sheen {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* ---- entrance motion ---- */
+@keyframes ev-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ev-public main > section,
+  .ev-public main > div > section {
+    animation: ev-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+  .ev-portal main > div > *,
+  .ev-portal main > section,
+  .ev-portal main > header {
+    animation: ev-rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+  .ev-portal main > div > *:nth-child(2) { animation-delay: 0.05s; }
+  .ev-portal main > div > *:nth-child(3) { animation-delay: 0.1s; }
+  .ev-portal main > div > *:nth-child(4) { animation-delay: 0.15s; }
+  .ev-portal main > div > *:nth-child(5) { animation-delay: 0.2s; }
+  .ev-portal main > div > *:nth-child(n + 6) { animation-delay: 0.25s; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ev-public section[class*="bg-gradient"]::after,
+  .ev-portal .ev-hero::after,
+  .ev-public section[class*="bg-gradient"] h1 span[class*="text-[#00C6FF]"] {
+    animation: none;
+  }
+}
+
+/* ---- buttons: lift and glow ---- */
+.ev-public a.bg-\[\#0052CC\],
+.ev-public a.bg-\[\#00AEEF\],
+.ev-public button.bg-\[\#0052CC\],
+.ev-portal a.bg-\[\#0052CC\],
+.ev-portal button.bg-\[\#0052CC\] {
+  box-shadow: 0 12px 26px -14px color-mix(in srgb, var(--ev-primary) 85%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.ev-public a.bg-\[\#0052CC\]:hover,
+.ev-public a.bg-\[\#00AEEF\]:hover,
+.ev-public button.bg-\[\#0052CC\]:hover,
+.ev-portal a.bg-\[\#0052CC\]:hover,
+.ev-portal button.bg-\[\#0052CC\]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 32px -14px color-mix(in srgb, var(--ev-primary) 95%, transparent);
+}
+
+/* ---- cards: glass edge, glow on hover (public service/value cards and portal cards) ---- */
+.ev-public article,
+.ev-public a.group,
+.ev-portal article {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.ev-public article:hover,
+.ev-public a.group:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 44px -22px color-mix(in srgb, var(--ev-cyan) 65%, transparent);
+  border-color: var(--ev-cyan);
+}
+
+/* ---- header: crisp glass and a cyan-to-blue underline ---- */
+.ev-public header.sticky {
+  border-bottom-width: 0;
+  box-shadow: var(--ev-shadow);
+}
+.ev-public header.sticky::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--ev-blue), var(--ev-cyan) 55%, var(--ev-blue));
 }

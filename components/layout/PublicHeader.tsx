@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import BrandLogo from "@/components/brand/BrandLogo";
 import { usePathname } from "next/navigation";
 import { Menu, X, LockKeyhole } from "lucide-react";
 import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
@@ -29,10 +29,10 @@ export default function PublicHeader() {
         <Link
           href="/"
           onClick={closeMenu}
-          className="flex min-w-0 items-center gap-3 rounded-xl dark:bg-[#f3fbff] dark:px-3 dark:py-1"
+          className="flex min-w-0 items-center gap-3 rounded-xl"
           aria-label="Evaryn Technologies Limited - Home"
         >
-          <Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={320} height={95} className="h-auto max-h-14 w-auto max-w-[min(62vw,260px)] object-contain" priority />
+          <BrandLogo priority className="h-auto max-h-14 w-auto max-w-[min(62vw,260px)] object-contain" />
         </Link>
 
         {/* Desktop navigation */}

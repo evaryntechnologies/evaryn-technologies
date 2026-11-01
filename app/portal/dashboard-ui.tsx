@@ -70,7 +70,7 @@ export function Hero({
 }) {
   return (
     <section
-      className="relative isolate overflow-hidden rounded-3xl p-6 text-white sm:p-9"
+      className="ev-hero relative isolate overflow-hidden rounded-3xl p-6 text-white sm:p-9"
       style={{
         background:
           "linear-gradient(135deg,var(--ev-hero-from),var(--ev-hero-via) 55%,var(--ev-hero-to))",

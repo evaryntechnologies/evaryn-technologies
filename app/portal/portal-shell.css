@@ -7,8 +7,7 @@
 .ev-menu-trigger:hover,.ev-top-icon:hover { background:var(--ev-surface-2); }
 .ev-menu-trigger:active { transform:scale(.96); }
 .ev-brand { display:inline-flex; align-items:center; flex-shrink:0; }
-.dark .ev-brand { background:#f3fbff; border-radius:12px; padding:3px 10px; }
-.ev-brand-image { width:auto; height:auto; max-height:54px; max-width:210px; object-fit:contain; }
+.ev-brand-image { width:auto; height:auto; max-height:50px; max-width:230px; object-fit:contain; }
 .ev-top-title { padding:4px 11px; border-radius:999px; font-size:12px; font-weight:600; color:var(--ev-accent-text); background:var(--ev-surface); border:1px solid var(--ev-border-soft); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .ev-top-actions { margin-left:auto; display:flex; align-items:center; gap:9px; }
 .ev-top-actions select { max-width:100px; }

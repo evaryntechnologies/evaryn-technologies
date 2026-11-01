@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import BrandLogo from "@/components/brand/BrandLogo";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X, LayoutDashboard, ClipboardList, PanelsTopLeft, Wallet, Bell, CreditCard, Users, ChevronDown, ShieldCheck, Clock3, Settings2, MessageSquare, ChevronRight, LogOut, Search, Star, Gavel, Compass, HandCoins, SlidersHorizontal, CornerDownLeft } from "lucide-react";
@@ -203,7 +203,7 @@ export default function PortalShell({children,unreadNotifications=0}:{children:R
   return <div className="ev-workspace">
     <header className="ev-topbar">
       <button type="button" className="ev-menu-trigger" aria-label={open?"Close navigation":"Open navigation"} aria-controls="ev-main-sidebar" aria-expanded={open} onClick={()=>setOpen(v=>!v)}>{open?<X size={21}/>:<Menu size={21}/>}</button>
-      <Link href={role?home[role]:"/portal"} className="ev-brand" aria-label="Evaryn dashboard"><Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={240} height={77} priority className="ev-brand-image"/></Link>
+      <Link href={role?home[role]:"/portal"} className="ev-brand" aria-label="Evaryn dashboard"><BrandLogo priority className="ev-brand-image"/></Link>
       <span className="ev-top-title">{role?roleTitle[role]:"Workspace"}</span>
       <div className="ev-top-actions">
         <button type="button" className="ev-search" onClick={()=>{setCmdOpen(true);setQuery("");setCursor(0);}} aria-label="Search pages (Ctrl K)"><Search size={15} aria-hidden="true"/><span>Jump to…</span><kbd>Ctrl K</kbd></button>
