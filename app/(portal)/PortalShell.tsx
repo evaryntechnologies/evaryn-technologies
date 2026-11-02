@@ -72,6 +72,8 @@ function roleMenu(role:Role): MenuItem[] {
     {name:"Admin Hours",href:"/portal/super-admin/payroll/admin-hours",icon:Clock3},
     {name:"Categories",href:"/portal/super-admin/categories",icon:Settings2},
     {name:"Inquiries",href:"/portal/super-admin/inquiries",icon:MessageSquare},
+    {name:"Company Email",href:"/portal/super-admin/emails",icon:MessageSquare},
+    {name:"Expert Applications",href:"/portal/super-admin/expert-applications",icon:Users},
     {name:"Audit Log",href:"/portal/super-admin/audit-log",icon:ShieldCheck},
   );
   links.push(...baseMenu.slice(1), {name:"Ratings & Rubrics",href:"/portal/ratings",icon:Star});
@@ -115,7 +117,7 @@ function groupedNavigation(role: Role): NavigationEntry[] {
       ]),
     );
     if (role === "SUPER_ADMIN") {
-      navigation.push(section("Administration", Settings2, ["Inquiries", "Audit Log"]));
+      navigation.push(section("Administration", Settings2, ["Inquiries", "Company Email", "Expert Applications", "Audit Log"]));
     }
     // Team memos is a shared page, linked here without changing any role permissions.
     navigation.push({name:"Team Memos",href:"/portal/announcements",icon:MessageSquare});

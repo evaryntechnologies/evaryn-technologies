@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X, LockKeyhole } from "lucide-react";
 import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
 
-const STAFF_LOGIN_URL = "/portal/login";
+const STAFF_LOGIN_URL = "/experts";
 
 const links = [
   { label: "Services", href: "/services" },
@@ -15,7 +15,7 @@ const links = [
   { label: "Why Evaryn", href: "/why-evaryn" },
   { label: "About Us", href: "/about" },
   { label: "Careers", href: "/careers" },
-  { label: "Partner With Us", href: "/collaborate" },
+  { label: "Work With Us", href: "/collaborate" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -76,7 +76,7 @@ export default function PublicHeader() {
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#003F9E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ev-cyan)]"
           >
             <LockKeyhole size={16} aria-hidden="true" />
-            Staff Login
+            Are You an Expert?
           </Link>
         </div>
 
@@ -143,7 +143,7 @@ export default function PublicHeader() {
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#003F9E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ev-cyan)]"
               >
                 <LockKeyhole size={16} aria-hidden="true" />
-                Staff Login
+                Are You an Expert?
               </Link>
             </div>
           </div>
