@@ -191,6 +191,7 @@ export type WorkProjectWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"WorkProject"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WorkProject"> | Date | string
   tasks?: Prisma.WorkTaskListRelationFilter
+  clientAccess?: Prisma.ClientProjectAccessListRelationFilter
 }
 
 export type WorkProjectOrderByWithRelationInput = {
@@ -201,6 +202,7 @@ export type WorkProjectOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tasks?: Prisma.WorkTaskOrderByRelationAggregateInput
+  clientAccess?: Prisma.ClientProjectAccessOrderByRelationAggregateInput
 }
 
 export type WorkProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -214,6 +216,7 @@ export type WorkProjectWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"WorkProject"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WorkProject"> | Date | string
   tasks?: Prisma.WorkTaskListRelationFilter
+  clientAccess?: Prisma.ClientProjectAccessListRelationFilter
 }, "id">
 
 export type WorkProjectOrderByWithAggregationInput = {
@@ -248,6 +251,7 @@ export type WorkProjectCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.WorkTaskCreateNestedManyWithoutProjectInput
+  clientAccess?: Prisma.ClientProjectAccessCreateNestedManyWithoutWorkProjectInput
 }
 
 export type WorkProjectUncheckedCreateInput = {
@@ -258,6 +262,7 @@ export type WorkProjectUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutProjectInput
+  clientAccess?: Prisma.ClientProjectAccessUncheckedCreateNestedManyWithoutWorkProjectInput
 }
 
 export type WorkProjectUpdateInput = {
@@ -268,6 +273,7 @@ export type WorkProjectUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.WorkTaskUpdateManyWithoutProjectNestedInput
+  clientAccess?: Prisma.ClientProjectAccessUpdateManyWithoutWorkProjectNestedInput
 }
 
 export type WorkProjectUncheckedUpdateInput = {
@@ -278,6 +284,7 @@ export type WorkProjectUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutProjectNestedInput
+  clientAccess?: Prisma.ClientProjectAccessUncheckedUpdateManyWithoutWorkProjectNestedInput
 }
 
 export type WorkProjectCreateManyInput = {
@@ -305,6 +312,11 @@ export type WorkProjectUncheckedUpdateManyInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type WorkProjectScalarRelationFilter = {
+  is?: Prisma.WorkProjectWhereInput
+  isNot?: Prisma.WorkProjectWhereInput
 }
 
 export type WorkProjectCountOrderByAggregateInput = {
@@ -339,6 +351,20 @@ export type WorkProjectNullableScalarRelationFilter = {
   isNot?: Prisma.WorkProjectWhereInput | null
 }
 
+export type WorkProjectCreateNestedOneWithoutClientAccessInput = {
+  create?: Prisma.XOR<Prisma.WorkProjectCreateWithoutClientAccessInput, Prisma.WorkProjectUncheckedCreateWithoutClientAccessInput>
+  connectOrCreate?: Prisma.WorkProjectCreateOrConnectWithoutClientAccessInput
+  connect?: Prisma.WorkProjectWhereUniqueInput
+}
+
+export type WorkProjectUpdateOneRequiredWithoutClientAccessNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkProjectCreateWithoutClientAccessInput, Prisma.WorkProjectUncheckedCreateWithoutClientAccessInput>
+  connectOrCreate?: Prisma.WorkProjectCreateOrConnectWithoutClientAccessInput
+  upsert?: Prisma.WorkProjectUpsertWithoutClientAccessInput
+  connect?: Prisma.WorkProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkProjectUpdateToOneWithWhereWithoutClientAccessInput, Prisma.WorkProjectUpdateWithoutClientAccessInput>, Prisma.WorkProjectUncheckedUpdateWithoutClientAccessInput>
+}
+
 export type WorkProjectCreateNestedOneWithoutTasksInput = {
   create?: Prisma.XOR<Prisma.WorkProjectCreateWithoutTasksInput, Prisma.WorkProjectUncheckedCreateWithoutTasksInput>
   connectOrCreate?: Prisma.WorkProjectCreateOrConnectWithoutTasksInput
@@ -355,6 +381,62 @@ export type WorkProjectUpdateOneWithoutTasksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.WorkProjectUpdateToOneWithWhereWithoutTasksInput, Prisma.WorkProjectUpdateWithoutTasksInput>, Prisma.WorkProjectUncheckedUpdateWithoutTasksInput>
 }
 
+export type WorkProjectCreateWithoutClientAccessInput = {
+  id?: string
+  title: string
+  description: string
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tasks?: Prisma.WorkTaskCreateNestedManyWithoutProjectInput
+}
+
+export type WorkProjectUncheckedCreateWithoutClientAccessInput = {
+  id?: string
+  title: string
+  description: string
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tasks?: Prisma.WorkTaskUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type WorkProjectCreateOrConnectWithoutClientAccessInput = {
+  where: Prisma.WorkProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkProjectCreateWithoutClientAccessInput, Prisma.WorkProjectUncheckedCreateWithoutClientAccessInput>
+}
+
+export type WorkProjectUpsertWithoutClientAccessInput = {
+  update: Prisma.XOR<Prisma.WorkProjectUpdateWithoutClientAccessInput, Prisma.WorkProjectUncheckedUpdateWithoutClientAccessInput>
+  create: Prisma.XOR<Prisma.WorkProjectCreateWithoutClientAccessInput, Prisma.WorkProjectUncheckedCreateWithoutClientAccessInput>
+  where?: Prisma.WorkProjectWhereInput
+}
+
+export type WorkProjectUpdateToOneWithWhereWithoutClientAccessInput = {
+  where?: Prisma.WorkProjectWhereInput
+  data: Prisma.XOR<Prisma.WorkProjectUpdateWithoutClientAccessInput, Prisma.WorkProjectUncheckedUpdateWithoutClientAccessInput>
+}
+
+export type WorkProjectUpdateWithoutClientAccessInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.WorkTaskUpdateManyWithoutProjectNestedInput
+}
+
+export type WorkProjectUncheckedUpdateWithoutClientAccessInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.WorkTaskUncheckedUpdateManyWithoutProjectNestedInput
+}
+
 export type WorkProjectCreateWithoutTasksInput = {
   id?: string
   title: string
@@ -362,6 +444,7 @@ export type WorkProjectCreateWithoutTasksInput = {
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  clientAccess?: Prisma.ClientProjectAccessCreateNestedManyWithoutWorkProjectInput
 }
 
 export type WorkProjectUncheckedCreateWithoutTasksInput = {
@@ -371,6 +454,7 @@ export type WorkProjectUncheckedCreateWithoutTasksInput = {
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  clientAccess?: Prisma.ClientProjectAccessUncheckedCreateNestedManyWithoutWorkProjectInput
 }
 
 export type WorkProjectCreateOrConnectWithoutTasksInput = {
@@ -396,6 +480,7 @@ export type WorkProjectUpdateWithoutTasksInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clientAccess?: Prisma.ClientProjectAccessUpdateManyWithoutWorkProjectNestedInput
 }
 
 export type WorkProjectUncheckedUpdateWithoutTasksInput = {
@@ -405,6 +490,7 @@ export type WorkProjectUncheckedUpdateWithoutTasksInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clientAccess?: Prisma.ClientProjectAccessUncheckedUpdateManyWithoutWorkProjectNestedInput
 }
 
 
@@ -414,10 +500,12 @@ export type WorkProjectUncheckedUpdateWithoutTasksInput = {
 
 export type WorkProjectCountOutputType = {
   tasks: number
+  clientAccess: number
 }
 
 export type WorkProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tasks?: boolean | WorkProjectCountOutputTypeCountTasksArgs
+  clientAccess?: boolean | WorkProjectCountOutputTypeCountClientAccessArgs
 }
 
 /**
@@ -437,6 +525,13 @@ export type WorkProjectCountOutputTypeCountTasksArgs<ExtArgs extends runtime.Typ
   where?: Prisma.WorkTaskWhereInput
 }
 
+/**
+ * WorkProjectCountOutputType without action
+ */
+export type WorkProjectCountOutputTypeCountClientAccessArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ClientProjectAccessWhereInput
+}
+
 
 export type WorkProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -446,6 +541,7 @@ export type WorkProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   createdAt?: boolean
   updatedAt?: boolean
   tasks?: boolean | Prisma.WorkProject$tasksArgs<ExtArgs>
+  clientAccess?: boolean | Prisma.WorkProject$clientAccessArgs<ExtArgs>
   _count?: boolean | Prisma.WorkProjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workProject"]>
 
@@ -479,6 +575,7 @@ export type WorkProjectSelectScalar = {
 export type WorkProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["workProject"]>
 export type WorkProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tasks?: boolean | Prisma.WorkProject$tasksArgs<ExtArgs>
+  clientAccess?: boolean | Prisma.WorkProject$clientAccessArgs<ExtArgs>
   _count?: boolean | Prisma.WorkProjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type WorkProjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -488,6 +585,7 @@ export type $WorkProjectPayload<ExtArgs extends runtime.Types.Extensions.Interna
   name: "WorkProject"
   objects: {
     tasks: Prisma.$WorkTaskPayload<ExtArgs>[]
+    clientAccess: Prisma.$ClientProjectAccessPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -891,6 +989,7 @@ readonly fields: WorkProjectFieldRefs;
 export interface Prisma__WorkProjectClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tasks<T extends Prisma.WorkProject$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkProject$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  clientAccess<T extends Prisma.WorkProject$clientAccessArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkProject$clientAccessArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClientProjectAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1340,6 +1439,30 @@ export type WorkProject$tasksArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.WorkTaskScalarFieldEnum | Prisma.WorkTaskScalarFieldEnum[]
+}
+
+/**
+ * WorkProject.clientAccess
+ */
+export type WorkProject$clientAccessArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ClientProjectAccess
+   */
+  select?: Prisma.ClientProjectAccessSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ClientProjectAccess
+   */
+  omit?: Prisma.ClientProjectAccessOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ClientProjectAccessInclude<ExtArgs> | null
+  where?: Prisma.ClientProjectAccessWhereInput
+  orderBy?: Prisma.ClientProjectAccessOrderByWithRelationInput | Prisma.ClientProjectAccessOrderByWithRelationInput[]
+  cursor?: Prisma.ClientProjectAccessWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ClientProjectAccessScalarFieldEnum | Prisma.ClientProjectAccessScalarFieldEnum[]
 }
 
 /**

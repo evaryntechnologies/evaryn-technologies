@@ -26,3 +26,22 @@ export const ApplicationStatus = {
 } as const
 
 export type ApplicationStatus = (typeof ApplicationStatus)[keyof typeof ApplicationStatus]
+
+
+export const ExpertApprovalStatus = {
+  PENDING: 'PENDING',
+  UNDER_REVIEW: 'UNDER_REVIEW',
+  WAITLISTED: 'WAITLISTED',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type ExpertApprovalStatus = (typeof ExpertApprovalStatus)[keyof typeof ExpertApprovalStatus]
+
+
+export const ClientAccountStatus = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED'
+} as const
+
+export type ClientAccountStatus = (typeof ClientAccountStatus)[keyof typeof ClientAccountStatus]

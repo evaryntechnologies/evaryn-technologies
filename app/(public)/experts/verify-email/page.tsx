@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function VerifyEmail(){return <main className="mx-auto max-w-xl px-6 py-20"><h1 className="text-3xl font-bold">Verify Your Email</h1><p className="mt-4">Follow the verification link sent to your email, then sign in to complete your expert application.</p><Link className="mt-6 inline-block text-cyan-600 underline" href="/experts/login">Go to Expert Login</Link></main>;}

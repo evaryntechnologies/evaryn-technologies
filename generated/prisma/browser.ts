@@ -33,6 +33,21 @@ export type CustomServiceRequest = Prisma.CustomServiceRequestModel
  */
 export type JobApplication = Prisma.JobApplicationModel
 /**
+ * Model ExpertApplication
+ * 
+ */
+export type ExpertApplication = Prisma.ExpertApplicationModel
+/**
+ * Model ClientProfile
+ * 
+ */
+export type ClientProfile = Prisma.ClientProfileModel
+/**
+ * Model ClientProjectAccess
+ * 
+ */
+export type ClientProjectAccess = Prisma.ClientProjectAccessModel
+/**
  * Model EmployeeProfile
  * 
  */

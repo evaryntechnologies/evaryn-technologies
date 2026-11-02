@@ -54,6 +54,9 @@ export const ModelName = {
   ClientInquiry: 'ClientInquiry',
   CustomServiceRequest: 'CustomServiceRequest',
   JobApplication: 'JobApplication',
+  ExpertApplication: 'ExpertApplication',
+  ClientProfile: 'ClientProfile',
+  ClientProjectAccess: 'ClientProjectAccess',
   EmployeeProfile: 'EmployeeProfile',
   WorkProject: 'WorkProject',
   WorkTask: 'WorkTask',
@@ -134,6 +137,52 @@ export const JobApplicationScalarFieldEnum = {
 } as const
 
 export type JobApplicationScalarFieldEnum = (typeof JobApplicationScalarFieldEnum)[keyof typeof JobApplicationScalarFieldEnum]
+
+
+export const ExpertApplicationScalarFieldEnum = {
+  id: 'id',
+  authUserId: 'authUserId',
+  email: 'email',
+  fullName: 'fullName',
+  country: 'country',
+  expertise: 'expertise',
+  experience: 'experience',
+  portfolioUrl: 'portfolioUrl',
+  cvStorageKey: 'cvStorageKey',
+  status: 'status',
+  reviewedById: 'reviewedById',
+  reviewedAt: 'reviewedAt',
+  decisionReason: 'decisionReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ExpertApplicationScalarFieldEnum = (typeof ExpertApplicationScalarFieldEnum)[keyof typeof ExpertApplicationScalarFieldEnum]
+
+
+export const ClientProfileScalarFieldEnum = {
+  id: 'id',
+  authUserId: 'authUserId',
+  email: 'email',
+  fullName: 'fullName',
+  companyName: 'companyName',
+  phone: 'phone',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ClientProfileScalarFieldEnum = (typeof ClientProfileScalarFieldEnum)[keyof typeof ClientProfileScalarFieldEnum]
+
+
+export const ClientProjectAccessScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  workProjectId: 'workProjectId',
+  createdAt: 'createdAt'
+} as const
+
+export type ClientProjectAccessScalarFieldEnum = (typeof ClientProjectAccessScalarFieldEnum)[keyof typeof ClientProjectAccessScalarFieldEnum]
 
 
 export const EmployeeProfileScalarFieldEnum = {
