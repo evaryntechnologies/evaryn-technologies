@@ -53,3 +53,18 @@ export function mailboxAddress(raw: string) {
   }
   return value;
 }
+
+// Read recently received email metadata from Resend for manual recovery/synchronization.
+export async function listReceivedEmails(limit = 100, after?: string) {
+  const url = new URL("https://api.resend.com/emails/receiving");
+  url.searchParams.set("limit", String(limit));
+  if (after) url.searchParams.set("after", after);
+  const response = await fetch(url, {
+    headers: { Authorization: `Bearer ${key()}` }, cache: "no-store",
+  });
+  if (!response.ok) throw new Error(`Resend inbox list failed: ${response.status}`);
+  return response.json() as Promise<{
+    data: { id: string; to: string[]; from: string; subject?: string; created_at?: string }[];
+    has_more: boolean;
+  }>;
+}

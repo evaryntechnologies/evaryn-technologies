@@ -2,7 +2,7 @@ import { connection } from "next/server";
 import Link from "next/link";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
-import { sendPortalEmail } from "./actions";
+import { sendPortalEmail, syncReceivedEmails } from "./actions";
 
 type Mail = { id: string; direction: string; fromAddress: string; toAddress: string; subject: string; receivedAt: Date; isRead: boolean; forwardStatus: string };
 export default async function EmailsPage() {
@@ -18,7 +18,7 @@ export default async function EmailsPage() {
     <p className="mt-2 text-slate-300">contact@evaryninc.com · Inbox and outgoing messages · Super Admin only</p>
     <div className="mt-7 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
       <section className="rounded-2xl border border-cyan-800/40 bg-[#101F39] p-5">
-        <h2 className="text-xl font-semibold">Messages</h2>
+        <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-semibold">Messages</h2><form action={syncReceivedEmails}><button type="submit" className="rounded-lg border border-cyan-500 px-3 py-2 text-sm font-semibold text-cyan-200 hover:bg-cyan-900/40">Sync Inbox from Resend</button></form></div>
         <div className="mt-4 space-y-2">{mails.map(m => <Link key={m.id} href={`/super-admin/emails/${encodeURIComponent(m.id)}`}
           className="block rounded-xl border border-white/10 p-4 hover:border-cyan-400/50">
           <div className="flex justify-between gap-3"><strong className="truncate">{m.subject}</strong>
