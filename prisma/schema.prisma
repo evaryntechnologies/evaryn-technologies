@@ -68,6 +68,72 @@ model JobApplication {
   @@index([status, createdAt])
 }
 
+
+// PHASE 1: External identities stay separate from authorized employees.
+// Never create an EmployeeProfile or set an employee app_metadata role during public signup.
+enum ExpertApprovalStatus {
+  PENDING
+  UNDER_REVIEW
+  WAITLISTED
+  APPROVED
+  REJECTED
+}
+
+enum ClientAccountStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+model ExpertApplication {
+  id              String               @id @default(uuid()) @db.Uuid
+  authUserId      String               @unique @db.Uuid
+  email           String
+  fullName        String
+  country         String?
+  expertise       String[]             @default([])
+  experience      String?              @db.Text
+  portfolioUrl    String?
+  cvStorageKey    String?
+  status          ExpertApprovalStatus @default(PENDING)
+  reviewedById    String?              @db.Uuid
+  reviewedAt      DateTime?
+  decisionReason  String?              @db.Text
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email])
+}
+
+model ClientProfile {
+  id             String              @id @default(uuid()) @db.Uuid
+  authUserId     String              @unique @db.Uuid
+  email          String
+  fullName       String
+  companyName    String?
+  phone          String?
+  status         ClientAccountStatus @default(ACTIVE)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  projectAccess  ClientProjectAccess[]
+
+  @@index([email])
+  @@index([status])
+}
+
+// Clients are explicitly granted access to operational projects, never by guessing IDs.
+model ClientProjectAccess {
+  id              String        @id @default(uuid()) @db.Uuid
+  clientId        String        @db.Uuid
+  workProjectId   String        @db.Uuid
+  createdAt       DateTime      @default(now())
+  client          ClientProfile @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  workProject     WorkProject   @relation(fields: [workProjectId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, workProjectId])
+  @@index([workProjectId])
+}
+
 // =====================================================
 // EVARYN TECHNOLOGIES — EMPLOYEE AND TASK MANAGEMENT
 // =====================================================
@@ -111,6 +177,7 @@ model WorkProject {
   updatedAt   DateTime @updatedAt
 
   tasks WorkTask[]
+  clientAccess ClientProjectAccess[]
 
   @@index([status])
 }
