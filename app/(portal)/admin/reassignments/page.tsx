@@ -6,7 +6,7 @@ import { prisma } from "@/lib/db/prisma";
 import { resolveReassignment } from "./actions";
 import {
   PageShell, PageHeader, EmptyState, Pill, card, inputCls, btnPrimary, statusTone, prettyStatus,
-} from "@/app/portal/ui";
+} from "@/app/(portal)/ui";
 
 async function Content() {
   await connection();

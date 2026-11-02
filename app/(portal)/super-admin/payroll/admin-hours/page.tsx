@@ -15,7 +15,7 @@ import {
   dateFmt,
   statusTone,
   prettyStatus,
-} from "@/app/portal/ui";
+} from "@/app/(portal)/ui";
 
 type Row = {
   eventKey: string;

@@ -25,7 +25,7 @@ import {
   btnPrimary,
   moneyFmt,
   dateTimeFmt,
-} from "@/app/portal/ui";
+} from "@/app/(portal)/ui";
 
 function waiting(d: Date) {
   const hrs = Math.max(1, Math.round((Date.now() - d.getTime()) / 3600000));

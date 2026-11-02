@@ -4,10 +4,10 @@ import { CheckCircle2, CreditCard, Lock, XCircle } from "lucide-react";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 import { decidePaymentChange } from "./actions";
-import { canChangePaymentNow } from "@/app/portal/payment-method/payment-utils";
+import { canChangePaymentNow } from "@/app/(portal)/payment-method/payment-utils";
 import {
   PageShell, PageHeader, EmptyState, Pill, card, textareaCls, btnPrimary, dateTimeFmt,
-} from "@/app/portal/ui";
+} from "@/app/(portal)/ui";
 
 type Request = { id: string; employeeId: string; method: string; accountName: string; requestedAt: Date; fullName: string; email: string };
 

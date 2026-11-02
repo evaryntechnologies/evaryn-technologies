@@ -1,5 +1,5 @@
 "use server";
-import { createEmployee, type CreateEmployeeState } from "@/app/portal/super-admin/employees/create-actions";
+import { createEmployee, type CreateEmployeeState } from "@/app/(portal)/super-admin/employees/create-actions";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 import { revalidatePath } from "next/cache";

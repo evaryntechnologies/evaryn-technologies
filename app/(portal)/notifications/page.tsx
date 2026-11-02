@@ -13,7 +13,7 @@ import {
   card,
   btnGhost,
   dateTimeFmt,
-} from "@/app/portal/ui";
+} from "@/app/(portal)/ui";
 
 type Group = "orders" | "payments" | "general" | "account";
 const groups: { key: Group; label: string }[] = [

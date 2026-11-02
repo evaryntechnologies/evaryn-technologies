@@ -5,7 +5,7 @@ import { Check, ExternalLink } from "lucide-react";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 import { markNotificationRead } from "../actions";
-import { PageShell, PageHeader, Pill, card, btnGhost, btnPrimary, dateTimeFmt } from "@/app/portal/ui";
+import { PageShell, PageHeader, Pill, card, btnGhost, btnPrimary, dateTimeFmt } from "@/app/(portal)/ui";
 
 export default async function NotificationDetail({ params }: { params: Promise<{ id: string }> }) {
   await connection();

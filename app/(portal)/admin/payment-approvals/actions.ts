@@ -2,7 +2,7 @@
 import {revalidatePath} from "next/cache";
 import {requireEmployee} from "@/lib/auth/require-employee";
 import {prisma} from "@/lib/db/prisma";
-import {canChangePaymentNow} from "@/app/portal/payment-method/payment-utils";
+import {canChangePaymentNow} from "@/app/(portal)/payment-method/payment-utils";
 export async function decidePaymentChange(form:FormData){
  const user=await requireEmployee(["ADMIN","SUPER_ADMIN"]);
  const actor=await prisma.employeeProfile.findUnique({where:{authUserId:user.id},select:{id:true,status:true,role:true}});

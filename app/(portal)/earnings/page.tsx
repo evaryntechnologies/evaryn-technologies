@@ -19,7 +19,7 @@ import {
   btnPrimary,
   btnGhost,
   moneyFmt,
-} from "@/app/portal/ui";
+} from "@/app/(portal)/ui";
 
 type Props = { searchParams: Promise<Record<string, string | undefined>> };
 

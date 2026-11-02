@@ -3,10 +3,10 @@ import { connection } from "next/server";
 import { Gavel, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/db/prisma";
 import { requireEmployee } from "@/lib/auth/require-employee";
-import { resolveTaskIssue } from "@/app/portal/tasks/[taskId]/issues/actions";
+import { resolveTaskIssue } from "@/app/(portal)/tasks/[taskId]/issues/actions";
 import {
   PageShell, PageHeader, EmptyState, Pill, card, textareaCls, btnPrimary, dateTimeFmt,
-} from "@/app/portal/ui";
+} from "@/app/(portal)/ui";
 
 async function Content() {
   await connection();

@@ -1,4 +1,4 @@
-import { BackLink } from "@/app/portal/ui";
+import { BackLink } from "@/app/(portal)/ui";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import Link from "next/link";

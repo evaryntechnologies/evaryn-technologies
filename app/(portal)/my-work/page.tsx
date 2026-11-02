@@ -17,7 +17,7 @@ import {
   statusTone,
   prettyStatus,
   moneyFmt,
-} from "@/app/portal/ui";
+} from "@/app/(portal)/ui";
 
 type Props = { searchParams: Promise<{ tab?: string }> };
 type Session = { id: string; startedAt: Date; endedAt: Date | null; activeSeconds: number; rateHourly: unknown };

@@ -18,7 +18,7 @@ import {
   btnGhost,
   moneyFmt,
   dateFmt,
-} from "@/app/portal/ui";
+} from "@/app/(portal)/ui";
 
 type Candidate = {
   eventKey: string;

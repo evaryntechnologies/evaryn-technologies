@@ -17,7 +17,7 @@ import {
   statusTone,
   prettyStatus,
   dateTimeFmt,
-} from "@/app/portal/ui";
+} from "@/app/(portal)/ui";
 
 type Props = { searchParams: Promise<{ tab?: string }> };
 
