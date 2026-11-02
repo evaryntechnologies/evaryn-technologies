@@ -1,84 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { Suspense } from "react";
-import { ExpertiseServiceGrid } from "@/components/public/DynamicExpertise";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Our Services",
-  description:
-    "Explore writing, data annotation and video editing services from Evaryn Technologies Limited.",
-};
-
-export default function ServicesPage() {
-  return (
-    <main className="min-h-screen bg-[#F3F7FC] text-[#071327] dark:bg-[#071327] dark:text-white">
-      <section className="bg-gradient-to-br from-[#071327] via-[#002B7F] to-[#0052CC] px-6 py-20 text-white md:py-28">
-        <div className="mx-auto w-full max-w-none">
-          <p className="text-sm font-bold uppercase tracking-[0.22em] text-cyan-300">
-            What we offer
-          </p>
-
-          <h1 className="mt-5 max-w-3xl text-4xl font-bold tracking-tight md:text-6xl">
-            Professional services.
-            <span className="mt-2 block text-[#00C6FF]">
-              Built around your needs.
-            </span>
-          </h1>
-
-          <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-200">
-            Our services evolve with our teams and capabilities. We bring
-            together skilled professionals and clear workflows
-            to support your projects.
-          </p>
-        </div>
-      </section>
-
-      <section className="mx-auto w-full max-w-none px-6 py-20 md:px-8">
-        <div className="mb-10">
-          <p className="text-sm font-bold uppercase tracking-widest text-[#0052CC] dark:text-cyan-300">
-            Explore our expertise
-          </p>
-          <h2 className="mt-4 text-3xl font-bold md:text-4xl">
-            Our core services
-          </h2>
-          <p className="mt-4 max-w-2xl leading-7 text-slate-600 dark:text-slate-300">
-            Select a service to learn more about what we
-            deliver and how to request a quotation.
-          </p>
-        </div>
-
-        <Suspense fallback={<p className="text-sm text-[#0052CC] dark:text-cyan-200">Loading services…</p>}>
-          <ExpertiseServiceGrid />
-        </Suspense>
-      </section>
-
-      <section className="px-6 pb-20 md:px-8">
-        <div className="mx-auto w-full max-w-none rounded-3xl bg-[#002B7F] px-7 py-12 text-white md:px-14 md:py-16">
-          <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
-            <div>
-              <p className="text-sm font-bold uppercase tracking-widest text-cyan-300">
-                Custom solutions
-              </p>
-              <h2 className="mt-4 text-3xl font-bold">
-                Need something we do not list?
-              </h2>
-              <p className="mt-4 max-w-xl leading-7 text-slate-200">
-                Tell us about your requirements and the
-                type of support your project needs.
-              </p>
-            </div>
-
-            <Link
-              href="/custom-request"
-              className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#00AEEF] px-7 py-4 font-semibold text-[#071327] transition hover:bg-[#00C6FF]"
-            >
-              Request a custom service
-              <ArrowRight size={18} />
-            </Link>
-          </div>
-        </div>
-      </section>
-    </main>
-  );
-}
+export const metadata: Metadata = { title: "Services | Evaryn Technologies", description: "Explore content and news writing, journal and blog editorial, LiDAR annotation, egocentric video collection, video editing and website creation and maintenance." };
+const categories = [
+  {title:"Content writing & editorial",items:["News and feature writing","Journal and blog articles","Technical and non-technical writing","Website and marketing copy"],detail:"Audience-led content supported by a clear brief, editorial expectations and review."},
+  {title:"AI training & data annotation",items:["LiDAR and point-cloud annotation","Image and video labeling","Segmentation and classification","Language and human-feedback tasks"],detail:"Human-in-the-loop data workflows with project-specific instructions and quality review."},
+  {title:"Egocentric video data collection",items:["First-person footage collection","Capture guideline development","Dataset organization and metadata","Footage review and quality checks"],detail:"Scoping and coordination for first-person video programs, subject to permissions and applicable privacy requirements."},
+  {title:"Video editing & post-production",items:["Story and sequence editing","Captions and accessible versions","Titles, motion and graphics","Audio cleanup and finishing"],detail:"Professional post-production for businesses, educators, creators and agencies."},
+  {title:"Website creation & maintenance",items:["Responsive business websites","Landing pages and updates","Content publishing and maintenance","Performance and usability improvements"],detail:"Digital experiences designed to help organizations communicate clearly and convert interest into inquiries."},
+  {title:"Outsourced delivery teams",items:["Project-based workforce support","Agency and supplier collaboration","Defined review and handoff workflows","Flexible scopes and delivery coordination"],detail:"Explore team augmentation or delivery partnerships when your projects need additional capacity."},
+];
+export default function ServicesPage(){return <main className="ev-marketing bg-[var(--ev-page)] text-[var(--ev-ink)]"><section className="bg-gradient-to-br from-[#002657] via-[#0048A8] to-[#0089D1] px-5 py-12 text-white sm:px-8 lg:py-16"><div className="mx-auto max-w-[1240px]"><p className="text-xs font-bold uppercase tracking-[.15em] text-cyan-200">Our services</p><h1 className="mt-3 max-w-4xl text-4xl font-bold leading-[1.12] tracking-tight sm:text-5xl">Practical expertise for ambitious projects.</h1><p className="mt-4 max-w-2xl text-base leading-7 text-blue-50">One place to explore editorial, AI data, creative and digital services. Every engagement starts with a clear scope and agreed expectations.</p></div></section><section className="mx-auto max-w-[1240px] px-5 py-12 sm:px-8 lg:py-14"><div className="grid gap-4 md:grid-cols-2">{categories.map((c)=><article key={c.title} className="rounded-2xl border border-[var(--ev-border)] bg-[var(--ev-surface)] p-6 sm:p-7"><h2 className="text-2xl font-bold tracking-tight">{c.title}</h2><p className="mt-2 text-sm leading-6 text-[var(--ev-muted)]">{c.detail}</p><ul className="mt-5 grid gap-2.5">{c.items.map(i=><li key={i} className="flex items-start gap-2 text-sm"><CheckCircle2 size={16} className="mt-0.5 shrink-0 text-[var(--ev-accent-text)]"/>{i}</li>)}</ul><Link href="/custom-request" className="mt-6 inline-flex items-center gap-1 text-sm font-bold text-[var(--ev-accent-text)]">Discuss this service <ArrowRight size={16}/></Link></article>)}</div></section><section className="bg-[var(--ev-surface-2)] px-5 py-12 sm:px-8"><div className="mx-auto flex max-w-[1240px] flex-col gap-5 lg:flex-row lg:items-center lg:justify-between"><div><h2 className="text-2xl font-bold">Need a dedicated team or a custom project?</h2><p className="mt-2 max-w-2xl leading-7 text-[var(--ev-muted)]">We welcome direct client work and collaborations with companies looking to outsource part of their delivery.</p></div><Link href="/collaborate" className="inline-flex self-start items-center gap-2 rounded-xl bg-[var(--ev-primary)] px-6 py-3 font-bold text-[var(--ev-on-primary)]">Partner with Evaryn <ArrowRight size={16}/></Link></div></section></main>}

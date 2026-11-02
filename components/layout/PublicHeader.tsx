@@ -15,6 +15,7 @@ const links = [
   { label: "Why Evaryn", href: "/why-evaryn" },
   { label: "About Us", href: "/about" },
   { label: "Careers", href: "/careers" },
+  { label: "Partner With Us", href: "/collaborate" },
   { label: "Contact", href: "/contact" },
 ];
 

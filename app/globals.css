@@ -771,3 +771,12 @@ html:not(.dark) :is(.ev-public, .ev-portal) .text-red-600 {
 .dark .ev-portal :is(.text-red-600, .text-red-700, .text-rose-600):not([class*="bg-"]) {
   color: #fca5a5;
 }
+
+/* EVARYN MARKETING RHYTHM v1 */
+.ev-public .ev-marketing h1, .ev-public .ev-marketing h2, .ev-public .ev-marketing h3 { text-wrap: balance; }
+.ev-public .ev-marketing p { text-wrap: pretty; }
+.ev-public .ev-marketing section { scroll-margin-top: 5.5rem; }
+@media (max-width: 640px) { .ev-public .ev-marketing h1 { letter-spacing: -0.035em; } }
+/* Portal legibility: scoped and conservative; avoid overriding grids or custom dashboard layouts. */
+.ev-portal p { line-height: 1.55; }
+.ev-portal h1, .ev-portal h2, .ev-portal h3 { line-height: 1.2; }
