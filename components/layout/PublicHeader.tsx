@@ -10,6 +10,7 @@ import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
 const EXPERT_URL = "/experts";
 
 const links = [
+  { label: "Our Work", href: "/projects" },
   { label: "Services", href: "/services" },
   { label: "How we work", href: "/how-we-work" },
   { label: "Why Evaryn", href: "/why-evaryn" },
