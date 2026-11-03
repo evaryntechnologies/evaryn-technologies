@@ -67,6 +67,21 @@ export default function PublicHeader() {
           </button>
         </div>
 
+
+{/* Always-visible showcase navigation: not dependent on desktop width or hamburger state. */}
+<nav
+  data-evaryn-showcase-navigation="true"
+  aria-label="Projects and client reviews"
+  className="flex w-full flex-wrap items-center justify-center gap-3 border-t border-[var(--ev-border)] bg-[var(--ev-surface)] px-4 py-2 text-sm"
+>
+  <Link href="/projects" onClick={closeMenu} className="rounded-lg px-3 py-1.5 font-semibold text-[var(--ev-accent-text)] transition hover:bg-[var(--ev-surface-2)]">
+    Our Work
+  </Link>
+  <Link href="/reviews" onClick={closeMenu} className="rounded-lg px-3 py-1.5 font-semibold text-[var(--ev-ink)] transition hover:bg-[var(--ev-surface-2)]">
+    Client Reviews
+  </Link>
+</nav>
+
         {menuOpen && (
           <div id="site-mobile-menu" className="site-header__sheet">
             {links.map((link) => (
