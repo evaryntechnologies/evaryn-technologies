@@ -25,8 +25,8 @@ export default function BrandLogo({
   }
   return (
     <>
-      <Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={w} height={h} priority={priority} className={`${className} dark:hidden`} />
-      <Image src="/brand/evaryn-full-dark.png" alt="" aria-hidden="true" width={w} height={h} priority={priority} className={`${className} hidden dark:block`} />
+      <Image src="/brand/evaryn-full-trimmed.png" alt="Evaryn Technologies Limited" width={w} height={h} priority={priority} className={`${className} ev-logo-light`} />
+      <Image src="/brand/evaryn-full-dark.png" alt="" aria-hidden="true" width={w} height={h} priority={priority} className={`${className} ev-logo-dark`} />
     </>
   );
 }

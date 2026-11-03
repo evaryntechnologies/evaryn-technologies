@@ -383,8 +383,8 @@ html:not(.dark) .ev-portal .bg-emerald-950\/30 {
   letter-spacing: -0.01em;
 }
 .ev-portal main > div:only-child {
-  max-width: none;
-  margin-inline: 0;
+  max-width: 1760px;
+  margin-inline: auto;
 }
 
 /* form controls */
@@ -691,13 +691,6 @@ html {
    Content, menus and headers use the whole display. Side gutters grow smoothly with the screen
    (24px on phones up to 80px on very wide monitors) instead of squeezing everything into the middle.
    ===================================================================== */
-.ev-public section,
-.ev-public footer > div {
-  padding-inline: clamp(1.5rem, 4vw, 5rem);
-}
-.ev-public header > div {
-  padding-inline: clamp(1.25rem, 3.4vw, 4rem);
-}
 .ev-portal main {
   padding-inline: clamp(1rem, 3vw, 3.5rem);
 }
@@ -772,11 +765,19 @@ html:not(.dark) :is(.ev-public, .ev-portal) .text-red-600 {
   color: #fca5a5;
 }
 
-/* EVARYN MARKETING RHYTHM v1 */
-.ev-public .ev-marketing h1, .ev-public .ev-marketing h2, .ev-public .ev-marketing h3 { text-wrap: balance; }
-.ev-public .ev-marketing p { text-wrap: pretty; }
-.ev-public .ev-marketing section { scroll-margin-top: 5.5rem; }
-@media (max-width: 640px) { .ev-public .ev-marketing h1 { letter-spacing: -0.035em; } }
-/* Portal legibility: scoped and conservative; avoid overriding grids or custom dashboard layouts. */
-.ev-portal p { line-height: 1.55; }
-.ev-portal h1, .ev-portal h2, .ev-portal h3 { line-height: 1.2; }
+/* logo swap by theme, independent of any utility classes */
+.ev-logo-dark { display: none; }
+.dark .ev-logo-light { display: none; }
+.dark .ev-logo-dark { display: block; }
+
+/* =====================================================================
+   READING WIDTH
+   Descriptions and explanatory text keep a comfortable line length instead of stretching
+   across the whole screen, in the portal and on any remaining public markup.
+   ===================================================================== */
+.ev-portal main p {
+  max-width: 78ch;
+}
+.ev-portal main :is(td, th, label, li) p {
+  max-width: none;
+}

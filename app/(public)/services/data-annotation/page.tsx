@@ -1,18 +1,16 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ServiceDetail from "@/components/ui/ServiceDetail";
 import { getService } from "@/lib/services";
 
+const service = getService("data-annotation");
+
 export const metadata: Metadata = {
-  title: "Data Annotation",
+  title: service ? `${service.title} Services` : "Service",
+  description: service ? `${service.tagline} ${service.shortDescription}` : undefined,
 };
 
 export default function Page() {
-  const service = getService("data-annotation");
-
-  if (!service) {
-    notFound();
-  }
-
+  if (!service) notFound();
   return <ServiceDetail service={service} />;
 }

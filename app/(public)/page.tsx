@@ -1,69 +1,338 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Database, FilePenLine, Handshake, Laptop, Video, Layers3, ShieldCheck } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  CheckCircle2,
+  ClipboardCheck,
+  Clock3,
+  Layers3,
+  RefreshCcw,
+  ShieldCheck,
+  TrendingUp,
+  UsersRound,
+} from "lucide-react";
+import { getService, serviceGroups, services } from "@/lib/services";
+import { clientNames, proofPoints, testimonials } from "@/lib/site";
+import ServiceIcon from "@/components/ui/ServiceIcon";
+import SectionHead from "@/components/public/SectionHead";
+import CtaBand from "@/components/public/CtaBand";
 
 export const metadata: Metadata = {
-  title: "Evaryn Technologies | Managed Content, AI Data & Digital Services",
-  description: "Evaryn Technologies supports organizations, AI teams and delivery partners with content production, video editing, LiDAR annotation, egocentric video collection, and website development and maintenance.",
+  title: { absolute: "AI Training Data, Content Writing & Video Editing | Evaryn Technologies" },
+  description:
+    "Evaryn delivers LiDAR annotation, egocentric video collection, data annotation, content writing and video editing from Nairobi, with peer review and QA on every deliverable.",
 };
 
-const offers = [
-  { title: "Content & editorial", detail: "News articles, blogs, journals, technical documentation and brand content tailored to your audience.", Icon: FilePenLine, note: "Writing and editorial production" },
-  { title: "AI training data", detail: "LiDAR and image annotation, spatial labeling, language tasks and human-in-the-loop quality review.", Icon: Database, note: "Structured data workflows" },
-  { title: "Egocentric video collection", detail: "Project-defined first-person footage collection and review for research and AI datasets.", Icon: Layers3, note: "Custom collection programs" },
-  { title: "Video editing", detail: "Editing, sound, captions, motion graphics and post-production for digital and commercial projects.", Icon: Video, note: "Story-first production" },
-  { title: "Websites & maintenance", detail: "Responsive websites, ongoing content updates, upkeep and digital experience improvements.", Icon: Laptop, note: "Build, maintain, improve" },
-  { title: "Outsourced project teams", detail: "A collaborative delivery model for agencies, studios, data firms and service providers seeking additional capacity.", Icon: Handshake, note: "Partner-ready delivery" },
+const heroPicks = ["lidar-annotation", "egocentric-video-collection", "non-technical-writing", "video-editing"]
+  .map((slug) => getService(slug))
+  .filter((s): s is NonNullable<typeof s> => Boolean(s));
+
+const reasons = [
+  { Icon: ShieldCheck, title: "Two independent quality gates", text: "Every deliverable is peer-reviewed and then passed through a final QA check. Nothing reaches you unchecked." },
+  { Icon: UsersRound, title: "Specialists matched to the work", text: "Projects go only to team members approved for that category, not to a general pool." },
+  { Icon: RefreshCcw, title: "Revisions handled directly", text: "Your feedback goes straight back to the person who did the work, so fixes are fast and the lesson sticks." },
+  { Icon: Clock3, title: "Deadlines tracked, not hoped for", text: "Every order carries a deadline at each stage, with reminders built in so delays surface early." },
+  { Icon: BadgeCheck, title: "Original, verified work", text: "We check for originality, including inappropriate AI-generated text, before anything is delivered." },
+  { Icon: TrendingUp, title: "Accountable teams", text: "Structured feedback and performance ratings decide who gets the next piece of work, so quality compounds." },
+];
+
+const steps = [
+  { t: "Brief", d: "You tell us the goal, volume and deadline." },
+  { t: "Match", d: "We assign specialists approved for your category." },
+  { t: "Create", d: "The team produces the work to your guidelines." },
+  { t: "Review", d: "A second specialist checks and returns anything weak." },
+  { t: "QA and delivery", d: "A final quality gate signs off before you receive it." },
 ];
 
 export default function Home() {
   return (
-    <main className="ev-marketing bg-[var(--ev-page)] text-[var(--ev-ink)]">
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#002657] via-[#0048A8] to-[#0089D1] px-5 pb-14 pt-10 text-white sm:px-8 sm:pb-16 sm:pt-14 lg:pb-20 lg:pt-16">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[url('/watermarks/evaryn-watermark.svg')] bg-right bg-no-repeat opacity-[0.09]" />
-        <div className="relative mx-auto grid max-w-[1240px] items-start gap-9 lg:grid-cols-[1.15fr_.85fr] lg:gap-12">
-          <div className="max-w-[740px]">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-200">Evaryn Technologies · Innovation. People. Progress.</p>
-            <h1 className="mt-4 text-[clamp(2.45rem,5vw,4.65rem)] font-bold leading-[1.08] tracking-[-.045em]">The delivery partner behind your <span className="text-[#67DEFF]">next big project.</span></h1>
-            <p className="mt-5 max-w-[620px] text-base leading-[1.65] text-blue-50 sm:text-lg">From human-centered AI data operations and original content to video production and web development, we help ambitious teams turn demanding briefs into carefully managed deliverables.</p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl bg-[#52D7FF] px-6 py-3.5 font-bold text-[#002657] transition hover:bg-white">Discuss a project <ArrowRight size={17}/></Link>
-              <Link href="/collaborate" className="inline-flex items-center gap-2 rounded-xl border border-cyan-200/60 px-6 py-3.5 font-semibold text-white transition hover:bg-white/10">Outsource or partner with us</Link>
+    <main>
+      {/* ------------------------------- HERO ------------------------------- */}
+      <section className="site-hero">
+        <div className="site-container">
+          <div className="site-hero__grid site-hero__grid--split">
+            <div className="site-hero__copy">
+              <p className="site-eyebrow">AI training data &middot; Content &middot; Video</p>
+              <h1 className="site-h1">
+                Quality-checked data, content and video,
+                <span className="site-accent">delivered without the rework.</span>
+              </h1>
+              <p className="site-lead">
+                Evaryn pairs trained specialists with a built-in two-stage review, so every LiDAR label,
+                egocentric clip, article and edit reaches you consistent, checked and ready to use.
+              </p>
+              <div className="site-actions">
+                <Link href="/contact" className="site-btn site-btn--cyan">
+                  Request a quote <ArrowRight size={18} aria-hidden="true" />
+                </Link>
+                <Link href="/services" className="site-btn site-btn--ghost-light">
+                  Explore our services
+                </Link>
+              </div>
+              <ul className="site-checks">
+                {["Peer review and QA on every deliverable", "Based in Nairobi, serving clients worldwide", "Start with a small pilot batch"].map((t) => (
+                  <li key={t}>
+                    <CheckCircle2 size={17} aria-hidden="true" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-sm text-blue-50">
-              {["Flexible project scopes", "Review-led workflows", "Collaboration-focused"].map((text) => <span key={text} className="inline-flex items-center gap-2"><CheckCircle2 size={16} className="text-cyan-200"/>{text}</span>)}
-            </div>
-          </div>
-          <div className="rounded-[1.5rem] border border-white/20 bg-[#002657]/45 p-6 shadow-xl backdrop-blur-sm sm:p-7">
-            <p className="text-xs font-bold uppercase tracking-[0.15em] text-cyan-200">What we enable</p>
-            <h2 className="mt-3 text-2xl font-bold tracking-tight">One partner. Multiple capabilities.</h2>
-            <p className="mt-3 text-sm leading-6 text-blue-50">Bring the brief. We can discuss a delivery model suited to the skills, quality requirements and timeline your project needs.</p>
-            <div className="mt-5 grid gap-2.5">
-              {["AI data labeling & collection", "Editorial & content operations", "Video & digital production", "Team augmentation & outsourcing"].map((item) => <div key={item} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-semibold"><CheckCircle2 size={16} className="shrink-0 text-[#67DEFF]" />{item}</div>)}
-            </div>
-            <Link href="/how-we-work" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-cyan-200 hover:text-white">See how delivery works <ArrowRight size={16}/></Link>
+
+            <aside className="site-glass" aria-label="What we deliver">
+              <h2>What we deliver</h2>
+              <div className="site-glass__list">
+                {heroPicks.map((service) => (
+                  <Link key={service.slug} href={`/services/${service.slug}`} className="site-glass__item">
+                    <ServiceIcon name={service.icon} size={22} />
+                    <div>
+                      <strong>{service.title}</strong>
+                      <span>{service.tagline}</span>
+                    </div>
+                    <ArrowRight size={18} aria-hidden="true" />
+                  </Link>
+                ))}
+              </div>
+            </aside>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1240px] px-5 py-14 sm:px-8 lg:py-16">
-        <div className="max-w-[760px]">
-          <p className="text-xs font-bold uppercase tracking-[.15em] text-[var(--ev-accent-text)]">Capabilities</p>
-          <h2 className="mt-3 text-3xl font-bold leading-tight tracking-tight sm:text-4xl">Specialized services. Connected delivery.</h2>
-          <p className="mt-3 text-base leading-7 text-[var(--ev-muted)]">Choose a defined service or bring us a custom scope. We work across creative, technical and AI-related workflows.</p>
-        </div>
-        <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {offers.map(({title,detail,Icon,note}) => <Link key={title} href="/services" className="group rounded-2xl border border-[var(--ev-border)] bg-[var(--ev-surface)] p-6 transition hover:-translate-y-0.5 hover:shadow-lg"><Icon size={25} className="text-[var(--ev-accent-text)]"/><p className="mt-4 text-xs font-bold uppercase tracking-[.1em] text-[var(--ev-accent-text)]">{note}</p><h3 className="mt-2 text-xl font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-[var(--ev-muted)]">{detail}</p><span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[var(--ev-accent-text)]">Explore capabilities <ArrowRight size={15}/></span></Link>)}
+      {/* ----------------------------- ASSURANCE ----------------------------- */}
+      <section className="site-section--tight">
+        <div className="site-container">
+          <div className="site-stats">
+            {proofPoints.length > 0
+              ? proofPoints.map((p) => (
+                  <div key={p.label} className="site-stat">
+                    <strong>{p.value}</strong>
+                    <span>{p.label}</span>
+                  </div>
+                ))
+              : [
+                  { v: "2", l: "independent quality checks on every deliverable" },
+                  { v: "5", l: "clear stages from brief to delivery" },
+                  { v: "Pilot-first", l: "judge our quality on a small batch before you scale" },
+                  { v: "1 team", l: "assigned to your project, with direct revisions" },
+                ].map((s) => (
+                  <div key={s.l} className="site-stat">
+                    <strong>{s.v}</strong>
+                    <span>{s.l}</span>
+                  </div>
+                ))}
+          </div>
+          {clientNames.length > 0 && (
+            <p className="site-logos" style={{ marginTop: "1.5rem" }}>
+              <span>Trusted by</span>
+              {clientNames.map((name) => (
+                <span key={name}>{name}</span>
+              ))}
+            </p>
+          )}
         </div>
       </section>
 
-      <section className="bg-[var(--ev-surface-2)] px-5 py-14 sm:px-8 lg:py-16">
-        <div className="mx-auto grid max-w-[1240px] items-center gap-8 lg:grid-cols-2">
-          <div><p className="text-xs font-bold uppercase tracking-[.15em] text-[var(--ev-accent-text)]">Built for delivery partners</p><h2 className="mt-3 text-3xl font-bold leading-tight tracking-tight sm:text-4xl">Your client relationship. Additional delivery capacity.</h2><p className="mt-4 leading-7 text-[var(--ev-muted)]">We welcome partnerships with agencies, AI data firms, editorial businesses and other service providers. If you have a project that needs a capable external team, let's explore how we can support execution under an agreed scope and workflow.</p><Link href="/collaborate" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[var(--ev-primary)] px-5 py-3 font-semibold text-[var(--ev-on-primary)]">Explore partnerships <ArrowRight size={17}/></Link></div>
-          <div className="grid gap-3"><div className="rounded-xl border border-[var(--ev-border)] bg-[var(--ev-surface)] p-5"><Handshake className="text-[var(--ev-accent-text)]"/><h3 className="mt-2 font-bold">Agency and vendor partnerships</h3><p className="mt-1 text-sm leading-6 text-[var(--ev-muted)]">Collaborate on client-facing projects while clarifying responsibilities and communication.</p></div><div className="rounded-xl border border-[var(--ev-border)] bg-[var(--ev-surface)] p-5"><ShieldCheck className="text-[var(--ev-accent-text)]"/><h3 className="mt-2 font-bold">Defined quality checkpoints</h3><p className="mt-1 text-sm leading-6 text-[var(--ev-muted)]">Align briefs, acceptance criteria, review stages and delivery expectations up front.</p></div></div>
+      {/* ------------------------------ SERVICES ------------------------------ */}
+      <section className="site-section">
+        <div className="site-container">
+          <SectionHead
+            eyebrow="What we do"
+            title="Three service lines, one quality standard"
+            lead="Whatever you are building, the process behind it is the same: trained specialists, independent review, final QA."
+          />
+          <div className="site-grid site-grid--3">
+            {serviceGroups.map((group) => {
+              const list = services.filter((s) => s.group === group.group);
+              const first = list[0];
+              return (
+                <div key={group.group} className="site-card site-card--hover">
+                  <span className="site-icon">
+                    <ServiceIcon name={first.icon} size={26} />
+                  </span>
+                  <h3 className="site-h3">{group.title}</h3>
+                  <p>{group.blurb}</p>
+                  <ul className="site-list">
+                    {list.map((s) => (
+                      <li key={s.slug}>
+                        <CheckCircle2 size={18} aria-hidden="true" />
+                        <Link href={`/services/${s.slug}`} className="site-link">
+                          {s.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
-      <section className="mx-auto flex max-w-[1240px] flex-col gap-5 px-5 py-14 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:py-16"><div><p className="text-xs font-bold uppercase tracking-[.15em] text-[var(--ev-accent-text)]">Start the conversation</p><h2 className="mt-2 text-3xl font-bold tracking-tight">What are you building next?</h2><p className="mt-2 max-w-2xl leading-7 text-[var(--ev-muted)]">Tell us about the work, desired outcome, timeline and quality expectations. We'll discuss a practical path forward.</p></div><Link href="/contact" className="inline-flex shrink-0 items-center gap-2 self-start rounded-xl bg-[var(--ev-primary)] px-6 py-3.5 font-bold text-[var(--ev-on-primary)]">Request a project discussion <ArrowRight size={17}/></Link></section>
+
+      {/* --------------------------- AI DATA SPOTLIGHT --------------------------- */}
+      <section className="site-section site-band">
+        <div className="site-container">
+          <div className="site-split site-split--wide-left">
+            <div className="site-stack">
+              <p className="site-eyebrow">AI training data</p>
+              <h2 className="site-h2">The data layer for robotics, autonomous systems and smart devices</h2>
+              <p className="site-p">
+                Perception and embodied-AI models need labeled 3D scenes and real first-person footage. Both are
+                hard to get right: inconsistent labels, missing consent and unscreened clips cost you months of
+                retraining. We run the whole pipeline with quality built in.
+              </p>
+              <ul className="site-list">
+                {[
+                  "LiDAR annotation: 3D cuboids, segmentation, tracking and sensor-fusion labeling",
+                  "Egocentric video collection: scripted first-person capture with consent and privacy screening",
+                  "Data annotation: image, video, text and RLHF preference labeling",
+                ].map((t) => (
+                  <li key={t}>
+                    <CheckCircle2 size={18} aria-hidden="true" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+              <div className="site-actions">
+                <Link href="/services/lidar-annotation" className="site-btn site-btn--primary">
+                  LiDAR annotation <ArrowRight size={17} aria-hidden="true" />
+                </Link>
+                <Link href="/services/egocentric-video-collection" className="site-btn site-btn--ghost">
+                  Egocentric video collection
+                </Link>
+              </div>
+            </div>
+            <div className="site-grid">
+              {["lidar-annotation", "egocentric-video-collection"].map((slug) => {
+                const s = getService(slug)!;
+                return (
+                  <Link key={slug} href={`/services/${slug}`} className="site-card">
+                    <span className="site-icon">
+                      <ServiceIcon name={s.icon} />
+                    </span>
+                    <h3 className="site-h3">{s.title}</h3>
+                    <p>{s.shortDescription}</p>
+                    <span className="site-card__more">
+                      Learn more <ArrowRight size={17} aria-hidden="true" />
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------ WHY EVARYN ------------------------------ */}
+      <section className="site-section">
+        <div className="site-container">
+          <SectionHead
+            eyebrow="Why Evaryn"
+            title="Built so quality does not depend on luck"
+            lead="Most delivery problems come from process, not people. Ours is designed to catch problems before you ever see them."
+          />
+          <div className="site-grid site-grid--3">
+            {reasons.map(({ Icon, title, text }) => (
+              <div key={title} className="site-card site-card--hover">
+                <span className="site-icon">
+                  <Icon size={24} aria-hidden="true" />
+                </span>
+                <h3 className="site-h3">{title}</h3>
+                <p>{text}</p>
+              </div>
+            ))}
+          </div>
+          <div className="site-actions" style={{ marginTop: "2rem" }}>
+            <Link href="/why-evaryn" className="site-link">
+              More on why teams choose Evaryn <ArrowRight size={17} aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------- PROCESS ---------------------------------- */}
+      <section className="site-section site-band">
+        <div className="site-container">
+          <SectionHead eyebrow="How it works" title="From brief to delivery in five clear steps" />
+          <ol className="site-steps">
+            {steps.map((step) => (
+              <li key={step.t} className="site-step">
+                <h3 className="site-h3">{step.t}</h3>
+                <p>{step.d}</p>
+              </li>
+            ))}
+          </ol>
+          <div className="site-actions" style={{ marginTop: "2rem" }}>
+            <Link href="/how-we-work" className="site-link">
+              See the full process <ArrowRight size={17} aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------- PROOF ---------------------------------- */}
+      {testimonials.length > 0 && (
+        <section className="site-section">
+          <div className="site-container">
+            <SectionHead eyebrow="Client feedback" title="What clients say" />
+            <div className="site-grid site-grid--3">
+              {testimonials.map((t) => (
+                <figure key={t.name} className="site-quote">
+                  <blockquote>{t.quote}</blockquote>
+                  <figcaption>
+                    <strong>{t.name}</strong>, {t.role}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* --------------------------------- PILOT + INVESTORS --------------------------------- */}
+      <section className="site-section">
+        <div className="site-container">
+          <div className="site-grid site-grid--2">
+            <div className="site-card">
+              <span className="site-icon">
+                <ClipboardCheck size={24} aria-hidden="true" />
+              </span>
+              <h3 className="site-h3">Start small. Judge us on your own data.</h3>
+              <p>
+                Send a representative sample of your data or brief. We will scope a pilot batch so you can see
+                our quality, our communication and our turnaround before you commit volume.
+              </p>
+              <Link href="/contact" className="site-card__more">
+                Ask about a pilot <ArrowRight size={17} aria-hidden="true" />
+              </Link>
+            </div>
+            <div className="site-card">
+              <span className="site-icon">
+                <Layers3 size={24} aria-hidden="true" />
+              </span>
+              <h3 className="site-h3">Building the managed workforce behind AI data.</h3>
+              <p>
+                Evaryn runs on its own workforce platform: task marketplace, multi-stage review, performance-based
+                pay and a full audit trail. We are building it to scale, and we welcome conversations with
+                investors and strategic partners.
+              </p>
+              <Link href="/investors" className="site-card__more">
+                For investors <ArrowRight size={17} aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="site-section--tight" style={{ paddingBottom: "clamp(3rem,6vw,5rem)" }}>
+        <div className="site-container">
+          <CtaBand
+            title="Tell us what you are building."
+            text="Share your requirements and a sample if you have one. You will get a clear scope, a proposed pilot and a quote, with no obligation."
+            secondary={{ label: "Request a custom service", href: "/custom-request" }}
+          />
+        </div>
+      </section>
     </main>
   );
 }

@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { useSearchParams } from "next/navigation";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { services } from "@/lib/services";
 
 type Kind = "contact" | "custom";
@@ -13,7 +13,8 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
   const params = useSearchParams();
   const requestedService = params.get("service") ?? "";
   const matchingService = services.find((service) => service.title === requestedService);
-  const defaultService = matchingService?.title ?? "";
+  const extraServices = ["Investor enquiry", "Partnership", "Something else"];
+  const defaultService = matchingService?.title ?? (extraServices.includes(requestedService) ? requestedService : "");
   const [feedback, setFeedback] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -23,19 +24,33 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (kind === "custom") { setFeedback(true); return; }
     setErrorMessage("");
     if (!turnstileToken) { setErrorMessage("Please complete the security verification."); return; }
     setSubmitting(true);
     const form = event.currentTarget;
     const data = new FormData(form);
+    // The custom request form collects a few extra fields; they are sent together with the details
+    // through the same protected endpoint as the contact form.
+    let details = String(data.get("details") ?? "");
+    if (kind === "custom") {
+      const lines = [
+        `Request: ${data.get("requestTitle") ?? ""}`,
+        `Expected volume: ${data.get("volume") ?? ""}`,
+        `Needed by: ${data.get("neededBy") ?? ""}`,
+      ];
+      const company = String(data.get("phoneOrCompany") ?? "").trim();
+      if (company) lines.push(`Phone or company: ${company}`);
+      const link = String(data.get("exampleLink") ?? "").trim();
+      if (link) lines.push(`Example link: ${link}`);
+      details = `${lines.join("\n")}\n\n${details}`;
+    }
     try {
       const response = await fetch("/api/public/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: data.get("name"), email: data.get("email"),
-          service: data.get("service"), details: data.get("details"),
+          service: data.get("service"), details: details.slice(0, 5000),
           turnstileToken, website: data.get("website") ?? "",
         }),
       });
@@ -53,10 +68,10 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
 
   return (
     <form onSubmit={handleSubmit} onChange={() => { setFeedback(false); setErrorMessage(""); }} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-[#0C1B33] sm:p-9">
-      {submitted && kind === "contact" ? (
+      {submitted ? (
         <div role="status" className="rounded-xl border border-cyan-300 bg-cyan-50 p-6 text-[#003F7F] dark:border-cyan-800 dark:bg-[#102D4D] dark:text-cyan-100">
           <CheckCircle2 className="mb-3" aria-hidden="true" />
-          Thank you for contacting us. Our team will reach out to you soon.
+          Thank you. We have received your message and our team will reach out to you soon.
         </div>
       ) : <>
       <input name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[10000px] h-px w-px opacity-0" />
@@ -77,7 +92,7 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
           <select name="service" key={defaultService} defaultValue={defaultService} required className={inputStyle}>
             <option value="">Select a service</option>
             {services.map((service) => <option key={service.slug} value={service.title}>{service.title}</option>)}
-            {kind === "custom" && <option value="Something else">Something else</option>}
+            {extraServices.map((name) => <option key={name} value={name}>{name}</option>)}
           </select>
         </label>
         {kind === "custom" && (
@@ -98,24 +113,18 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
         )}
         <label className="block text-sm font-semibold sm:col-span-2">
           {kind === "custom" ? "Project details" : "Project details"} <span className="text-red-700 dark:text-red-300">*</span>
-          <textarea name="details" required minLength={15} maxLength={5000} rows={6} className={inputStyle} placeholder="Describe what you need, your goals and any important requirements." />
+          <textarea name="details" required minLength={15} maxLength={kind === "custom" ? 4500 : 5000} rows={6} className={inputStyle} placeholder="Describe what you need, your goals and any important requirements." />
         </label>
       </div>
-      {kind === "contact" && turnstileSiteKey && (
+      {turnstileSiteKey && (
         <div className="mt-6"><Turnstile siteKey={turnstileSiteKey} options={{ action: "contact" }} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken("")} onError={() => setTurnstileToken("")} /></div>
       )}
-      {kind === "contact" && !turnstileSiteKey && <p role="alert" className="mt-4 text-sm text-red-700 dark:text-red-300">Contact submissions are temporarily unavailable. Please try again later.</p>}
+      {!turnstileSiteKey && <p role="alert" className="mt-4 text-sm text-red-700 dark:text-red-300">Online submissions are temporarily unavailable. Please try again later.</p>}
       {errorMessage && <p role="alert" className="mt-5 rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800">{errorMessage}</p>}
-      {feedback && (
-        <div role="status" className="mt-6 flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-100">
-          <AlertCircle className="mt-0.5 shrink-0" size={19} aria-hidden="true" />
-          <p>This custom service request form is not yet accepting submissions.</p>
-        </div>
-      )}
       <div className="mt-7 flex flex-wrap items-center justify-between gap-4">
         <p className="text-xs text-slate-500 dark:text-slate-400">Fields marked * are required.</p>
-        <button type="submit" disabled={submitting || (kind === "contact" && (!turnstileSiteKey || !turnstileToken))} className="inline-flex items-center gap-2 rounded-xl bg-[#0052CC] px-7 py-3.5 font-semibold text-white transition hover:bg-[#003F9E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400">
-          <CheckCircle2 size={18} aria-hidden="true" /> {submitting ? "Sending..." : kind === "contact" ? "Send message" : "Check my details"}
+        <button type="submit" disabled={submitting || !turnstileSiteKey || !turnstileToken} className="inline-flex items-center gap-2 rounded-xl bg-[#0052CC] px-7 py-3.5 font-semibold text-white transition hover:bg-[#003F9E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400">
+          <CheckCircle2 size={18} aria-hidden="true" /> {submitting ? "Sending..." : kind === "contact" ? "Send message" : "Send request"}
         </button>
       </div>
       </>}

@@ -1,80 +1,72 @@
-import BrandLogo from "@/components/brand/BrandLogo";
 import Link from "next/link";
-import { MapPin } from "lucide-react";
+import { MapPin, Mail, Phone } from "lucide-react";
+import BrandLogo from "@/components/brand/BrandLogo";
+import { services } from "@/lib/services";
+import { site } from "@/lib/site";
 
-const explore = [
-  { label: "Our Services", href: "/services" },
-  { label: "How We Work", href: "/how-we-work" },
+const company = [
+  { label: "How we work", href: "/how-we-work" },
   { label: "Why Evaryn", href: "/why-evaryn" },
+  { label: "Investors", href: "/investors" },
   { label: "Careers", href: "/careers" },
 ];
 
-const touch = [
-  { label: "Contact Us", href: "/contact" },
-  { label: "Request a Custom Service", href: "/custom-request" },
-  { label: "Staff Login", href: "/portal/login" },
-];
-
-const linkCls =
-  "w-fit text-sm text-white/80 underline-offset-4 transition hover:text-[#7bd8ff] hover:underline";
-
 export default function PublicFooter() {
   return (
-    <footer
-      className="relative isolate overflow-hidden text-white"
-      style={{
-        background:
-          "linear-gradient(160deg,var(--ev-hero-from),var(--ev-hero-via))",
-      }}
-    >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 bg-[url('/watermarks/evaryn-watermark.svg')] bg-[position:right_-60px_center] bg-no-repeat opacity-[0.07]"
-      />
-      <div className="h-1 w-full bg-[#00b0f8]" aria-hidden="true" />
+    <footer className="site-footer">
+      <div className="site-footer__top" aria-hidden="true" />
+      <div className="site-container">
+        <div className="site-footer__grid">
+          <div className="site-footer__brand">
+            <BrandLogo tone="dark-surface" />
+            <p>
+              Quality-assured AI training data, content and video, delivered by trained specialists and checked
+              twice before it reaches you.
+            </p>
+            <p style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <MapPin size={16} aria-hidden="true" /> {site.location}
+            </p>
+          </div>
 
-      <div className="mx-auto grid w-full max-w-none gap-12 px-6 py-14 md:grid-cols-[1.4fr_1fr_1fr] md:px-8">
-        <div>
-          <BrandLogo tone="dark-surface" className="h-auto max-h-16 w-auto max-w-[260px] object-contain" />
+          <nav aria-label="Services">
+            <h2>Services</h2>
+            {services.map((service) => (
+              <Link key={service.slug} href={`/services/${service.slug}`}>
+                {service.title}
+              </Link>
+            ))}
+          </nav>
 
-          <p className="mt-6 text-base font-semibold text-[#7bd8ff]">
-            Innovation. People. Progress.
-          </p>
-          <p className="mt-4 flex items-center gap-2 text-sm text-white/80">
-            <MapPin size={16} aria-hidden="true" />
-            Based in Nairobi, Kenya.
-          </p>
+          <nav aria-label="Company">
+            <h2>Company</h2>
+            {company.map((item) => (
+              <Link key={item.href} href={item.href}>
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          <nav aria-label="Get in touch">
+            <h2>Get in touch</h2>
+            <Link href="/contact">Request a quote</Link>
+            <Link href="/custom-request">Custom service request</Link>
+            {site.contactEmail && (
+              <a href={`mailto:${site.contactEmail}`} style={{ display: "inline-flex", gap: "0.5rem", alignItems: "center" }}>
+                <Mail size={15} aria-hidden="true" /> {site.contactEmail}
+              </a>
+            )}
+            {site.contactPhone && (
+              <a href={`tel:${site.contactPhone.replace(/\s+/g, "")}`} style={{ display: "inline-flex", gap: "0.5rem", alignItems: "center" }}>
+                <Phone size={15} aria-hidden="true" /> {site.contactPhone}
+              </a>
+            )}
+            <Link href="/portal/login">Staff login</Link>
+          </nav>
         </div>
 
-        <nav aria-label="Explore">
-          <h2 className="mb-5 text-sm font-bold uppercase tracking-widest text-[#7bd8ff]">
-            Explore
-          </h2>
-          <div className="flex flex-col gap-3">
-            {explore.map((l) => (
-              <Link key={l.href} href={l.href} className={linkCls}>
-                {l.label}
-              </Link>
-            ))}
-          </div>
-        </nav>
-
-        <nav aria-label="Get in touch">
-          <h2 className="mb-5 text-sm font-bold uppercase tracking-widest text-[#7bd8ff]">
-            Get in touch
-          </h2>
-          <div className="flex flex-col gap-3">
-            {touch.map((l) => (
-              <Link key={l.href} href={l.href} className={linkCls}>
-                {l.label}
-              </Link>
-            ))}
-          </div>
-        </nav>
-      </div>
-
-      <div className="border-t border-white/15 px-6 py-6 text-center text-xs text-white/80">
-        © 2026 Evaryn Technologies Limited. All rights reserved.
+        <div className="site-footer__legal">
+          &copy; 2026 {site.name}. All rights reserved. {site.tagline}
+        </div>
       </div>
     </footer>
   );

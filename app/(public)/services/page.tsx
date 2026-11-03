@@ -1,16 +1,156 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import LiveServiceCatalog from "@/components/public/LiveServiceCatalog";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, ClipboardCheck, Handshake, Layers3 } from "lucide-react";
+import { serviceGroups, services } from "@/lib/services";
+import ServiceCard from "@/components/ui/ServiceCard";
+import SectionHead from "@/components/public/SectionHead";
+import CtaBand from "@/components/public/CtaBand";
+import { ExtraExpertiseGrid } from "@/components/public/DynamicExpertise";
 
-export const metadata: Metadata = { title: "Services | Evaryn Technologies", description: "Explore content and news writing, journal and blog editorial, LiDAR annotation, egocentric video collection, video editing and website creation and maintenance." };
-const categories = [
-  {title:"Content writing & editorial",items:["News and feature writing","Journal and blog articles","Technical and non-technical writing","Website and marketing copy"],detail:"Audience-led content supported by a clear brief, editorial expectations and review."},
-  {title:"AI training & data annotation",items:["LiDAR and point-cloud annotation","Image and video labeling","Segmentation and classification","Language and human-feedback tasks"],detail:"Human-in-the-loop data workflows with project-specific instructions and quality review."},
-  {title:"Egocentric video data collection",items:["First-person footage collection","Capture guideline development","Dataset organization and metadata","Footage review and quality checks"],detail:"Scoping and coordination for first-person video programs, subject to permissions and applicable privacy requirements."},
-  {title:"Video editing & post-production",items:["Story and sequence editing","Captions and accessible versions","Titles, motion and graphics","Audio cleanup and finishing"],detail:"Professional post-production for businesses, educators, creators and agencies."},
-  {title:"Website creation & maintenance",items:["Responsive business websites","Landing pages and updates","Content publishing and maintenance","Performance and usability improvements"],detail:"Digital experiences designed to help organizations communicate clearly and convert interest into inquiries."},
-  {title:"Outsourced delivery teams",items:["Project-based workforce support","Agency and supplier collaboration","Defined review and handoff workflows","Flexible scopes and delivery coordination"],detail:"Explore team augmentation or delivery partnerships when your projects need additional capacity."},
+export const metadata: Metadata = {
+  title: "Services: LiDAR Annotation, Egocentric Video, Content Writing, Video Editing",
+  description:
+    "AI training data (LiDAR annotation, egocentric video collection, data annotation), content writing and video editing, each peer-reviewed and QA-checked before delivery.",
+};
+
+const engagement = [
+  { Icon: ClipboardCheck, title: "Pilot batch", text: "A small, scoped sample on your own data or brief. You judge our quality, communication and turnaround before committing volume." },
+  { Icon: Layers3, title: "Project-based", text: "A defined scope, volume and deadline with a fixed quote. Ideal for one-off datasets, campaigns and documentation sets." },
+  { Icon: Handshake, title: "Managed team", text: "A consistent team assigned to your ongoing pipeline, so guidelines, style and quality stay uniform as volume grows." },
 ];
-export default function ServicesPage(){return <main className="ev-marketing bg-[var(--ev-page)] text-[var(--ev-ink)]"><section className="bg-gradient-to-br from-[#002657] via-[#0048A8] to-[#0089D1] px-5 py-12 text-white sm:px-8 lg:py-16"><div className="mx-auto max-w-[1240px]"><p className="text-xs font-bold uppercase tracking-[.15em] text-cyan-200">Our services</p><h1 className="mt-3 max-w-4xl text-4xl font-bold leading-[1.12] tracking-tight sm:text-5xl">Practical expertise for ambitious projects.</h1><p className="mt-4 max-w-2xl text-base leading-7 text-blue-50">One place to explore editorial, AI data, creative and digital services. Every engagement starts with a clear scope and agreed expectations.</p></div></section><section className="mx-auto max-w-[1240px] px-5 py-12 sm:px-8 lg:py-14"><div className="grid gap-4 md:grid-cols-2">{categories.map((c)=><article key={c.title} className="rounded-2xl border border-[var(--ev-border)] bg-[var(--ev-surface)] p-6 sm:p-7"><h2 className="text-2xl font-bold tracking-tight">{c.title}</h2><p className="mt-2 text-sm leading-6 text-[var(--ev-muted)]">{c.detail}</p><ul className="mt-5 grid gap-2.5">{c.items.map(i=><li key={i} className="flex items-start gap-2 text-sm"><CheckCircle2 size={16} className="mt-0.5 shrink-0 text-[var(--ev-accent-text)]"/>{i}</li>)}</ul><Link href="/custom-request" className="mt-6 inline-flex items-center gap-1 text-sm font-bold text-[var(--ev-accent-text)]">Discuss this service <ArrowRight size={16}/></Link></article>)}</div></section><section className="bg-[var(--ev-surface-2)] px-5 py-12 sm:px-8"><div className="mx-auto flex max-w-[1240px] flex-col gap-5 lg:flex-row lg:items-center lg:justify-between"><div><h2 className="text-2xl font-bold">Need a dedicated team or a custom project?</h2><p className="mt-2 max-w-2xl leading-7 text-[var(--ev-muted)]">We welcome direct client work and collaborations with companies looking to outsource part of their delivery.</p></div><Link href="/collaborate" className="inline-flex self-start items-center gap-2 rounded-xl bg-[var(--ev-primary)] px-6 py-3 font-bold text-[var(--ev-on-primary)]">Partner with Evaryn <ArrowRight size={16}/></Link></div></section><Suspense fallback={<div className="mx-auto max-w-[1240px] px-5 py-8 text-sm text-[var(--ev-muted)]">Loading current services…</div>}><LiveServiceCatalog /></Suspense></main>}
+
+const industries = [
+  "Autonomous vehicles and ADAS",
+  "Robotics and automation",
+  "AR/VR and wearables",
+  "AI and ML platforms",
+  "SaaS and developer tools",
+  "Media and marketing",
+  "Education and research",
+  "Retail and e-commerce",
+];
+
+const faqs = [
+  { q: "How do we get a quote?", a: "Send us your requirements and, if you can, a sample of your data or brief through the contact form. We reply with a scope, a proposed pilot and a quote." },
+  { q: "Can we start with a small test?", a: "Yes, and we recommend it. A pilot batch lets you verify quality on your own material before you scale." },
+  { q: "What if our requirement is not listed?", a: "Use the custom service request. If it fits our teams and quality process, we will scope it with you." },
+  { q: "How do you protect our data?", a: "Work is assigned only to named, vetted team members and we follow the data-handling requirements you set out at scoping." },
+];
+
+export default function ServicesPage() {
+  return (
+    <main>
+      <section className="site-hero">
+        <div className="site-container">
+          <div className="site-hero__grid site-hero__grid--split">
+            <div className="site-hero__copy">
+              <p className="site-eyebrow">Our services</p>
+              <h1 className="site-h1">
+                Everything your AI, content and video pipeline needs,
+                <span className="site-accent">from one quality-assured partner.</span>
+              </h1>
+              <p className="site-lead">
+                LiDAR annotation, egocentric video collection, data annotation, content writing and video editing,
+                each produced by trained specialists and checked twice before delivery.
+              </p>
+              <div className="site-actions">
+                <Link href="/contact" className="site-btn site-btn--cyan">
+                  Request a quote <ArrowRight size={18} aria-hidden="true" />
+                </Link>
+                <Link href="/custom-request" className="site-btn site-btn--ghost-light">
+                  Request a custom service
+                </Link>
+              </div>
+            </div>
+            <aside className="site-glass" aria-label="How to get started">
+              <h2>Not sure where to start?</h2>
+              <ul className="site-list" style={{ marginTop: "1.1rem" }}>
+                {[
+                  "Send us your brief or a data sample",
+                  "Get a scoped quote and a proposed pilot",
+                  "Review the pilot, then scale with confidence",
+                ].map((t) => (
+                  <li key={t} style={{ color: "#fff" }}>
+                    <CheckCircle2 size={18} aria-hidden="true" style={{ color: "#7bd8ff" }} />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      {serviceGroups.map((group, index) => (
+        <section key={group.group} className={`site-section ${index % 2 === 1 ? "site-band" : ""}`}>
+          <div className="site-container">
+            <SectionHead eyebrow={group.title} title={group.blurb} />
+            <div className="site-grid site-grid--3">
+              {services
+                .filter((service) => service.group === group.group)
+                .map((service) => (
+                  <ServiceCard key={service.slug} service={service} />
+                ))}
+            </div>
+          </div>
+        </section>
+      ))}
+
+      <section className="site-section">
+        <div className="site-container">
+          <SectionHead eyebrow="How we engage" title="Work with us the way that suits your stage" />
+          <div className="site-grid site-grid--3">
+            {engagement.map(({ Icon, title, text }) => (
+              <div key={title} className="site-card site-card--hover">
+                <span className="site-icon"><Icon size={24} aria-hidden="true" /></span>
+                <h3 className="site-h3">{title}</h3>
+                <p>{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="site-section site-band">
+        <div className="site-container">
+          <SectionHead eyebrow="Who we work with" title="Teams building with data, content and video" />
+          <ul className="site-actions" aria-label="Industries">
+            {industries.map((name) => (
+              <li key={name} className="site-tag" style={{ fontSize: "0.9rem", padding: "0.55rem 1.1rem" }}>{name}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <Suspense fallback={null}>
+        <ExtraExpertiseGrid />
+      </Suspense>
+
+      <section className="site-section">
+        <div className="site-container">
+          <SectionHead eyebrow="Questions" title="Good to know before you start" />
+          <div className="site-faq">
+            {faqs.map((faq) => (
+              <details key={faq.q}>
+                <summary>{faq.q}</summary>
+                <p>{faq.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="site-section--tight" style={{ paddingBottom: "clamp(3rem,6vw,5rem)" }}>
+        <div className="site-container">
+          <CtaBand
+            title="Need something we do not list?"
+            text="Tell us about your requirement and the support your project needs. If it fits our teams and quality process, we will scope it with you."
+            primary={{ label: "Request a custom service", href: "/custom-request" }}
+            secondary={{ label: "Talk to us", href: "/contact" }}
+          />
+        </div>
+      </section>
+    </main>
+  );
+}

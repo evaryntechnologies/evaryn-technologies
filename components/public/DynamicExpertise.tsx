@@ -12,6 +12,12 @@ const existingPages: Record<string, string> = {
   "content writing": "non-technical-writing",
   "data annotation": "data-annotation",
   "video editing": "video-editing",
+  "lidar annotation": "lidar-annotation",
+  "lidar": "lidar-annotation",
+  "egocentric video collection": "egocentric-video-collection",
+  "egocentric video": "egocentric-video-collection",
+  "ai training": "data-annotation",
+  "ai training data": "data-annotation",
 };
 
 async function activeExpertise() {
@@ -68,5 +74,37 @@ export async function ExpertiseServiceGrid() {
         </Link>
       ))}
     </div>
+  );
+}
+
+/**
+ * Active categories from the portal that do not yet have a dedicated service page.
+ * Renders nothing when every category is already covered by the curated services.
+ */
+export async function ExtraExpertiseGrid() {
+  const categories = (await activeExpertise()).filter(
+    (category) => !existingPages[category.name.trim().toLowerCase()],
+  );
+  if (!categories.length) return null;
+  return (
+    <section className="site-section">
+      <div className="site-container">
+        <div className="site-head">
+          <p className="site-eyebrow">More capabilities</p>
+          <h2 className="site-h2">Additional services available on request</h2>
+          <p className="site-lead">These service lines are currently active. Tell us about your project and we will scope it.</p>
+        </div>
+        <div className="site-grid site-grid--4">
+          {categories.map((category) => (
+            <Link key={category.id} href={category.href} className="site-card">
+              <span className="site-icon"><Layers3 size={24} aria-hidden="true" /></span>
+              <h3 className="site-h3">{category.name}</h3>
+              <p>{category.description}</p>
+              <span className="site-card__more">Request this service <ArrowRight size={17} aria-hidden="true" /></span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

@@ -1,65 +1,131 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, ClipboardList, UsersRound, PenLine, ScanSearch, BadgeCheck, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, ClipboardCheck, Clock3, MessagesSquare, RefreshCcw, ShieldCheck } from "lucide-react";
+import SectionHead from "@/components/public/SectionHead";
+import CtaBand from "@/components/public/CtaBand";
 
 export const metadata: Metadata = {
   title: "How We Work",
-  description: "See Evaryn Technologies Limited's five-step process: Brief, Match, Create, Review, and QA & delivery.",
+  description:
+    "From brief to delivery in five clear stages: scoping, specialist matching, production, peer review and final QA.",
 };
 
 const steps = [
-  { number: "01", title: "Brief", Icon: ClipboardList, description: "Tell us about your goals, requirements, timelines and expected deliverables.", points: ["Understand the project scope", "Clarify expectations and priorities"] },
-  { number: "02", title: "Match", Icon: UsersRound, description: "We align your project with people whose skills fit the work and its requirements.", points: ["Choose the appropriate service team", "Confirm instructions and responsibilities"] },
-  { number: "03", title: "Create", Icon: PenLine, description: "Our team carries out the work using the agreed brief, deliverables and standards.", points: ["Work to the project brief", "Maintain clear project communication"] },
-  { number: "04", title: "Review", Icon: ScanSearch, description: "A separate review stage checks the work and identifies any improvements needed.", points: ["Evaluate accuracy and completeness", "Request revisions where necessary"] },
-  { number: "05", title: "QA & delivery", Icon: BadgeCheck, description: "Final quality assurance takes place before the work is prepared for client delivery.", points: ["Perform final quality checks", "Prepare the approved deliverables"] },
+  { n: "01", title: "Brief and scope", you: "Share your goals, volume, deadline and any examples or guidelines.", we: "Confirm scope and acceptance criteria, propose a pilot where it helps, and send you a quote." },
+  { n: "02", title: "Specialist match", you: "Nothing, we handle the staffing.", we: "Assign your project to team members approved for your category and set a deadline for each stage." },
+  { n: "03", title: "Production", you: "Answer the occasional clarifying question.", we: "Produce the work to your guidelines while tracking deadlines and sending reminders so nothing drifts." },
+  { n: "04", title: "Peer review", you: "Nothing yet. This happens before you see anything.", we: "A second specialist checks accuracy, consistency and completeness, and sends anything that falls short back for revision." },
+  { n: "05", title: "QA and delivery", you: "Review the delivery and tell us what you think.", we: "A final quality gate signs off the work. If you want changes, your revision request goes straight back to the specialist, and your rating informs future assignments." },
+];
+
+const expect = [
+  { Icon: MessagesSquare, title: "Clear communication", text: "You know who is responsible for your project and what stage it is in." },
+  { Icon: Clock3, title: "Predictable timelines", text: "Deadlines are agreed up front and tracked at each stage." },
+  { Icon: RefreshCcw, title: "Direct revisions", text: "Feedback goes straight to the person who can fix it, with your notes attached." },
+  { Icon: ShieldCheck, title: "Careful data handling", text: "Work is assigned only to named, vetted team members, and we follow the requirements you set." },
 ];
 
 export default function HowWeWorkPage() {
   return (
-    <main className="bg-[#F3F7FC] text-[#071327] dark:bg-[#071327] dark:text-white">
-      <section className="relative isolate overflow-hidden bg-gradient-to-br from-[#071327] via-[#002B7F] to-[#0052CC] px-6 py-20 text-white md:py-28">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[url('/watermarks/evaryn-watermark.svg')] bg-right bg-no-repeat opacity-15" />
-        <div className="relative mx-auto w-full max-w-none">
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-cyan-300">Our delivery process</p>
-          <h1 className="mt-5 max-w-3xl text-4xl font-bold tracking-tight md:text-6xl">How we work</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">Five clear steps connect your brief to reviewed, quality-checked deliverables.</p>
-          <a href="#process" className="mt-8 inline-flex items-center gap-2 rounded-xl border border-white/40 px-6 py-3 font-semibold text-white hover:bg-white/10">Explore the process <ArrowRight size={18} /></a>
+    <main>
+      <section className="site-hero">
+        <div className="site-container">
+          <div className="site-hero__copy">
+            <p className="site-eyebrow">How we work</p>
+            <h1 className="site-h1">
+              A clear process from first brief
+              <span className="site-accent">to final delivery.</span>
+            </h1>
+            <p className="site-lead">
+              Five stages, two independent quality checks and a direct line for revisions. You always know where
+              your work stands and who is responsible for it.
+            </p>
+            <div className="site-actions">
+              <Link href="/contact" className="site-btn site-btn--cyan">
+                Start a project <ArrowRight size={18} aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section id="process" className="mx-auto w-full max-w-none scroll-mt-24 px-6 py-20 md:px-8">
-        <div className="mb-12 max-w-2xl">
-          <p className="text-sm font-bold uppercase tracking-widest text-[#0052CC] dark:text-cyan-300">A structured approach</p>
-          <h2 className="mt-4 text-3xl font-bold md:text-4xl">From idea to delivery</h2>
-          <p className="mt-4 leading-7 text-slate-600 dark:text-slate-300">Every stage has a purpose. Clear responsibilities and checkpoints support reliable project work.</p>
-        </div>
-        <ol className="relative space-y-5 before:absolute before:bottom-10 before:left-[25px] before:top-10 before:hidden before:w-px before:bg-[#00AEEF]/40 md:before:block">
-          {steps.map(({ number, title, Icon, description, points }) => (
-            <li key={number} className="relative md:pl-20">
-              <span aria-hidden="true" className="absolute left-1 top-8 z-10 hidden h-11 w-11 items-center justify-center rounded-full border-4 border-[#F3F7FC] bg-[#0052CC] text-xs font-bold text-white dark:border-[#071327] md:flex">{number}</span>
-              <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-[#101F39] md:p-9">
-                <div className="flex items-start gap-5">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#E7F6FF] text-[#0052CC] dark:bg-[#18385D] dark:text-cyan-300"><Icon size={24} /></div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold uppercase tracking-widest text-[#0052CC] dark:text-cyan-300">Step {number}</p>
-                    <h3 className="mt-2 text-2xl font-bold">{title}</h3>
-                    <p className="mt-3 leading-7 text-slate-600 dark:text-slate-300">{description}</p>
-                    <ul className="mt-5 grid gap-3 text-sm sm:grid-cols-2">{points.map((point) => <li key={point} className="flex items-start gap-2"><CheckCircle2 size={17} className="mt-0.5 shrink-0 text-[#00AEEF]" /><span>{point}</span></li>)}</ul>
+      <section className="site-section">
+        <div className="site-container">
+          <SectionHead eyebrow="The process" title="Five stages, each with a clear owner" />
+          <div className="site-grid">
+            {steps.map((step) => (
+              <div key={step.n} className="site-card site-card--hover" style={{ display: "grid", gap: "1.25rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                  <span className="site-tag" style={{ fontSize: "0.9rem" }}>{step.n}</span>
+                  <h3 className="site-h3" style={{ fontSize: "1.3rem" }}>{step.title}</h3>
+                </div>
+                <div className="site-grid site-grid--2" style={{ gap: "1.25rem" }}>
+                  <div>
+                    <p className="site-eyebrow" style={{ fontSize: "0.7rem" }}>You</p>
+                    <p style={{ marginTop: "0.5rem" }}>{step.you}</p>
+                  </div>
+                  <div>
+                    <p className="site-eyebrow" style={{ fontSize: "0.7rem" }}>We</p>
+                    <p style={{ marginTop: "0.5rem" }}>{step.we}</p>
                   </div>
                 </div>
-              </article>
-            </li>
-          ))}
-        </ol>
-      </section>
-      <section className="bg-white px-6 py-16 dark:bg-[#101F39]">
-        <div className="flex w-full flex-wrap items-center justify-between gap-8">
-          <div className="min-w-0 max-w-3xl">
-            <h2 className="text-3xl font-bold">Ready to discuss your project?</h2>
-            <p className="mt-4 leading-7 text-slate-600 dark:text-slate-300">Share your requirements and let us understand the scope of work.</p>
+              </div>
+            ))}
           </div>
-          <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl bg-[#0052CC] px-7 py-4 font-semibold text-white hover:bg-[#003F9E]">Request a quote <ArrowRight size={18} /></Link>
+        </div>
+      </section>
+
+      <section className="site-section site-band">
+        <div className="site-container">
+          <SectionHead eyebrow="What to expect" title="Working with us" />
+          <div className="site-grid site-grid--4">
+            {expect.map(({ Icon, title, text }) => (
+              <div key={title} className="site-card">
+                <span className="site-icon"><Icon size={24} aria-hidden="true" /></span>
+                <h3 className="site-h3">{title}</h3>
+                <p>{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="site-section">
+        <div className="site-container">
+          <div className="site-split">
+            <div className="site-stack">
+              <p className="site-eyebrow">Start with a pilot</p>
+              <h2 className="site-h2">See our quality on your own work first</h2>
+              <p className="site-p">
+                For new clients we suggest a small pilot batch. It costs you little, gives you a real read on our
+                quality and communication, and lets us calibrate to your guidelines before volume ramps up.
+              </p>
+            </div>
+            <div className="site-card">
+              <ul className="site-list">
+                {[
+                  "Send a representative sample or a short brief",
+                  "We scope the pilot and agree acceptance criteria",
+                  "You review the output, give feedback and decide next steps",
+                ].map((t) => (
+                  <li key={t}>
+                    <ClipboardCheck size={18} aria-hidden="true" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="site-section--tight" style={{ paddingBottom: "clamp(3rem,6vw,5rem)" }}>
+        <div className="site-container">
+          <CtaBand
+            title="Ready to discuss your project?"
+            text="Share your requirements and let us scope the work, the pilot and the timeline."
+            primary={{ label: "Request a quote", href: "/contact" }}
+          />
         </div>
       </section>
     </main>
