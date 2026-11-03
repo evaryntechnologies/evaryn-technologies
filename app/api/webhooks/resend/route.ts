@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import { Resend } from "resend";
 import { Webhook } from "svix";
 import { prisma } from "@/lib/db/prisma";
-import { FROM, GMAIL, received, sendEmail, mailboxAddress } from "@/lib/evaryn-email/resend";
+import { FROM, GMAIL, received, mailboxAddress } from "@/lib/evaryn-email/resend";
 
 export async function POST(request: Request) {
   const secret = process.env.RESEND_WEBHOOK_SECRET;
@@ -44,9 +45,16 @@ export async function POST(request: Request) {
     `;
     if (claimed) {
       try {
-        const note = `Original sender: ${mail.from}\nOriginal recipient: ${mail.to.join(", ")}\n\n${body}\n\nAttachments, if any, must be viewed in Resend Receiving.`;
-        await sendEmail({ to: GMAIL, subject: `[Evaryn Inbox] ${subject}`, text: note,
-          replyTo: sender, idempotencyKey: `evaryn-forward-${id}` });
+        // Resend's forward helper retrieves the original message and attachments.
+        const apiKey = process.env.RESEND_API_KEY;
+        if (!apiKey) throw new Error("RESEND_API_KEY missing");
+        const resend = new Resend(apiKey);
+        const { error } = await resend.emails.receiving.forward({
+          emailId: id,
+          to: GMAIL,
+          from: `Evaryn Technologies Limited <${FROM}>`,
+        });
+        if (error) throw new Error(`Resend forwarding failed: ${error.message}`);
         await prisma.$executeRaw`update public."EvarynEmail" set "forwardStatus"='SENT',"forwardedAt"=now() where id=${id}`;
       } catch (error) {
         const description = error instanceof Error ? error.message.slice(0, 400) : "Unknown send failure";
