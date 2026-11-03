@@ -1,3 +1,4 @@
+import { forwardIncomingAndRecord } from "@/lib/evaryn-email/inbound-repair";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { Webhook } from "svix";
@@ -43,25 +44,7 @@ export async function POST(request: Request) {
       update public."EvarynEmail" set "forwardStatus"='PROCESSING', "lastForwardError"=null, "forwardedAt"=now()
       where id=${id} and "forwardStatus" in ('PENDING')
     `;
-    if (claimed) {
-      try {
-        // Resend's forward helper retrieves the original message and attachments.
-        const apiKey = process.env.RESEND_API_KEY;
-        if (!apiKey) throw new Error("RESEND_API_KEY missing");
-        const resend = new Resend(apiKey);
-        const { error } = await resend.emails.receiving.forward({
-          emailId: id,
-          to: GMAIL,
-          from: `Evaryn Technologies Limited <${FROM}>`,
-        });
-        if (error) throw new Error(`Resend forwarding failed: ${error.message}`);
-        await prisma.$executeRaw`update public."EvarynEmail" set "forwardStatus"='SENT',"forwardedAt"=now() where id=${id}`;
-      } catch (error) {
-        const description = error instanceof Error ? error.message.slice(0, 400) : "Unknown send failure";
-        await prisma.$executeRaw`update public."EvarynEmail" set "forwardStatus"='PENDING', "lastForwardError"=${description} where id=${id}`;
-        throw error;
-      }
-    }
+    if (claimed) await forwardIncomingAndRecord(id);
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("Resend inbound processing failed", error);

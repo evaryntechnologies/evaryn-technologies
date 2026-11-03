@@ -1,10 +1,11 @@
+import ReceivedAttachments from "../ReceivedAttachments";
 import { connection } from "next/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 import { conversationKey, externalAddress, type EmailConversationItem } from "@/lib/evaryn-email/conversations";
-import { markRead, sendPortalEmail } from "../actions";
+import { markRead, sendPortalEmail, retryReceivedForwarding } from "../actions";
 
 type Mail = EmailConversationItem & {
   body: string; lastForwardError: string | null; attachmentInfo: unknown;
@@ -42,6 +43,8 @@ export default async function MessagePage({params}:{params:Promise<{id:string}>}
           </div>
           <p className="mt-1 break-all text-xs text-slate-400">To: {m.toAddress}</p>
           <pre className="mt-4 whitespace-pre-wrap break-words font-sans text-sm leading-7">{m.body}</pre>
+          {m.direction === "INBOUND" && <ReceivedAttachments emailId={m.id} />}
+          {m.direction === "INBOUND" && m.forwardStatus !== "SENT" && <form action={retryReceivedForwarding} className="mt-3"><input type="hidden" name="id" value={m.id}/><button className="rounded-lg border border-cyan-500 px-3 py-2 text-sm text-cyan-200">Retry Gmail Forwarding</button>{m.lastForwardError && <p className="mt-1 text-xs text-amber-200">Previous failure: {m.lastForwardError}</p>}</form>}
           {m.direction==='INBOUND' && !m.isRead && <form action={markRead} className="mt-4"><input type="hidden" name="id" value={m.id}/><button className="rounded-lg border border-cyan-600 px-3 py-1.5 text-xs">Mark as read</button></form>}
         </article>
       )}</div>

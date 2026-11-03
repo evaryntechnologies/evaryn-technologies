@@ -1,4 +1,5 @@
 "use server";
+import { forwardIncomingAndRecord } from "@/lib/evaryn-email/inbound-repair";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireEmployee } from "@/lib/auth/require-employee";
@@ -91,4 +92,21 @@ export async function openEmailConversation(form: FormData) {
   }
   revalidatePath("/super-admin/emails");
   redirect(`/super-admin/emails/${encodeURIComponent(id)}`);
+}
+
+// Manual recovery for a received message whose forwarding failed or got stuck.
+export async function retryReceivedForwarding(form: FormData) {
+  await requireEmployee(["SUPER_ADMIN"]);
+  const id = String(form.get("id") || "");
+  if (!/^[a-zA-Z0-9-]{8,100}$/.test(id)) throw new Error("Invalid email ID");
+  const claimed = await prisma.$executeRaw`
+    update public."EvarynEmail" set "forwardStatus"='PROCESSING', "forwardedAt"=now(), "lastForwardError"=null
+    where id=${id} and direction='INBOUND' and (
+      "forwardStatus"='PENDING' or
+      ("forwardStatus"='PROCESSING' and ("forwardedAt" is null or "forwardedAt" < now() - interval '15 minutes'))
+    )
+  `;
+  if (claimed) await forwardIncomingAndRecord(id);
+  revalidatePath("/super-admin/emails");
+  revalidatePath(`/super-admin/emails/${id}`);
 }
