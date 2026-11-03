@@ -30,7 +30,7 @@ export async function sendEmail(input: { to: string; subject: string; text: stri
       ...(input.idempotencyKey ? { "Idempotency-Key": input.idempotencyKey } : {}),
     },
     body: JSON.stringify({
-      from: `Evaryn Technologies <${from}>`,
+      from: `Evaryn Technologies Limited <${from}>`,
       to: [input.to],
       subject: input.subject,
       text: input.text,
