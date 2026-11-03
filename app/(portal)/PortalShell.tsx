@@ -101,7 +101,6 @@ function groupedNavigation(role: Role): NavigationEntry[] {
     single("All My Orders"),
     section("My Orders", ClipboardList, ["Task Hub", "In Progress", "In Revision", "Completed", "Canceled Orders"]),
   ];
-  if (role === "SUPER_ADMIN") navigation.splice(1, 0, single("Client Requests"));
   if (role !== "TASKER") {
     navigation.push(section("Order Queues", ShieldCheck, ["Review Queue", "QA Queue", "Client Actions"]));
   }
@@ -136,7 +135,7 @@ function groupedNavigation(role: Role): NavigationEntry[] {
     navigation.push(section("Finances", Wallet, ["My Earnings", "Payment Method"]));
   }
   // Notifications are available through the persistent header bell, not duplicated in the sidebar.
-  const remaining = links.filter(item => !used.has(item.href) && item.name !== "Notifications");
+  const remaining = links.filter(item => !used.has(item.href) && item.name !== "Notifications" && item.name !== "Client Requests");
   if (remaining.length) navigation.push({name:"More Workspace Tools",icon:PanelsTopLeft,items:remaining});
   return navigation.filter((item): item is NavigationEntry => Boolean(item));
 }
@@ -222,6 +221,19 @@ export default function PortalShell({children,unreadNotifications=0,initialRole=
       <div className="ev-sidebar-card"><span className="ev-avatar ev-avatar-lg" aria-hidden="true">{firstName?firstName.charAt(0).toUpperCase():"E"}</span><div><strong>{firstName||"Welcome"}</strong><small>{role?roleTitle[role]:"Workspace"}</small></div></div>
       <div className="ev-sidebar-heading"><span>NAVIGATE</span></div>
       <nav className="ev-sidebar-links" aria-label="Your available pages">
+        {(role === "SUPER_ADMIN" || pathname?.startsWith("/portal/super-admin") || pathname?.startsWith("/super-admin")) && (
+          <Link
+            data-evaryn-client-requests-shortcut="true"
+            tabIndex={open ? 0 : -1}
+            href="/portal/super-admin/client-requests"
+            aria-current={isActive("/portal/super-admin/client-requests") ? "page" : undefined}
+            className={`ev-nav-link ${isActive("/portal/super-admin/client-requests") ? "ev-nav-active" : ""}`}
+          >
+            <ClipboardList size={17} />
+            <span>Client Requests</span>
+            {isActive("/portal/super-admin/client-requests") && <ChevronRight size={14} className="ev-nav-chevron" />}
+          </Link>
+        )}
         {navigation.map(item=>{
           const Icon=item.icon;
           if(isNavigationGroup(item)){
