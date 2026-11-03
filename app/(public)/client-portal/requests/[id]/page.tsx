@@ -1,0 +1,5 @@
+import {notFound} from "next/navigation";
+import Link from "next/link";
+import {prisma} from "@/lib/db/prisma";
+import {ensureClientProfile} from "../../../clients/actions";
+export default async function RequestDetails({params}:{params:Promise<{id:string}>}){const client=await ensureClientProfile();const {id}=await params;const request=await prisma.clientProjectRequest.findFirst({where:{id,clientId:client.id}});if(!request)notFound();return <main className="mx-auto max-w-3xl"><Link href="/client-portal" className="text-sm text-cyan-700 underline">Back to dashboard</Link><h1 className="mt-4 text-3xl font-bold">{request.title}</h1><p className="mt-3 text-sm">Status: <strong>{request.status.replaceAll("_"," ")}</strong></p><p className="mt-2 text-sm text-slate-500">Service: {request.service} · Submitted {request.createdAt.toLocaleDateString("en-GB")}</p><div className="mt-6 whitespace-pre-wrap rounded-xl border p-6">{request.details}</div>{request.adminNote&&<div className="mt-5 rounded-xl border border-sky-400/30 bg-sky-950/5 p-5"><h2 className="font-semibold">Update from Evaryn</h2><p className="mt-2 whitespace-pre-wrap">{request.adminNote}</p></div>}</main>}

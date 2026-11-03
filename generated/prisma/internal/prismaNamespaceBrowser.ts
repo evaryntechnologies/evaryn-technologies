@@ -69,7 +69,8 @@ export const ModelName = {
   TaskPenalty: 'TaskPenalty',
   TaskExtraAttachment: 'TaskExtraAttachment',
   TaskDispute: 'TaskDispute',
-  PortalNotification: 'PortalNotification'
+  PortalNotification: 'PortalNotification',
+  ClientProjectRequest: 'ClientProjectRequest'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -383,6 +384,21 @@ export const PortalNotificationScalarFieldEnum = {
 } as const
 
 export type PortalNotificationScalarFieldEnum = (typeof PortalNotificationScalarFieldEnum)[keyof typeof PortalNotificationScalarFieldEnum]
+
+
+export const ClientProjectRequestScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  title: 'title',
+  service: 'service',
+  details: 'details',
+  status: 'status',
+  adminNote: 'adminNote',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ClientProjectRequestScalarFieldEnum = (typeof ClientProjectRequestScalarFieldEnum)[keyof typeof ClientProjectRequestScalarFieldEnum]
 
 
 export const SortOrder = {

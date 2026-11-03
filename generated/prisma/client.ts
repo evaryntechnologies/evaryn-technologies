@@ -136,3 +136,8 @@ export type TaskDispute = Prisma.TaskDisputeModel
  * 
  */
 export type PortalNotification = Prisma.PortalNotificationModel
+/**
+ * Model ClientProjectRequest
+ * 
+ */
+export type ClientProjectRequest = Prisma.ClientProjectRequestModel

@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function VerifyEmail(){return <main className="mx-auto max-w-xl px-5 py-24"><h1 className="text-3xl font-bold">Verify your email</h1><p className="mt-4">Check your email for a confirmation link. After verification, sign in to your client account.</p><p className="mt-4 text-sm text-slate-500">Check your spam folder if it is not in your inbox.</p><Link className="mt-6 inline-block rounded-lg bg-[#0758B5] px-5 py-3 font-semibold text-white" href="/clients/login">Go to client login</Link></main>}

@@ -415,7 +415,8 @@ export const ModelName = {
   TaskPenalty: 'TaskPenalty',
   TaskExtraAttachment: 'TaskExtraAttachment',
   TaskDispute: 'TaskDispute',
-  PortalNotification: 'PortalNotification'
+  PortalNotification: 'PortalNotification',
+  ClientProjectRequest: 'ClientProjectRequest'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -431,7 +432,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "clientInquiry" | "customServiceRequest" | "jobApplication" | "expertApplication" | "clientProfile" | "clientProjectAccess" | "employeeProfile" | "workProject" | "workTask" | "taskSubmission" | "taskReview" | "taskCategory" | "employeeCategory" | "taskMessage" | "taskReassignmentRequest" | "taskPenalty" | "taskExtraAttachment" | "taskDispute" | "portalNotification"
+    modelProps: "clientInquiry" | "customServiceRequest" | "jobApplication" | "expertApplication" | "clientProfile" | "clientProjectAccess" | "employeeProfile" | "workProject" | "workTask" | "taskSubmission" | "taskReview" | "taskCategory" | "employeeCategory" | "taskMessage" | "taskReassignmentRequest" | "taskPenalty" | "taskExtraAttachment" | "taskDispute" | "portalNotification" | "clientProjectRequest"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1841,6 +1842,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ClientProjectRequest: {
+      payload: Prisma.$ClientProjectRequestPayload<ExtArgs>
+      fields: Prisma.ClientProjectRequestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ClientProjectRequestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClientProjectRequestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ClientProjectRequestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClientProjectRequestPayload>
+        }
+        findFirst: {
+          args: Prisma.ClientProjectRequestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClientProjectRequestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ClientProjectRequestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClientProjectRequestPayload>
+        }
+        findMany: {
+          args: Prisma.ClientProjectRequestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClientProjectRequestPayload>[]
+        }
+        create: {
+          args: Prisma.ClientProjectRequestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClientProjectRequestPayload>
+        }
+        createMany: {
+          args: Prisma.ClientProjectRequestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ClientProjectRequestCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClientProjectRequestPayload>[]
+        }
+        delete: {
+          args: Prisma.ClientProjectRequestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClientProjectRequestPayload>
+        }
+        update: {
+          args: Prisma.ClientProjectRequestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClientProjectRequestPayload>
+        }
+        deleteMany: {
+          args: Prisma.ClientProjectRequestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ClientProjectRequestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ClientProjectRequestUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClientProjectRequestPayload>[]
+        }
+        upsert: {
+          args: Prisma.ClientProjectRequestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClientProjectRequestPayload>
+        }
+        aggregate: {
+          args: Prisma.ClientProjectRequestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateClientProjectRequest>
+        }
+        groupBy: {
+          args: Prisma.ClientProjectRequestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClientProjectRequestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ClientProjectRequestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClientProjectRequestCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2177,6 +2252,21 @@ export const PortalNotificationScalarFieldEnum = {
 export type PortalNotificationScalarFieldEnum = (typeof PortalNotificationScalarFieldEnum)[keyof typeof PortalNotificationScalarFieldEnum]
 
 
+export const ClientProjectRequestScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  title: 'title',
+  service: 'service',
+  details: 'details',
+  status: 'status',
+  adminNote: 'adminNote',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ClientProjectRequestScalarFieldEnum = (typeof ClientProjectRequestScalarFieldEnum)[keyof typeof ClientProjectRequestScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2337,6 +2427,20 @@ export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'ClientProjectRequestStatus'
+ */
+export type EnumClientProjectRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClientProjectRequestStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ClientProjectRequestStatus[]'
+ */
+export type ListEnumClientProjectRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClientProjectRequestStatus[]'>
     
 
 /**
@@ -2509,6 +2613,7 @@ export type GlobalOmitConfig = {
   taskExtraAttachment?: Prisma.TaskExtraAttachmentOmit
   taskDispute?: Prisma.TaskDisputeOmit
   portalNotification?: Prisma.PortalNotificationOmit
+  clientProjectRequest?: Prisma.ClientProjectRequestOmit
 }
 
 /* Types for Logging */

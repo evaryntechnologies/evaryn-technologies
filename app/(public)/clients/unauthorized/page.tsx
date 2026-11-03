@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function Unavailable(){return <main className="mx-auto max-w-xl px-5 py-24"><h1 className="text-3xl font-bold">Client access unavailable</h1><p className="mt-3">This account cannot access the client workspace. Expert and employee accounts use their own portals. If this is unexpected, contact Evaryn support.</p><Link href="/work-with-us" className="mt-5 inline-block text-cyan-700 underline">Return to Work With Us</Link></main>}

@@ -45,3 +45,14 @@ export const ClientAccountStatus = {
 } as const
 
 export type ClientAccountStatus = (typeof ClientAccountStatus)[keyof typeof ClientAccountStatus]
+
+
+export const ClientProjectRequestStatus = {
+  PENDING_REVIEW: 'PENDING_REVIEW',
+  IN_DISCUSSION: 'IN_DISCUSSION',
+  ACCEPTED: 'ACCEPTED',
+  CLOSED: 'CLOSED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type ClientProjectRequestStatus = (typeof ClientProjectRequestStatus)[keyof typeof ClientProjectRequestStatus]

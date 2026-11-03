@@ -215,6 +215,7 @@ export type ClientProfileWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"ClientProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ClientProfile"> | Date | string
   projectAccess?: Prisma.ClientProjectAccessListRelationFilter
+  projectRequests?: Prisma.ClientProjectRequestListRelationFilter
 }
 
 export type ClientProfileOrderByWithRelationInput = {
@@ -228,6 +229,7 @@ export type ClientProfileOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   projectAccess?: Prisma.ClientProjectAccessOrderByRelationAggregateInput
+  projectRequests?: Prisma.ClientProjectRequestOrderByRelationAggregateInput
 }
 
 export type ClientProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -244,6 +246,7 @@ export type ClientProfileWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"ClientProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ClientProfile"> | Date | string
   projectAccess?: Prisma.ClientProjectAccessListRelationFilter
+  projectRequests?: Prisma.ClientProjectRequestListRelationFilter
 }, "id" | "authUserId">
 
 export type ClientProfileOrderByWithAggregationInput = {
@@ -287,6 +290,7 @@ export type ClientProfileCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   projectAccess?: Prisma.ClientProjectAccessCreateNestedManyWithoutClientInput
+  projectRequests?: Prisma.ClientProjectRequestCreateNestedManyWithoutClientInput
 }
 
 export type ClientProfileUncheckedCreateInput = {
@@ -300,6 +304,7 @@ export type ClientProfileUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   projectAccess?: Prisma.ClientProjectAccessUncheckedCreateNestedManyWithoutClientInput
+  projectRequests?: Prisma.ClientProjectRequestUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ClientProfileUpdateInput = {
@@ -313,6 +318,7 @@ export type ClientProfileUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projectAccess?: Prisma.ClientProjectAccessUpdateManyWithoutClientNestedInput
+  projectRequests?: Prisma.ClientProjectRequestUpdateManyWithoutClientNestedInput
 }
 
 export type ClientProfileUncheckedUpdateInput = {
@@ -326,6 +332,7 @@ export type ClientProfileUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projectAccess?: Prisma.ClientProjectAccessUncheckedUpdateManyWithoutClientNestedInput
+  projectRequests?: Prisma.ClientProjectRequestUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ClientProfileCreateManyInput = {
@@ -423,6 +430,20 @@ export type ClientProfileUpdateOneRequiredWithoutProjectAccessNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ClientProfileUpdateToOneWithWhereWithoutProjectAccessInput, Prisma.ClientProfileUpdateWithoutProjectAccessInput>, Prisma.ClientProfileUncheckedUpdateWithoutProjectAccessInput>
 }
 
+export type ClientProfileCreateNestedOneWithoutProjectRequestsInput = {
+  create?: Prisma.XOR<Prisma.ClientProfileCreateWithoutProjectRequestsInput, Prisma.ClientProfileUncheckedCreateWithoutProjectRequestsInput>
+  connectOrCreate?: Prisma.ClientProfileCreateOrConnectWithoutProjectRequestsInput
+  connect?: Prisma.ClientProfileWhereUniqueInput
+}
+
+export type ClientProfileUpdateOneRequiredWithoutProjectRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.ClientProfileCreateWithoutProjectRequestsInput, Prisma.ClientProfileUncheckedCreateWithoutProjectRequestsInput>
+  connectOrCreate?: Prisma.ClientProfileCreateOrConnectWithoutProjectRequestsInput
+  upsert?: Prisma.ClientProfileUpsertWithoutProjectRequestsInput
+  connect?: Prisma.ClientProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ClientProfileUpdateToOneWithWhereWithoutProjectRequestsInput, Prisma.ClientProfileUpdateWithoutProjectRequestsInput>, Prisma.ClientProfileUncheckedUpdateWithoutProjectRequestsInput>
+}
+
 export type ClientProfileCreateWithoutProjectAccessInput = {
   id?: string
   authUserId: string
@@ -433,6 +454,7 @@ export type ClientProfileCreateWithoutProjectAccessInput = {
   status?: $Enums.ClientAccountStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  projectRequests?: Prisma.ClientProjectRequestCreateNestedManyWithoutClientInput
 }
 
 export type ClientProfileUncheckedCreateWithoutProjectAccessInput = {
@@ -445,6 +467,7 @@ export type ClientProfileUncheckedCreateWithoutProjectAccessInput = {
   status?: $Enums.ClientAccountStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  projectRequests?: Prisma.ClientProjectRequestUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ClientProfileCreateOrConnectWithoutProjectAccessInput = {
@@ -473,6 +496,7 @@ export type ClientProfileUpdateWithoutProjectAccessInput = {
   status?: Prisma.EnumClientAccountStatusFieldUpdateOperationsInput | $Enums.ClientAccountStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectRequests?: Prisma.ClientProjectRequestUpdateManyWithoutClientNestedInput
 }
 
 export type ClientProfileUncheckedUpdateWithoutProjectAccessInput = {
@@ -485,6 +509,75 @@ export type ClientProfileUncheckedUpdateWithoutProjectAccessInput = {
   status?: Prisma.EnumClientAccountStatusFieldUpdateOperationsInput | $Enums.ClientAccountStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectRequests?: Prisma.ClientProjectRequestUncheckedUpdateManyWithoutClientNestedInput
+}
+
+export type ClientProfileCreateWithoutProjectRequestsInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  companyName?: string | null
+  phone?: string | null
+  status?: $Enums.ClientAccountStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  projectAccess?: Prisma.ClientProjectAccessCreateNestedManyWithoutClientInput
+}
+
+export type ClientProfileUncheckedCreateWithoutProjectRequestsInput = {
+  id?: string
+  authUserId: string
+  email: string
+  fullName: string
+  companyName?: string | null
+  phone?: string | null
+  status?: $Enums.ClientAccountStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  projectAccess?: Prisma.ClientProjectAccessUncheckedCreateNestedManyWithoutClientInput
+}
+
+export type ClientProfileCreateOrConnectWithoutProjectRequestsInput = {
+  where: Prisma.ClientProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ClientProfileCreateWithoutProjectRequestsInput, Prisma.ClientProfileUncheckedCreateWithoutProjectRequestsInput>
+}
+
+export type ClientProfileUpsertWithoutProjectRequestsInput = {
+  update: Prisma.XOR<Prisma.ClientProfileUpdateWithoutProjectRequestsInput, Prisma.ClientProfileUncheckedUpdateWithoutProjectRequestsInput>
+  create: Prisma.XOR<Prisma.ClientProfileCreateWithoutProjectRequestsInput, Prisma.ClientProfileUncheckedCreateWithoutProjectRequestsInput>
+  where?: Prisma.ClientProfileWhereInput
+}
+
+export type ClientProfileUpdateToOneWithWhereWithoutProjectRequestsInput = {
+  where?: Prisma.ClientProfileWhereInput
+  data: Prisma.XOR<Prisma.ClientProfileUpdateWithoutProjectRequestsInput, Prisma.ClientProfileUncheckedUpdateWithoutProjectRequestsInput>
+}
+
+export type ClientProfileUpdateWithoutProjectRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumClientAccountStatusFieldUpdateOperationsInput | $Enums.ClientAccountStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectAccess?: Prisma.ClientProjectAccessUpdateManyWithoutClientNestedInput
+}
+
+export type ClientProfileUncheckedUpdateWithoutProjectRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumClientAccountStatusFieldUpdateOperationsInput | $Enums.ClientAccountStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectAccess?: Prisma.ClientProjectAccessUncheckedUpdateManyWithoutClientNestedInput
 }
 
 
@@ -494,10 +587,12 @@ export type ClientProfileUncheckedUpdateWithoutProjectAccessInput = {
 
 export type ClientProfileCountOutputType = {
   projectAccess: number
+  projectRequests: number
 }
 
 export type ClientProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   projectAccess?: boolean | ClientProfileCountOutputTypeCountProjectAccessArgs
+  projectRequests?: boolean | ClientProfileCountOutputTypeCountProjectRequestsArgs
 }
 
 /**
@@ -517,6 +612,13 @@ export type ClientProfileCountOutputTypeCountProjectAccessArgs<ExtArgs extends r
   where?: Prisma.ClientProjectAccessWhereInput
 }
 
+/**
+ * ClientProfileCountOutputType without action
+ */
+export type ClientProfileCountOutputTypeCountProjectRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ClientProjectRequestWhereInput
+}
+
 
 export type ClientProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -529,6 +631,7 @@ export type ClientProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   createdAt?: boolean
   updatedAt?: boolean
   projectAccess?: boolean | Prisma.ClientProfile$projectAccessArgs<ExtArgs>
+  projectRequests?: boolean | Prisma.ClientProfile$projectRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.ClientProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["clientProfile"]>
 
@@ -571,6 +674,7 @@ export type ClientProfileSelectScalar = {
 export type ClientProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "authUserId" | "email" | "fullName" | "companyName" | "phone" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["clientProfile"]>
 export type ClientProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   projectAccess?: boolean | Prisma.ClientProfile$projectAccessArgs<ExtArgs>
+  projectRequests?: boolean | Prisma.ClientProfile$projectRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.ClientProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ClientProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -580,6 +684,7 @@ export type $ClientProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
   name: "ClientProfile"
   objects: {
     projectAccess: Prisma.$ClientProjectAccessPayload<ExtArgs>[]
+    projectRequests: Prisma.$ClientProjectRequestPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -986,6 +1091,7 @@ readonly fields: ClientProfileFieldRefs;
 export interface Prisma__ClientProfileClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   projectAccess<T extends Prisma.ClientProfile$projectAccessArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClientProfile$projectAccessArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClientProjectAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projectRequests<T extends Prisma.ClientProfile$projectRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClientProfile$projectRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClientProjectRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1438,6 +1544,30 @@ export type ClientProfile$projectAccessArgs<ExtArgs extends runtime.Types.Extens
   take?: number
   skip?: number
   distinct?: Prisma.ClientProjectAccessScalarFieldEnum | Prisma.ClientProjectAccessScalarFieldEnum[]
+}
+
+/**
+ * ClientProfile.projectRequests
+ */
+export type ClientProfile$projectRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ClientProjectRequest
+   */
+  select?: Prisma.ClientProjectRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ClientProjectRequest
+   */
+  omit?: Prisma.ClientProjectRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ClientProjectRequestInclude<ExtArgs> | null
+  where?: Prisma.ClientProjectRequestWhereInput
+  orderBy?: Prisma.ClientProjectRequestOrderByWithRelationInput | Prisma.ClientProjectRequestOrderByWithRelationInput[]
+  cursor?: Prisma.ClientProjectRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ClientProjectRequestScalarFieldEnum | Prisma.ClientProjectRequestScalarFieldEnum[]
 }
 
 /**

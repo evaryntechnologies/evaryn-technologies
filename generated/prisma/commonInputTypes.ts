@@ -405,6 +405,23 @@ export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
 }
 
+export type EnumClientProjectRequestStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClientProjectRequestStatus | Prisma.EnumClientProjectRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ClientProjectRequestStatus[] | Prisma.ListEnumClientProjectRequestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClientProjectRequestStatus[] | Prisma.ListEnumClientProjectRequestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClientProjectRequestStatusFilter<$PrismaModel> | $Enums.ClientProjectRequestStatus
+}
+
+export type EnumClientProjectRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClientProjectRequestStatus | Prisma.EnumClientProjectRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ClientProjectRequestStatus[] | Prisma.ListEnumClientProjectRequestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClientProjectRequestStatus[] | Prisma.ListEnumClientProjectRequestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClientProjectRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.ClientProjectRequestStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumClientProjectRequestStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumClientProjectRequestStatusFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -792,6 +809,23 @@ export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
+}
+
+export type NestedEnumClientProjectRequestStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClientProjectRequestStatus | Prisma.EnumClientProjectRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ClientProjectRequestStatus[] | Prisma.ListEnumClientProjectRequestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClientProjectRequestStatus[] | Prisma.ListEnumClientProjectRequestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClientProjectRequestStatusFilter<$PrismaModel> | $Enums.ClientProjectRequestStatus
+}
+
+export type NestedEnumClientProjectRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClientProjectRequestStatus | Prisma.EnumClientProjectRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ClientProjectRequestStatus[] | Prisma.ListEnumClientProjectRequestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClientProjectRequestStatus[] | Prisma.ListEnumClientProjectRequestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClientProjectRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.ClientProjectRequestStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumClientProjectRequestStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumClientProjectRequestStatusFilter<$PrismaModel>
 }
 
 
