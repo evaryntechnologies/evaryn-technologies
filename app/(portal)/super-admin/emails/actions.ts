@@ -69,3 +69,26 @@ export async function syncReceivedEmails() {
   revalidatePath("/super-admin/emails");
   redirect(`/super-admin/emails?sync=${imported}`);
 }
+
+// Opening a conversation marks its inbound messages read before displaying the thread.
+// The server recalculates membership rather than trusting user-supplied message IDs.
+export async function openEmailConversation(form: FormData) {
+  await requireEmployee(["SUPER_ADMIN"]);
+  const id = String(form.get("id") || "");
+  if (!id || id.length > 200) throw new Error("Invalid conversation");
+  const mails = await prisma.$queryRaw<import("@/lib/evaryn-email/conversations").EmailConversationItem[]>`
+    select id, direction, "fromAddress", "toAddress", subject, "receivedAt", "isRead"
+    from public."EvarynEmail" order by "receivedAt" desc limit 500
+  `;
+  const target = mails.find(m => m.id === id);
+  if (!target) throw new Error("Conversation not found");
+  const { conversationKey } = await import("@/lib/evaryn-email/conversations");
+  const key = conversationKey(target);
+  for (const mail of mails) {
+    if (conversationKey(mail) === key && mail.direction === "INBOUND" && !mail.isRead) {
+      await prisma.$executeRaw`update public."EvarynEmail" set "isRead"=true where id=${mail.id} and direction='INBOUND'`;
+    }
+  }
+  revalidatePath("/super-admin/emails");
+  redirect(`/super-admin/emails/${encodeURIComponent(id)}`);
+}

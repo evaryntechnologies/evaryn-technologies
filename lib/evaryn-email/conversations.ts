@@ -29,7 +29,9 @@ export function groupEmailConversations<T extends EmailConversationItem>(mails: 
   }
   return [...groups.values()].map(messages => {
     messages.sort((a,b) => new Date(a.receivedAt).getTime() - new Date(b.receivedAt).getTime());
+    const unreadCount = messages.filter(m => m.direction === "INBOUND" && !m.isRead).length;
     return { messages, latest: messages[messages.length - 1], count: messages.length,
-      unread: messages.some(m => m.direction === "INBOUND" && !m.isRead) };
-  }).sort((a,b) => new Date(b.latest.receivedAt).getTime() - new Date(a.latest.receivedAt).getTime());
+      unreadCount, unread: unreadCount > 0 };
+  }).sort((a,b) => Number(b.unreadCount > 0) - Number(a.unreadCount > 0) ||
+    new Date(b.latest.receivedAt).getTime() - new Date(a.latest.receivedAt).getTime());
 }

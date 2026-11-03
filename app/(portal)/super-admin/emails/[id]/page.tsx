@@ -31,7 +31,7 @@ export default async function MessagePage({params}:{params:Promise<{id:string}>}
     <section className="mt-5 max-w-4xl rounded-2xl border border-white/10 bg-[#101F39] p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="break-words text-2xl font-bold">{baseSubject}</h1>
-        <span className="flex h-8 min-w-8 items-center justify-center rounded-full bg-red-600 px-2 text-sm font-bold text-white" aria-label={`${messages.length} messages`}>{messages.length}</span>
+        <span className="text-xs text-slate-300">{messages.length} messages</span>
       </div>
       <p className="mt-2 break-all text-sm text-slate-300">Conversation with {correspondent}</p>
       <div className="mt-6 space-y-4">{messages.map(m =>
