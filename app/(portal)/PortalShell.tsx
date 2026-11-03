@@ -101,6 +101,7 @@ function groupedNavigation(role: Role): NavigationEntry[] {
     single("All My Orders"),
     section("My Orders", ClipboardList, ["Task Hub", "In Progress", "In Revision", "Completed", "Canceled Orders"]),
   ];
+  if (role === "SUPER_ADMIN") navigation.splice(1, 0, single("Client Requests"));
   if (role !== "TASKER") {
     navigation.push(section("Order Queues", ShieldCheck, ["Review Queue", "QA Queue", "Client Actions"]));
   }
@@ -118,7 +119,7 @@ function groupedNavigation(role: Role): NavigationEntry[] {
       ]),
     );
     if (role === "SUPER_ADMIN") {
-      navigation.push(section("Administration", Settings2, ["Inquiries", "Client Requests", "Company Email", "Expert Applications", "Audit Log"]));
+      navigation.push(section("Administration", Settings2, ["Inquiries", "Company Email", "Expert Applications", "Audit Log"]));
     }
     // Team memos is a shared page, linked here without changing any role permissions.
     navigation.push({name:"Team Memos",href:"/portal/announcements",icon:MessageSquare});

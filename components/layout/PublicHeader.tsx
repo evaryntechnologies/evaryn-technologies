@@ -4,10 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import BrandLogo from "@/components/brand/BrandLogo";
 import { usePathname } from "next/navigation";
-import { ArrowRight, LockKeyhole, Menu, X } from "lucide-react";
+import { ArrowRight, UsersRound, Menu, X } from "lucide-react";
 import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
 
-const STAFF_LOGIN_URL = "/portal/login";
+const EXPERT_URL = "/experts";
 
 const links = [
   { label: "Services", href: "/services" },
@@ -42,9 +42,12 @@ export default function PublicHeader() {
           </nav>
 
           <div className="site-header__actions">
+            <Link href="/work-with-us" aria-label="Work With Us — client registration" className="site-btn site-btn--primary">
+              Work With Us <ArrowRight size={16} aria-hidden="true" />
+            </Link>
             <ThemeSwitcher />
-            <Link href={STAFF_LOGIN_URL} className="site-btn site-btn--ghost">
-              <LockKeyhole size={15} aria-hidden="true" /> Staff login
+            <Link href={EXPERT_URL} className="site-btn site-btn--ghost">
+              <UsersRound size={15} aria-hidden="true" /> Are You an Expert?
             </Link>
             <Link href="/contact" className="site-btn site-btn--primary">
               Request a quote <ArrowRight size={16} aria-hidden="true" />
@@ -72,8 +75,8 @@ export default function PublicHeader() {
             ))}
             <div className="site-header__sheet-actions">
               <ThemeSwitcher />
-              <Link href={STAFF_LOGIN_URL} onClick={closeMenu} className="site-btn site-btn--ghost">
-                <LockKeyhole size={15} aria-hidden="true" /> Staff login
+              <Link href={EXPERT_URL} onClick={closeMenu} className="site-btn site-btn--ghost">
+                <UsersRound size={15} aria-hidden="true" /> Are You an Expert?
               </Link>
               <Link href="/contact" onClick={closeMenu} className="site-btn site-btn--primary">
                 Request a quote
