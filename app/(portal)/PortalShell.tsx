@@ -145,11 +145,11 @@ function isNavigationGroup(item:MenuItem | NavigationGroup): item is NavigationG
 }
 const authRoutes = ["/portal/login","/portal/register","/portal/change-password","/portal/unauthorized"];
 
-export default function PortalShell({children,unreadNotifications=0}:{children:ReactNode;unreadNotifications?:number}) {
+export default function PortalShell({children,unreadNotifications=0,initialRole=null,initialFirstName=""}:{children:ReactNode;unreadNotifications?:number;initialRole?:Role|null;initialFirstName?:string}) {
   const pathname=usePathname();
   const params=useSearchParams();
-  const [role,setRole]=useState<Role|null>(null);
-  const [firstName,setFirstName]=useState("");
+  const [role,setRole]=useState<Role|null>(initialRole);
+  const [firstName,setFirstName]=useState(initialFirstName);
   const [open,setOpen]=useState(false);
   const [loading,setLoading]=useState(true);
   const [unread,setUnread]=useState(unreadNotifications);
