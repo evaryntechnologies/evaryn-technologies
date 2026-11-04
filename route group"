@@ -1,0 +1,125 @@
+ app/{portal => (portal)}/AdminActivityTracker.tsx       |  0
+ app/{portal => (portal)}/DashboardPage.tsx              |  0
+ app/{portal => (portal)}/PortalDashboardReturn.tsx      |  0
+ app/{portal/page.tsx => (portal)/PortalHome.tsx}        |  0
+ app/{portal => (portal)}/PortalHomeContent.tsx          |  0
+ app/{portal => (portal)}/PortalShell.tsx                |  0
+ .../PortalShellWithNotifications.tsx                    |  0
+ app/{portal => (portal)}/RoleLogout.tsx                 |  0
+ app/{portal => (portal)}/WorkTabs.tsx                   |  0
+ app/{portal => (portal)}/actions.ts                     |  0
+ app/{portal => (portal)}/admin/disputes/page.tsx        |  0
+ app/{portal => (portal)}/admin/disputes/page.tsx.save   |  0
+ app/{portal => (portal)}/admin/employees/page.tsx       |  0
+ app/{portal => (portal)}/admin/fines/actions.ts         |  0
+ app/{portal => (portal)}/admin/fines/page.tsx           |  0
+ .../admin/force-reassign/actions.ts                     |  0
+ app/{portal => (portal)}/admin/force-reassign/page.tsx  |  0
+ app/{portal => (portal)}/admin/operations/page.tsx      |  0
+ .../admin/order-reinstatement/actions.ts                |  0
+ .../admin/order-reinstatement/page.tsx                  |  0
+ app/{portal => (portal)}/admin/orders/page.tsx          |  0
+ app/{portal => (portal)}/admin/page.tsx                 |  0
+ .../admin/payment-approvals/actions.ts                  |  0
+ .../admin/payment-approvals/page.tsx                    |  0
+ app/{portal => (portal)}/admin/reassignments/actions.ts |  0
+ app/{portal => (portal)}/admin/reassignments/page.tsx   |  0
+ .../admin/recruitment/HiringControls.tsx                |  0
+ app/{portal => (portal)}/admin/recruitment/actions.ts   |  0
+ .../admin/recruitment/opening-actions.ts                |  0
+ app/{portal => (portal)}/admin/recruitment/page.tsx     |  0
+ app/{portal => (portal)}/admin/review-qa/page.tsx       |  0
+ app/{portal => (portal)}/admin/task-history/page.tsx    |  0
+ .../admin/task-management/TaskCostFields.tsx            |  0
+ .../admin/task-management/actions.ts                    |  0
+ .../admin/task-management/edit/[taskId]/page.tsx        |  0
+ .../admin/task-management/edit/actions.ts               |  0
+ .../admin/task-management/layout.tsx                    |  0
+ app/{portal => (portal)}/admin/task-management/page.tsx |  0
+ .../admin/task-management/publish-actions.ts            |  0
+ app/{portal => (portal)}/admin/task-summary/page.tsx    |  0
+ .../admin/time-tracker/LiveAdminTracker.tsx             |  0
+ app/{portal => (portal)}/admin/time-tracker/actions.ts  |  0
+ app/{portal => (portal)}/admin/time-tracker/page.tsx    |  0
+ app/{portal => (portal)}/announcements/actions.ts       |  0
+ app/{portal => (portal)}/announcements/page.tsx         |  0
+ .../attachments/[taskId]/extra/[fileId]/route.ts        |  0
+ app/{portal => (portal)}/attachments/[taskId]/route.ts  |  0
+ app/{portal => (portal)}/change-password/actions.ts     |  0
+ app/{portal => (portal)}/change-password/page.tsx       |  0
+ app/{portal => (portal)}/dashboard-ui.tsx               |  0
+ app/{portal => (portal)}/dashboards.tsx                 |  0
+ app/{portal => (portal)}/earnings/page.tsx              |  0
+ app/{portal => (portal)}/layout.tsx                     |  2 [32m+[m[31m-[m
+ app/{portal => (portal)}/login/page.tsx                 |  0
+ app/{portal => (portal)}/my-work/page.tsx               |  0
+ app/{portal => (portal)}/notifications/[id]/page.tsx    |  0
+ app/{portal => (portal)}/notifications/actions.ts       |  0
+ app/{portal => (portal)}/notifications/page.tsx         |  0
+ app/{portal => (portal)}/orders/page.tsx                |  0
+ .../payment-method/PaymentChangeFields.tsx              |  0
+ .../payment-method/PaymentRequestForm.tsx               |  0
+ app/{portal => (portal)}/payment-method/actions.ts      |  0
+ app/{portal => (portal)}/payment-method/page.tsx        |  0
+ .../payment-method/payment-utils.ts                     |  0
+ app/{portal => (portal)}/portal-shell.css               |  0
+ app/{portal => (portal)}/qa/client-actions/actions.ts   |  0
+ app/{portal => (portal)}/qa/client-actions/page.tsx     |  0
+ app/{portal => (portal)}/qa/layout.tsx                  |  0
+ app/{portal => (portal)}/qa/page.tsx                    |  0
+ app/{portal => (portal)}/qa/queue/actions.ts            |  0
+ app/{portal => (portal)}/qa/queue/page.tsx              |  0
+ app/{portal => (portal)}/qa/status/page.tsx             |  0
+ app/{portal => (portal)}/ratings/page.tsx               |  0
+ app/{portal => (portal)}/register/actions.ts            |  0
+ app/{portal => (portal)}/register/page.tsx              |  0
+ app/{portal => (portal)}/reviewer/layout.tsx            |  0
+ app/{portal => (portal)}/reviewer/page.tsx              |  0
+ app/{portal => (portal)}/reviewer/queue/actions.ts      |  0
+ app/{portal => (portal)}/reviewer/queue/page.tsx        |  0
+ app/{portal => (portal)}/super-admin/audit-log/page.tsx |  0
+ .../super-admin/categories/actions.ts                   |  0
+ .../super-admin/categories/page.tsx                     |  0
+ .../super-admin/employees/AddEmployeeForm.tsx           |  0
+ .../super-admin/employees/EmployeeAccessControls.tsx    |  0
+ .../super-admin/employees/access-actions.ts             |  0
+ .../super-admin/employees/actions.ts                    |  0
+ .../super-admin/employees/category-actions.ts           |  0
+ .../super-admin/employees/create-actions.ts             |  0
+ app/{portal => (portal)}/super-admin/employees/page.tsx |  0
+ .../super-admin/inquiries/actions.ts                    |  0
+ app/{portal => (portal)}/super-admin/inquiries/page.tsx |  0
+ app/{portal => (portal)}/super-admin/orders/page.tsx    |  0
+ app/{portal => (portal)}/super-admin/page.tsx           |  0
+ .../super-admin/payment-adjustments/actions.ts          |  0
+ .../super-admin/payment-adjustments/page.tsx            |  0
+ app/{portal => (portal)}/super-admin/payroll/actions.ts |  0
+ .../super-admin/payroll/admin-hours/page.tsx            |  0
+ .../super-admin/payroll/audit/page.tsx                  |  0
+ app/{portal => (portal)}/super-admin/payroll/page.tsx   |  0
+ .../super-admin/payroll/pay-team-actions.ts             |  0
+ .../super-admin/payroll/pay-team/PaymentCard.tsx        |  0
+ .../super-admin/payroll/pay-team/page.tsx               |  0
+ .../super-admin/recruitment/hire/HireApplicantForm.tsx  |  0
+ .../super-admin/recruitment/hire/actions.ts             |  0
+ .../super-admin/recruitment/hire/page.tsx               |  0
+ .../super-admin/recruitment/page.tsx                    |  0
+ app/{portal => (portal)}/task-hub/actions.ts            |  0
+ app/{portal => (portal)}/task-hub/page.tsx              |  0
+ app/{portal => (portal)}/tasker/layout.tsx              |  0
+ app/{portal => (portal)}/tasker/marketplace/page.tsx    |  0
+ app/{portal => (portal)}/tasker/my-tasks/page.tsx       |  0
+ app/{portal => (portal)}/tasker/page.tsx                |  0
+ .../tasker/tasks/[taskId]/actions.ts                    |  0
+ app/{portal => (portal)}/tasker/tasks/[taskId]/page.tsx |  0
+ .../tasks/[taskId]/discussion/actions.ts                |  0
+ .../tasks/[taskId]/discussion/page.tsx                  |  0
+ .../tasks/[taskId]/issues/actions.ts                    |  0
+ app/{portal => (portal)}/tasks/[taskId]/issues/page.tsx |  0
+ app/{portal => (portal)}/ui.tsx                         |  0
+ app/{portal => (portal)}/unauthorized/page.tsx          |  0
+ app/(portal)/workspace/page.tsx                         |  1 [32m+[m
+ app/login/page.tsx                                      | 17 [31m-----------------[m
+ next.config.ts                                          | 16 [32m++++++++++++++++[m
+ proxy.ts                                                | 13 [32m+++++++++[m[31m----[m
+ 124 files changed, 27 insertions(+), 22 deletions(-)

@@ -16,35 +16,45 @@
    Everything below is driven by these variables.
    ===================================================================== */
 :root {
+  /* brand */
+  --ev-cyan: #00b0f8;
+  --ev-blue: #0a47a8;
+  --ev-navy: #0b2447;
   --ev-amethyst: #7956af;
   --ev-amethyst-light: #b99be5;
-  --ev-cyan: #00b0f8;
-  --ev-blue: #0040a0;
-  --ev-navy: #002080;
+  --ev-gold: #d9a82e;
+  --ev-gold-light: #f0cf78;
 
-  /* LIGHT MODE: the light cyan-blue of the logo */
-  --ev-page: #d2effe;
-  --ev-page-2: #bde6fb;
-  --ev-surface: #f2fbff;
-  --ev-surface-2: #e0f4fe;
-  --ev-inset: #e4f6ff;
-  --ev-nav: #eaf8ff;
-  --ev-border: #97d6f3;
-  --ev-border-soft: #b9e3f6;
-  --ev-ink: #04285a;
-  --ev-muted: #2a5883;
-  --ev-accent-text: #0040a0;
-  --ev-primary: #0040a0;
-  --ev-primary-hover: #003282;
+  /* LIGHT MODE: airy blue-white, navy ink. Never pure white text, never pure black. */
+  --ev-page: #e9f3fb;
+  --ev-page-2: #dcebf8;
+  --ev-surface: #ffffff;
+  --ev-surface-2: #f1f8fe;
+  --ev-inset: #eaf4fc;
+  --ev-nav: #f4faff;
+  --ev-border: #b7d3ea;
+  --ev-border-soft: #cfe2f2;
+  --ev-ink: #0b2447;
+  --ev-muted: #3c5878;
+  --ev-accent-text: #0b4fb3;
+  --ev-amethyst-text: #5f3c9e;
+  --ev-gold-text: #8a6210;
+  --ev-primary: #0a47a8;
+  --ev-primary-hover: #083a8c;
   --ev-on-primary: #ffffff;
-  --ev-hero-from: #002a70;
-  --ev-hero-via: #0049a8;
-  --ev-hero-to: #005eae;
-  --ev-shadow: 0 16px 36px -18px rgba(0, 64, 160, 0.38);
+  --ev-gold-btn: #e2b13c;
+  --ev-gold-btn-hover: #efc25a;
+  --ev-on-gold: #1a1405;
+  --ev-hero-from: #0a2a63;
+  --ev-hero-via: #0a47a8;
+  --ev-hero-to: #3b2a86;
+  --ev-shadow: 0 18px 40px -22px rgba(10, 36, 90, 0.32);
+  --ev-shadow-lg: 0 34px 70px -34px rgba(10, 36, 90, 0.45);
 
-  /* atmosphere: glows, dot grid and the watermark artwork */
-  --ev-glow-a: rgba(0, 176, 248, 0.34);
-  --ev-glow-b: rgba(114, 75, 171, 0.16);
+  /* atmosphere: glows behind the honeycomb artwork */
+  --ev-glow-a: rgba(0, 176, 248, 0.26);
+  --ev-glow-b: rgba(121, 86, 175, 0.16);
+  --ev-glow-c: rgba(217, 168, 46, 0.10);
   --ev-mark-opacity: 1;
 
   --background: var(--ev-page);
@@ -54,28 +64,35 @@
 }
 
 .dark {
-  /* DARK MODE: the deep blue of the logo (never black) */
-  --ev-page: #00236a;
-  --ev-page-2: #001b56;
-  --ev-surface: #003285;
-  --ev-surface-2: #003f9c;
-  --ev-inset: #002a75;
-  --ev-nav: #001a50;
-  --ev-border: #1b63c4;
-  --ev-border-soft: #124fa5;
-  --ev-ink: #f2faff;
-  --ev-muted: #bbdcf6;
-  --ev-accent-text: #52caff;
+  /* DARK MODE: deep logo-navy (blue, never black). Soft ice text, never pure white. */
+  --ev-page: #08214d;
+  --ev-page-2: #061a3e;
+  --ev-surface: #0d2b60;
+  --ev-surface-2: #123572;
+  --ev-inset: #0a2554;
+  --ev-nav: #061a3e;
+  --ev-border: #2a5ca8;
+  --ev-border-soft: #1b4688;
+  --ev-ink: #eef5ff;
+  --ev-muted: #b6cce8;
+  --ev-accent-text: #5ccbff;
+  --ev-amethyst-text: #c4a9f5;
+  --ev-gold-text: #e7be5c;
   --ev-primary: #00b0f8;
   --ev-primary-hover: #38c4ff;
-  --ev-on-primary: #00224f;
-  --ev-hero-from: #001445;
-  --ev-hero-via: #00328a;
-  --ev-hero-to: #0a5cc0;
-  --ev-shadow: 0 16px 36px -18px rgba(0, 10, 40, 0.65);
+  --ev-on-primary: #04204a;
+  --ev-gold-btn: #e7be5c;
+  --ev-gold-btn-hover: #f3d27f;
+  --ev-on-gold: #1a1405;
+  --ev-hero-from: #051638;
+  --ev-hero-via: #0a2f73;
+  --ev-hero-to: #2a2170;
+  --ev-shadow: 0 18px 40px -22px rgba(0, 8, 32, 0.7);
+  --ev-shadow-lg: 0 34px 70px -34px rgba(0, 6, 28, 0.8);
 
-  --ev-glow-a: rgba(0, 176, 248, 0.2);
-  --ev-glow-b: rgba(114, 75, 171, 0.27);
+  --ev-glow-a: rgba(0, 176, 248, 0.18);
+  --ev-glow-b: rgba(121, 86, 175, 0.30);
+  --ev-glow-c: rgba(231, 190, 92, 0.07);
   --ev-mark-opacity: 1;
 }
 
@@ -502,7 +519,8 @@ body::before {
   pointer-events: none;
   background:
     radial-gradient(1100px 720px at 92% -12%, var(--ev-glow-a), transparent 62%),
-    radial-gradient(920px 720px at -8% 108%, var(--ev-glow-b), transparent 60%);
+    radial-gradient(920px 720px at -8% 108%, var(--ev-glow-b), transparent 60%),
+    radial-gradient(700px 520px at 55% 112%, var(--ev-glow-c), transparent 65%);
 }
 /* the Evaryn artwork: honeycomb, orbits and network, full-page and fixed */
 body::after {

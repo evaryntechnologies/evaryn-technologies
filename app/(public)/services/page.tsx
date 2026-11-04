@@ -85,7 +85,7 @@ export default function ServicesPage() {
       {serviceGroups.map((group, index) => (
         <section key={group.group} className={`site-section ${index % 2 === 1 ? "site-band" : ""}`}>
           <div className="site-container">
-            <SectionHead eyebrow={group.title} title={group.blurb} />
+            <SectionHead eyebrow="Service line" title={group.title} lead={group.blurb} />
             <div className="site-grid site-grid--3">
               {services
                 .filter((service) => service.group === group.group)

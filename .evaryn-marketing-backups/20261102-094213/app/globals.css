@@ -1,0 +1,773 @@
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* =====================================================================
+   EVARYN BRAND THEME
+   Brand colours sampled from the logo:
+     cyan  #00B0F8  (the EVARYN lettering)
+     blue  #0048A8  (the "A" mark and the tagline)
+   Light mode  -> airy cyan-blue surfaces (tints of the cyan)
+   Dark mode   -> deep logo-blue surfaces (shades of the blue, never black)
+   Everything below is driven by these variables.
+   ===================================================================== */
+:root {
+  --ev-cyan: #00b0f8;
+  --ev-blue: #0040a0;
+  --ev-navy: #002080;
+
+  /* LIGHT MODE: the light cyan-blue of the logo */
+  --ev-page: #d2effe;
+  --ev-page-2: #bde6fb;
+  --ev-surface: #f2fbff;
+  --ev-surface-2: #e0f4fe;
+  --ev-inset: #e4f6ff;
+  --ev-nav: #eaf8ff;
+  --ev-border: #97d6f3;
+  --ev-border-soft: #b9e3f6;
+  --ev-ink: #04285a;
+  --ev-muted: #2a5883;
+  --ev-accent-text: #0040a0;
+  --ev-primary: #0040a0;
+  --ev-primary-hover: #003282;
+  --ev-on-primary: #ffffff;
+  --ev-hero-from: #002a70;
+  --ev-hero-via: #0049a8;
+  --ev-hero-to: #005eae;
+  --ev-shadow: 0 16px 36px -18px rgba(0, 64, 160, 0.38);
+
+  /* atmosphere: glows, dot grid and the watermark artwork */
+  --ev-glow-a: rgba(0, 176, 248, 0.34);
+  --ev-glow-b: rgba(0, 64, 160, 0.16);
+  --ev-mark-opacity: 1;
+
+  --background: var(--ev-page);
+  --foreground: var(--ev-ink);
+  --surface: var(--ev-surface);
+  --border-color: var(--ev-border);
+}
+
+.dark {
+  /* DARK MODE: the deep blue of the logo (never black) */
+  --ev-page: #00236a;
+  --ev-page-2: #001b56;
+  --ev-surface: #003285;
+  --ev-surface-2: #003f9c;
+  --ev-inset: #002a75;
+  --ev-nav: #001a50;
+  --ev-border: #1b63c4;
+  --ev-border-soft: #124fa5;
+  --ev-ink: #f2faff;
+  --ev-muted: #bbdcf6;
+  --ev-accent-text: #52caff;
+  --ev-primary: #00b0f8;
+  --ev-primary-hover: #38c4ff;
+  --ev-on-primary: #00224f;
+  --ev-hero-from: #001445;
+  --ev-hero-via: #00328a;
+  --ev-hero-to: #0a5cc0;
+  --ev-shadow: 0 16px 36px -18px rgba(0, 10, 40, 0.65);
+
+  --ev-glow-a: rgba(0, 176, 248, 0.2);
+  --ev-glow-b: rgba(0, 64, 160, 0.55);
+  --ev-mark-opacity: 1;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html {
+  background-color: var(--ev-page);
+}
+body {
+  margin: 0;
+  background: transparent;
+  color: var(--ev-ink);
+  font-family:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ev-cyan);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--ev-cyan);
+  color: #00224f;
+}
+
+/* Unified typography */
+html,
+body,
+button,
+input,
+textarea,
+select,
+option {
+  font-family: "Inter", Arial, sans-serif !important;
+}
+html,
+body {
+  font-weight: 500;
+}
+button {
+  font-weight: 600;
+}
+h1,
+h2,
+h3 {
+  letter-spacing: -0.015em;
+}
+
+/* Responsive application layout */
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+main {
+  width: 100%;
+  min-width: 0;
+}
+main > div {
+  min-width: 0;
+}
+.grid > * {
+  min-width: 0;
+}
+img,
+svg {
+  max-width: 100%;
+}
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+@media (max-width: 640px) {
+  main {
+    overflow-wrap: anywhere;
+  }
+  main table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* =====================================================================
+   PUBLIC WEBSITE  (wrapper: .ev-public)
+   Pages use paired light / dark utilities, so we only swap the surface
+   colours for the brand tokens.
+   ===================================================================== */
+.ev-public .bg-white,
+.ev-public .bg-\[\#F3F7FC\],
+.ev-public .bg-slate-50 {
+  background-color: var(--ev-page);
+}
+.ev-public .bg-white {
+  background-color: var(--ev-surface);
+}
+.ev-public .bg-\[\#E7F6FF\] {
+  background-color: var(--ev-surface-2);
+}
+.ev-public .border-slate-200,
+.ev-public .border-slate-300,
+.ev-public .border-cyan-200 {
+  border-color: var(--ev-border);
+}
+.ev-public .from-\[\#E7F6FF\] {
+  --tw-gradient-from: var(--ev-surface-2);
+}
+.ev-public .to-\[\#D5E9FB\] {
+  --tw-gradient-to: var(--ev-page-2);
+}
+
+/* dark variants -> logo blue */
+.dark .ev-public .dark\:bg-\[\#071327\] {
+  background-color: var(--ev-page);
+}
+.dark .ev-public .dark\:bg-\[\#0C1B33\] {
+  background-color: var(--ev-page-2);
+}
+.dark .ev-public .dark\:bg-\[\#101F39\],
+.dark .ev-public .dark\:bg-\[\#101f39\] {
+  background-color: var(--ev-surface);
+}
+.dark .ev-public .dark\:bg-\[\#102D4D\],
+.dark .ev-public .dark\:bg-\[\#102442\],
+.dark .ev-public .dark\:bg-\[\#17365B\],
+.dark .ev-public .dark\:bg-\[\#18385D\],
+.dark .ev-public .dark\:bg-slate-800 {
+  background-color: var(--ev-surface-2);
+}
+.dark .ev-public .dark\:border-slate-700,
+.dark .ev-public .dark\:border-slate-800,
+.dark .ev-public .dark\:border-slate-600,
+.dark .ev-public .dark\:border-\[\#24496E\] {
+  border-color: var(--ev-border);
+}
+.dark .ev-public .dark\:from-\[\#102D4D\] {
+  --tw-gradient-from: var(--ev-surface-2);
+}
+.dark .ev-public .dark\:to-\[\#071327\] {
+  --tw-gradient-to: var(--ev-page);
+}
+.dark .ev-public .dark\:text-slate-300,
+.dark .ev-public .dark\:text-slate-200 {
+  color: var(--ev-muted);
+}
+
+/* Hero / call-to-action gradients (both modes) */
+.ev-public .from-\[\#071327\],
+.ev-portal .from-\[\#071327\] {
+  --tw-gradient-from: var(--ev-hero-from);
+}
+.ev-public .via-\[\#002B7F\],
+.ev-portal .via-\[\#002B7F\] {
+  --tw-gradient-via: var(--ev-hero-via);
+}
+.ev-public .to-\[\#002B7F\] {
+  --tw-gradient-to: var(--ev-hero-via);
+}
+.ev-public .to-\[\#0052CC\],
+.ev-portal .to-\[\#0052CC\] {
+  --tw-gradient-to: var(--ev-hero-to);
+}
+
+/* Brand buttons (solid) */
+.ev-public .bg-\[\#0052CC\],
+.ev-portal .bg-\[\#0052CC\],
+.ev-public .bg-\[\#00AEEF\],
+.ev-public .bg-\[\#00C6FF\] {
+  background-color: var(--ev-primary);
+  color: var(--ev-on-primary) !important;
+}
+.ev-public .hover\:bg-\[\#003F9E\]:hover,
+.ev-portal .hover\:bg-\[\#003F9E\]:hover,
+.ev-public .hover\:bg-\[\#00C6FF\]:hover,
+.ev-public .group:hover .group-hover\:bg-\[\#003F9E\],
+.ev-portal .group:hover .group-hover\:bg-\[\#003F9E\] {
+  background-color: var(--ev-primary-hover);
+}
+/* On dark hero bands the call-to-action stays cyan with navy text in both modes */
+.ev-public [class*="bg-gradient"] .bg-\[\#00AEEF\],
+.ev-public [class*="bg-gradient"] .bg-\[\#0052CC\] {
+  background-color: #00b0f8;
+  color: #00224f !important;
+}
+.ev-public [class*="bg-gradient"] .bg-\[\#00AEEF\]:hover,
+.ev-public [class*="bg-gradient"] .bg-\[\#0052CC\]:hover {
+  background-color: #38c4ff;
+}
+
+/* =====================================================================
+   STAFF PORTAL  (wrapper: .ev-portal)
+   The portal pages were written dark-first with hard-coded colours.
+   Those colours are remapped to the brand tokens for BOTH modes.
+   ===================================================================== */
+.ev-portal .bg-\[\#071327\] {
+  background-color: var(--ev-page);
+}
+.ev-portal .bg-\[\#071327\]\/60,
+.ev-portal .bg-\[\#071327\]\/70,
+.ev-portal .bg-\[\#071327\]\/95 {
+  background-color: var(--ev-inset);
+}
+.ev-portal .bg-\[\#101F39\] {
+  background-color: var(--ev-surface);
+  border-color: var(--ev-border-soft);
+  box-shadow: var(--ev-shadow);
+}
+.ev-portal .bg-\[\#0B1B34\],
+.ev-portal .bg-\[\#08162d\],
+.ev-portal .bg-\[\#102442\] {
+  background-color: var(--ev-nav);
+}
+.ev-portal .bg-\[\#002B7F\] {
+  background-color: var(--ev-hero-via);
+}
+.ev-portal .hover\:bg-\[\#15294B\]:hover {
+  background-color: var(--ev-surface-2);
+}
+.ev-portal main.text-white {
+  color: var(--ev-ink);
+}
+.ev-portal .border-white\/10,
+.ev-portal .border-white\/15,
+.ev-portal .border-white\/20 {
+  border-color: var(--ev-border-soft);
+}
+.ev-portal .text-slate-200,
+.ev-portal .text-slate-300,
+.ev-portal .text-slate-400 {
+  color: var(--ev-muted);
+}
+.ev-portal input,
+.ev-portal select,
+.ev-portal textarea {
+  color: var(--ev-ink);
+}
+.ev-portal input::placeholder,
+.ev-portal textarea::placeholder {
+  color: var(--ev-muted);
+  opacity: 0.75;
+}
+.ev-portal .bg-white\/5,
+.ev-portal .bg-white\/10 {
+  background-color: color-mix(in srgb, var(--ev-cyan) 10%, transparent);
+}
+
+/* Accent text: deep blue on light, bright cyan-blue on dark */
+.ev-portal .text-cyan-100,
+.ev-portal .text-cyan-200,
+.ev-portal .text-cyan-300,
+.ev-portal .text-cyan-400,
+.ev-portal .text-cyan-600 {
+  color: var(--ev-accent-text);
+}
+
+/* Light mode only: status colours need darker shades on pale surfaces */
+html:not(.dark) .ev-portal .text-emerald-200,
+html:not(.dark) .ev-portal .text-emerald-300 {
+  color: #047857;
+}
+html:not(.dark) .ev-portal .text-amber-200,
+html:not(.dark) .ev-portal .text-amber-300 {
+  color: #92400e;
+}
+html:not(.dark) .ev-portal .text-red-200 {
+  color: #b91c1c;
+}
+html:not(.dark) .ev-portal .bg-amber-950\/30 {
+  background-color: #fef3c7;
+}
+html:not(.dark) .ev-portal .bg-emerald-950\/30 {
+  background-color: #d1fae5;
+}
+
+/* =====================================================================
+   PORTAL DESIGN LAYER
+   Applies one consistent look to every staff page, including the ones
+   that still use their original markup: forms, tables, headings, links.
+   ===================================================================== */
+.ev-portal main h1 {
+  letter-spacing: -0.02em;
+  font-weight: 800;
+}
+.ev-portal main h2 {
+  letter-spacing: -0.01em;
+}
+.ev-portal main > div:only-child {
+  max-width: none;
+  margin-inline: 0;
+}
+
+/* form controls */
+.ev-portal input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="file"]),
+.ev-portal select,
+.ev-portal textarea {
+  border: 1px solid var(--ev-border);
+  border-radius: 0.75rem;
+  background-color: var(--ev-surface);
+  color: var(--ev-ink);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.ev-portal input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="file"]):focus,
+.ev-portal select:focus,
+.ev-portal textarea:focus {
+  outline: none;
+  border-color: var(--ev-cyan);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ev-cyan) 28%, transparent);
+}
+.ev-portal input[type="checkbox"],
+.ev-portal input[type="radio"] {
+  accent-color: var(--ev-primary);
+}
+.ev-portal input[type="file"] {
+  color: var(--ev-muted);
+}
+.ev-portal input[type="file"]::file-selector-button {
+  margin-right: 0.75rem;
+  border: 0;
+  border-radius: 0.6rem;
+  background: var(--ev-primary);
+  color: var(--ev-on-primary);
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ev-portal option {
+  background: var(--ev-surface);
+  color: var(--ev-ink);
+}
+
+/* buttons: consistent shape and feedback */
+.ev-portal main button:not(:disabled) {
+  cursor: pointer;
+}
+.ev-portal main button {
+  transition: background-color 0.15s, transform 0.1s, opacity 0.15s;
+}
+.ev-portal main button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* inline links */
+.ev-portal main a.underline {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  font-weight: 600;
+}
+
+/* tables */
+.ev-portal main table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ev-portal main th {
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ev-muted);
+}
+.ev-portal main th,
+.ev-portal main td {
+  padding: 0.8rem 0.9rem;
+  border-bottom: 1px solid var(--ev-border-soft);
+}
+.ev-portal main tbody tr:hover {
+  background: var(--ev-inset);
+}
+
+/* disclosure rows */
+.ev-portal summary {
+  cursor: pointer;
+}
+
+/* soft card lift on the original card markup */
+.ev-portal article.bg-\[\#101F39\] {
+  transition: transform 0.15s, border-color 0.15s;
+}
+.ev-portal article.bg-\[\#101F39\]:hover {
+  border-color: var(--ev-cyan);
+}
+
+/* thin, themed scrollbars */
+.ev-portal * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ev-border) transparent;
+}
+
+/* =====================================================================
+   BRAND ATMOSPHERE
+   One fixed backdrop behind every page, public and portal:
+   cyan glow + deep-blue glow + fine dot grid + the Evaryn hexagon-E watermark.
+   Pages keep their own cards and bands on top; only page-level backgrounds are made
+   transparent so the artwork shows through the gutters and hero edges.
+   ===================================================================== */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(1100px 720px at 92% -12%, var(--ev-glow-a), transparent 62%),
+    radial-gradient(920px 720px at -8% 108%, var(--ev-glow-b), transparent 60%);
+}
+/* the Evaryn artwork: honeycomb, orbits and network, full-page and fixed */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: url("/watermarks/evaryn-watermark.svg") center / cover no-repeat;
+  opacity: var(--ev-mark-opacity);
+}
+.dark body::after {
+  background-image: url("/watermarks/evaryn-watermark-dark.svg");
+}
+
+/* page-level backgrounds become transparent so the backdrop shows */
+.ev-portal main,
+.ev-public main,
+.ev-portal .ev-workspace {
+  background: transparent !important;
+}
+/* full-width public bands: frosted, so the artwork whispers through them */
+.ev-public section:where([class*="bg-white"], [class*="dark:bg-[#0C1B33]"], [class*="dark:bg-[#101F39]"]):not([class*="bg-gradient"]) {
+  background-color: color-mix(in srgb, var(--ev-surface) 74%, transparent) !important;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+/* =====================================================================
+   POLISH: type, motion, glow
+   ===================================================================== */
+h1,
+h2 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+::selection {
+  background: var(--ev-cyan);
+  color: #00224f;
+}
+html {
+  scrollbar-color: var(--ev-border) transparent;
+}
+
+/* ---- hero art: orbit rings on every deep-blue gradient hero (public + portal) ---- */
+.ev-public section[class*="bg-gradient"],
+.ev-portal .ev-hero {
+  position: relative;
+  isolation: isolate;
+}
+.ev-public section[class*="bg-gradient"]::after,
+.ev-portal .ev-hero::after {
+  content: "";
+  position: absolute;
+  right: -14%;
+  top: 50%;
+  z-index: -1;
+  width: min(62vw, 720px);
+  aspect-ratio: 1;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    radial-gradient(circle, transparent 0 63%, rgba(255, 255, 255, 0.17) 63.2%, transparent 63.8%),
+    radial-gradient(circle, transparent 0 47%, rgba(82, 202, 255, 0.38) 47.2%, transparent 47.9%),
+    radial-gradient(circle, transparent 0 31%, rgba(255, 255, 255, 0.12) 31.2%, transparent 31.8%),
+    radial-gradient(circle, rgba(0, 176, 248, 0.28), transparent 64%);
+  animation: ev-float 16s ease-in-out infinite;
+}
+.ev-portal .ev-hero::after {
+  width: min(70vw, 460px);
+  right: -8%;
+}
+@keyframes ev-float {
+  0%,
+  100% {
+    transform: translateY(-50%) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-53%) rotate(6deg) scale(1.03);
+  }
+}
+
+/* gradient headline accent in the heroes */
+.ev-public section[class*="bg-gradient"] h1 span[class*="text-[#00C6FF]"] {
+  background: linear-gradient(90deg, #8fe6ff, #38c4ff 45%, #a8ecff 75%, #38c4ff);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: ev-sheen 7s ease-in-out infinite;
+}
+@keyframes ev-sheen {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* ---- entrance motion ---- */
+@keyframes ev-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ev-public main > section,
+  .ev-public main > div > section {
+    animation: ev-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+  .ev-portal main > div > *,
+  .ev-portal main > section,
+  .ev-portal main > header {
+    animation: ev-rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+  .ev-portal main > div > *:nth-child(2) { animation-delay: 0.05s; }
+  .ev-portal main > div > *:nth-child(3) { animation-delay: 0.1s; }
+  .ev-portal main > div > *:nth-child(4) { animation-delay: 0.15s; }
+  .ev-portal main > div > *:nth-child(5) { animation-delay: 0.2s; }
+  .ev-portal main > div > *:nth-child(n + 6) { animation-delay: 0.25s; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ev-public section[class*="bg-gradient"]::after,
+  .ev-portal .ev-hero::after,
+  .ev-public section[class*="bg-gradient"] h1 span[class*="text-[#00C6FF]"] {
+    animation: none;
+  }
+}
+
+/* ---- buttons: lift and glow ---- */
+.ev-public a.bg-\[\#0052CC\],
+.ev-public a.bg-\[\#00AEEF\],
+.ev-public button.bg-\[\#0052CC\],
+.ev-portal a.bg-\[\#0052CC\],
+.ev-portal button.bg-\[\#0052CC\] {
+  box-shadow: 0 12px 26px -14px color-mix(in srgb, var(--ev-primary) 85%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.ev-public a.bg-\[\#0052CC\]:hover,
+.ev-public a.bg-\[\#00AEEF\]:hover,
+.ev-public button.bg-\[\#0052CC\]:hover,
+.ev-portal a.bg-\[\#0052CC\]:hover,
+.ev-portal button.bg-\[\#0052CC\]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 32px -14px color-mix(in srgb, var(--ev-primary) 95%, transparent);
+}
+
+/* ---- cards: glass edge, glow on hover (public service/value cards and portal cards) ---- */
+.ev-public article,
+.ev-public a.group,
+.ev-portal article {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.ev-public article:hover,
+.ev-public a.group:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 44px -22px color-mix(in srgb, var(--ev-cyan) 65%, transparent);
+  border-color: var(--ev-cyan);
+}
+
+/* ---- header: crisp glass and a cyan-to-blue underline ---- */
+.ev-public header.sticky {
+  border-bottom-width: 0;
+  box-shadow: var(--ev-shadow);
+}
+.ev-public header.sticky::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--ev-blue), var(--ev-cyan) 55%, var(--ev-blue));
+}
+
+/* =====================================================================
+   FULL-WIDTH LAYOUT
+   Content, menus and headers use the whole display. Side gutters grow smoothly with the screen
+   (24px on phones up to 80px on very wide monitors) instead of squeezing everything into the middle.
+   ===================================================================== */
+.ev-public section,
+.ev-public footer > div {
+  padding-inline: clamp(1.5rem, 4vw, 5rem);
+}
+.ev-public header > div {
+  padding-inline: clamp(1.25rem, 3.4vw, 4rem);
+}
+.ev-portal main {
+  padding-inline: clamp(1rem, 3vw, 3.5rem);
+}
+
+/* =====================================================================
+   READABILITY SAFETY NET
+   Many portal pages were written for a dark surface (white text everywhere). On the light theme
+   those colours would be invisible, so every light-mode text colour that depends on a dark
+   surface is remapped to a readable equivalent. Dark mode keeps its own light-on-deep-blue text.
+   Buttons, banners and hero bands that really are dark keep their white text.
+   ===================================================================== */
+html:not(.dark) .ev-portal :is(.text-white, [class*="text-white/"]):not(main):not([class*="bg-"]):not(:is(.ev-hero, [class*="bg-gradient"], [class*="bg-[#0052CC]"], [class*="bg-[#002B7F]"], [class*="bg-emerald-"], [class*="bg-red-"], [class*="bg-rose-"], [class*="bg-blue-"], [class*="bg-cyan-"], [class*="bg-violet-"], [class*="bg-amber-"]) *) {
+  color: var(--ev-ink);
+}
+html:not(.dark) .ev-portal [class*="text-white/"]:not([class*="bg-"]):not(:is(.ev-hero, [class*="bg-gradient"], [class*="bg-[#0052CC]"], [class*="bg-[#002B7F]"]) *) {
+  color: var(--ev-muted);
+}
+.ev-portal .text-slate-500 {
+  color: var(--ev-muted);
+}
+html:not(.dark) .ev-public .text-slate-500 {
+  color: var(--ev-muted);
+}
+html:not(.dark) .ev-public .placeholder\:text-slate-500::placeholder {
+  color: var(--ev-muted);
+  opacity: 0.85;
+}
+
+/* status colours: deeper shades on the pale light surfaces */
+html:not(.dark) .ev-portal :is(.text-amber-50, .text-amber-100, .text-amber-200, .text-amber-300) {
+  color: #92400e;
+}
+html:not(.dark) .ev-portal :is(.text-amber-500, .text-amber-600) {
+  color: #b45309;
+}
+html:not(.dark) .ev-portal :is(.text-rose-200, .text-rose-300, .text-rose-500) {
+  color: #be123c;
+}
+html:not(.dark) .ev-portal :is(.text-sky-200, .text-sky-300) {
+  color: #0369a1;
+}
+html:not(.dark) .ev-portal .text-cyan-500 {
+  color: #0e7490;
+}
+html:not(.dark) .ev-portal .text-emerald-500 {
+  color: #047857;
+}
+html:not(.dark) .ev-portal :is(.bg-amber-950, .bg-amber-950\/30, .bg-amber-950\/40) {
+  background-color: #fef3c7;
+}
+html:not(.dark) .ev-portal :is(.bg-emerald-950, .bg-emerald-950\/30) {
+  background-color: #d1fae5;
+}
+html:not(.dark) .ev-portal :is(.bg-red-950\/30, .bg-red-950\/40, .bg-rose-950) {
+  background-color: #fee2e2;
+}
+
+/* solid action buttons that only set a background: always white text (all pass 4.5:1) */
+.ev-portal :is(.bg-blue-600, .bg-blue-700, .bg-amber-700, .bg-emerald-600, .bg-emerald-700, .bg-red-700, .bg-red-800, .bg-rose-700, .bg-violet-700) {
+  color: #ffffff;
+}
+/* icons and spans inside primary buttons follow the button's text colour in both modes */
+:is(.ev-public, .ev-portal) .bg-\[\#0052CC\] :is(span, svg, b, strong, i) {
+  color: inherit !important;
+}
+/* required marks and errors */
+html:not(.dark) :is(.ev-public, .ev-portal) .text-red-600 {
+  color: #b91c1c;
+}
+/* safeguard: dark-on-light status text without its own dark variant becomes light on deep blue */
+.dark .ev-portal :is(.text-red-600, .text-red-700, .text-rose-600):not([class*="bg-"]) {
+  color: #fca5a5;
+}

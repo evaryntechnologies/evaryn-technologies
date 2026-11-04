@@ -87,3 +87,13 @@
 .ev-portal .ev-nav-active:hover { background: linear-gradient(112deg, #7753b8, #307db8) !important; }
 .ev-portal .ev-avatar { background: linear-gradient(135deg, #7652b5, #278fbf); }
 .ev-portal .ev-nav-group-active { box-shadow: inset 3px 0 0 #9b78d4; }
+
+/* v3 polish: brand gradient hairline on the top bar, gold marker on the active link,
+   consistent with the public website. All colours come from the tokens in globals.css. */
+.ev-portal .ev-topbar { background: color-mix(in srgb, var(--ev-nav) 88%, transparent); -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%); border-bottom: 1px solid var(--ev-border-soft); }
+.ev-portal .ev-topbar::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: linear-gradient(90deg, var(--ev-cyan), var(--ev-amethyst) 55%, var(--ev-gold)); }
+.ev-portal .ev-nav-active { position: relative; }
+.ev-portal .ev-nav-active::after { content: ""; position: absolute; right: 10px; top: 50%; width: 6px; height: 6px; border-radius: 2px; background: var(--ev-gold-light); transform: translateY(-50%) rotate(45deg); }
+.ev-portal .ev-sidebar { border-right-color: var(--ev-border-soft); }
+.ev-portal .ev-nav-link:hover { background: color-mix(in srgb, var(--ev-primary) 9%, transparent); }
+.ev-portal .ev-user, .ev-portal .ev-top-title, .ev-portal .ev-search { box-shadow: 0 1px 0 rgba(255,255,255,.35) inset; }

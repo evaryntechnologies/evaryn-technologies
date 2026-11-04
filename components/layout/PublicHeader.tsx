@@ -6,25 +6,26 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import BrandLogo from "@/components/brand/BrandLogo";
 import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
 
-// Home is the Evaryn logo; contact sits between Clients and Experts.
+// Home is the Evaryn logo. Buyers look for: what you do, proof, who you are, how to start.
 const navigation = [
-  { type: "link", label: "About Us", href: "/about" },
-  { type: "link", label: "Work With Us", href: "/work-with-us" },
   { type: "link", label: "Services", href: "/services" },
-  { type: "link", label: "Past Projects", href: "/projects" },
-  { type: "link", label: "Feedback & Reviews", href: "/reviews" },
-  { type: "menu", label: "For Clients", links: [
-    { label: "Client signup", href: "/clients/register" },
-    { label: "Client login", href: "/clients/login" },
-    { label: "Client services", href: "/services" },
-    { label: "Investors", href: "/work-with-us#investors" },
+  { type: "menu", label: "Our Work", links: [
+    { label: "Past projects", href: "/projects" },
+    { label: "Feedback & reviews", href: "/reviews" },
   ] },
-  { type: "link", label: "Contact Us", href: "/contact" },
+  { type: "link", label: "About", href: "/about" },
+  { type: "link", label: "Partners & Investors", href: "/work-with-us" },
+  { type: "menu", label: "For Clients", links: [
+    { label: "Create a client account", href: "/clients/register" },
+    { label: "Client login", href: "/clients/login" },
+    { label: "Request a custom service", href: "/custom-request" },
+  ] },
   { type: "menu", label: "For Experts", links: [
     { label: "Apply as an expert", href: "/experts/register" },
     { label: "Expert login", href: "/experts/login" },
     { label: "Expert opportunities", href: "/careers" },
   ] },
+  { type: "link", label: "Contact", href: "/contact" },
 ] as const;
 
 export default function PublicHeader() {
@@ -70,7 +71,7 @@ export default function PublicHeader() {
               </div>}
             </div>)}
       </nav>
-      <div className="ev2-header-actions"><ThemeSwitcher /></div>
+      <div className="ev2-header-actions"><ThemeSwitcher /><Link href="/contact#consultation" className="ev2-primary ev2-header-cta" onClick={closeAll}>Book a consultation</Link></div>
       <button className="ev2-mobile-toggle" type="button" aria-expanded={mobileOpen} aria-controls="ev2-mobile-menu" aria-label={mobileOpen ? "Close navigation" : "Open navigation"} onClick={() => { setActiveMenu(null); setMobileOpen(!mobileOpen); }}>
         {mobileOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
       </button>
@@ -81,6 +82,7 @@ export default function PublicHeader() {
         : <div key={item.label} className="ev2-mobile-group"><strong>{item.label}</strong>
             {item.links.map(link => <Link key={link.href} href={link.href} onClick={closeAll}>{link.label}</Link>)}
           </div>)}
+      <Link href="/contact#consultation" className="ev2-primary ev2-mobile-cta" onClick={closeAll}>Book a consultation</Link>
     </nav>}
   </header>;
 }

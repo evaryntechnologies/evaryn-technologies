@@ -23,11 +23,14 @@ const existingPages: Record<string, string> = {
 async function activeExpertise() {
   // Categories must be resolved at request time, not frozen into a build.
   await connection();
-  const categories = await prisma.taskCategory.findMany({
-    where: { active: true },
-    select: { id: true, name: true },
-    orderBy: { name: "asc" },
-  });
+  // If the database is briefly unreachable the public page must still render without the extra list.
+  const categories = await prisma.taskCategory
+    .findMany({
+      where: { active: true },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    })
+    .catch(() => [] as { id: string; name: string }[]);
   return categories.map((category) => {
     const slug = existingPages[category.name.trim().toLowerCase()];
     const detail = slug ? services.find((service) => service.slug === slug) : undefined;

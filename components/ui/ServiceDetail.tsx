@@ -173,7 +173,7 @@ export default function ServiceDetail({ service }: { service: Service }) {
       <section className="site-section">
         <div className="site-container">
           <CtaBand
-            title={`Ready to talk about ${service.title.toLowerCase()}?`}
+            title={`Ready to talk about ${service.title}?`}
             text="Send us your requirements or a sample of your data or brief. We will come back with a scoped quote and a proposed pilot."
             primary={{ label: "Request a quote", href: quote }}
             secondary={{ label: "See how we work", href: "/how-we-work" }}
