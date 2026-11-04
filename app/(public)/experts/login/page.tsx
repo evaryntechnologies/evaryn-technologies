@@ -1,3 +1,4 @@
+import GoogleAuthLink from "@/components/auth/GoogleAuthLink";
 import Link from "next/link";
 import BrandLogo from "@/components/brand/BrandLogo";
 import { signInExpert } from "../actions";
@@ -11,7 +12,7 @@ export default async function ExpertLogin({ searchParams }: { searchParams: Prom
       <h1>Expert Login</h1>
       <p className="ev2-expert-desc">Return to your workspace or check the status of your expert application.</p>
       {params.error && <p className="ev2-expert-error" role="alert">We could not sign you in. Check your email and password, then try again.</p>}
-      <form action={signInExpert} className="ev2-expert-form">
+      <GoogleAuthLink area="experts" intent="login" /><form action={signInExpert} className="ev2-expert-form">
         <label>Email address<input type="email" name="email" autoComplete="username" required /></label>
         <label>Password<input type="password" name="password" autoComplete="current-password" required /></label>
         <button type="submit" className="ev2-primary">Log In</button>
