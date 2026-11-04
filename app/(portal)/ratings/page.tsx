@@ -35,7 +35,7 @@ async function RatingsContent() {
   ] };
   const orders = await prisma.workTask.findMany({
     where: participantWhere,
-    select: {id:true,title:true,publicTaskId:true,clientRating:true,clientPaidPercent:true,clientActionAt:true},
+    select: {id:true,title:true,publicTaskId:true,clientRating:true,clientPaidPercent:true,clientActionAt:true,clientDelivery:{select:{feedback:true}}},
     orderBy:{updatedAt:"desc"},
   });
   const rated = orders.filter(o => o.clientRating !== null);
@@ -72,7 +72,7 @@ async function RatingsContent() {
       <div className="hidden gap-4 border-b border-cyan-500/20 bg-cyan-200/65 px-4 py-3 text-xs font-bold uppercase tracking-wide dark:bg-[#163B66] md:grid md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)]"><span>Order Details</span><span>Order Rating</span><span>% of Completion</span></div>
       {orders.map(o => <article key={o.id} className="grid min-w-0 gap-4 border-b border-cyan-500/20 px-4 py-3 last:border-b-0 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)] md:items-center">
         <div className="min-w-0"><p className="break-words text-sm font-semibold">{o.title}</p><p className="text-xs opacity-70">{o.publicTaskId ?? "Order"}</p></div>
-        <div><p className="mb-1 text-[11px] font-semibold uppercase opacity-60 md:hidden">Order Rating</p><Stars rating={o.clientRating}/></div>
+        <div><p className="mb-1 text-[11px] font-semibold uppercase opacity-60 md:hidden">Order Rating</p><Stars rating={o.clientRating}/>{o.clientDelivery?.feedback&&<p className="mt-2 whitespace-pre-wrap text-xs opacity-80">{o.clientDelivery.feedback}</p>}</div>
         <div><p className="mb-1 text-[11px] font-semibold uppercase opacity-60 md:hidden">% of Completion</p><PaymentBar percent={o.clientPaidPercent === null ? null : Number(o.clientPaidPercent)}/></div>
       </article>)}
       {orders.length === 0 && <p className="p-6 text-sm opacity-75">No orders in which you participated have been recorded yet.</p>}

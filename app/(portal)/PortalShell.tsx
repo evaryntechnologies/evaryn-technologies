@@ -43,6 +43,8 @@ function roleMenu(role:Role): MenuItem[] {
     links.push({name:"QA Queue",href:"/portal/qa/queue",icon:ShieldCheck});
   if (role === "QA" || role === "SUPER_ADMIN")
     links.push({name:"Client Actions",href:"/portal/qa/client-actions",icon:ClipboardList});
+  if (["QA","ADMIN","SUPER_ADMIN"].includes(role))
+    links.push({name:"Client Deliveries",href:"/portal/client-delivery",icon:ClipboardList});
   if (role === "QA")
     links.push({name:"Fines",href:"/portal/admin/fines",icon:Settings2});
   if (role === "QA")
@@ -102,12 +104,12 @@ function groupedNavigation(role: Role): NavigationEntry[] {
     section("My Orders", ClipboardList, ["Task Hub", "In Progress", "In Revision", "Completed", "Canceled Orders"]),
   ];
   if (role !== "TASKER") {
-    navigation.push(section("Order Queues", ShieldCheck, ["Review Queue", "QA Queue", "Client Actions"]));
+    navigation.push(section("Order Queues", ShieldCheck, ["Review Queue", "QA Queue", "Client Actions", "Client Deliveries"]));
   }
   if (role === "SUPER_ADMIN" || role === "ADMIN") {
     navigation.push(
       section("Operations Hub", Compass, [
-        "Operations Hub", "Task Management", "Task Summary", "Force Reassign",
+        "Operations Hub", "Client Deliveries", "Task Management", "Task Summary", "Force Reassign",
         "Reassignment Requests", "Categories", "Review & QA Oversight",
         "Fines & Penalties", "Disputes", "Ratings & Rubrics",
       ]),

@@ -910,3 +910,9 @@ html:not(.dark) .ev-portal [role="alert"][class*="amber"] { background: #fdf0c8;
 
 /* Selection + links */
 .ev-portal main a:not([class]) { color: var(--ev-accent-text); font-weight: 600; }
+
+/* Evaryn client workspace — theme-aware cyan, deep navy and royal amethyst. */
+.ev-client-panel{border:1px solid var(--ev-border);border-radius:1.15rem;background:color-mix(in srgb,var(--ev-surface) 85%,transparent);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);box-shadow:0 12px 32px -25px rgba(9,35,77,.5);color:var(--ev-ink)}
+.ev-client-header{background:linear-gradient(115deg,color-mix(in srgb,var(--ev-page-2) 85%,transparent),color-mix(in srgb,#7956af 11%,var(--ev-surface) 89%))}
+.ev-client-hero{background:radial-gradient(circle at 90% 12%,color-mix(in srgb,#7956af 20%,transparent),transparent 43%),linear-gradient(120deg,color-mix(in srgb,var(--ev-page-2) 72%,var(--ev-surface)),color-mix(in srgb,var(--ev-surface) 82%,transparent))}
+[data-theme="dark"] .ev-client-hero,.dark .ev-client-hero{background:radial-gradient(circle at 90% 12%,rgba(121,86,175,.23),transparent 43%),linear-gradient(120deg,#00236a,#003f88)}

@@ -1,0 +1,13 @@
+import {notFound} from "next/navigation";
+import Link from "next/link";
+import {prisma} from "@/lib/db/prisma";
+import {ensureClientProfile} from "../../../clients/actions";
+import {rateDelivery} from "./actions";
+export default async function DeliveryDetail({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{rated?:string}>}){
+ const client=await ensureClientProfile();const {id}=await params;const sp=await searchParams;
+ const d=await prisma.clientDelivery.findFirst({where:{id,clientId:client.id},include:{task:{select:{title:true,publicTaskId:true,description:true}}}});
+ if(!d)notFound();
+ return <main className="mx-auto max-w-3xl space-y-5"><Link href="/client-portal/delivered" className="text-sm font-semibold text-[var(--ev-accent-text)] underline">← Delivered orders</Link><div className="ev-client-panel p-7"><p className="text-xs uppercase tracking-widest text-[var(--ev-accent-text)]">QA-approved delivery</p><h1 className="mt-3 text-3xl font-bold">{d.task.title}</h1><p className="mt-2 text-sm text-[var(--ev-muted)]">{d.task.publicTaskId??"Order"} · Delivered {d.publishedAt.toLocaleDateString("en-GB")}</p><p className="mt-4 text-sm text-[var(--ev-muted)]">{d.task.description}</p><a className="mt-6 inline-flex rounded-xl bg-[var(--ev-primary)] px-5 py-3 font-bold text-[var(--ev-on-primary)]" href={`/api/client-deliveries/${d.id}/download`}>Download {d.fileName}</a></div>
+ <section className="ev-client-panel p-7"><h2 className="text-xl font-semibold">Your feedback</h2>{sp.rated&&<p role="status" className="mt-2 text-sm text-[var(--ev-accent-text)]">Thank you. Your rating has been shared with the team.</p>}
+ {d.rating!==null?<div className="mt-4"><p className="font-semibold text-[var(--ev-accent-text)]">{d.rating} / 5 stars</p>{d.feedback&&<p className="mt-2 whitespace-pre-wrap text-sm">{d.feedback}</p>}</div>:<form action={rateDelivery} className="mt-5 space-y-4"><input type="hidden" name="id" value={d.id}/><fieldset><legend className="mb-2 text-sm font-semibold">Rate your order</legend><div className="flex flex-wrap gap-3">{[1,2,3,4,5].map(n=><label key={n} className="flex items-center gap-1 text-sm"><input type="radio" name="rating" required value={n}/> {n} ★</label>)}</div></fieldset><label className="block text-sm font-semibold">Comments (optional)<textarea name="feedback" rows={4} maxLength={2000} className="mt-2 w-full rounded-xl border border-[var(--ev-border)] bg-[var(--ev-surface)] p-3 text-[var(--ev-ink)]" placeholder="Tell us about the quality of your delivery"/></label><button className="rounded-xl bg-[var(--ev-primary)] px-5 py-3 font-bold text-[var(--ev-on-primary)]">Submit rating</button></form>}</section></main>;
+}
