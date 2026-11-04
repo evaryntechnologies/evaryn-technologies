@@ -224,8 +224,7 @@ export function Metric({
 }) {
   return (
     <div
-      className={`${card} border-l-4 p-5`}
-      style={{ borderLeftColor: accent ?? "var(--ev-cyan)" }}
+      className={`${card} p-5`}
     >
       <p className="text-sm font-semibold text-[var(--ev-muted)]">{label}</p>
       <p className="mt-2 text-3xl font-bold tabular-nums">{value}</p>

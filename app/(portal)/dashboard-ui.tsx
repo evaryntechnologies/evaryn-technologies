@@ -79,12 +79,7 @@ export function Hero({
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 bg-[url('/watermarks/evaryn-watermark.svg')] bg-[position:right_-40px_center] bg-no-repeat opacity-[0.12]"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute inset-y-0 left-0 w-1.5"
-        style={{ background: accent }}
+        className="pointer-events-none absolute inset-0 -z-10 bg-[url('/watermarks/evaryn-watermark-dark.svg')] bg-cover bg-[position:right_center] bg-no-repeat opacity-[0.4]"
       />
       <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <div>
@@ -168,7 +163,7 @@ export function HeroButton({
       href={href}
       className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition ${
         primary
-          ? "bg-white text-[#003a8a] hover:bg-[#d6f1fe]"
+          ? "bg-gradient-to-b from-[#f0cf78] to-[#e2b13c] text-[#1a1405] hover:from-[#f7dd95] hover:to-[#efc25a]"
           : "border border-white/45 text-white hover:bg-white/15"
       }`}
     >
@@ -226,8 +221,8 @@ export function StatCard({
       )}
     </>
   );
-  const cls = `${card} block border-l-4 p-5 transition`;
-  const style = { borderLeftColor: tones[tone] };
+  const cls = `${card} block p-5 transition`;
+  const style = undefined;
   return href ? (
     <Link
       href={href}

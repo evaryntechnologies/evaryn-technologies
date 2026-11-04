@@ -97,3 +97,10 @@
 .ev-portal .ev-sidebar { border-right-color: var(--ev-border-soft); }
 .ev-portal .ev-nav-link:hover { background: color-mix(in srgb, var(--ev-primary) 9%, transparent); }
 .ev-portal .ev-user, .ev-portal .ev-top-title, .ev-portal .ev-search { box-shadow: 0 1px 0 rgba(255,255,255,.35) inset; }
+
+/* Dashboard banner: always a deep gradient, so its text must always be light (global heading colours must not leak in) */
+.ev-portal .ev-hero h1, .ev-portal .ev-hero h2 { color: #f1f6ff; }
+.ev-portal .ev-hero p { color: #d3e0f3; }
+.ev-portal .ev-hero { color: #f1f6ff; }
+.ev-portal .ev-hero a:not([class*="from-"]) { color: #f1f6ff; }
+.ev-portal .ev-hero a[class*="from-"] { color: #1a1405; }
