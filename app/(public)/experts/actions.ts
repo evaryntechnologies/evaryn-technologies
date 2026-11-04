@@ -3,17 +3,62 @@ import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {prisma} from "@/lib/db/prisma";
 
-export async function registerExpert(form:FormData){
- const fullName=String(form.get("fullName")??"").trim();
- const email=String(form.get("email")??"").trim().toLowerCase();
- const password=String(form.get("password")??"");
- if(fullName.length<2||fullName.length>150||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||password.length<12||password.length>128||password!==String(form.get("confirm")??""))redirect("/experts/register?error=invalid");
- const siteUrl=process.env.NEXT_PUBLIC_SITE_URL;
- if(!siteUrl||!/^https:\/\//.test(siteUrl))throw new Error("NEXT_PUBLIC_SITE_URL must be configured as a secure absolute URL");
- const supabase=await createClient();
- const {error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:`${siteUrl.replace(/\/$/,"")}/auth/confirm?next=experts`,data:{full_name:fullName}}});
- if(error)redirect("/experts/register?error=failed");
- redirect("/experts/register?result=check-email");
+export async function registerExpert(form: FormData) {
+  const fullName = String(form.get("fullName") ?? "").trim();
+  const email = String(form.get("email") ?? "").trim().toLowerCase();
+  const password = String(form.get("password") ?? "");
+  const confirm = String(form.get("confirm") ?? "");
+
+  if (
+    fullName.length < 2 || fullName.length > 150 ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+    password.length < 12 || password.length > 128 ||
+    password !== confirm
+  ) {
+    redirect("/experts/register?error=invalid");
+  }
+
+  // Never use a request Host header to build authentication links.
+  const configuredOrigin = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  const candidate = configuredOrigin || (vercelHost ? `https://${vercelHost}` : "");
+  let siteOrigin: string | null = null;
+  try {
+    const parsed = new URL(candidate);
+    if (parsed.protocol === "https:" && !parsed.username && !parsed.password) {
+      siteOrigin = parsed.origin;
+    }
+  } catch {
+    // Invalid deployment configuration should produce a visible form error.
+  }
+  if (!siteOrigin) {
+    console.error("Expert signup: missing or invalid production site origin");
+    redirect("/experts/register?error=configuration");
+  }
+
+  let signupError: "failed" | "unavailable" | null = null;
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${siteOrigin}/auth/confirm?next=experts`,
+        data: { full_name: fullName, evaryn_account_type: "EXPERT" },
+      },
+    });
+    if (error) {
+      console.error("Expert signup rejected:", error.code ?? "auth_error");
+      signupError = "failed";
+    }
+  } catch (error) {
+    console.error("Expert signup unavailable:", error instanceof Error ? error.name : "unknown");
+    signupError = "unavailable";
+  }
+
+  // Next.js redirect() intentionally throws. Keep redirects outside try/catch.
+  if (signupError) redirect(`/experts/register?error=${signupError}`);
+  redirect("/experts/register?result=check-email");
 }
 
 export async function signInExpert(form:FormData){
