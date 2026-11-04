@@ -6,7 +6,7 @@ import { Suspense, useState, useTransition } from "react";
 import { sendPasswordRecovery } from "./actions";
 
 const destinations = {
-  staff: { label: "Staff", href: "/portal/login" },
+  staff: { label: "Staff", href: "/login" },
   clients: { label: "Clients", href: "/clients/login" },
   experts: { label: "Experts", href: "/experts/login" },
 } as const;

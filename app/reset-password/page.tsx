@@ -9,7 +9,7 @@ function ResetPasswordForm() {
   const search = useSearchParams();
   const raw = search.get("for");
   const area = raw === "clients" || raw === "experts" ? raw : "staff";
-  const loginHref = area === "clients" ? "/clients/login" : area === "experts" ? "/experts/login" : "/portal/login";
+  const loginHref = area === "clients" ? "/clients/login" : area === "experts" ? "/experts/login" : "/login";
   const [ready, setReady] = useState(false);
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -34,6 +34,10 @@ function ResetPasswordForm() {
         // Supports Supabase PKCE links and custom token-hash recovery templates.
         const code = search.get("code");
         const tokenHash = search.get("token_hash");
+        const fragment = window.location.hash;
+        // An existing sign-in session alone must not unlock the recovery page.
+        const validRecoveryLink = Boolean(code || tokenHash ||
+          (fragment.includes("type=recovery") && fragment.includes("access_token=")));
         if (code) {
           const { error: codeError } = await supabase.auth.exchangeCodeForSession(code);
           if (codeError) throw codeError;
@@ -47,7 +51,7 @@ function ResetPasswordForm() {
         // The browser client initializes the auth session from that URL.
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         if (!active) return;
-        if (sessionError || !session) {
+        if (sessionError || !session || !validRecoveryLink) {
           setError("This reset link is invalid or has expired. Request a new one.");
         } else {
           setReady(true);
