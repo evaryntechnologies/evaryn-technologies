@@ -17,7 +17,7 @@ export const site = {
   /** Where investor briefing requests should go, if different from contactEmail. */
   investorEmail: "contact@evaryninc.com",
   /** Add the verified LinkedIn company URL in Vercel Production when supplied. */
-  linkedinUrl: process.env.NEXT_PUBLIC_EVARYN_LINKEDIN_URL?.startsWith("https://www.linkedin.com/company/") ? process.env.NEXT_PUBLIC_EVARYN_LINKEDIN_URL : "",
+  linkedinUrl: process.env.NEXT_PUBLIC_EVARYN_LINKEDIN_URL?.startsWith("https://www.linkedin.com/company/") ? process.env.NEXT_PUBLIC_EVARYN_LINKEDIN_URL : "https://www.linkedin.com/company/evaryntechnologies",
 };
 
 /** Real headline numbers, e.g. { value: "250k+", label: "Labels delivered" }. Shown only when filled. */

@@ -55,6 +55,7 @@ export default function PublicFooter() {
           <a href={`mailto:${site.contactEmail}`}><Mail size={16} /> {site.contactEmail}</a>
           <a href={`tel:${site.contactPhone.replace(/\s/g, "")}`}><Phone size={16} /> {site.contactPhone}</a>
           <a href={`https://wa.me/${site.contactPhone.replace(/\D/g, "")}`} target="_blank" rel="noreferrer"><MessageCircle size={16} /> WhatsApp our team</a>
+          {site.linkedinUrl && <a href={site.linkedinUrl} target="_blank" rel="noopener noreferrer"><LinkedInMark size={16} /> Follow us on LinkedIn</a>}
           <span style={{ display: "flex", gap: ".5rem", alignItems: "center", fontSize: ".9rem" }}><MapPin size={16} /> {site.location}</span>
           <Link href="/contact#consultation">Book a consultation</Link>
         </div>
