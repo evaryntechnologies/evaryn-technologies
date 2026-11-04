@@ -1,11 +1,35 @@
+import "./client-portal.css";
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { Prisma } from "@/generated/prisma/client";
+import { prisma } from "@/lib/db/prisma";
 import { ensureClientProfile, signOutClient } from "../clients/actions";
-export default async function ClientPortalLayout({children}:{children:ReactNode}) {
- const client = await ensureClientProfile();
- return <div className="mx-auto min-h-[70vh] max-w-6xl px-5 py-8">
- <div className="mb-8 flex flex-wrap items-center justify-between gap-4 ev-client-panel ev-client-header rounded-2xl p-5 text-[var(--ev-ink)]">
- <div><p className="text-xs uppercase tracking-wide text-[var(--ev-accent-text)]">Client workspace</p><p className="font-bold">Welcome, {client.fullName}</p></div>
- <nav aria-label="Client navigation" className="flex flex-wrap items-center gap-3 text-sm"><Link className="hover:underline" href="/client-portal">Dashboard</Link><Link className="hover:underline" href="/client-portal/requests/new">New Request</Link><Link className="hover:underline" href="/client-portal/projects">My Projects</Link><Link className="hover:underline" href="/client-portal/orders">Track Orders</Link><Link className="hover:underline" href="/client-portal/delivered">Delivered Orders</Link><form action={signOutClient}><button className="rounded-lg border border-[var(--ev-border)] px-3 py-2 hover:bg-[var(--ev-inset)]">Sign Out</button></form></nav>
- </div>{children}</div>;
+import ClientNav from "./ClientNav";
+
+export const dynamic = "force-dynamic";
+
+export default async function ClientPortalLayout({ children }: { children: ReactNode }) {
+  const client = await ensureClientProfile();
+  // Orders delivered to this client that they have not rated yet (drives the badge on "Delivered").
+  const awaiting = await prisma
+    .$queryRaw<{ n: bigint }[]>(Prisma.sql`
+      SELECT count(*)::bigint AS n FROM public."ClientOrderLink" l
+      JOIN public."WorkTask" t ON t."id" = l."taskId"
+      WHERE l."clientId" = ${client.id}::uuid AND l."deliveredAt" IS NOT NULL
+        AND t."status" = 'DELIVERED_AWAITING_CLIENT' AND l."ratedAt" IS NULL`)
+    .then((r) => Number(r[0]?.n ?? 0))
+    .catch(() => 0);
+
+  return (
+    <div className="cp-shell">
+      <header className="cp-banner">
+        <div className="cp-welcome">
+          <span className="cp-eyebrow">Client workspace</span>
+          <p className="cp-name">{client.fullName}{client.companyName ? <span> · {client.companyName}</span> : null}</p>
+        </div>
+        <ClientNav awaiting={awaiting} />
+        <form action={signOutClient}><button className="cp-signout">Sign out</button></form>
+      </header>
+      {children}
+    </div>
+  );
 }
