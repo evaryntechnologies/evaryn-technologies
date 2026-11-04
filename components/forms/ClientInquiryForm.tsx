@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { Turnstile } from "@marsidev/react-turnstile";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { services } from "@/lib/services";
@@ -19,13 +18,10 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [turnstileToken, setTurnstileToken] = useState("");
-  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setErrorMessage("");
-    if (!turnstileToken) { setErrorMessage("Please complete the security verification."); return; }
     setSubmitting(true);
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -51,7 +47,7 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
         body: JSON.stringify({
           name: data.get("name"), email: data.get("email"),
           service: data.get("service"), details: details.slice(0, 5000),
-          turnstileToken, website: data.get("website") ?? "",
+          website: data.get("website") ?? "",
         }),
       });
       const result: { error?: string } = await response.json();
@@ -60,7 +56,6 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
       form.reset();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Unable to submit your message.");
-      setTurnstileToken("");
     } finally {
       setSubmitting(false);
     }
@@ -116,14 +111,10 @@ export default function ClientInquiryForm({ kind }: { kind: Kind }) {
           <textarea name="details" required minLength={15} maxLength={kind === "custom" ? 4500 : 5000} rows={6} className={inputStyle} placeholder="Describe what you need, your goals and any important requirements." />
         </label>
       </div>
-      {turnstileSiteKey && (
-        <div className="mt-6"><Turnstile siteKey={turnstileSiteKey} options={{ action: "contact" }} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken("")} onError={() => setTurnstileToken("")} /></div>
-      )}
-      {!turnstileSiteKey && <p role="alert" className="mt-4 text-sm text-red-700 dark:text-red-300">Online submissions are temporarily unavailable. Please try again later.</p>}
       {errorMessage && <p role="alert" className="mt-5 rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800">{errorMessage}</p>}
       <div className="mt-7 flex flex-wrap items-center justify-between gap-4">
         <p className="text-xs text-slate-500 dark:text-slate-400">Fields marked * are required.</p>
-        <button type="submit" disabled={submitting || !turnstileSiteKey || !turnstileToken} className="inline-flex items-center gap-2 rounded-xl bg-[#0052CC] px-7 py-3.5 font-semibold text-white transition hover:bg-[#003F9E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400">
+        <button type="submit" disabled={submitting} className="inline-flex items-center gap-2 rounded-xl bg-[#0052CC] px-7 py-3.5 font-semibold text-white transition hover:bg-[#003F9E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400">
           <CheckCircle2 size={18} aria-hidden="true" /> {submitting ? "Sending..." : kind === "contact" ? "Send message" : "Send request"}
         </button>
       </div>

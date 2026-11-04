@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
 import { contactSchema } from "@/lib/validations/contact";
 import { checkContactRateLimit } from "@/lib/security/rate-limit";
-import { verifyTurnstile } from "@/lib/security/turnstile";
 
 type ContactRequest = {
   name?: unknown;
   email?: unknown;
   service?: unknown;
   details?: unknown;
-  turnstileToken?: unknown;
   website?: unknown;
 };
 
@@ -16,13 +14,6 @@ export async function POST(request: Request) {
   if (process.env.ENABLE_PUBLIC_SUBMISSIONS !== "true") {
     return NextResponse.json(
       { error: "Online submissions are not available yet." },
-      { status: 503 }
-    );
-  }
-
-  if (process.env.PUBLIC_SUBMISSION_PROTECTION_READY !== "true") {
-    return NextResponse.json(
-      { error: "Submission protection is not enabled." },
       { status: 503 }
     );
   }
@@ -166,48 +157,37 @@ export async function POST(request: Request) {
       );
     }
 
-    if (typeof body.turnstileToken !== "string") {
-      return NextResponse.json(
-        { error: "Spam verification is required." },
-        { status: 400 }
-      );
-    }
-
-    const verified = await verifyTurnstile(
-      body.turnstileToken,
-      allowedOrigin.hostname
-    );
-
-    if (!verified) {
-      return NextResponse.json(
-        { error: "Spam verification failed. Please try again." },
-        { status: 403 }
-      );
-    }
-
     const { prisma } = await import("@/lib/db/prisma");
 
-    const inquiry = await prisma.$transaction(async (tx) => {
-      const created = await tx.clientInquiry.create({
-        data: result.data,
-        select: { id: true },
-      });
-      const admins = await tx.employeeProfile.findMany({
+    const inquiry = await prisma.clientInquiry.create({
+      data: result.data,
+      select: { id: true },
+    });
+
+    // Best-effort notifications: failures must not erase saved contact inquiries.
+    try {
+      const admins = await prisma.employeeProfile.findMany({
         where: { role: { in: ["ADMIN", "SUPER_ADMIN"] }, status: "ACTIVE" },
-        select: { id: true },
+        select: { id: true, role: true },
       });
-      if (admins.length) {
-        await tx.portalNotification.createMany({
+      if (admins.length > 0) {
+        await prisma.portalNotification.createMany({
           data: admins.map((admin) => ({
             recipientId: admin.id,
             title: "New website contact inquiry",
             body: `${result.data.name} submitted an inquiry about ${result.data.service}.`,
-            href: "/portal/super-admin/inquiries",
+            href: admin.role === "SUPER_ADMIN"
+              ? "/portal/super-admin/inquiries"
+              : "/portal/admin",
           })),
         });
       }
-      return created;
-    });
+    } catch (notificationError) {
+      console.error(
+        "Contact inquiry saved but notification failed:",
+        notificationError instanceof Error ? notificationError.name : "UnknownError"
+      );
+    }
 
     return NextResponse.json(
       {
