@@ -64,9 +64,69 @@ export async function signInClient(form: FormData) {
   const email = String(form.get("email") ?? "").trim().toLowerCase();
   const password = String(form.get("password") ?? "");
   if (!validEmail(email) || !password) redirect("/clients/login?error=invalid");
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) redirect("/clients/login?error=invalid");
+
+  // Create/check the ClientProfile while the action can return a useful error.
+  // The portal itself remains protected by ensureClientProfile and requireClient.
+  let result: "ok" | "invalid" | "verify" | "unauthorized" | "profile" | "unavailable" = "invalid";
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      result = error.code === "email_not_confirmed" ? "verify" : "invalid";
+    } else {
+      const user = data.user;
+      if (!user) {
+        result = "unavailable";
+      } else if (!user.email_confirmed_at) {
+        result = "verify";
+      } else if (user.app_metadata?.role || user.user_metadata?.evaryn_account_type !== "CLIENT") {
+        result = "unauthorized";
+      } else {
+        try {
+          const [employee, expert] = await Promise.all([
+            prisma.employeeProfile.findUnique({ where: { authUserId: user.id }, select: { id: true } }),
+            prisma.expertApplication.findUnique({ where: { authUserId: user.id }, select: { id: true } }),
+          ]);
+          if (employee || expert) {
+            result = "unauthorized";
+          } else {
+            const existing = await prisma.clientProfile.findUnique({ where: { authUserId: user.id } });
+            if (existing) {
+              result = existing.status === "ACTIVE" ? "ok" : "unauthorized";
+            } else {
+              const fullName = String(user.user_metadata?.full_name ?? "").trim().slice(0, 150);
+              const companyName = String(user.user_metadata?.company_name ?? "").trim().slice(0, 200);
+              const accountEmail = String(user.email ?? "").trim().toLowerCase();
+              if (fullName.length < 2 || !validEmail(accountEmail)) {
+                result = "unauthorized";
+              } else {
+                await prisma.clientProfile.upsert({
+                  where: { authUserId: user.id },
+                  update: {},
+                  create: {
+                    authUserId: user.id,
+                    email: accountEmail,
+                    fullName,
+                    companyName: companyName || null,
+                  },
+                });
+                result = "ok";
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Evaryn client login: profile initialization failed", error);
+          result = "profile";
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Evaryn client login: authentication service failed", error instanceof Error ? error.name : "unknown");
+    result = "unavailable";
+  }
+
+  // Redirect outside catch blocks: Next.js redirects throw internally.
+  if (result !== "ok") redirect(`/clients/login?error=${result}`);
   redirect("/client-portal");
 }
 
