@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
 import { useSearchParams } from "next/navigation";
-import { FormEvent, Suspense, useEffect, useMemo, useState } from "react";
+import { FormEvent, Suspense, useEffect, useMemo, useRef, useState } from "react";
 
 function ResetPasswordForm() {
   const search = useSearchParams();
   const raw = search.get("for");
   const area = raw === "clients" || raw === "experts" ? raw : "staff";
   const loginHref = area === "clients" ? "/clients/login" : area === "experts" ? "/experts/login" : "/login";
+  const initialized = useRef(false);
   const [ready, setReady] = useState(false);
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -23,46 +24,93 @@ function ResetPasswordForm() {
   ), []);
 
   useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+
     let active = true;
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!active) return;
-      if (event === "PASSWORD_RECOVERY" && session) setReady(true);
-    });
 
     async function initialize() {
       try {
-        // Supports Supabase PKCE links and custom token-hash recovery templates.
-        const code = search.get("code");
-        const tokenHash = search.get("token_hash");
-        const fragment = window.location.hash;
-        // An ordinary existing session must not activate the recovery form.
-        const validRecoveryLink = Boolean(code || tokenHash ||
-          (fragment.includes("type=recovery") && fragment.includes("access_token=")));
-        if (code) {
-          const { error: codeError } = await supabase.auth.exchangeCodeForSession(code);
-          if (codeError) throw codeError;
-          window.history.replaceState(null, "", `/reset-password?for=${area}`);
-        } else if (tokenHash) {
-          const { error: otpError } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: "recovery" });
-          if (otpError) throw otpError;
-          window.history.replaceState(null, "", `/reset-password?for=${area}`);
+        const url = new URL(window.location.href);
+        const code = url.searchParams.get("code");
+        const tokenHash = url.searchParams.get("token_hash");
+        const type = url.searchParams.get("type");
+
+        const hashParams = new URLSearchParams(
+          window.location.hash.replace(/^#/, "")
+        );
+
+        if (url.searchParams.get("error")) {
+          throw new Error("Supabase rejected the recovery link.");
         }
-        // The standard Supabase recovery email may return a fragment session.
-        // The browser client initializes the auth session from that URL.
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        if (!active) return;
-        if (sessionError || !session || !validRecoveryLink) {
-          setError("This reset link is invalid or has expired. Request a new one.");
+
+        if (tokenHash && type === "recovery") {
+          const { error } = await supabase.auth.verifyOtp({
+            token_hash: tokenHash,
+            type: "recovery",
+          });
+
+          if (error) throw error;
+        } else if (code) {
+          const flowId = url.searchParams.get("sb_flow_id");
+
+          const { error } =
+            await supabase.auth.exchangeCodeForSession(
+              code,
+              flowId ? { flowId } : undefined
+            );
+
+          if (error) throw error;
+        } else if (
+          hashParams.get("type") === "recovery" &&
+          hashParams.get("access_token") &&
+          hashParams.get("refresh_token")
+        ) {
+          const { error } = await supabase.auth.setSession({
+            access_token: hashParams.get("access_token")!,
+            refresh_token: hashParams.get("refresh_token")!,
+          });
+
+          if (error) throw error;
         } else {
-          setReady(true);
+          throw new Error("Missing recovery credentials.");
         }
-      } catch {
-        if (active) setError("This reset link is invalid or has expired. Request a new one.");
+
+        const { data, error } = await supabase.auth.getUser();
+
+        if (error || !data.user) {
+          throw new Error("Recovery session is not valid.");
+        }
+
+        if (!active) return;
+
+        window.history.replaceState(
+          null,
+          "",
+          `/reset-password?for=${area}`
+        );
+
+        setError("");
+        setReady(true);
+      } catch (err) {
+        console.error("Password recovery verification failed:", err);
+
+        if (active) {
+          setReady(false);
+          setError(
+            "This reset link is invalid or has expired. " +
+            "Please request a new one."
+          );
+        }
       }
     }
+
     void initialize();
-    return () => { active = false; subscription.unsubscribe(); };
-  }, [supabase, search, area]);
+
+    return () => {
+      active = false;
+    };
+  }, [supabase, area]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
