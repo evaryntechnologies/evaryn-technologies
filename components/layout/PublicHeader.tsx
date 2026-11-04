@@ -2,64 +2,85 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, ArrowUpRight, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import BrandLogo from "@/components/brand/BrandLogo";
 import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
 
-const mainLinks = [
-  { label: "Services", href: "/services" },
-  { label: "Past Projects", href: "/projects" },
-  { label: "About Us", href: "/about" },
-  { label: "Work With Us", href: "/work-with-us" },
-  { label: "Feedback & Reviews", href: "/reviews" },
-];
-const audiences = [
-  { label: "For Clients", links: [{ label: "Create client account", href: "/clients/register" }, { label: "Client login", href: "/clients/login" }, { label: "Client services", href: "/services" }, { label: "Investors", href: "/work-with-us#investors" }] },
-  { label: "For Experts", links: [{ label: "Apply as an expert", href: "/experts/register" }, { label: "Expert login", href: "/experts/login" }, { label: "Expert opportunities", href: "/careers" }] },
-];
+// Home is the Evaryn logo; contact sits between Clients and Experts.
+const navigation = [
+  { type: "link", label: "About Us", href: "/about" },
+  { type: "link", label: "Work With Us", href: "/work-with-us" },
+  { type: "link", label: "Services", href: "/services" },
+  { type: "link", label: "Past Projects", href: "/projects" },
+  { type: "link", label: "Feedback & Reviews", href: "/reviews" },
+  { type: "menu", label: "For Clients", links: [
+    { label: "Client signup", href: "/clients/register" },
+    { label: "Client login", href: "/clients/login" },
+    { label: "Client services", href: "/services" },
+    { label: "Investors", href: "/work-with-us#investors" },
+  ] },
+  { type: "link", label: "Contact Us", href: "/contact" },
+  { type: "menu", label: "For Experts", links: [
+    { label: "Apply as an expert", href: "/experts/register" },
+    { label: "Expert login", href: "/experts/login" },
+    { label: "Expert opportunities", href: "/careers" },
+  ] },
+] as const;
+
 export default function PublicHeader() {
-  const [open, setOpen] = useState(false);
-  const [compact, setCompact] = useState(false);
   const pathname = usePathname();
-  const [activeAudience, setActiveAudience] = useState<string | null>(null);
-  const navRef = useRef<HTMLElement>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [compact, setCompact] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const menuId = "evaryn-header-menu";
+  const closeAll = () => { setActiveMenu(null); setMobileOpen(false); };
+
+  useEffect(() => { setActiveMenu(null); setMobileOpen(false); }, [pathname]);
   useEffect(() => {
-    setActiveAudience(null);
-    setOpen(false);
-  }, [pathname]);
-  useEffect(() => {
-    const dismiss = (event: PointerEvent) => {
-      if (navRef.current && !navRef.current.contains(event.target as Node)) setActiveAudience(null);
-    };
-    const escape = (event: KeyboardEvent) => { if (event.key === "Escape") setActiveAudience(null); };
-    document.addEventListener("pointerdown", dismiss);
-    document.addEventListener("keydown", escape);
-    return () => { document.removeEventListener("pointerdown", dismiss); document.removeEventListener("keydown", escape); };
+    const scroll = () => setCompact(window.scrollY > 45);
+    scroll();
+    window.addEventListener("scroll", scroll, { passive: true });
+    return () => window.removeEventListener("scroll", scroll);
   }, []);
   useEffect(() => {
-    const onScroll = () => setCompact(window.scrollY > 45);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const outside = (event: PointerEvent) => {
+      if (!headerRef.current?.contains(event.target as Node)) setActiveMenu(null);
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { setActiveMenu(null); setMobileOpen(false); }
+    };
+    document.addEventListener("pointerdown", outside);
+    document.addEventListener("keydown", escape);
+    return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); };
   }, []);
 
-  return <header className={`ev2-header${compact ? " ev2-header--compact" : ""}`}>
+  return <header ref={headerRef} className={`ev2-header${compact ? " ev2-header--compact" : ""}`}>
     <div className="ev2-shell ev2-header-inner">
-      <Link className="ev2-logo" href="/" aria-label="Evaryn Technologies Limited home" onClick={() => setOpen(false)}><BrandLogo priority /></Link>
-      <nav ref={navRef} className="ev2-desktop-nav" aria-label="Main navigation">
-        {mainLinks.map(l => <Link key={l.href} href={l.href} aria-current={pathname===l.href?"page":undefined}>{l.label}</Link>)}
-        {audiences.map(a=><div key={a.label} className={`ev2-dropdown${activeAudience === a.label ? " ev2-dropdown--open" : ""}`}>
-          <button type="button" className="ev2-dropdown-trigger" aria-expanded={activeAudience === a.label} aria-haspopup="true" onClick={()=>setActiveAudience(activeAudience === a.label ? null : a.label)}>{a.label}<ChevronDown size={14}/></button>
-          {activeAudience === a.label && <div className="ev2-dropdown-menu">{a.links.map(l=><Link href={l.href} key={l.href} onClick={()=>setActiveAudience(null)}>{l.label}</Link>)}</div>}
-        </div>)}
+      <Link href="/" className="ev2-logo" onClick={closeAll} aria-label="Evaryn Technologies Limited — Home"><BrandLogo priority /></Link>
+      <nav className="ev2-desktop-nav" aria-label="Main navigation">
+        {navigation.map((item) => item.type === "link" ?
+          <Link href={item.href} key={item.label} onClick={() => setActiveMenu(null)} aria-current={pathname === item.href ? "page" : undefined}>{item.label}</Link>
+          : <div key={item.label} className={`ev2-dropdown${activeMenu === item.label ? " ev2-dropdown--open" : ""}`}>
+              <button type="button" className="ev2-dropdown-trigger" aria-expanded={activeMenu === item.label} aria-haspopup="true" aria-controls={`${menuId}-${item.label.replace(/\s+/g, "-").toLowerCase()}`} onClick={() => setActiveMenu(activeMenu === item.label ? null : item.label)}>
+                {item.label}<ChevronDown size={14} aria-hidden="true" />
+              </button>
+              {activeMenu === item.label && <div id={`${menuId}-${item.label.replace(/\s+/g, "-").toLowerCase()}`} className="ev2-dropdown-menu">
+                {item.links.map(link => <Link key={link.href} href={link.href} onClick={closeAll}>{link.label}</Link>)}
+              </div>}
+            </div>)}
       </nav>
-      <div className="ev2-header-actions"><ThemeSwitcher/><Link href="/contact" className="ev2-primary ev2-header-cta">Contact Us <ArrowUpRight size={15}/></Link></div>
-      <button className="ev2-mobile-toggle" type="button" aria-expanded={open} aria-controls="ev2-mobile-menu" aria-label={open?"Close navigation":"Open navigation"} onClick={()=>{setActiveAudience(null);setOpen(!open)}}>{open?<X/>:<Menu/>}</button>
+      <div className="ev2-header-actions"><ThemeSwitcher /></div>
+      <button className="ev2-mobile-toggle" type="button" aria-expanded={mobileOpen} aria-controls="ev2-mobile-menu" aria-label={mobileOpen ? "Close navigation" : "Open navigation"} onClick={() => { setActiveMenu(null); setMobileOpen(!mobileOpen); }}>
+        {mobileOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+      </button>
     </div>
-    {open && <nav id="ev2-mobile-menu" className="ev2-mobile-nav" aria-label="Mobile navigation">
-      {mainLinks.map(l=><Link href={l.href} onClick={()=>setOpen(false)} key={l.href}>{l.label}</Link>)}
-      {audiences.map(a=><div className="ev2-mobile-group" key={a.label}><strong>{a.label}</strong>{a.links.map(l=><Link key={l.href} href={l.href} onClick={()=>setOpen(false)}>{l.label}</Link>)}</div>)}
-      <Link href="/contact" onClick={()=>setOpen(false)}>Contact Us</Link>
+    {mobileOpen && <nav id="ev2-mobile-menu" className="ev2-mobile-nav" aria-label="Mobile navigation">
+      {navigation.map(item => item.type === "link" ?
+        <Link key={item.label} href={item.href} onClick={closeAll}>{item.label}</Link>
+        : <div key={item.label} className="ev2-mobile-group"><strong>{item.label}</strong>
+            {item.links.map(link => <Link key={link.href} href={link.href} onClick={closeAll}>{link.label}</Link>)}
+          </div>)}
     </nav>}
   </header>;
 }

@@ -989,3 +989,64 @@ a.site-card:hover::before,
 .ev-public .ev2-client-signup{font-weight:750;color:var(--ev2-amethyst);text-decoration:underline;text-underline-offset:3px}
 @media(max-width:760px){.ev-public .ev2-client-login-shell{grid-template-columns:1fr}.ev-public .ev2-client-welcome h1{font-size:clamp(2.5rem,9vw,3.6rem)}.ev-public .ev2-client-login{padding-block:2.5rem}}
 @media(prefers-reduced-motion:reduce){.ev-public .ev2-heritage-orbits{animation:none}}
+
+
+/* EVARYN NAVIGATION AND GLASS CLARITY 2026-11 */
+/* React-controlled dropdowns need explicit visibility: earlier CSS hid div menus without [open]. */
+.ev-public .ev2-desktop-nav .ev2-dropdown.ev2-dropdown--open > .ev2-dropdown-menu {
+  display:grid;visibility:visible;opacity:1;pointer-events:auto;z-index:120;
+}
+.ev-public .ev2-desktop-nav .ev2-dropdown {position:relative;}
+.ev-public .ev2-desktop-nav .ev2-dropdown-trigger {
+  display:inline-flex;align-items:center;gap:.3rem;padding:.63rem .48rem;
+  background:transparent;border:0;border-radius:9px;cursor:pointer;
+  color:var(--ev2-ink);font-family:inherit;font-size:.81rem;font-weight:650;white-space:nowrap;
+}
+.ev-public .ev2-desktop-nav .ev2-dropdown-trigger:hover,
+.ev-public .ev2-desktop-nav .ev2-dropdown-trigger[aria-expanded="true"] {
+  color:var(--ev2-amethyst);background:color-mix(in srgb,var(--ev2-amethyst) 11%,transparent);
+}
+.ev-public .ev2-dropdown-menu {
+  background:color-mix(in srgb,var(--ev2-card) 94%,transparent);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+}
+/* Place a translucent reading surface only behind actual copy, not across an entire page. */
+.ev-public .ev2-section-heading,
+.ev-public .ev2-about-intro,
+.ev-public .ev2-section-lead,
+.ev-public .ev2-contact-details,
+.ev-public .ev2-client-welcome,
+.ev-public .ev2-hero-copy,
+.ev-public .ev2-inner-hero .ev2-shell > div:first-child {
+  background:color-mix(in srgb,var(--ev-surface) 59%,transparent);
+  border:1px solid color-mix(in srgb,var(--ev2-line) 58%,transparent);
+  border-radius:20px;padding:clamp(1rem,2.2vw,1.65rem);
+  -webkit-backdrop-filter:blur(13px);backdrop-filter:blur(13px);
+}
+.ev-public .ev2-section-heading {flex-wrap:wrap;}
+.ev-public .ev2-card,.ev-public .ev2-benefit,.ev-public .ev2-contact-note,
+.ev-public .ev2-consult-form,.ev-public .ev2-client-auth {
+  background:color-mix(in srgb,var(--ev-surface) 80%,transparent);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+}
+/* Registration forms retain original actions and fields, but gain readable frosted surfaces. */
+.ev-public .ev2-register-page {color:var(--ev2-ink);}
+.ev-public .ev2-register-card {
+  border-radius:22px;padding:clamp(1.2rem,3vw,2.2rem);
+  border:1px solid var(--ev2-line);
+  background:color-mix(in srgb,var(--ev-surface) 84%,transparent);
+  box-shadow:0 18px 45px -38px rgba(12,39,86,.6);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+}
+.ev-public .ev2-register-page p:not([role="alert"]) {color:var(--ev2-muted);line-height:1.7;}
+.ev-public .ev2-register-page form {margin-top:1.65rem;display:grid;gap:1rem;}
+.ev-public .ev2-register-page label {display:grid;gap:.4rem;font-size:.94rem;font-weight:650;color:var(--ev2-ink);}
+.ev-public .ev2-register-page input {
+  width:100%;border:1px solid var(--ev2-line);border-radius:11px;
+  padding:.85rem .95rem;background:var(--ev-surface-2);color:var(--ev2-ink);
+}
+.ev-public .ev2-register-page input:focus-visible {outline:2px solid var(--ev2-amethyst);outline-offset:2px;}
+.ev-public .ev2-register-page form button {border-radius:11px;min-height:48px;background:#7651b3;color:white;font-weight:700;}
+.ev-public .ev2-register-page form button:hover {background:#67409d;}
+@media(max-width:1220px){.ev-public .ev2-header-actions{margin-left:auto;}}
+@media(prefers-reduced-motion:reduce){.ev-public .ev2-dropdown-menu{transition:none;}}
