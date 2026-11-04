@@ -929,3 +929,15 @@
 .ev2-section-heading { gap: 1rem 3rem; }
 .ev2-about-intro-body p { margin: 0 0 1.1rem; font-size: 1.06rem; max-width: 62ch; }
 .site-steps { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) !important; }
+
+/* compact footer: height follows its content */
+.ev2-footer { margin-top: 0; padding-top: 2rem; }
+.ev2-footer-grid { padding-bottom: 1.25rem; gap: 1.25rem clamp(1.25rem, 2.5vw, 2.25rem); }
+.ev2-footer-about img { width: 124px; }
+.ev2-footer-about p { margin-top: 0.7rem; font-size: 0.85rem; line-height: 1.55; }
+.ev2-footer h2 { margin-bottom: 0.65rem; }
+.ev2-footer nav, .ev2-footer-contact { gap: 0.4rem; }
+.ev2-footer a, .ev2-footer-contact span { font-size: 0.85rem; line-height: 1.4; }
+.ev2-social { margin-top: 0.8rem; }
+.ev2-social a { width: 34px; height: 34px; border-radius: 10px; }
+.ev2-footer-bottom { padding-block: 0.9rem 1rem; }
