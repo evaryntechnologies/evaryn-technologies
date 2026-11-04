@@ -61,6 +61,7 @@ async function LoginContent({ searchParams }: LoginProps) {
             Sign In
           </button>
         </form>
+<p className="mt-3 text-sm"><Link className="font-semibold text-cyan-700 underline underline-offset-4 dark:text-cyan-300" href="/forgot-password?for=staff">Forgot password?</Link></p>
         <Link href="/" className="mt-6 inline-flex items-center text-sm font-semibold text-cyan-300 hover:underline">← Back to Homepage</Link>
       </section>
     </main>

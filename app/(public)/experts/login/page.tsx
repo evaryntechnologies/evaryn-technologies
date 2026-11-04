@@ -16,6 +16,7 @@ export default async function ExpertLogin({ searchParams }: { searchParams: Prom
         <label>Password<input type="password" name="password" autoComplete="current-password" required /></label>
         <button type="submit" className="ev2-primary">Log In</button>
       </form>
+<p className="mt-3 text-sm"><Link className="font-semibold text-cyan-700 underline underline-offset-4 dark:text-cyan-300" href="/forgot-password?for=experts">Forgot password?</Link></p>
       <p className="ev2-expert-register">New to Evaryn? <Link href="/experts/register">Create an expert account</Link></p>
       <Link href="/" className="ev2-expert-back">Back to homepage</Link>
     </section>
