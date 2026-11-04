@@ -18,20 +18,30 @@ export async function POST(request: Request) {
     );
   }
 
-  const configuredOrigin = process.env.PUBLIC_FORM_ORIGIN;
+  // Allow only explicitly configured website origins. This supports both the
+  // apex and www production domains without disabling CSRF origin checks.
+  const configuredOrigins = [
+    process.env.PUBLIC_FORM_ORIGIN ?? "",
+    process.env.PUBLIC_FORM_ALLOWED_ORIGINS ?? "",
+  ]
+    .flatMap((value) => value.split(","))
+    .map((value) => value.trim())
+    .filter(Boolean);
 
-  if (!configuredOrigin) {
-    return NextResponse.json(
-      { error: "Submission service is not configured." },
-      { status: 503 }
-    );
+  const allowedOrigins = new Set<string>();
+  for (const configured of configuredOrigins) {
+    try {
+      const candidate = new URL(configured);
+      if (candidate.protocol === "https:" ||
+          (process.env.NODE_ENV !== "production" && candidate.origin.startsWith("http://localhost:"))) {
+        allowedOrigins.add(candidate.origin);
+      }
+    } catch {
+      // Ignore malformed entries; never treat them as wildcards.
+    }
   }
 
-  let allowedOrigin: URL;
-
-  try {
-    allowedOrigin = new URL(configuredOrigin);
-  } catch {
+  if (allowedOrigins.size === 0) {
     return NextResponse.json(
       { error: "Submission service is not configured." },
       { status: 503 }
@@ -39,8 +49,7 @@ export async function POST(request: Request) {
   }
 
   const origin = request.headers.get("origin");
-
-  if (origin !== allowedOrigin.origin) {
+  if (!origin || !allowedOrigins.has(origin)) {
     return NextResponse.json(
       { error: "Request origin is not allowed." },
       { status: 403 }
