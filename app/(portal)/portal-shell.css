@@ -73,3 +73,17 @@
 .ev-nav-group-items { margin:2px 0 5px 19px; padding-left:8px; border-left:1px solid var(--ev-border); display:grid; gap:2px; }
 .ev-nav-sub-link { min-height:35px; padding:7px 9px; font-size:12px; }
 @media(prefers-reduced-motion:reduce){ .ev-nav-group-arrow{transition:none;} }
+
+/* Royal amethyst accents: subtle visual continuity with public site. */
+.ev-portal .ev-topbar {
+  border-bottom: 0;
+  box-shadow: 0 12px 26px -24px rgba(86, 51, 140, .5);
+}
+.ev-portal .ev-nav-active,
+.ev-portal .ev-cmd-active {
+  background: linear-gradient(112deg, #6846a8, #246da6) !important;
+  color: #fff !important;
+}
+.ev-portal .ev-nav-active:hover { background: linear-gradient(112deg, #7753b8, #307db8) !important; }
+.ev-portal .ev-avatar { background: linear-gradient(135deg, #7652b5, #278fbf); }
+.ev-portal .ev-nav-group-active { box-shadow: inset 3px 0 0 #9b78d4; }

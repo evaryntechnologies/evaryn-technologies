@@ -16,6 +16,8 @@
    Everything below is driven by these variables.
    ===================================================================== */
 :root {
+  --ev-amethyst: #7956af;
+  --ev-amethyst-light: #b99be5;
   --ev-cyan: #00b0f8;
   --ev-blue: #0040a0;
   --ev-navy: #002080;
@@ -42,7 +44,7 @@
 
   /* atmosphere: glows, dot grid and the watermark artwork */
   --ev-glow-a: rgba(0, 176, 248, 0.34);
-  --ev-glow-b: rgba(0, 64, 160, 0.16);
+  --ev-glow-b: rgba(114, 75, 171, 0.16);
   --ev-mark-opacity: 1;
 
   --background: var(--ev-page);
@@ -73,7 +75,7 @@
   --ev-shadow: 0 16px 36px -18px rgba(0, 10, 40, 0.65);
 
   --ev-glow-a: rgba(0, 176, 248, 0.2);
-  --ev-glow-b: rgba(0, 64, 160, 0.55);
+  --ev-glow-b: rgba(114, 75, 171, 0.27);
   --ev-mark-opacity: 1;
 }
 

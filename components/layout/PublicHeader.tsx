@@ -1,106 +1,39 @@
 "use client";
-
 import { useState } from "react";
 import Link from "next/link";
-import BrandLogo from "@/components/brand/BrandLogo";
 import { usePathname } from "next/navigation";
-import { ArrowRight, UsersRound, Menu, X } from "lucide-react";
+import { Menu, X, ArrowUpRight, ChevronDown } from "lucide-react";
+import BrandLogo from "@/components/brand/BrandLogo";
 import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
 
-const EXPERT_URL = "/experts";
-
-const links = [
-  { label: "Our Work", href: "/projects" },
+const mainLinks = [
   { label: "Services", href: "/services" },
-  { label: "How we work", href: "/how-we-work" },
-  { label: "Why Evaryn", href: "/why-evaryn" },
-  { label: "Investors", href: "/investors" },
-  { label: "Careers", href: "/careers" },
+  { label: "Our Work", href: "/projects" },
+  { label: "About Us", href: "/about" },
   { label: "Work With Us", href: "/work-with-us" },
-  { label: "Contact", href: "/contact" },
+  { label: "Feedback & Reviews", href: "/reviews" },
 ];
-
+const audiences = [
+  { label: "For Clients", links: [{ label: "Create client account", href: "/clients/register" }, { label: "Client login", href: "/clients/login" }, { label: "Client services", href: "/work-with-us" }] },
+  { label: "For Experts", links: [{ label: "Apply as an expert", href: "/experts/register" }, { label: "Expert login", href: "/experts/login" }, { label: "Expert opportunities", href: "/experts" }] },
+];
 export default function PublicHeader() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const closeMenu = () => setMenuOpen(false);
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
-
-  return (
-    <header className="site-header">
-      <div className="site-container">
-        <div className="site-header__bar">
-          <Link href="/" onClick={closeMenu} className="site-header__logo" aria-label="Evaryn Technologies Limited, home">
-            <BrandLogo priority />
-          </Link>
-
-          <nav aria-label="Main navigation" className="site-nav">
-            {links.map((link) => (
-              <Link key={link.href} href={link.href} aria-current={isActive(link.href) ? "page" : undefined}>
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="site-header__actions">
-            <Link href="/work-with-us" aria-label="Work With Us — client registration" className="site-btn site-btn--primary">
-              Work With Us <ArrowRight size={16} aria-hidden="true" />
-            </Link>
-            <ThemeSwitcher />
-            <Link href={EXPERT_URL} className="site-btn site-btn--ghost">
-              <UsersRound size={15} aria-hidden="true" /> Are You an Expert?
-            </Link>
-            <Link href="/contact" className="site-btn site-btn--primary">
-              Request a quote <ArrowRight size={16} aria-hidden="true" />
-            </Link>
-          </div>
-
-          <button
-            type="button"
-            className="site-header__burger"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            aria-controls="site-mobile-menu"
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            {menuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
-        </div>
-
-
-{/* Always-visible showcase navigation: not dependent on desktop width or hamburger state. */}
-<nav
-  data-evaryn-showcase-navigation="true"
-  aria-label="Projects and client reviews"
-  className="flex w-full flex-wrap items-center justify-center gap-3 border-t border-[var(--ev-border)] bg-[var(--ev-surface)] px-4 py-2 text-sm"
->
-  <Link href="/projects" onClick={closeMenu} className="rounded-lg px-3 py-1.5 font-semibold text-[var(--ev-accent-text)] transition hover:bg-[var(--ev-surface-2)]">
-    Our Work
-  </Link>
-  <Link href="/reviews" onClick={closeMenu} className="rounded-lg px-3 py-1.5 font-semibold text-[var(--ev-ink)] transition hover:bg-[var(--ev-surface-2)]">
-    Client Reviews
-  </Link>
-</nav>
-
-        {menuOpen && (
-          <div id="site-mobile-menu" className="site-header__sheet">
-            {links.map((link) => (
-              <Link key={link.href} href={link.href} onClick={closeMenu} aria-current={isActive(link.href) ? "page" : undefined}>
-                {link.label}
-              </Link>
-            ))}
-            <div className="site-header__sheet-actions">
-              <ThemeSwitcher />
-              <Link href={EXPERT_URL} onClick={closeMenu} className="site-btn site-btn--ghost">
-                <UsersRound size={15} aria-hidden="true" /> Are You an Expert?
-              </Link>
-              <Link href="/contact" onClick={closeMenu} className="site-btn site-btn--primary">
-                Request a quote
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-    </header>
-  );
+  return <header className="ev2-header">
+    <div className="ev2-shell ev2-header-inner">
+      <Link className="ev2-logo" href="/" aria-label="Evaryn Technologies Limited home" onClick={() => setOpen(false)}><BrandLogo priority /></Link>
+      <nav className="ev2-desktop-nav" aria-label="Main navigation">
+        {mainLinks.map(l => <Link key={l.href} href={l.href} aria-current={pathname===l.href?"page":undefined}>{l.label}</Link>)}
+        {audiences.map(a=><details key={a.label} className="ev2-dropdown"><summary>{a.label}<ChevronDown size={14}/></summary><div className="ev2-dropdown-menu">{a.links.map(l=><Link href={l.href} key={l.href}>{l.label}</Link>)}</div></details>)}
+      </nav>
+      <div className="ev2-header-actions"><ThemeSwitcher/><Link href="/contact" className="ev2-primary ev2-header-cta">Contact Us <ArrowUpRight size={15}/></Link></div>
+      <button className="ev2-mobile-toggle" type="button" aria-expanded={open} aria-controls="ev2-mobile-menu" aria-label={open?"Close navigation":"Open navigation"} onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button>
+    </div>
+    {open && <nav id="ev2-mobile-menu" className="ev2-mobile-nav" aria-label="Mobile navigation">
+      {mainLinks.map(l=><Link href={l.href} onClick={()=>setOpen(false)} key={l.href}>{l.label}</Link>)}
+      {audiences.map(a=><div className="ev2-mobile-group" key={a.label}><strong>{a.label}</strong>{a.links.map(l=><Link key={l.href} href={l.href} onClick={()=>setOpen(false)}>{l.label}</Link>)}</div>)}
+      <Link href="/contact" onClick={()=>setOpen(false)}>Contact Us</Link>
+    </nav>}
+  </header>;
 }

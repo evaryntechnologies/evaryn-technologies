@@ -11,11 +11,13 @@ export const site = {
   tagline: "Innovation. People. Progress.",
   location: "Nairobi, Kenya",
   /** e.g. "hello@yourdomain.com" - shown on Contact and Investors when set. */
-  contactEmail: "",
+  contactEmail: "contact@evaryninc.com",
   /** e.g. "+254 700 000 000" */
-  contactPhone: "",
+  contactPhone: "+254 712 798 426",
   /** Where investor briefing requests should go, if different from contactEmail. */
-  investorEmail: "",
+  investorEmail: "contact@evaryninc.com",
+  /** Add the verified LinkedIn company URL in Vercel Production when supplied. */
+  linkedinUrl: process.env.NEXT_PUBLIC_EVARYN_LINKEDIN_URL?.startsWith("https://www.linkedin.com/company/") ? process.env.NEXT_PUBLIC_EVARYN_LINKEDIN_URL : "",
 };
 
 /** Real headline numbers, e.g. { value: "250k+", label: "Labels delivered" }. Shown only when filled. */

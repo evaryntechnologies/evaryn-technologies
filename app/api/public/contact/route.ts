@@ -183,8 +183,10 @@ export async function POST(request: Request) {
         await prisma.portalNotification.createMany({
           data: admins.map((admin) => ({
             recipientId: admin.id,
-            title: "New website contact inquiry",
-            body: `${result.data.name} submitted an inquiry about ${result.data.service}.`,
+            title: result.data.service === "Consultation request" ? "Consultation requested — confirm availability" : "New website contact inquiry",
+            body: result.data.service === "Consultation request"
+              ? `${result.data.name} (${result.data.email}) requested a consultation. ${result.data.details.slice(0, 900)}. Please confirm availability.`
+              : `${result.data.name} submitted an inquiry about ${result.data.service}.`,
             href: admin.role === "SUPER_ADMIN"
               ? "/portal/super-admin/inquiries"
               : "/portal/admin",

@@ -1,16 +1,3 @@
-import Link from "next/link";
-import type { Metadata } from "next";
-import { publishedReviews } from "@/lib/public-showcase";
-export const metadata: Metadata = {
-  title: "Client Reviews | Evaryn Technologies Limited",
-  description: "Published and approved client feedback about Evaryn Technologies Limited.",
-};
-export default function ReviewsPage() {
-  return <main className="mx-auto w-full max-w-5xl px-5 py-16 text-[var(--ev-ink)] md:px-8">
-    <p className="mb-4 text-sm font-bold uppercase tracking-widest text-[var(--ev-accent-text)]">Client feedback</p>
-    <h1 className="text-4xl font-bold">Client Reviews</h1>
-    <p className="mt-4 max-w-2xl leading-relaxed opacity-80">Only verified feedback shared with permission is published here.</p>
-    {publishedReviews.length ? <div className="mt-10 grid gap-5 md:grid-cols-2">{publishedReviews.map((review)=><blockquote key={review.id} className="rounded-xl border border-[var(--ev-border)] bg-[var(--ev-surface)] p-6"><p>“{review.quote}”</p><footer className="mt-4 font-semibold">— {review.attribution}</footer></blockquote>)}</div> : <div className="mt-10 rounded-xl border border-[var(--ev-border)] bg-[var(--ev-surface)] p-7">We are preparing approved client feedback for publication.</div>}
-    <Link href="/projects" className="mt-10 inline-block font-semibold text-[var(--ev-accent-text)] underline underline-offset-4">Explore our projects</Link>
-  </main>;
-}
+import type {Metadata} from "next";import Link from "next/link";import {ArrowUpRight} from "lucide-react";import {publishedReviews} from "@/lib/public-showcase";
+export const metadata:Metadata={title:"Feedback & Reviews | Evaryn Technologies Limited",description:"Verified feedback and reviews from Evaryn Technologies clients, published with permission."};
+export default function Reviews(){return <main className="ev2-page"><section className="ev2-inner-hero"><div className="ev2-shell"><span className="ev2-kicker">Feedback & Reviews</span><h1>Relationships are built<br/><em>on trust and delivery.</em></h1><p>Authentic client feedback is published here only with permission and verification.</p></div></section><section className="ev2-section ev2-shell">{publishedReviews.length?<div className="ev2-two-col">{publishedReviews.map(r=><blockquote className="ev2-card" key={r.id}><p className="ev2-quote">“{r.quote}”</p><footer>— {r.attribution}</footer></blockquote>)}</div>:<div className="ev2-card ev2-empty"><h2>Verified feedback is being prepared.</h2><p>We won't publish fabricated testimonials. In the meantime, you're welcome to discuss our working approach with the team.</p><Link className="ev2-textlink" href="/contact">Get in touch <ArrowUpRight size={16}/></Link></div>}</section></main>}

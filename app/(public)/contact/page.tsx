@@ -1,83 +1,9 @@
-import type { Metadata } from "next";
+import LinkedInMark from "@/components/ui/LinkedInMark";
+import type {Metadata} from "next";
 import { Suspense } from "react";
-import { Clock3, Mail, MapPin, MessageSquareText, Phone, SearchCheck } from "lucide-react";
+import {Mail,Phone,MessageCircle,MapPin,CalendarDays,ArrowUpRight} from "lucide-react";
 import ClientInquiryForm from "@/components/forms/ClientInquiryForm";
-import { site } from "@/lib/site";
-
-export const metadata: Metadata = {
-  title: "Contact and Request a Quote",
-  description:
-    "Tell us about your project. Share your requirements and a sample if you have one, and we will come back with a scoped quote and a proposed pilot.",
-};
-
-const next = [
-  { Icon: MessageSquareText, title: "You tell us what you need", text: "Share your requirements, volume and timeline. A sample or example helps a lot." },
-  { Icon: SearchCheck, title: "We scope it properly", text: "We review your request and come back with a clear scope, a proposed pilot and a quote." },
-  { Icon: Clock3, title: "You decide, no pressure", text: "Review the proposal, ask questions and start with a pilot when you are ready." },
-];
-
-export default function ContactPage() {
-  return (
-    <main>
-      <section className="site-hero">
-        <div className="site-container">
-          <div className="site-hero__copy">
-            <p className="site-eyebrow">Contact</p>
-            <h1 className="site-h1">
-              Let&apos;s scope your project,
-              <span className="site-accent">and prove the quality.</span>
-            </h1>
-            <p className="site-lead">
-              Tell us what you are building. We will reply with a scoped quote and a proposed pilot so you can
-              judge our work before you commit.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="site-section">
-        <div className="site-container">
-          <div className="site-split site-split--wide-right">
-            <div className="site-stack" style={{ gap: "1.75rem" }}>
-              <div>
-                <p className="site-eyebrow">What happens next</p>
-                <h2 className="site-h2" style={{ marginTop: "0.9rem" }}>Three simple steps</h2>
-              </div>
-              <ol className="site-grid" style={{ width: "100%" }}>
-                {next.map(({ Icon, title, text }) => (
-                  <li key={title} className="site-card" style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                    <span className="site-icon"><Icon size={22} aria-hidden="true" /></span>
-                    <div>
-                      <h3 className="site-h3">{title}</h3>
-                      <p style={{ marginTop: "0.4rem" }}>{text}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-
-              <div className="site-card" style={{ width: "100%" }}>
-                <h3 className="site-h3">Prefer to reach us directly?</h3>
-                <ul className="site-list site-list--muted">
-                  <li><MapPin size={18} aria-hidden="true" /> {site.location}</li>
-                  {site.contactEmail && (
-                    <li><Mail size={18} aria-hidden="true" /> <a className="site-link" href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></li>
-                  )}
-                  {site.contactPhone && (
-                    <li><Phone size={18} aria-hidden="true" /> <a className="site-link" href={`tel:${site.contactPhone.replace(/\s+/g, "")}`}>{site.contactPhone}</a></li>
-                  )}
-                </ul>
-                <p>For the fastest response, use the form. It tells us exactly what we need to scope your project.</p>
-              </div>
-            </div>
-
-            <div className="site-form-wrap">
-              <Suspense fallback={<div className="site-card">Loading the inquiry form...</div>}>
-                <ClientInquiryForm kind="contact" />
-              </Suspense>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-  );
-}
+import ConsultationRequestForm from "@/components/forms/ConsultationRequestForm";
+import {site} from "@/lib/site";
+export const metadata:Metadata={title:"Contact & Consultation | Evaryn Technologies Limited",description:"Contact Evaryn Technologies by email, WhatsApp or phone, or request a consultation."};
+export default function Contact(){return <main className="ev2-page"><section className="ev2-inner-hero"><div className="ev2-shell"><span className="ev2-kicker">Let's talk</span><h1>A clear conversation<br/><em>is a good place to start.</em></h1><p>Tell us what you're building or request a conversation with our team. We'll help you find the right next step.</p></div></section><section className="ev2-section ev2-shell"><div className="ev2-contact-grid"><div className="ev2-contact-details"><span className="ev2-kicker">Direct contact</span><h2>Reach the right team.</h2><a href="mailto:contact@evaryninc.com"><Mail/> contact@evaryninc.com</a><a href="tel:+254712798426"><Phone/> +254 712 798 426</a><a href="https://wa.me/254712798426" target="_blank" rel="noreferrer"><MessageCircle/> WhatsApp our team <ArrowUpRight size={15}/></a>{site.linkedinUrl && <a href={site.linkedinUrl} target="_blank" rel="noopener noreferrer"><LinkedInMark/> Connect on LinkedIn <ArrowUpRight size={15}/></a>}<p><MapPin size={17}/> Nairobi, Kenya · Serving clients worldwide</p><div className="ev2-contact-note"><strong>Need a project quote?</strong><span>Share your requirements and preferred timeline. We'll review the brief and respond.</span></div></div><div className="ev2-contact-form"><h2>Send an inquiry</h2><Suspense fallback={<p>Loading inquiry form…</p>}><ClientInquiryForm kind="contact"/></Suspense></div></div></section><section className="ev2-section ev2-section-tinted" id="consultation"><div className="ev2-shell"><div className="ev2-section-heading"><div><span className="ev2-kicker">Meet with Evaryn</span><h2>Request a consultation.</h2></div><p>Choose a preferred time and share the topic. Your request goes to our Super Admin inquiry queue for availability confirmation.</p></div><div className="ev2-consult-layout"><aside><CalendarDays size={36}/><h3>Focused conversation, meaningful next steps.</h3><p>Discuss a new service requirement, delivery partnership or investment opportunity. We will confirm the schedule by email.</p><p className="ev2-small">Requests are not automatic bookings.</p></aside><ConsultationRequestForm/></div></div></section></main>}
