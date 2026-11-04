@@ -13,18 +13,50 @@ export async function registerClient(form: FormData) {
   const email = String(form.get("email") ?? "").trim().toLowerCase();
   const password = String(form.get("password") ?? "");
   const confirm = String(form.get("confirm") ?? "");
-  if (fullName.length < 2 || fullName.length > 150 || companyName.length > 200 || !validEmail(email) || password.length < 12 || password.length > 128 || password !== confirm) redirect("/clients/register?error=invalid");
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  if (!siteUrl || !/^https:\/\/[^/]+/.test(siteUrl)) throw new Error("NEXT_PUBLIC_SITE_URL must be a secure production URL");
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
-    email, password,
-    options: {
-      emailRedirectTo: `${siteUrl.replace(/\/$/, "")}/auth/confirm?next=clients`,
-      data: { full_name: fullName, company_name: companyName, evaryn_account_type: "CLIENT" },
-    },
-  });
-  if (error) redirect("/clients/register?error=failed");
+  if (fullName.length < 2 || fullName.length > 150 || companyName.length > 200 || !validEmail(email) || password.length < 12 || password.length > 128 || password !== confirm) {
+    redirect("/clients/register?error=invalid");
+  }
+
+  // Prefer the configured public origin; Vercel's production URL is a safe fallback.
+  // Never build an email verification link using untrusted request Host headers.
+  const configuredSite = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  const vercelProduction = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  const rawSite = configuredSite || (vercelProduction ? `https://${vercelProduction}` : "");
+  let siteOrigin: string | null = null;
+  try {
+    const parsed = new URL(rawSite);
+    if (parsed.protocol === "https:" && !parsed.username && !parsed.password) {
+      siteOrigin = parsed.origin;
+    }
+  } catch {
+    // Invalid configuration should not crash a public registration page.
+  }
+  if (!siteOrigin) {
+    console.error("Evaryn client registration: production site URL is not configured");
+    redirect("/clients/register?error=configuration");
+  }
+
+  let signupFailed = false;
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${siteOrigin}/auth/confirm?next=clients`,
+        data: { full_name: fullName, company_name: companyName, evaryn_account_type: "CLIENT" },
+      },
+    });
+    if (error) {
+      console.error("Evaryn client registration: Supabase rejected signup", error.code ?? "auth_error");
+      signupFailed = true;
+    }
+  } catch (error) {
+    // Catch network or missing-Supabase-config failures, not Next.js redirects.
+    console.error("Evaryn client registration: unexpected signup failure", error instanceof Error ? error.name : "unknown");
+    redirect("/clients/register?error=unavailable");
+  }
+  if (signupFailed) redirect("/clients/register?error=failed");
   redirect("/clients/verify-email");
 }
 
