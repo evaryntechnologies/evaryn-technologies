@@ -1,20 +1,9 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import BrandLogo from "@/components/brand/BrandLogo";
-import { createClient } from "@/lib/supabase/server";
-import { prisma } from "@/lib/db/prisma";
 import { signInExpert } from "../actions";
 
 export default async function ExpertLogin({ searchParams }: { searchParams: Promise<{error?:string}> }) {
   const params = await searchParams;
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (user) {
-    if (!user.email_confirmed_at) redirect("/experts/verify-email");
-    const employee = await prisma.employeeProfile.findUnique({ where: {authUserId: user.id}, select: {status:true, role:true} });
-    if (employee?.status === "ACTIVE" && user.app_metadata?.role === employee.role) redirect("/portal");
-    redirect("/experts/application");
-  }
   return <main className="ev2-expert-login">
     <section className="ev2-expert-login-card">
       <Link href="/" className="ev2-expert-logo" aria-label="Evaryn home"><BrandLogo priority /></Link>
