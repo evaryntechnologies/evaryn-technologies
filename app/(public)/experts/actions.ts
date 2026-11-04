@@ -2,6 +2,7 @@
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {prisma} from "@/lib/db/prisma";
+import { uploadPrivateFile, removePrivateFile } from "@/lib/private-order-files";
 
 export async function registerExpert(form: FormData) {
   const fullName = String(form.get("fullName") ?? "").trim();
@@ -87,8 +88,11 @@ export async function submitExpertApplication(form:FormData){
  const portfolioUrl=String(form.get("portfolioUrl")??"").trim();
  if(!expertise.length||experience.length<20||portfolioUrl.length>500)redirect("/experts/application?error=invalid");
  if(portfolioUrl){try{const parsed=new URL(portfolioUrl);if(!["https:","http:"].includes(parsed.protocol))throw Error();}catch{redirect("/experts/application?error=invalid");}}
+ const resume = form.get("resume");
+ if (!(resume instanceof File) || resume.size === 0 || resume.size > 10 * 1024 * 1024 || !["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(resume.type)) redirect("/experts/application?error=invalid");
  const current=await prisma.expertApplication.findUnique({where:{authUserId:user.id},select:{id:true}});
  if(current)redirect("/experts/application");
- await prisma.expertApplication.create({data:{authUserId:user.id,email,fullName:String(user.user_metadata?.full_name??email.split("@")[0]).slice(0,150),expertise,country,experience,portfolioUrl:portfolioUrl||null}});
+ const uploaded = await uploadPrivateFile(resume, `expert-resumes/${user.id}`, ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]);
+ try { await prisma.expertApplication.create({data:{authUserId:user.id,email,cvStorageKey:uploaded.storageKey,fullName:String(user.user_metadata?.full_name??email.split("@")[0]).slice(0,150),expertise,country,experience,portfolioUrl:portfolioUrl||null}}); } catch (error) { await removePrivateFile(uploaded.storageKey); throw error; }
  redirect("/experts/application?submitted=1");
 }

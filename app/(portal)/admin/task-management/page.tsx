@@ -8,6 +8,7 @@ import { prisma } from "@/lib/db/prisma";
 import { assignTask } from "./actions";
 import { publishDraft } from "./publish-actions";
 import TaskCostFields from "./TaskCostFields";
+import { listAvailableClientRequests } from "@/lib/client-communication";
 
 const field="mt-2 w-full rounded-xl border border-slate-600 bg-[#071327] px-4 py-3 font-bold text-white";
 
@@ -16,11 +17,12 @@ async function Content({searchParams}:{searchParams:Promise<{message?:string;ok?
   const user=await requireEmployee(["ADMIN","SUPER_ADMIN","QA"]);
   const profile=await prisma.employeeProfile.findUnique({where:{authUserId:user.id},select:{role:true,status:true}});
   if(!profile || profile.status!=="ACTIVE" || !["ADMIN","SUPER_ADMIN","QA"].includes(profile.role)) return <p>Access denied.</p>;
-  const [workers,tasks,params,categories]=await Promise.all([
+  const [workers,tasks,params,categories,clientRequests]=await Promise.all([
     prisma.employeeProfile.findMany({where:{status:"ACTIVE",role:"TASKER"},select:{id:true,fullName:true,email:true,eligibleCategories:{select:{categoryId:true}}},orderBy:{fullName:"asc"},take:200}),
     prisma.workTask.findMany({select:{id:true,publicTaskId:true,orderId:true,category:true,title:true,status:true,deadline:true,reviewDeadline:true,qaDeadline:true,assignedTo:{select:{fullName:true}}},orderBy:{createdAt:"desc"},take:30}),
     searchParams,
     prisma.taskCategory.findMany({where:{active:true},select:{id:true,name:true,rate:true,billingUnit:true},orderBy:{name:"asc"}}),
+    listAvailableClientRequests(),
   ]);
   return <main className="min-h-screen bg-[#071327] px-5 py-10 text-white sm:px-10"><div className="w-full max-w-none">
     <BackLink href={profile.role==="QA"?"/portal/qa":"/portal/admin"} label="Dashboard" />
@@ -38,7 +40,7 @@ async function Content({searchParams}:{searchParams:Promise<{message?:string;ok?
     {params.message && <p role="status" className="mt-5 rounded-xl border border-white/20 p-4">{params.ok==="1"?"Success: ":"Error: "}{params.message}</p>}
     <section className="mt-7 rounded-2xl border border-white/10 bg-[#101F39] p-6"><h2 className="text-xl font-bold">Create Task</h2>
     <form className="mt-5 grid gap-5 sm:grid-cols-2" action={async(data:FormData)=>{"use server";const result=await assignTask(data);redirect("/portal/admin/task-management?ok="+(result.success?"1":"0")+"&message="+encodeURIComponent(result.message));}}>
-      <label>Order ID (external, kept private)<input name="orderId" className={field} placeholder="Enter the original order reference" /></label>
+      <label>Client order (automatic code)<select name="clientRequestId" className={field} required defaultValue=""><option value="">Select an unassigned client order</option>{clientRequests.map(r=><option key={r.id} value={r.id}>{r.clientOrderCode} — {r.title} · {r.service}</option>)}</select></label>
       <TaskCostFields categories={categories.map(c=>({id:c.id,name:c.name,rate:String(c.rate),billingUnit:c.billingUnit}))} workers={workers.map(w=>({id:w.id,fullName:w.fullName,email:w.email,categoryIds:w.eligibleCategories.map(c=>c.categoryId)}))}/>
       <label>Priority<select name="priority" className={field} defaultValue="NORMAL"><option value="LOW">Low</option><option value="NORMAL">Normal</option><option value="HIGH">High</option><option value="URGENT">Urgent</option></select></label>
       <label className="sm:col-span-2">Task title<input required name="title" minLength={3} maxLength={160} className={field}/></label>

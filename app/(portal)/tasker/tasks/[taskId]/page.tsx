@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
+import { Prisma } from "@/generated/prisma/client";
 import { submitTask } from "./actions";
 
 async function TaskContent({
@@ -53,6 +54,10 @@ async function TaskContent({
   });
 
   if (!task) notFound();
+  const clientFiles=await prisma.$queryRaw<{id:string;fileName:string}[]>(Prisma.sql`
+    SELECT a."id",a."fileName" FROM public."ClientOrderAttachment" a
+    JOIN public."ClientOrderLink" l ON l."requestId"=a."requestId"
+    WHERE l."taskId"=${taskId}::uuid ORDER BY a."createdAt" ASC LIMIT 50`);
 
   const params = await searchParams;
   const canSubmit = ["ASSIGNED", "REWORK_REQUIRED"].includes(task.status);
@@ -88,6 +93,7 @@ async function TaskContent({
         <section className="mt-8 rounded-2xl border border-white/10 bg-[#101F39] p-6 sm:p-8">
           <h2 className="text-xl font-bold">Task Details</h2>
           {task.attachmentKey && <p className="mt-4"><a className="text-cyan-300 underline" href={`/portal/attachments/${task.id}`}>Download reference: {task.attachmentName ?? "Attachment"}</a></p>}
+          {clientFiles.map(file => <p key={file.id} className="mt-3"><a className="text-cyan-300 underline" href={`/api/client-order-attachments/${file.id}`}>Client instructions: {file.fileName}</a></p>)}
           {task.extraAttachments.map(file => <p key={file.id} className="mt-3"><a className="text-cyan-300 underline" href={`/portal/attachments/${task.id}/extra/${file.id}`}>Additional file: {file.fileName}</a></p>)}
           {task.clientRevisionNote && task.status === "REWORK_REQUIRED" && <div className="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 p-4"><strong className="text-amber-100">Client requested revision</strong><p className="mt-2 whitespace-pre-wrap text-sm text-amber-50">{task.clientRevisionNote}</p></div>}
           {task.clientPaidPercent != null && Number(task.clientPaidPercent) > 0 && Number(task.clientPaidPercent) < 100 && <p className="mt-3 rounded-lg border border-cyan-400/30 bg-cyan-400/10 p-3 text-sm text-cyan-100">Client paid partially: {Number(task.clientPaidPercent)}%. Eligible earnings are prorated to this percentage.</p>}

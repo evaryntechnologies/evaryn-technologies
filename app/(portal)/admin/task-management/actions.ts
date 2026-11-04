@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
+import { Prisma } from "@/generated/prisma/client";
 import { createClient as adminClient } from "@supabase/supabase-js";
 
 type Result = { success: boolean; message: string };
@@ -18,10 +19,18 @@ export async function assignTask(formData: FormData): Promise<Result> {
   if (!["DRAFT", "OPEN", "ASSIGN"].includes(mode)) return {success:false,message:"Invalid publication option."};
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
-  const orderId = String(formData.get("orderId") ?? "");
+  const clientRequestId = String(formData.get("clientRequestId") ?? "");
   const category = String(formData.get("category") ?? "");
   const priority = String(formData.get("priority") ?? "NORMAL");
-  if ((mode === "ASSIGN" && !uuid.test(assignedToId)) || title.length < 3 || title.length > 160 || description.length < 10 || description.length > 10000 || orderId.length > 10000 || !category || !["LOW","NORMAL","HIGH","URGENT"].includes(priority)) return {success:false,message:"Check the entered task details."};
+  if ((mode === "ASSIGN" && !uuid.test(assignedToId)) || title.length < 3 || title.length > 160 || description.length < 10 || description.length > 10000 || !uuid.test(clientRequestId) || !category || !["LOW","NORMAL","HIGH","URGENT"].includes(priority)) return {success:false,message:"Check the entered task details."};
+  const requestRows = await prisma.$queryRaw<{id:string;clientId:string;clientOrderCode:string;service:string;title:string;details:string;status:string}[]>(Prisma.sql`
+    SELECT r."id",r."clientId",r."clientOrderCode",r."service",r."title",r."details",r."status"
+    FROM public."ClientProjectRequest" r
+    LEFT JOIN public."ClientOrderLink" l ON l."requestId"=r."id"
+    WHERE r."id"=${clientRequestId}::uuid AND l."id" IS NULL LIMIT 1`);
+  const clientRequest = requestRows[0];
+  if (!clientRequest || !clientRequest.clientOrderCode || clientRequest.status === "CLOSED" || clientRequest.status === "REJECTED") return {success:false,message:"Select an available, active client order."};
+  const orderId = clientRequest.clientOrderCode;
   const validCategory = await prisma.taskCategory.findFirst({where:{name:category,active:true},select:{id:true,rate:true,billingUnit:true}});
   if (!validCategory) return {success:false,message:"Please select an active category."};
   const unitsText=String(formData.get("unitsOrdered")??"").trim();
@@ -62,7 +71,8 @@ export async function assignTask(formData: FormData): Promise<Result> {
   const start=Date.now();
   const stamp=(hours:number)=>new Date(start+hours*3600000);
   try {
-    await prisma.workTask.create({data:{
+    await prisma.$transaction(async tx => {
+    const task = await tx.workTask.create({data:{
       assignedToId:mode === "ASSIGN" ? assignedToId : null,createdById:creator.id,title,description,priority,status:mode === "ASSIGN" ? "ASSIGNED" : mode,
       orderId,category,unitsOrdered:unitsOrdered.toFixed(2),unitRate:validCategory.rate,totalOrderCost:validCategory.rate.mul(unitsOrdered),billingUnit:validCategory.billingUnit,publicTaskId:"TASK-"+randomUUID().replaceAll("-","").slice(0,12).toUpperCase(),
       // For hub tasks, deadlines start only once a Tasker claims the task.
@@ -72,6 +82,10 @@ export async function assignTask(formData: FormData): Promise<Result> {
       submissionHours, reviewHours, qaHours,
       attachmentKey,attachmentName,
     }});
+    await tx.$executeRaw(Prisma.sql`
+      INSERT INTO public."ClientOrderLink" ("taskId","clientId","linkedById","requestId")
+      VALUES (${task.id}::uuid,${clientRequest.clientId}::uuid,${creator.id}::uuid,${clientRequest.id}::uuid)`);
+    });
   } catch(e) {
     if(attachmentKey && client) await client.storage.from("task-attachments").remove([attachmentKey]).catch(()=>{});
     console.error("Task creation error:",e);

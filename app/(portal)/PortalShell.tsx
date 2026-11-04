@@ -41,10 +41,10 @@ function roleMenu(role:Role): MenuItem[] {
     links.push({name:"Review Queue",href:"/portal/reviewer/queue",icon:ShieldCheck});
   if (role === "QA" || role === "ADMIN" || role === "SUPER_ADMIN")
     links.push({name:"QA Queue",href:"/portal/qa/queue",icon:ShieldCheck});
+  if (role === "QA" || role === "ADMIN" || role === "SUPER_ADMIN")
+    links.push({name:"Client Orders",href:"/portal/client-orders",icon:PanelsTopLeft}, {name:"Client Messages",href:"/portal/client-messages",icon:MessageSquare}, {name:"Order Register",href:"/portal/order-register",icon:Search});
   if (role === "QA" || role === "SUPER_ADMIN")
     links.push({name:"Client Actions",href:"/portal/qa/client-actions",icon:ClipboardList});
-  if (["QA","ADMIN","SUPER_ADMIN"].includes(role))
-    links.push({name:"Client Deliveries",href:"/portal/client-delivery",icon:ClipboardList});
   if (role === "QA")
     links.push({name:"Fines",href:"/portal/admin/fines",icon:Settings2});
   if (role === "QA")
@@ -104,12 +104,12 @@ function groupedNavigation(role: Role): NavigationEntry[] {
     section("My Orders", ClipboardList, ["Task Hub", "In Progress", "In Revision", "Completed", "Canceled Orders"]),
   ];
   if (role !== "TASKER") {
-    navigation.push(section("Order Queues", ShieldCheck, ["Review Queue", "QA Queue", "Client Actions", "Client Deliveries"]));
+    navigation.push(section("Order Queues", ShieldCheck, ["Review Queue", "QA Queue", "Client Actions", "Client Messages", "Order Register"]));
   }
   if (role === "SUPER_ADMIN" || role === "ADMIN") {
     navigation.push(
       section("Operations Hub", Compass, [
-        "Operations Hub", "Client Deliveries", "Task Management", "Task Summary", "Force Reassign",
+        "Operations Hub", "Task Management", "Task Summary", "Force Reassign",
         "Reassignment Requests", "Categories", "Review & QA Oversight",
         "Fines & Penalties", "Disputes", "Ratings & Rubrics",
       ]),

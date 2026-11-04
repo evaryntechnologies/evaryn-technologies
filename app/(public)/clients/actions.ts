@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db/prisma";
+import { Prisma } from "@/generated/prisma/client";
+import { categoryPrefix, uploadClientRequestAttachments } from "@/lib/client-communication";
 
 const validEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -172,7 +174,25 @@ export async function createClientRequest(form: FormData) {
   // Basic server-side throttle to reduce duplicate submissions. No public client can choose another client's ID.
   const recent = await prisma.clientProjectRequest.count({ where: { clientId: client.id, createdAt: { gte: new Date(Date.now() - 60_000) } } });
   if (recent >= 2) redirect("/client-portal/requests/new?error=rate");
-  const request = await prisma.clientProjectRequest.create({ data: { clientId: client.id, title, service, details } });
+  const files = form.getAll("attachments").filter((f): f is File => f instanceof File && f.size > 0);
+  if (files.length > 5 || files.some(f => f.size > 10*1024*1024)) redirect("/client-portal/requests/new?error=invalid");
+  const prefix = categoryPrefix(service);
+  const request = await prisma.$transaction(async tx => {
+    const result = await tx.$queryRaw<{nextNumber:number}[]>(Prisma.sql`
+      INSERT INTO public."ClientOrderSequence" ("prefix", "nextNumber") VALUES (${prefix}, 1)
+      ON CONFLICT ("prefix") DO UPDATE SET "nextNumber" = public."ClientOrderSequence"."nextNumber" + 1
+      RETURNING "nextNumber"`);
+    const orderCode = `${prefix}-${String(result[0].nextNumber).padStart(3,"0")}`;
+    const r = await tx.clientProjectRequest.create({ data: { clientId: client.id, title, service, details } });
+    await tx.$executeRaw(Prisma.sql`UPDATE public."ClientProjectRequest" SET "clientOrderCode" = ${orderCode} WHERE "id" = ${r.id}::uuid`);
+    return r;
+  });
+  try {
+    await uploadClientRequestAttachments(request.id, files);
+  } catch (error) {
+    console.error("Client attachment upload failed", error);
+    redirect(`/client-portal/requests/${request.id}?upload=failed`);
+  }
   revalidatePath("/client-portal");
   redirect(`/client-portal/requests/${request.id}?submitted=1`);
 }

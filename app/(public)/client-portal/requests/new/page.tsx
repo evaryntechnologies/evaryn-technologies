@@ -1,3 +1,26 @@
-import {createClientRequest} from "../../../clients/actions";
-export default async function NewClientRequest({searchParams}:{searchParams:Promise<{error?:string}>}){const p=await searchParams;return <main className="mx-auto max-w-2xl"><h1 className="text-3xl font-bold">New Project Request</h1><p className="mt-2 text-sm text-slate-500">Tell Evaryn about the work you need. All requests are reviewed before becoming active projects.</p>{p.error&&<p role="alert" className="mt-4 rounded-lg bg-red-100 p-3 text-red-800">{p.error==="rate"?"Too many requests in a short time. Please try later.":"Please check your title, service and description."}</p>}
- <form action={createClientRequest} className="mt-6 grid gap-5 rounded-xl border p-6"><label className="grid gap-1 text-sm font-medium">Project title<input required minLength={5} maxLength={180} name="title" className="rounded-lg border p-3 text-slate-900"/></label><label className="grid gap-1 text-sm font-medium">Service required<select name="service" required className="rounded-lg border p-3 text-slate-900"><option value="">Select a service</option><option>AI Data Annotation</option><option>AI Training Data Operations</option><option>Technical Writing</option><option>Non-Technical Writing</option><option>Video Editing</option><option>Website Development</option><option>Other</option></select></label><label className="grid gap-1 text-sm font-medium">Project details (at least 30 characters)<textarea required minLength={30} maxLength={10000} rows={8} name="details" className="rounded-lg border p-3 text-slate-900"/></label><button className="rounded-lg bg-[#0758B5] px-5 py-3 font-semibold text-white">Submit Request</button></form></main>}
+import { createClientRequest } from "../../../clients/actions";
+
+export default async function NewClientRequest({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const p = await searchParams;
+  return (
+    <main className="cp-page cp-narrow">
+      <div className="cp-head"><div><h1 className="cp-title">New project request</h1><p className="cp-sub">Tell Evaryn about the work you need. Every request is reviewed before it becomes an active order.</p></div></div>
+      {p.error && <p role="alert" className="cp-flash cp-flash--err">{p.error === "rate" ? "Too many requests in a short time. Please try again later." : "Please check your title, service and description."}</p>}
+      <form action={createClientRequest} encType="multipart/form-data" className="cp-panel cp-form">
+        <label>Project title<input required minLength={5} maxLength={180} name="title" placeholder="e.g. Annotate 12,000 LiDAR frames" /></label>
+        <label>Service required
+          <select name="service" required defaultValue="">
+            <option value="" disabled>Select a service</option>
+            <option>AI Data Annotation</option><option>AI Training Data Operations</option><option>Technical Writing</option>
+            <option>Non-Technical Writing</option><option>Video Editing</option><option>Website Development</option><option>Other</option>
+          </select>
+        </label>
+        <label>Project details<small>At least 30 characters. Include volume, deadline and target format.</small>
+          <textarea required minLength={30} maxLength={10000} rows={8} name="details" />
+        </label>
+        <label>Additional instructions or reference files (up to 5 files, 10 MB each)<input name="attachments" type="file" multiple accept=".pdf,.docx,.txt,.xlsx,.png,.jpg,.jpeg" /></label>
+        <div><button className="ev2-primary">Submit request</button></div>
+      </form>
+    </main>
+  );
+}

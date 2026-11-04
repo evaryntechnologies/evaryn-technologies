@@ -1,0 +1,34 @@
+import Link from "next/link";
+import { Prisma } from "@/generated/prisma/client";
+import { prisma } from "@/lib/db/prisma";
+import { requireEmployee } from "@/lib/auth/require-employee";
+type Row={requestId:string;clientOrderCode:string|null;clientName:string;title:string;service:string;requestStatus:string;taskId:string|null;maskedId:string|null;category:string|null;taskStatus:string|null;price:string|null;tasker:string|null;qa:string|null;reviewer:string|null;createdAt:Date};
+export default async function Register({searchParams}:{searchParams:Promise<{q?:string;category?:string;status?:string;tasker?:string;reviewer?:string;qa?:string;sort?:string;min?:string;max?:string}>}){
+ await requireEmployee(["QA","ADMIN","SUPER_ADMIN"]);const p=await searchParams;
+ const q=(p.q??"").trim().slice(0,120).toLowerCase();const category=(p.category??"").trim().slice(0,100);const status=(p.status??"").trim().slice(0,70);
+ const tasker=(p.tasker??"").slice(0,150);const reviewer=(p.reviewer??"").slice(0,150);const qa=(p.qa??"").slice(0,150);
+ const min=p.min&&Number.isFinite(Number(p.min))?Number(p.min):null;const max=p.max&&Number.isFinite(Number(p.max))?Number(p.max):null;
+ const sort=["newest","oldest","cost-high","cost-low","title"].includes(p.sort??"")?p.sort:"newest";
+ const rows=await prisma.$queryRaw<Row[]>(Prisma.sql`
+ SELECT r."id" AS "requestId",r."clientOrderCode",c."fullName" AS "clientName",r."title",r."service",r."status"::text AS "requestStatus",
+ t."id" AS "taskId",t."publicTaskId" AS "maskedId",t."category",t."status" AS "taskStatus",
+ t."totalOrderCost"::text AS "price",worker."fullName" AS "tasker",qa."fullName" AS "qa",rev."fullName" AS "reviewer",r."createdAt"
+ FROM public."ClientProjectRequest" r JOIN public."ClientProfile" c ON c."id"=r."clientId"
+ LEFT JOIN public."ClientOrderLink" l ON l."requestId"=r."id"
+ LEFT JOIN public."WorkTask" t ON t."id"=l."taskId"
+ LEFT JOIN public."EmployeeProfile" worker ON worker."id"=t."assignedToId"
+ LEFT JOIN public."EmployeeProfile" qa ON qa."id"=t."claimedQaId"
+ LEFT JOIN public."EmployeeProfile" rev ON rev."id"=t."claimedReviewerId"
+ ORDER BY r."createdAt" DESC LIMIT 1000`);
+ const filtered=rows.filter(r=>{
+ const searchable=[r.clientOrderCode,r.maskedId,r.title,r.service,r.clientName,r.tasker,r.qa,r.reviewer].join(" ").toLowerCase();
+ const price=r.price===null?null:Number(r.price);
+ return (!q||searchable.includes(q))&&(!category||r.service===category||r.category===category)&&(!status||r.taskStatus===status||r.requestStatus===status)&&(!tasker||r.tasker===tasker)&&(!reviewer||r.reviewer===reviewer)&&(!qa||r.qa===qa)&&(min===null||(price!==null&&price>=min))&&(max===null||(price!==null&&price<=max));
+ }).sort((a,b)=>sort==="cost-high"?(Number(b.price??-1)-Number(a.price??-1)):sort==="cost-low"?(Number(a.price??Infinity)-Number(b.price??Infinity)):sort==="oldest"?(+new Date(a.createdAt)- +new Date(b.createdAt)):sort==="title"?a.title.localeCompare(b.title):(+new Date(b.createdAt)- +new Date(a.createdAt)));
+ const categories=Array.from(new Set(rows.map(r=>r.service))).sort();const statuses=Array.from(new Set(rows.flatMap(r=>[r.taskStatus,r.requestStatus]).filter((x):x is string=>!!x))).sort();
+ const taskers=Array.from(new Set(rows.map(r=>r.tasker).filter((x):x is string=>!!x))).sort();const reviewers=Array.from(new Set(rows.map(r=>r.reviewer).filter((x):x is string=>!!x))).sort();const qas=Array.from(new Set(rows.map(r=>r.qa).filter((x):x is string=>!!x))).sort();
+ const cls="rounded-lg border border-sky-400/30 bg-[#102b4d] px-3 py-2 text-white";
+ return <main className="mx-auto max-w-7xl px-5 py-10"><h1 className="text-3xl font-bold">All Client Orders</h1><p className="mt-2 text-sm opacity-75">Search and filter orders by category, status, worker, reviewer, QA, and client order pricing.</p>
+ <form method="GET" className="mt-6 grid gap-3 rounded-xl bg-[#0B2441] p-4 text-white sm:grid-cols-3 lg:grid-cols-5"><input name="q" defaultValue={q} placeholder="Order code, task ID, title, person" className={cls}/><select name="category" defaultValue={category} className={cls}><option value="">All categories</option>{categories.map(c=><option key={c}>{c}</option>)}</select><select name="status" defaultValue={status} className={cls}><option value="">All statuses</option>{statuses.map(s=><option key={s}>{s}</option>)}</select><select name="tasker" defaultValue={tasker} className={cls}><option value="">All taskers</option>{taskers.map(n=><option key={n}>{n}</option>)}</select><select name="reviewer" defaultValue={reviewer} className={cls}><option value="">All reviewers</option>{reviewers.map(n=><option key={n}>{n}</option>)}</select><select name="qa" defaultValue={qa} className={cls}><option value="">All QA staff</option>{qas.map(n=><option key={n}>{n}</option>)}</select><input name="min" type="number" step="0.01" min="0" defaultValue={p.min} placeholder="Min order price" className={cls}/><input name="max" type="number" step="0.01" min="0" defaultValue={p.max} placeholder="Max order price" className={cls}/><select name="sort" defaultValue={sort} className={cls}><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="cost-high">Highest price</option><option value="cost-low">Lowest price</option><option value="title">Title A-Z</option></select><button className="rounded-lg bg-[#7956AF] px-4 py-3 font-bold text-white">Apply filters</button><Link className="self-center underline" href="/portal/order-register">Clear filters</Link></form>
+ <p className="my-4 text-sm">{filtered.length} matching orders</p><div className="overflow-x-auto rounded-xl border"><table className="min-w-full text-left text-sm"><thead><tr className="border-b"><th className="p-3">Client Order</th><th className="p-3">Worker Task ID</th><th className="p-3">Title / Category</th><th className="p-3">Status</th><th className="p-3">Tasker</th><th className="p-3">Reviewer</th><th className="p-3">QA</th><th className="p-3">Order price</th><th className="p-3">View</th></tr></thead><tbody>{filtered.map(r=><tr key={r.requestId} className="border-b"><td className="p-3 font-semibold">{r.clientOrderCode??"Legacy order"}</td><td className="p-3">{r.maskedId??"Not tasked"}</td><td className="p-3">{r.title}<div className="text-xs opacity-75">{r.service}</div></td><td className="p-3">{r.taskStatus??r.requestStatus}</td><td className="p-3">{r.tasker??"—"}</td><td className="p-3">{r.reviewer??"—"}</td><td className="p-3">{r.qa??"—"}</td><td className="p-3">{r.price===null?"Not priced":Number(r.price).toFixed(2)}</td><td className="p-3"><Link className="text-cyan-500 underline" href={`/portal/client-messages/${r.requestId}`}>Details</Link></td></tr>)}</tbody></table></div></main>;
+}
