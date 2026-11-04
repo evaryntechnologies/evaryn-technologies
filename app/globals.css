@@ -801,3 +801,112 @@ html:not(.dark) :is(.ev-public, .ev-portal) .text-red-600 {
 .ev-portal main :is(td, th, label, li) p {
   max-width: none;
 }
+
+/* =====================================================================
+   PORTAL v3: catch-all remap + modern polish for pages that still use their original markup.
+   Every near-black / hard-coded navy used anywhere in the staff portal maps to a brand token,
+   so no page can show a black box in dark mode or a dark box in light mode.
+   ===================================================================== */
+.ev-portal .bg-\[\#10223E\],
+.ev-portal .bg-\[\#0C2948\],
+.ev-portal .bg-\[\#0D3051\],
+.ev-portal .bg-\[\#12141C\],
+.ev-portal .dark\:bg-\[\#102D4D\],
+.ev-portal .dark\:bg-\[\#102B4F\],
+.ev-portal .dark\:bg-\[\#163B66\],
+.ev-portal .dark\:bg-\[\#173F67\],
+.ev-portal .dark\:bg-\[\#0C1B33\] {
+  background-color: var(--ev-surface);
+  border-color: var(--ev-border-soft);
+}
+.ev-portal .bg-\[\#0D0F17\],
+.ev-portal .bg-\[\#090A0F\],
+.ev-portal .bg-slate-50,
+.ev-portal .bg-slate-400\/10,
+.ev-portal .bg-slate-500\/15 {
+  background-color: var(--ev-inset);
+}
+.ev-portal .bg-\[\#085BC0\],
+.ev-portal .bg-\[\#1268e3\],
+.ev-portal .bg-\[\#2478E7\],
+.ev-portal .hover\:bg-\[\#1268e3\]:hover {
+  background-color: var(--ev-primary);
+  color: var(--ev-on-primary);
+}
+.ev-portal .bg-\[\#085BC0\]:hover { background-color: var(--ev-primary-hover); }
+.ev-portal .border-slate-600,
+.ev-portal .border-slate-300,
+.ev-portal .border-slate-200,
+.ev-portal .dark\:border-slate-600,
+.ev-portal .dark\:border-slate-700,
+.ev-portal .border-white\/\[0\.08\],
+.ev-portal .divide-white\/\[0\.06\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--ev-border-soft);
+}
+.ev-portal .hover\:bg-white\/5:hover,
+.ev-portal .hover\:bg-white\/10:hover,
+.ev-portal .hover\:bg-white\/\[0\.03\]:hover,
+.ev-portal .hover\:bg-white\/\[0\.04\]:hover {
+  background-color: var(--ev-inset);
+}
+.ev-portal .text-slate-500,
+.ev-portal .text-slate-600 { color: var(--ev-muted); }
+.ev-portal .text-slate-900,
+.ev-portal .text-slate-100 { color: var(--ev-ink); }
+
+/* Page headings written as bare h1 + p (header, then content) */
+.ev-portal main header > h1,
+.ev-portal main > h1,
+.ev-portal main > div > h1 {
+  font-size: clamp(1.7rem, 1.2rem + 1.4vw, 2.4rem);
+  line-height: 1.15;
+  color: var(--ev-ink);
+}
+.ev-portal main header > p:first-child,
+.ev-portal main header > .uppercase {
+  color: var(--ev-amethyst-text);
+  letter-spacing: 0.16em;
+}
+.ev-portal main header > h1 + p,
+.ev-portal main > h1 + p {
+  max-width: 68ch;
+  line-height: 1.75;
+  color: var(--ev-muted);
+}
+
+/* Cards in original markup: unified radius, softer depth, hover accent */
+.ev-portal article[class*="rounded"][class*="border"],
+.ev-portal section[class*="rounded"][class*="border"].bg-\[\#101F39\],
+.ev-portal div.bg-\[\#101F39\][class*="rounded"] {
+  border-radius: 1.1rem;
+  box-shadow: var(--ev-shadow);
+}
+.ev-portal article.bg-\[\#101F39\]:hover,
+.ev-portal article.bg-\[\#10223E\]:hover {
+  box-shadow: 0 22px 44px -26px color-mix(in srgb, var(--ev-cyan) 55%, transparent);
+}
+
+/* Inset blocks inside cards (submitted work, notes, code-like areas) */
+.ev-portal .bg-\[\#071327\][class*="rounded"][class*="border"] {
+  background-color: var(--ev-inset);
+  border-color: var(--ev-border-soft);
+}
+
+/* Status banners: readable in both modes */
+.ev-portal [role="status"][class*="emerald"] { border-color: #34d399; }
+.ev-portal [role="alert"][class*="amber"] { border-color: #f5b301; }
+html:not(.dark) .ev-portal [role="status"][class*="emerald"] { background: #d9f6e9; color: #065f46; }
+html:not(.dark) .ev-portal [role="alert"][class*="amber"] { background: #fdf0c8; color: #7a4a05; }
+.dark .ev-portal [role="status"][class*="emerald"] { background: rgba(16,185,129,.16); color: #b7f3d8; }
+.dark .ev-portal [role="alert"][class*="amber"] { background: rgba(245,179,1,.16); color: #fde9a6; }
+
+/* Modal / dialog panels */
+.ev-portal [role="dialog"] { background-color: var(--ev-surface); color: var(--ev-ink); border: 1px solid var(--ev-border); border-radius: 1.25rem; box-shadow: var(--ev-shadow-lg); }
+
+/* Tables: header band, zebra-free, roomy rows */
+.ev-portal main table { border-radius: 0.9rem; overflow: hidden; }
+.ev-portal main thead th { background: var(--ev-inset); }
+.ev-portal main td { color: var(--ev-ink); }
+
+/* Selection + links */
+.ev-portal main a:not([class]) { color: var(--ev-accent-text); font-weight: 600; }

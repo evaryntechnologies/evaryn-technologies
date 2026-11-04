@@ -1,7 +1,75 @@
 import {Suspense} from "react";
 import {connection} from "next/server";
+import {Inbox} from "lucide-react";
 import {requireEmployee} from "@/lib/auth/require-employee";
 import {prisma} from "@/lib/db/prisma";
 import {updateClientRequest} from "./actions";
-async function ClientRequestQueue(){await connection();const user=await requireEmployee(["SUPER_ADMIN"]);if(user.role!=="SUPER_ADMIN")return null;const requests=await prisma.clientProjectRequest.findMany({include:{client:{select:{fullName:true,email:true,companyName:true}}},orderBy:{createdAt:"desc"},take:100});return <main className="min-h-screen bg-[#071327] px-4 py-8 text-white sm:px-8"><h1 className="text-3xl font-bold">Client Project Requests</h1><p className="mt-2 text-sm text-slate-300">Requests received through Work With Us · Super Admin only</p><div className="mt-7 grid gap-4">{requests.map(r=><article key={r.id} className="rounded-xl border border-white/10 bg-[#10223E] p-5"><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-lg font-semibold">{r.title}</h2><span className="rounded-full border border-cyan-500/30 px-3 py-1 text-xs text-cyan-200">{r.status.replaceAll("_"," ")}</span></div><p className="mt-2 text-sm text-slate-300">{r.client.fullName} · {r.client.companyName||"Individual"} · {r.client.email}</p><p className="mt-1 text-xs text-slate-400">{r.service} · {r.createdAt.toLocaleDateString("en-GB")}</p><p className="mt-4 whitespace-pre-wrap text-sm">{r.details}</p><form action={updateClientRequest} className="mt-5 grid gap-3 border-t border-white/10 pt-4"><input type="hidden" name="id" value={r.id}/><label className="text-sm">Status <select name="status" defaultValue={r.status} className="mt-1 block w-full rounded-lg bg-[#071327] p-3 text-white"><option value="PENDING_REVIEW">Pending review</option><option value="IN_DISCUSSION">In discussion</option><option value="ACCEPTED">Accepted</option><option value="CLOSED">Closed</option><option value="REJECTED">Rejected</option></select></label><label className="text-sm">Update visible to client<textarea name="adminNote" rows={3} maxLength={4000} defaultValue={r.adminNote||""} className="mt-1 block w-full rounded-lg bg-[#071327] p-3 text-white"/></label><button className="w-fit rounded-lg bg-[#085BC0] px-5 py-2 font-semibold">Save Update</button></form></article>)}{!requests.length&&<p className="text-slate-300">No client requests yet.</p>}</div></main>}
-export default function Page(){return <Suspense fallback={<p>Loading client requests…</p>}><ClientRequestQueue/></Suspense>}
+import {PageShell, PageHeader, Pill, EmptyState, card, inputCls, textareaCls, btnPrimary, prettyStatus, dateFmt, type PillTone} from "../../ui";
+
+const tone = (s: string): PillTone =>
+  s === "ACCEPTED" ? "green" : s === "REJECTED" ? "rose" : s === "CLOSED" ? "slate" : s === "IN_DISCUSSION" ? "blue" : "amber";
+
+async function ClientRequestQueue() {
+  await connection();
+  const user = await requireEmployee(["SUPER_ADMIN"]);
+  if (user.role !== "SUPER_ADMIN") return null;
+  const requests = await prisma.clientProjectRequest.findMany({
+    include: {client: {select: {fullName: true, email: true, companyName: true}}},
+    orderBy: {createdAt: "desc"},
+    take: 100,
+  });
+  return (
+    <PageShell>
+      <PageHeader
+        eyebrow="Super Admin"
+        title="Client project requests"
+        subtitle="Requests received through Work With Us. Update the status and leave a note the client can see."
+        back={{href: "/portal/super-admin", label: "Dashboard"}}
+        actions={<Pill tone="cyan">{requests.length} request{requests.length === 1 ? "" : "s"}</Pill>}
+      />
+      {!requests.length ? (
+        <EmptyState icon={Inbox} title="No client requests yet" text="New requests from the public website will appear here." />
+      ) : (
+        <div className="grid gap-5">
+          {requests.map((r) => (
+            <article key={r.id} className={`${card} p-6`}>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-bold">{r.title}</h2>
+                  <p className="mt-1 text-sm text-[var(--ev-muted)]">
+                    {r.client.fullName} · {r.client.companyName || "Individual"} · {r.client.email}
+                  </p>
+                  <p className="mt-1 text-xs font-semibold text-[var(--ev-muted)]">{r.service} · {dateFmt(r.createdAt)}</p>
+                </div>
+                <Pill tone={tone(r.status)}>{prettyStatus(r.status)}</Pill>
+              </div>
+              <p className="mt-4 whitespace-pre-wrap rounded-xl bg-[var(--ev-inset)] p-4 text-sm leading-7">{r.details}</p>
+              <form action={updateClientRequest} className="mt-5 grid gap-4 border-t border-[var(--ev-border-soft)] pt-5 md:grid-cols-[220px_1fr]">
+                <input type="hidden" name="id" value={r.id} />
+                <label className="grid content-start gap-2 text-sm font-semibold">
+                  Status
+                  <select name="status" defaultValue={r.status} className={inputCls}>
+                    <option value="PENDING_REVIEW">Pending review</option>
+                    <option value="IN_DISCUSSION">In discussion</option>
+                    <option value="ACCEPTED">Accepted</option>
+                    <option value="CLOSED">Closed</option>
+                    <option value="REJECTED">Rejected</option>
+                  </select>
+                </label>
+                <label className="grid gap-2 text-sm font-semibold">
+                  Update visible to client
+                  <textarea name="adminNote" rows={3} maxLength={4000} defaultValue={r.adminNote || ""} className={textareaCls} />
+                </label>
+                <div className="md:col-span-2"><button className={btnPrimary}>Save update</button></div>
+              </form>
+            </article>
+          ))}
+        </div>
+      )}
+    </PageShell>
+  );
+}
+
+export default function Page() {
+  return <Suspense fallback={<p className="p-8">Loading client requests…</p>}><ClientRequestQueue /></Suspense>;
+}
