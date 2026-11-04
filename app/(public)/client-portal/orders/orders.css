@@ -1,0 +1,58 @@
+/* Evaryn client orders – explicitly scoped; preserves server-side order logic. */
+.cp-shell .ev-orders { width:min(100%,1312px); margin-inline:auto; display:grid; gap:26px; color:var(--cp-ink,#14345d); }
+.cp-shell .ev-orders-hero, .cp-shell .ev-orders-section, .cp-shell .ev-orders-summary > div { background:var(--cp-surface,#f8fcff); border:1px solid var(--cp-line,#d8e5f4); box-shadow:0 12px 28px rgba(20,58,100,.055); }
+.cp-shell .ev-orders-hero { padding:clamp(22px,3vw,36px); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:22px; border-radius:22px; border-top:3px solid #36a6d5; }
+.cp-shell .ev-orders-eyebrow { display:block; color:#1681b2; font-size:11px; font-weight:800; letter-spacing:.16em; margin-bottom:12px; }
+.cp-shell .ev-orders-hero h1 { font-size:clamp(29px,3.4vw,43px); letter-spacing:-.045em; line-height:1.14; font-weight:820; margin:0 0 11px; color:var(--cp-ink,#14345d); }
+.cp-shell .ev-orders-hero p { max-width:650px; font-size:14px; line-height:1.7; color:var(--cp-muted,#5a718d); margin:0; }
+.cp-shell .ev-orders-primary, .cp-shell .ev-orders-message, .cp-shell .ev-orders-secondary { display:inline-flex; align-items:center; justify-content:center; gap:9px; border-radius:11px; font-size:13px; line-height:1.35; font-weight:800; text-decoration:none; padding:12px 16px; white-space:normal; }
+.cp-shell .ev-orders-primary { background:#264ca4; color:#fff; box-shadow:0 6px 16px #213d8724; }
+.cp-shell .ev-orders-primary:hover { background:#183c8b; }
+.cp-shell .ev-orders-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.cp-shell .ev-orders-summary > div { padding:21px 23px; border-radius:17px; display:flex; flex-direction:column; gap:8px; }
+.cp-shell .ev-orders-summary span { font-size:12px; color:var(--cp-muted,#5a718d); font-weight:680; }
+.cp-shell .ev-orders-summary strong { font-size:34px; line-height:1; letter-spacing:-.045em; color:var(--cp-ink,#14345d); font-variant-numeric:tabular-nums; }
+.cp-shell .ev-orders-section { border-radius:22px; padding:clamp(19px,2.6vw,30px); min-width:0; }
+.cp-shell .ev-orders-section-head { display:flex; gap:18px; align-items:flex-start; justify-content:space-between; margin-bottom:22px; }
+.cp-shell .ev-orders-section-head h2 { font-size:clamp(19px,2vw,24px); font-weight:800; line-height:1.25; letter-spacing:-.02em; margin:0 0 7px; color:var(--cp-ink,#14345d); }
+.cp-shell .ev-orders-section-head p { font-size:13px; color:var(--cp-muted,#5a718d); line-height:1.65; max-width:740px; margin:0; }
+.cp-shell .ev-orders-section-count { white-space:nowrap; background:var(--cp-soft,#e9f5ff); color:var(--cp-ink,#14345d); border-radius:100px; font-size:11px; font-weight:800; padding:7px 12px; }
+.cp-shell .ev-orders-filters { display:flex; flex-wrap:wrap; gap:8px; padding:5px; background:var(--cp-soft,#eaf4fd); border-radius:15px; margin-bottom:23px; width:fit-content; max-width:100%; }
+.cp-shell .ev-orders-filters a { display:inline-flex; gap:9px; align-items:center; font-size:12px; font-weight:750; text-decoration:none; color:var(--cp-muted,#56718c); border-radius:11px; padding:10px 12px; transition:background .2s,color .2s; }
+.cp-shell .ev-orders-filters a span { background:rgba(100,130,170,.12); min-width:22px; text-align:center; border-radius:99px; padding:3px 6px; font-size:10px; }
+.cp-shell .ev-orders-filters a[aria-current="page"] { background:#264ca4; color:#fff; box-shadow:0 3px 9px #193d8020; }
+.cp-shell .ev-orders-filters a[aria-current="page"] span { background:#ffffff32; }
+.cp-shell .ev-orders-empty { background:var(--cp-soft,#edf6fe); padding:26px; border:1px dashed var(--cp-line,#cbddeb); border-radius:17px; display:flex; align-items:center; gap:17px; flex-wrap:wrap; }
+.cp-shell .ev-orders-empty > svg { flex-shrink:0; color:#4285b6; }
+.cp-shell .ev-orders-empty > div { flex:1 1 300px; }
+.cp-shell .ev-orders-empty strong { display:block; font-size:14px; font-weight:800; margin-bottom:6px; }
+.cp-shell .ev-orders-empty p { font-size:12px; color:var(--cp-muted,#5a718d); line-height:1.65; margin:0; }
+.cp-shell .ev-orders-cards, .cp-shell .ev-orders-requests { display:grid; gap:14px; }
+.cp-shell .ev-orders-card, .cp-shell .ev-orders-request { border:1px solid var(--cp-line,#d8e5f4); background:var(--cp-surface,#fff); border-radius:17px; padding:22px; }
+.cp-shell .ev-orders-card-top { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; }
+.cp-shell .ev-orders-code { font-size:11px; color:#2786b9; font-weight:800; letter-spacing:.04em; }
+.cp-shell .ev-orders-card h3, .cp-shell .ev-orders-request h3 { font-size:17px; font-weight:790; letter-spacing:-.01em; line-height:1.35; color:var(--cp-ink,#14345d); margin:8px 0 0; }
+.cp-shell .ev-orders-tracker { margin:22px 0; padding:16px 18px; background:var(--cp-soft,#eef7ff); border-radius:13px; }
+.cp-shell .ev-orders-tracker .cp-tracker { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; list-style:none; margin:0; padding:0; }
+.cp-shell .ev-orders-tracker .cp-tracker li { min-width:0; display:flex; gap:7px; flex-wrap:wrap; align-items:center; font-size:11px; color:var(--cp-muted,#5a718d); font-weight:720; }
+.cp-shell .ev-orders-tracker .cp-dot { width:26px; height:26px; flex:0 0 26px; border-radius:50%; border:1px solid #b9cfdf; background:var(--cp-surface,#fff); display:grid; place-items:center; }
+.cp-shell .ev-orders-tracker [data-state="active"] .cp-dot { background:#7956af; border-color:#7956af; color:white; }
+.cp-shell .ev-orders-tracker [data-state="done"] .cp-dot { background:#228d7d; border-color:#228d7d; color:white; }
+.cp-shell .ev-orders-tracker .cp-step-hint { width:100%; padding-left:33px; font-size:10px; line-height:1.4; font-weight:500; }
+.cp-shell .ev-orders-meta { display:flex; flex-wrap:wrap; gap:14px 28px; margin:0 0 20px; padding:0 0 18px; border-bottom:1px solid var(--cp-line,#d8e5f4); }
+.cp-shell .ev-orders-meta div { display:grid; gap:5px; }
+.cp-shell .ev-orders-meta dt { color:var(--cp-muted,#5a718d); font-size:11px; }
+.cp-shell .ev-orders-meta dd { color:var(--cp-ink,#14345d); font-weight:740; font-size:12px; margin:0; }
+.cp-shell .ev-orders-actions { display:flex; align-items:center; flex-wrap:wrap; gap:10px; }
+.cp-shell .ev-orders-message { color:#fff; background:#7956af; }
+.cp-shell .ev-orders-message:hover { background:#67449e; }
+.cp-shell .ev-orders-secondary { border:1px solid var(--cp-line,#d8e5f4); color:var(--cp-ink,#14345d); background:var(--cp-soft,#eaf4fd); }
+.cp-shell .ev-orders-secondary:hover { border-color:#69bfe5; }
+.cp-shell .ev-orders-unlinked { color:var(--cp-muted,#5a718d); font-size:12px; line-height:1.5; }
+.cp-shell .ev-orders-request { display:flex; justify-content:space-between; gap:18px; align-items:center; flex-wrap:wrap; }
+.cp-shell .ev-orders-request-copy { flex:1 1 280px; }
+.cp-shell .ev-orders-request p { color:var(--cp-muted,#5a718d); font-size:12px; margin:7px 0 0; text-transform:capitalize; }
+.dark .cp-shell .ev-orders-code, [data-theme="dark"] .cp-shell .ev-orders-code { color:#9ad8ff; }
+.dark .cp-shell .ev-orders-eyebrow, [data-theme="dark"] .cp-shell .ev-orders-eyebrow { color:#9fdcff; }
+@media (max-width:760px) { .cp-shell .ev-orders-summary { grid-template-columns:1fr; } .cp-shell .ev-orders-filters { width:100%; } .cp-shell .ev-orders-tracker .cp-tracker { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:480px) { .cp-shell .ev-orders-hero, .cp-shell .ev-orders-section { border-radius:16px; } .cp-shell .ev-orders-filters a { font-size:11px; padding:9px; } .cp-shell .ev-orders-request .ev-orders-message { width:100%; } }
