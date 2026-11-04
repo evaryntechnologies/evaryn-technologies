@@ -63,8 +63,11 @@ export async function registerExpert(form: FormData) {
 
 export async function signInExpert(form:FormData){
  const supabase=await createClient();
- const {error}=await supabase.auth.signInWithPassword({email:String(form.get("email")??"").trim(),password:String(form.get("password")??"")});
- if(error)redirect("/experts/login?error=invalid");
+ const {data,error}=await supabase.auth.signInWithPassword({email:String(form.get("email")??"").trim(),password:String(form.get("password")??"")});
+ if(error || !data.user)redirect("/experts/login?error=invalid");
+ if(!data.user.email_confirmed_at)redirect("/experts/verify-email");
+ const employee=await prisma.employeeProfile.findUnique({where:{authUserId:data.user.id},select:{status:true,role:true}});
+ if(employee?.status==="ACTIVE" && data.user.app_metadata?.role===employee.role)redirect("/portal");
  redirect("/experts/application");
 }
 

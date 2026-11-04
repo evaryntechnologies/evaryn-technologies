@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ArrowUpRight, ChevronDown } from "lucide-react";
@@ -14,13 +14,21 @@ const mainLinks = [
   { label: "Feedback & Reviews", href: "/reviews" },
 ];
 const audiences = [
-  { label: "For Clients", links: [{ label: "Create client account", href: "/clients/register" }, { label: "Client login", href: "/clients/login" }, { label: "Client services", href: "/work-with-us" }] },
-  { label: "For Experts", links: [{ label: "Apply as an expert", href: "/experts/register" }, { label: "Expert login", href: "/experts/login" }, { label: "Expert opportunities", href: "/experts" }] },
+  { label: "For Clients", links: [{ label: "Create client account", href: "/clients/register" }, { label: "Client login", href: "/clients/login" }, { label: "Client services", href: "/services" }, { label: "Investors", href: "/work-with-us#investors" }] },
+  { label: "For Experts", links: [{ label: "Apply as an expert", href: "/experts/register" }, { label: "Expert login", href: "/experts/login" }, { label: "Expert opportunities", href: "/careers" }] },
 ];
 export default function PublicHeader() {
   const [open, setOpen] = useState(false);
+  const [compact, setCompact] = useState(false);
   const pathname = usePathname();
-  return <header className="ev2-header">
+  useEffect(() => {
+    const onScroll = () => setCompact(window.scrollY > 45);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return <header className={`ev2-header${compact ? " ev2-header--compact" : ""}`}>
     <div className="ev2-shell ev2-header-inner">
       <Link className="ev2-logo" href="/" aria-label="Evaryn Technologies Limited home" onClick={() => setOpen(false)}><BrandLogo priority /></Link>
       <nav className="ev2-desktop-nav" aria-label="Main navigation">
