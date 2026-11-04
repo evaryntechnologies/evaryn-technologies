@@ -915,3 +915,77 @@ a.site-card:hover::before,
 @media(max-width:800px){.ev-public{background-attachment:scroll}.ev-public .ev2-footer-grid{gap:1.3rem}}
 @media(max-width:580px){.ev-public .ev2-header--compact .ev2-header-inner{min-height:56px}.ev-public .ev2-header--compact .ev2-logo{width:112px}}
 @media(prefers-reduced-motion:reduce){.ev-public .ev2-header-inner,.ev-public .ev2-logo,.ev-public .ev2-header{transition:none}}
+
+
+/* EVARYN FINAL PUBLIC POLISH - NOV 2026 */
+/* This layer is intentionally scoped to the public website. Keep portal visuals unchanged. */
+.ev-public,.ev-public button,.ev-public input,.ev-public textarea,.ev-public select{font-family:"Inter",Arial,sans-serif}
+.ev-public{font-size:16px}
+.ev-public p{font-size:max(.96rem,1em)}
+.ev-public .ev2-section p,.ev-public .ev2-about-intro p,.ev-public .ev2-card p{font-size:1.01rem}
+.ev-public .ev2-desktop-nav>a,.ev-public .ev2-dropdown-trigger{font-size:.87rem}
+.ev-public .ev2-dropdown-trigger{display:flex;align-items:center;gap:5px;padding:.63rem .56rem;border:0;background:none;color:var(--ev2-ink);font-weight:650;border-radius:9px;cursor:pointer}
+.ev-public .ev2-dropdown-trigger:hover,.ev-public .ev2-dropdown-trigger[aria-expanded="true"]{color:var(--ev2-amethyst);background:color-mix(in srgb,var(--ev2-amethyst) 10%,transparent)}
+.ev-public .ev2-dropdown-menu{top:calc(100% + 3px);min-width:220px;z-index:80;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);background:color-mix(in srgb,var(--ev2-card) 92%,transparent)}
+/* The light theme is cyan-blue first, not a navy hero frozen over a light page. */
+.ev-public .ev2-hero,.ev-public .ev2-inner-hero,.ev-public .ev2-cta{
+ position:relative;isolation:isolate;color:#0a2b51;
+ background:radial-gradient(ellipse at 81% 14%,rgba(124,88,184,.13),transparent 52%),radial-gradient(ellipse at 16% 92%,rgba(49,176,230,.16),transparent 54%),linear-gradient(125deg,rgba(184,233,252,.88),rgba(215,242,255,.80) 56%,rgba(195,226,249,.84));
+}
+.dark .ev-public .ev2-hero,.dark .ev-public .ev2-inner-hero,.dark .ev-public .ev2-cta{
+ color:#eff8ff;background:radial-gradient(ellipse at 81% 18%,rgba(155,109,211,.21),transparent 50%),radial-gradient(ellipse at 8% 90%,rgba(40,177,221,.13),transparent 52%),linear-gradient(120deg,rgba(8,33,71,.90),rgba(14,43,83,.86) 55%,rgba(39,35,89,.87));
+}
+.ev-public .ev2-hero .ev2-kicker,.ev-public .ev2-inner-hero .ev2-kicker,.ev-public .ev2-cta .ev2-kicker{color:#65419d}
+.dark .ev-public .ev2-hero .ev2-kicker,.dark .ev-public .ev2-inner-hero .ev2-kicker,.dark .ev-public .ev2-cta .ev2-kicker{color:#d3b8fc}
+.ev-public .ev2-lead,.ev-public .ev2-inner-hero p,.ev-public .ev2-cta p,.ev-public .ev2-hero-note{color:#28516d}
+.dark .ev-public .ev2-lead,.dark .ev-public .ev2-inner-hero p,.dark .ev-public .ev2-cta p,.dark .ev-public .ev2-hero-note{color:#d3e2f5}
+.ev-public .ev2-hero h1 em,.ev-public .ev2-inner-hero h1 em{background:linear-gradient(92deg,#096ca9,#7651b3);-webkit-background-clip:text;background-clip:text;color:transparent}
+.dark .ev-public .ev2-hero h1 em,.dark .ev-public .ev2-inner-hero h1 em{background:linear-gradient(92deg,#7ddaf5,#d5b4fc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ev-public .ev2-hero .ev2-secondary,.ev-public .ev2-cta .ev2-secondary{color:#0c3f76;border-color:rgba(30,94,155,.36);background:rgba(240,250,255,.35)}
+.dark .ev-public .ev2-hero .ev2-secondary,.dark .ev-public .ev2-cta .ev2-secondary{color:#eef8ff;border-color:rgba(185,218,249,.38);background:rgba(255,255,255,.06)}
+.ev-public .ev2-hero-panel{position:relative;isolation:isolate;overflow:hidden;color:var(--ev2-ink);background:color-mix(in srgb,var(--ev-surface) 65%,transparent);border-color:color-mix(in srgb,var(--ev2-amethyst) 24%,transparent);backdrop-filter:blur(12px)}
+.dark .ev-public .ev2-hero-panel{background:color-mix(in srgb,var(--ev-surface) 68%,transparent)}
+.ev-public .ev2-panel-label,.ev-public .ev2-panel-core span,.ev-public .ev2-panel-step{color:var(--ev2-ink)}
+.ev-public .ev2-panel-core strong{font-size:1.55rem}
+.ev-public .ev2-panel-step{border-color:var(--ev2-line)}
+/* Restores the original site's concentric radial artwork + site-float movement. */
+.ev-public .ev2-heritage-orbits{position:absolute;right:-23%;top:48%;z-index:-1;width:min(86%,410px);aspect-ratio:1;transform:translateY(-50%);border-radius:50%;pointer-events:none;opacity:.72;background:radial-gradient(circle,transparent 0 63%,rgba(119,86,173,.24) 63.2%,transparent 63.8%),radial-gradient(circle,transparent 0 47%,rgba(82,202,255,.30) 47.2%,transparent 47.9%),radial-gradient(circle,rgba(0,176,248,.13),transparent 64%);animation:site-float 18s ease-in-out infinite}
+.dark .ev-public .ev2-heritage-orbits{opacity:.82;background:radial-gradient(circle,transparent 0 63%,rgba(255,255,255,.16) 63.2%,transparent 63.8%),radial-gradient(circle,transparent 0 47%,rgba(82,202,255,.36) 47.2%,transparent 47.9%),radial-gradient(circle,rgba(0,176,248,.26),transparent 64%)}
+.ev-public .ev2-panel-core,.ev-public .ev2-panel-step,.ev-public .ev2-panel-label{position:relative;z-index:1}
+/* Avoid repeated entrance motion on overlapping legacy hero elements. */
+.ev-public .ev2-hero .ev2-hero-grid>*{animation:none}
+.ev-public .site-hero__copy>*,.ev-public .site-hero .site-glass{animation:none}
+/* Services uses the original watermark but a transparent, mode-aware veil. */
+.ev-public .site-hero{color:#10365d;background:radial-gradient(ellipse at 72% 18%,rgba(131,87,192,.12),transparent 48%),linear-gradient(115deg,rgba(184,232,252,.86),rgba(216,242,255,.78) 65%,rgba(194,226,251,.84))}
+.dark .ev-public .site-hero{color:#f2f8ff;background:radial-gradient(ellipse at 72% 18%,rgba(149,104,203,.22),transparent 48%),linear-gradient(115deg,rgba(8,37,76,.88),rgba(13,43,88,.85) 65%,rgba(35,34,82,.86))}
+.ev-public .site-hero::before{opacity:.17}
+.dark .ev-public .site-hero::before{opacity:.30}
+.ev-public .site-hero::after{opacity:.29;animation:none}
+.ev-public .site-hero .site-lead,.ev-public .site-hero .site-eyebrow,.ev-public .site-hero .site-p{color:#234f75}
+.dark .ev-public .site-hero .site-lead,.dark .ev-public .site-hero .site-eyebrow,.dark .ev-public .site-hero .site-p{color:#d9e8f7}
+.ev-public .site-hero .site-h1,.ev-public .site-hero .site-glass{color:inherit}
+.ev-public .site-hero .site-glass{background:color-mix(in srgb,var(--ev-surface) 73%,transparent);border-color:var(--ev-border-soft);backdrop-filter:blur(14px)}
+.ev-public .site-hero .site-list li{color:var(--ev2-ink)!important}
+.ev-public .site-hero .site-accent{color:#7045b1}
+.dark .ev-public .site-hero .site-accent{color:#c6acfc}
+.ev-public .site-hero .site-btn--ghost-light{color:#113c64;border-color:rgba(14,95,153,.32)}
+.dark .ev-public .site-hero .site-btn--ghost-light{color:#e7f5ff;border-color:rgba(187,225,250,.3)}
+/* Client sign-in: better hierarchy, preserved server action and errors. */
+.ev-public .ev2-client-login{padding:clamp(3rem,6vw,6rem) 1.25rem;min-height:70vh;display:grid;align-items:center}
+.ev-public .ev2-client-login-shell{width:min(100%,1060px);margin:auto;display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(2rem,6vw,6rem);align-items:center}
+.ev-public .ev2-client-welcome h1{font-size:clamp(2.7rem,4.7vw,4.4rem);letter-spacing:-.045em;line-height:1.12;font-weight:760;max-width:15ch}
+.ev-public .ev2-client-welcome h1 em{font-style:normal;color:var(--ev2-amethyst)}
+.ev-public .ev2-client-welcome p{color:var(--ev2-muted);line-height:1.85;max-width:45ch;margin-top:1.3rem;font-size:1.1rem}
+.ev-public .ev2-client-features{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.8rem}
+.ev-public .ev2-client-features span{font-size:.78rem;font-weight:650;padding:.55rem .8rem;border:1px solid var(--ev2-line);border-radius:999px;background:color-mix(in srgb,var(--ev-surface) 65%,transparent)}
+.ev-public .ev2-client-auth{padding:clamp(1.5rem,3.2vw,2.6rem);border:1px solid var(--ev2-line);border-radius:22px;background:color-mix(in srgb,var(--ev-surface) 82%,transparent);backdrop-filter:blur(18px);box-shadow:0 25px 55px -44px rgba(11,37,72,.55)}
+.ev-public .ev2-client-auth h2{font-size:2rem;font-weight:760;letter-spacing:-.03em}
+.ev-public .ev2-client-auth-lead{color:var(--ev2-muted);line-height:1.65;margin-top:.65rem}
+.ev-public .ev2-client-form{display:grid;gap:1rem;margin-top:1.55rem}
+.ev-public .ev2-client-form label{display:grid;gap:.55rem;font-weight:650;font-size:.91rem;color:var(--ev2-ink)}
+.ev-public .ev2-client-input{width:100%;border-radius:11px;border:1px solid var(--ev-border);background:var(--ev-surface-2);color:var(--ev2-ink);padding:.88rem 1rem}
+.ev-public .ev2-client-input:focus{outline:2px solid var(--ev2-amethyst);outline-offset:2px}
+.ev-public .ev2-client-submit{width:100%;margin-top:.35rem}
+.ev-public .ev2-client-signup{font-weight:750;color:var(--ev2-amethyst);text-decoration:underline;text-underline-offset:3px}
+@media(max-width:760px){.ev-public .ev2-client-login-shell{grid-template-columns:1fr}.ev-public .ev2-client-welcome h1{font-size:clamp(2.5rem,9vw,3.6rem)}.ev-public .ev2-client-login{padding-block:2.5rem}}
+@media(prefers-reduced-motion:reduce){.ev-public .ev2-heritage-orbits{animation:none}}
