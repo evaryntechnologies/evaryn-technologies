@@ -35,7 +35,7 @@ function ResetPasswordForm() {
         const code = search.get("code");
         const tokenHash = search.get("token_hash");
         const fragment = window.location.hash;
-        // An existing sign-in session alone must not unlock the recovery page.
+        // An ordinary existing session must not activate the recovery form.
         const validRecoveryLink = Boolean(code || tokenHash ||
           (fragment.includes("type=recovery") && fragment.includes("access_token=")));
         if (code) {
