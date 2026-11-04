@@ -941,3 +941,29 @@
 .ev2-social { margin-top: 0.8rem; }
 .ev2-social a { width: 34px; height: 34px; border-radius: 10px; }
 .ev2-footer-bottom { padding-block: 0.9rem 1rem; }
+
+/* organic motif: honeycomb cells instead of rules and checkmarks */
+.ev2-kicker::before,
+.site-eyebrow::before {
+  width: 0.7rem;
+  height: 0.8rem;
+  border-radius: 0;
+  background: var(--ev-gold);
+  clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0 50%);
+}
+.site-list svg { display: none; }
+.site-list li { gap: 0.8rem; }
+.site-list li::before,
+.ev2-term li::before {
+  content: "";
+  flex: none;
+  width: 0.6rem;
+  height: 0.68rem;
+  margin-top: 0.5em;
+  border-radius: 0;
+  transform: none;
+  background: var(--ev-cyan);
+  clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0 50%);
+}
+.site-glass .site-list li::before { background: #f0cf78; }
+.ev2-term h3 svg { display: none; }
