@@ -72,6 +72,7 @@ function roleMenu(role:Role): MenuItem[] {
     {name:"Employees",href:"/portal/super-admin/employees",icon:Users},
     {name:"Payroll",href:"/portal/super-admin/payroll",icon:Wallet},
     {name:"Pay Team",href:"/portal/super-admin/payroll/pay-team",icon:HandCoins},
+    {name:"On Hold",href:"/portal/super-admin/on-hold",icon:Wallet},
     {name:"Payment Adjustments",href:"/portal/super-admin/payment-adjustments",icon:SlidersHorizontal},
     {name:"Admin Hours",href:"/portal/super-admin/payroll/admin-hours",icon:Clock3},
     {name:"Categories",href:"/portal/super-admin/categories",icon:Settings2},
