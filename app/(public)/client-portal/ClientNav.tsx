@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 const items = [
   { href: "/client-portal", label: "Overview", exact: true },
   { href: "/client-portal/orders", label: "My orders" },
-  { href: "/client-portal/delivered", label: "Delivered" },
+  { href: "/client-portal/delivered", label: "Delivered", exact: true },
+  { href: "/client-portal/delivered/awaiting", label: "Awaiting your decision" },
   { href: "/client-portal/requests/new", label: "New request" },
   { href: "/client-portal/projects", label: "Projects" },
 ];

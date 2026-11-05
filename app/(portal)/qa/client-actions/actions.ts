@@ -6,9 +6,9 @@ import { revalidatePath } from "next/cache";
 import { cancellationDetail, notifyOrderParticipants } from "@/lib/tasks/order-outcome-notifications";
 
 export async function finalizeClientAction(form: FormData) {
-  const user = await requireEmployee(["QA", "ADMIN", "SUPER_ADMIN"]);
+  const user = await requireEmployee(["ADMIN", "SUPER_ADMIN"]);
   const actor = await prisma.employeeProfile.findUnique({where:{authUserId:user.id},select:{id:true,status:true,role:true}});
-  if (!actor || actor.status !== "ACTIVE" || !["QA","ADMIN","SUPER_ADMIN"].includes(actor.role)) throw new Error("Unauthorized");
+  if (!actor || actor.status !== "ACTIVE" || !["ADMIN","SUPER_ADMIN"].includes(actor.role)) throw new Error("Unauthorized");
   const id=String(form.get("taskId")??"");
   const action=String(form.get("action")??"");
   const note=String(form.get("note")??"").trim();
@@ -24,9 +24,12 @@ export async function finalizeClientAction(form: FormData) {
   const paidPercent=action==="PAID_FULL"?100:action==="PAID_PARTIAL"?percentage:0;
   const next=action==="REVISION"?"REWORK_REQUIRED":action==="CANCELED"?"CANCELED":paidPercent>=50?"COMPLETED":"CANCELED";
   const cancellationReason = next==="CANCELED" ? cancellationDetail(cancellationCategory,cancellationExplanation,action==="PAID_PARTIAL"?`Client paid ${paidPercent}% of order value.`:note) : null;
-  if (next==="COMPLETED" && (ratingText==="" || !Number.isInteger(rating) || rating<1 || rating>5)) throw new Error("Completed orders require a 1–5 star rating.");
-  const task=await prisma.workTask.findFirst({where:{id,status:"DELIVERED_AWAITING_CLIENT"},select:{id:true,assignedToId:true,publicTaskId:true}});
+  const task=await prisma.workTask.findFirst({where:{id,status:"DELIVERED_AWAITING_CLIENT"},select:{id:true,assignedToId:true,publicTaskId:true,clientRating:true}});
   if (!task) throw new Error("This order is no longer awaiting client action.");
+  // The client may already have rated the delivery from their own portal; that rating is used unless staff enter one.
+  const typedRating=ratingText!==""&&Number.isInteger(rating)&&rating>=1&&rating<=5?rating:null;
+  const effectiveRating=typedRating??task.clientRating;
+  if (next==="COMPLETED" && effectiveRating===null) throw new Error("Completed orders require a 1–5 star rating.");
   if (action==="REVISION" && !task.assignedToId) throw new Error("No Tasker is assigned to receive this revision.");
   let attachment:Awaited<ReturnType<typeof saveOrderAttachment>>=null;
   if (action==="REVISION") attachment=await saveOrderAttachment(form,id,actor.id,false);
@@ -36,11 +39,13 @@ export async function finalizeClientAction(form: FormData) {
         status:next,clientActionAt:action==="REVISION"?null:new Date(),clientPaidPercent:action==="REVISION"?null:paidPercent,
         clientRevisionNote:action==="REVISION"?note:null,
         cancellationReason,
-        clientRating:next==="COMPLETED"?rating:null,
+        clientRating:next==="COMPLETED"?effectiveRating:null,
         claimedReviewerId:action==="REVISION"?null:undefined,
         claimedQaId:action==="REVISION"?null:undefined,
       }});
       if(updated.count!==1) throw new Error("Order already processed; reload the page.");
+      // Resolve any pending client payment report when staff records an actual outcome.
+      if (action !== "REVISION") await tx.$executeRaw`UPDATE public."ClientDeliveryDecision" SET "status"='RESOLVED' WHERE "taskId"=${id}::uuid AND "status"='PENDING'`;
       if(action==="REVISION"){
         await tx.taskMessage.create({data:{taskId:id,senderId:actor.id,body:`CLIENT REVISION REQUESTED: ${note}${attachment?` (Attachment: ${attachment.fileName})`:""}`,recipientRole:"TASKER"}});
         if(task.assignedToId) await tx.portalNotification.create({data:{recipientId:task.assignedToId,title:"Client revision requested",body:`Order ${task.publicTaskId??id} returned for revision. Open the task to read the client's instructions.`,href:`/portal/tasker/tasks/${id}`}});

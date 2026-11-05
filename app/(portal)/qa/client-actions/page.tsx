@@ -34,7 +34,7 @@ function waiting(d: Date) {
   return `${days} day${days === 1 ? "" : "s"}`;
 }
 
-function Stars({ required }: { required?: boolean }) {
+function Stars({ required, existing }: { required?: boolean; existing?: number | null }) {
   return (
     <div className="mt-2 flex gap-1.5">
       {[1, 2, 3, 4, 5].map((i) => (
@@ -55,7 +55,7 @@ const panel = "flex flex-col rounded-xl bg-[var(--ev-inset)] p-4";
 
 async function Content() {
   await connection();
-  await requireEmployee(["QA", "ADMIN", "SUPER_ADMIN"]);
+  await requireEmployee(["ADMIN", "SUPER_ADMIN"]);
 
   const tasks = await prisma.workTask.findMany({
     where: { status: "DELIVERED_AWAITING_CLIENT" },
@@ -65,6 +65,7 @@ async function Content() {
       title: true,
       category: true,
       totalOrderCost: true,
+      clientRating: true,
       updatedAt: true,
     },
     orderBy: { updatedAt: "asc" },
@@ -75,7 +76,7 @@ async function Content() {
     <>
       <PageHeader
         eyebrow="Client operations"
-        title="Delivered, awaiting the client"
+        title="Client outcome verification"
         subtitle="Record what the client decided. A revision goes straight back to the Tasker. A partial payment prorates Tasker, Reviewer and QA earnings: 50% or more completes the order, below 50% cancels it."
       />
 
@@ -119,8 +120,10 @@ async function Content() {
                     <CheckCircle2 size={16} className="text-emerald-600 dark:text-emerald-400" aria-hidden="true" /> Client paid 100%
                   </p>
                   <fieldset className="mt-3 flex-1">
-                    <legend className="text-xs font-semibold text-[var(--ev-muted)]">Client rating (required)</legend>
-                    <Stars required />
+                    <legend className="text-xs font-semibold text-[var(--ev-muted)]">
+                      {t.clientRating ? `Client already rated this ${t.clientRating}/5 from their portal. Leave blank to keep it.` : "Client rating (required)"}
+                    </legend>
+                    <Stars required={t.clientRating == null} />
                   </fieldset>
                   <button name="action" value="PAID_FULL" className={`${btnPrimary} mt-4 w-full`}>
                     <CheckCircle2 size={16} aria-hidden="true" /> Complete order

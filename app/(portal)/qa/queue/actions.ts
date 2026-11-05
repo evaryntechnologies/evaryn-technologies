@@ -120,7 +120,7 @@ export async function qaDecision(formData: FormData): Promise<void> {
     });
 
     const nextStatus =
-      decision === "APPROVED" ? "DELIVERED_AWAITING_CLIENT" : "REWORK_REQUIRED";
+      decision === "APPROVED" ? "POST_QA_APPROVED" : "REWORK_REQUIRED";
 
     await tx.taskSubmission.update({
       where: { id: submissionId },
@@ -132,6 +132,17 @@ export async function qaDecision(formData: FormData): Promise<void> {
       data: { status: nextStatus, claimedQaId: null, claimedReviewerId: decision === "REWORK_REQUIRED" ? null : undefined },
     });
 
+    if (decision === "APPROVED") {
+      const admins = await tx.employeeProfile.findMany({
+        where: { role: { in: ["ADMIN", "SUPER_ADMIN"] }, status: "ACTIVE" }, select: { id: true },
+      });
+      const approvedTask = await tx.workTask.findUnique({ where: { id: submission.taskId }, select: { title: true, publicTaskId: true } });
+      if (admins.length) await tx.portalNotification.createMany({ data: admins.map(a => ({
+        recipientId: a.id, title: "Post-QA order awaiting administrative check",
+        body: `${approvedTask?.publicTaskId ?? submission.taskId} · ${approvedTask?.title ?? "Order"} passed QA and is awaiting delivery approval.`,
+        href: "/portal/post-qa",
+      })) });
+    }
     if (decision === "REWORK_REQUIRED") {
       const current=await tx.workTask.findUnique({where:{id:submission.taskId},select:{assignedToId:true,publicTaskId:true}});
       if(current?.assignedToId) await tx.portalNotification.create({data:{recipientId:current.assignedToId,title:"Revision requested",body:`Order ${current.publicTaskId??submission.taskId} returned directly to you. ${feedback}`,href:`/portal/tasker/tasks/${submission.taskId}`}});

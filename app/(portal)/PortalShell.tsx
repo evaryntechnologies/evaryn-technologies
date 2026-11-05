@@ -43,7 +43,7 @@ function roleMenu(role:Role): MenuItem[] {
     links.push({name:"QA Queue",href:"/portal/qa/queue",icon:ShieldCheck});
   if (role === "QA" || role === "ADMIN" || role === "SUPER_ADMIN")
     links.push({name:"Client Orders",href:"/portal/client-orders",icon:PanelsTopLeft}, {name:"Client Messages",href:"/portal/client-messages",icon:MessageSquare}, {name:"Order Register",href:"/portal/order-register",icon:Search});
-  if (role === "QA" || role === "SUPER_ADMIN")
+  if (role === "ADMIN" || role === "SUPER_ADMIN")
     links.push({name:"Client Actions",href:"/portal/qa/client-actions",icon:ClipboardList});
   if (role === "QA")
     links.push({name:"Fines",href:"/portal/admin/fines",icon:Settings2});
@@ -54,6 +54,8 @@ function roleMenu(role:Role): MenuItem[] {
       {name:"Operations Hub",href:"/portal/admin/operations",icon:Compass},
       {name:"Disputes",href:"/portal/admin/disputes",icon:Gavel},
       {name:"Task Management",href:"/portal/admin/task-management",icon:ClipboardList},
+      {name:"Post-QA Orders",href:"/portal/post-qa",icon:ShieldCheck},
+      {name:"Client Decisions",href:"/portal/client-decisions",icon:MessageSquare},
       {name:"Task Summary",href:"/portal/admin/task-summary",icon:PanelsTopLeft},
       {name:"Force Reassign",href:"/portal/admin/force-reassign",icon:Settings2},
       {name:"Reassignment Requests",href:"/portal/admin/reassignments",icon:Settings2},
@@ -109,7 +111,7 @@ function groupedNavigation(role: Role): NavigationEntry[] {
   if (role === "SUPER_ADMIN" || role === "ADMIN") {
     navigation.push(
       section("Operations Hub", Compass, [
-        "Operations Hub", "Task Management", "Task Summary", "Force Reassign",
+        "Operations Hub", "Task Management", "Post-QA Orders", "Client Decisions", "Task Summary", "Force Reassign",
         "Reassignment Requests", "Categories", "Review & QA Oversight",
         "Fines & Penalties", "Disputes", "Ratings & Rubrics",
       ]),
