@@ -14,7 +14,7 @@ export type EarningsRow = {
   cycle: string; status: string; adjustmentReason: string | null;
 };
 export type EarningsFilters = { month: string; category: string; role: string; status: string };
-export const roles = ["TASKER", "REVIEWER", "QA", "ADMIN_TIME", "LEGACY"];
+export const roles = ["TASKER", "REVIEWER", "QA", "ADMIN_TIME", "LEGACY", "PAYOUT_ADJUSTMENT"];
 export function cleanFilters(input: Record<string, string | undefined>): EarningsFilters {
   return {
     month: /^\d{4}-(0[1-9]|1[0-2])$/.test(input.month ?? "") ? input.month! : "",
@@ -49,6 +49,10 @@ export async function getEarningsReport() {
     FROM public."PayrollEntry" l JOIN public."WorkTask" t ON t.id=l."taskId"
     WHERE l."employeeId"=${employee.id}::uuid
     ORDER BY l."payoutDate" DESC LIMIT 5000`;
+  const payoutAdjustments = await prisma.$queryRaw<Array<{id:string;label:string;reason:string;amount:unknown;payoutDate:Date|string;settlementId:string|null}>>`
+    SELECT a.id,a.label,a.reason,a.amount,a."payoutDate",a."settlementId"
+    FROM public."WorkforcePayoutAdjustment" a WHERE a."employeeId"=${employee.id}::uuid
+    ORDER BY a."payoutDate" DESC LIMIT 5000`;
   const rows: EarningsRow[] = [...modern, ...legacy].map(x => {
     const originalNet = Number(x.payableAmount);
     const recordedPaid = x.actualPaid == null ? originalNet : Number(x.actualPaid);
@@ -63,6 +67,14 @@ export async function getEarningsReport() {
       adjustmentReason: x.settlementReason,
     };
   }).sort((a,b) => b.cycle.localeCompare(a.cycle));
+  for (const a of payoutAdjustments) {
+    const amount = Number(a.amount);
+    rows.push({id:a.id,sourceType:"PAYOUT_ADJUSTMENT",label:a.label,category:"Payout adjustments",
+      gross:Math.max(amount,0),fines:Math.max(-amount,0),net:amount,originalNet:amount,
+      cycle:a.payoutDate instanceof Date?a.payoutDate.toISOString().slice(0,10):String(a.payoutDate).slice(0,10),
+      status:a.settlementId?"PAID":"PENDING",adjustmentReason:a.reason});
+  }
+  rows.sort((a,b)=>b.cycle.localeCompare(a.cycle));
   return { employee, rows };
 }
 export function applyEarningsFilters(rows: EarningsRow[], filters: EarningsFilters) {

@@ -12,11 +12,12 @@ export default async function PayTeamPage(){
   const auth=await requireEmployee(["SUPER_ADMIN"]);
   if(auth.role!=="SUPER_ADMIN") throw new Error("Access denied");
   const rows=await prisma.$queryRaw<Row[]>`
-    SELECT l."employeeId", e."fullName",l."payoutDate",SUM(l."payableAmount") AS due,COUNT(*)::bigint AS entries,
+    SELECT l."employeeId", e."fullName",l."payoutDate",SUM(l."payableAmount") + coalesce((SELECT sum(a.amount) FROM public."WorkforcePayoutAdjustment" a
+        WHERE a."employeeId"=l."employeeId" AND a."payoutDate"=l."payoutDate" AND a."settlementId" IS NULL),0) AS due,COUNT(*)::bigint AS entries,
       EXISTS(SELECT 1 FROM public."EmployeePaymentMethod" m WHERE m."employeeId"=l."employeeId" AND length(btrim(m.details))>0) AS "hasMethod"
     FROM public."WorkforcePayLedger" l
     JOIN public."EmployeeProfile" e ON e.id=l."employeeId"
-    WHERE l.status='PENDING' AND l."payableAmount">0
+    WHERE l.status='PENDING'
       AND NOT EXISTS(SELECT 1 FROM public."PayTeamAllocation" a WHERE a."ledgerId"=l.id)
       AND NOT EXISTS(SELECT 1 FROM public."WorkforcePayDecision" d WHERE d."ledgerId"=l.id)
       AND NOT EXISTS(SELECT 1 FROM public."WorkforcePayLedger" prior WHERE prior.id<>l.id AND prior.status='PAID'
@@ -24,6 +25,7 @@ export default async function PayTeamPage(){
         AND prior."employeeId"=l."employeeId" AND prior."sourceType"=l."sourceType")
       AND (l."taskId" IS NULL OR EXISTS(SELECT 1 FROM public."WorkTask" t WHERE t.id=l."taskId" AND t.status='COMPLETED' AND t."clientActionAt" IS NOT NULL))
     GROUP BY l."employeeId",e."fullName",l."payoutDate"
+    HAVING SUM(l."payableAmount") + coalesce((SELECT sum(a.amount) FROM public."WorkforcePayoutAdjustment" a WHERE a."employeeId"=l."employeeId" AND a."payoutDate"=l."payoutDate" AND a."settlementId" IS NULL),0) > 0
     ORDER BY l."payoutDate",e."fullName" LIMIT 300`;
   return <main className="min-h-screen bg-[#071327] p-5 text-white sm:p-9"><div className="max-w-none space-y-7">
     <header><Link className="text-sm text-cyan-300 hover:underline" href="/portal/super-admin/payroll">← Earnings approvals</Link><p className="mt-6 text-xs font-semibold uppercase tracking-widest text-cyan-300">Super Admin · Finance</p><h1 className="mt-1 text-3xl font-bold">Pay Team</h1><p className="mt-2 text-slate-300">Approved, unpaid earnings by employee and payout period. Early payments can be recorded once funds have been sent; this page does not send money.</p></header>

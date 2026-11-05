@@ -43,17 +43,25 @@ async function performSettlement(form: FormData): Promise<void> {
     if (!methods[0]?.hasMethod) throw new Error("Employee has no approved payment method.");
     const toCents=(v:unknown)=>Math.round(Number(v)*100);
     const due=rows.reduce((a,r)=>a+toCents(r.payableAmount),0);
-    if (!Number.isSafeInteger(due)||due<=0) throw new Error("Invalid outstanding balance.");
-    const requested=mode==="FULL"?due:Math.round(Number(enteredAmount)*100);
-    if (!Number.isSafeInteger(requested)||requested<=0) throw new Error("Final payment must be greater than zero.");
+    const extras = await tx.$queryRaw<Array<{id:string;amount:unknown}>>`
+      SELECT id,amount FROM public."WorkforcePayoutAdjustment"
+      WHERE "employeeId"=${employeeId}::uuid AND "payoutDate"=${payoutDate}::date AND "settlementId" IS NULL
+      ORDER BY "createdAt",id FOR UPDATE`;
+    const extrasTotal = extras.reduce((sum,a)=>sum+toCents(a.amount),0);
+    const finalDue = due + extrasTotal;
+    if (!Number.isSafeInteger(extrasTotal) || !Number.isSafeInteger(finalDue) || finalDue < 0) throw new Error("Invalid final payout total.");
+    if (extras.length && mode === "CUSTOM") throw new Error("Use Pay in full for a period with named adjustments. Update On Hold before settlement.");
+    if (!Number.isSafeInteger(due)||due<0) throw new Error("Invalid outstanding balance.");
+    const requested=mode==="FULL"?finalDue:Math.round(Number(enteredAmount)*100);
+    if (!Number.isSafeInteger(requested)||requested<=0) throw new Error("Final payment must be greater than zero. Zero-payout closeout requires a separate audited workflow.");
     const batch=await tx.$queryRaw<Array<{id:string}>>`
       INSERT INTO public."PayTeamSettlement" ("employeeId","payoutDate","approvedTotal","paidTotal","reason","paymentReference","paidById")
-      VALUES (${employeeId}::uuid,${payoutDate}::date,${(due/100).toFixed(2)}::numeric,${(requested/100).toFixed(2)}::numeric,${mode==="FULL"?null:reason},${reference},${actor.id}::uuid)
+      VALUES (${employeeId}::uuid,${payoutDate}::date,${(due/100).toFixed(2)}::numeric,${(requested/100).toFixed(2)}::numeric,${extras.length?"Named On Hold adjustments":mode==="FULL"?null:reason},${reference},${actor.id}::uuid)
       RETURNING id`;
     // Allocate a final settlement across all approved entries. For overpayments,
     // allocate the positive adjustment to the last row rather than opening employee debt.
     // The settlement approvedTotal/paidTotal preserves the original vs final totals.
-    let remaining=requested;
+    let remaining=extras.length?due:requested;
     for (const [index, row] of rows.entries()) {
       const cents=index === rows.length-1 ? remaining : Math.min(toCents(row.payableAmount),remaining);
       remaining-=cents;
@@ -67,6 +75,12 @@ async function performSettlement(form: FormData): Promise<void> {
       if (updated!==1) throw new Error("A payroll entry was updated during settlement; no payments were recorded.");
     }
     if (remaining!==0) throw new Error("Settlement allocation did not balance.");
+    if (extras.length) {
+      const updated = await tx.$executeRaw`
+        UPDATE public."WorkforcePayoutAdjustment" SET "settlementId"=${batch[0].id}::uuid,"settledAt"=now()
+        WHERE "employeeId"=${employeeId}::uuid AND "payoutDate"=${payoutDate}::date AND "settlementId" IS NULL`;
+      if (updated!==extras.length) throw new Error("Payout adjustment list changed during settlement.");
+    }
     await tx.portalNotification.create({data:{recipientId:employeeId,title:mode==="FULL"?"Payroll payment recorded":"Payroll payment adjusted",body:mode==="FULL"?`A payment of $${(requested/100).toFixed(2)} was recorded for ${payoutDate}. Reference: ${reference}.`:`A payment of $${(requested/100).toFixed(2)} was recorded against $${(due/100).toFixed(2)} for ${payoutDate}. Reason: ${reason}. Reference: ${reference}. Contact administration if you wish to dispute this adjustment.`,href:"/portal/earnings"}});
   }, {timeout:20000});
   revalidatePath("/portal/super-admin/payroll/pay-team");
@@ -90,7 +104,7 @@ export async function settleTeamBalance(
     console.error("Pay Team settlement failed", error);
     const message = error instanceof Error ? error.message : "Unable to record payment. Check the server logs.";
     // Do not expose raw SQL and internal stack traces to the browser.
-    const safe = /^(Invalid payment request|Enter |Nothing payable|Employee has no approved payment method|Not authorized|Final payment must|Invalid outstanding balance|Settlement allocation|A payroll entry was updated)/.test(message)
+    const safe = /^(Invalid payment request|Enter |Nothing payable|Employee has no approved payment method|Not authorized|Final payment must|Invalid outstanding balance|Invalid final payout|Use Pay in full|Settlement allocation|A payroll entry was updated)/.test(message)
       ? message
       : "Payment could not be recorded. Verify the Pay Team migration and review the server logs.";
     return {status:"error", message:safe};

@@ -26,7 +26,7 @@ export async function changeHold(form: FormData): Promise<void> {
   const kind = String(form.get("kind") ?? "");
   const text = String(form.get("value") ?? "").trim();
   const reason = String(form.get("reason") ?? "").trim();
-  if (!UUID.test(id) || !["AMOUNT", "BONUS_PERCENT", "FINE_PERCENT", "DISMISS_ADMIN_TIME"].includes(kind)) {
+  if (!UUID.test(id) || !["AMOUNT", "DISMISS_ADMIN_TIME"].includes(kind)) {
     throw new Error("Invalid hold adjustment request.");
   }
   if (reason.length < 10 || reason.length > 2000) throw new Error("Explain this adjustment in 10–2000 characters.");
@@ -97,6 +97,124 @@ export async function changeHold(form: FormData): Promise<void> {
   }, {timeout:20000});
   revalidatePath("/portal/super-admin/on-hold");
   revalidatePath("/portal/super-admin/payroll");
+  revalidatePath("/portal/super-admin/payroll/pay-team");
+  revalidatePath("/portal/earnings");
+  revalidatePath("/portal/notifications");
+}
+
+/** Named employee-wide adjustments. These never change an order's ledger amounts. */
+export async function addFinalPayoutAdjustment(form: FormData): Promise<void> {
+  const user = await requireEmployee(["SUPER_ADMIN"]);
+  const employeeId = String(form.get("employeeId") ?? "");
+  const payoutDate = String(form.get("payoutDate") ?? "");
+  const label = String(form.get("label") ?? "").trim();
+  const reason = String(form.get("reason") ?? "").trim();
+  const signed = String(form.get("amount") ?? "").trim();
+  if (!UUID.test(employeeId) || !/^\d{4}-\d{2}-\d{2}$/.test(payoutDate)) throw new Error("Select a valid employee and payout period.");
+  if (label.length < 2 || label.length > 100 || reason.length < 10 || reason.length > 2000) throw new Error("Enter an adjustment name (2–100 characters) and explanation (10–2000 characters).");
+  if (!/^[+-]?(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/.test(signed)) throw new Error("Enter a signed amount such as -2500.00 or +180.00.");
+  const cents = Math.round(Number(signed) * 100);
+  if (!Number.isSafeInteger(cents) || cents === 0) throw new Error("The adjustment must be a non-zero amount.");
+  await prisma.$transaction(async tx => {
+    const actor = await tx.employeeProfile.findUnique({where:{authUserId:user.id},select:{id:true,role:true,status:true}});
+    if (actor?.role !== "SUPER_ADMIN" || actor.status !== "ACTIVE") throw new Error("Super Admin access required.");
+    const staff = await tx.$queryRaw<Array<{id:string}>>`SELECT id FROM public."EmployeeProfile" WHERE id=${employeeId}::uuid FOR UPDATE`;
+    if (!staff.length) throw new Error("Employee not found.");
+    const state = await tx.$queryRaw<Array<{ledgerCount:bigint;settledCount:bigint;total:unknown}>>`
+      SELECT count(*)::bigint AS "ledgerCount",
+      count(*) FILTER (WHERE status='PAID' OR EXISTS (SELECT 1 FROM public."PayTeamAllocation" a WHERE a."ledgerId"=l.id))::bigint AS "settledCount",
+      coalesce(sum(l."payableAmount") FILTER (WHERE l.status='PENDING' AND
+      (l."taskId" IS NULL OR EXISTS(SELECT 1 FROM public."WorkTask" t WHERE t.id=l."taskId" AND t.status='COMPLETED' AND t."clientActionAt" IS NOT NULL))
+      AND NOT EXISTS (SELECT 1 FROM public."WorkforcePayDecision" d WHERE d."ledgerId"=l.id)),0) AS total
+      FROM public."WorkforcePayLedger" l WHERE l."employeeId"=${employeeId}::uuid AND l."payoutDate"=${payoutDate}::date`;
+    if (!state[0] || state[0].ledgerCount===BigInt(0)) throw new Error("An approved payroll entry is required for this period.");
+    if (state[0].settledCount>BigInt(0)) throw new Error("This payout period has already begun settlement and is locked.");
+    const prior = await tx.$queryRaw<Array<{amount:unknown}>>`
+      SELECT coalesce(sum(amount),0) AS amount FROM public."WorkforcePayoutAdjustment"
+      WHERE "employeeId"=${employeeId}::uuid AND "payoutDate"=${payoutDate}::date AND "settlementId" IS NULL`;
+    const base = Math.round(Number(state[0].total)*100);
+    const existing = Math.round(Number(prior[0]?.amount??0)*100);
+    if (![base,existing].every(Number.isSafeInteger) || base + existing + cents < 0) throw new Error("Final payout cannot become negative.");
+    await tx.$executeRaw`
+      INSERT INTO public."WorkforcePayoutAdjustment" ("employeeId","payoutDate","label","reason","amount","createdById")
+      VALUES (${employeeId}::uuid,${payoutDate}::date,${label},${reason},${(cents/100).toFixed(2)}::numeric,${actor.id}::uuid)`;
+    await tx.portalNotification.create({data:{recipientId:employeeId,title:"Final payout adjustment recorded",body:`${label}: ${cents>0?"+":""}$${(cents/100).toFixed(2)} for ${payoutDate}. ${reason}`,href:"/portal/earnings"}});
+  },{timeout:20000});
+  revalidatePath("/portal/super-admin/on-hold");
+  revalidatePath("/portal/super-admin/payroll/pay-team");
+  revalidatePath("/portal/earnings");
+}
+
+/** Order-level bonuses/fines: bonus reserves 30% for Evaryn; workers split the balance 50/30/20. */
+export async function distributeOrderAdjustment(form: FormData): Promise<void> {
+  const user = await requireEmployee(["SUPER_ADMIN"]);
+  const taskId = String(form.get("taskId") ?? "");
+  const kind = String(form.get("kind") ?? "");
+  const amount = String(form.get("amount") ?? "");
+  const reason = String(form.get("reason") ?? "").trim();
+  if (!UUID.test(taskId) || !["BONUS","FINE"].includes(kind)) throw new Error("Invalid order adjustment.");
+  if (reason.length < 10 || reason.length > 2000) throw new Error("Explain the bonus or fine in 10–2000 characters.");
+  const total = parseMoney(amount, 99999999999);
+  if (total <= 0) throw new Error("Enter a positive bonus or fine amount.");
+  await prisma.$transaction(async tx => {
+    const actor = await tx.employeeProfile.findUnique({where:{authUserId:user.id},select:{id:true,role:true,status:true}});
+    if (actor?.role !== "SUPER_ADMIN" || actor.status !== "ACTIVE") throw new Error("Super Admin access required.");
+    const source = await tx.$queryRaw<Array<{employeeId:string}>>`
+      SELECT DISTINCT "employeeId" FROM public."WorkforcePayLedger"
+      WHERE "taskId"=${taskId}::uuid AND "sourceType" IN ('TASKER','REVIEWER','QA') ORDER BY "employeeId"`;
+    if (!source.length) throw new Error("No approved employees for this order.");
+    for (const person of source) {
+      await tx.$queryRaw`SELECT id FROM public."EmployeeProfile" WHERE id=${person.employeeId}::uuid FOR UPDATE`;
+    }
+    const task = await tx.$queryRaw<Array<{eligible:boolean}>>`
+      SELECT (status='COMPLETED' AND "clientActionAt" IS NOT NULL) AS eligible
+      FROM public."WorkTask" WHERE id=${taskId}::uuid`;
+    if (!task[0]?.eligible) throw new Error("Order must be client-completed and approved before applying final payroll adjustments.");
+    type Entry = {id:string;employeeId:string;sourceType:string;grossAmount:unknown;fineAmount:unknown;payableAmount:unknown;status:string;blocked:boolean};
+    const entries = await tx.$queryRaw<Entry[]>`
+      SELECT l.id,l."employeeId",l."sourceType",l."grossAmount",l."fineAmount",l."payableAmount",l.status,
+      (EXISTS (SELECT 1 FROM public."PayTeamAllocation" a WHERE a."ledgerId"=l.id)
+        OR EXISTS (SELECT 1 FROM public."WorkforcePayDecision" d WHERE d."ledgerId"=l.id)) AS blocked
+      FROM public."WorkforcePayLedger" l
+      WHERE l."taskId"=${taskId}::uuid AND l."sourceType" IN ('TASKER','REVIEWER','QA')
+      ORDER BY l."sourceType",l.id FOR UPDATE OF l`;
+    const matched = ["TASKER","REVIEWER","QA"].map(role=>entries.filter(e=>e.sourceType===role));
+    if (matched.some(x=>x.length!==1)) throw new Error("Order must have exactly one approved, unpaid Tasker, Reviewer and QA ledger entry. Review duplicate or missing entries manually.");
+    if (entries.some(e=>e.status!=="PENDING" || e.blocked)) throw new Error("An order participant has already been paid or settled; the order is locked.");
+    const oldPaid = await tx.$queryRaw<Array<{blocked:boolean}>>`
+      SELECT EXISTS(SELECT 1 FROM public."PayrollEntry" WHERE "taskId"=${taskId}::uuid AND status='PAID') AS blocked`;
+    if (oldPaid[0]?.blocked) throw new Error("A legacy payment exists for this order; adjustments are locked.");
+    const adminRetained = kind==="BONUS"?Math.round(total*30/100):0;
+    const shareable = total-adminRetained;
+    const t = Math.round(shareable*50/100), r = Math.round(shareable*30/100), q = shareable-t-r;
+    const shares = [t,r,q];
+    const decimal=(c:number)=>(c/100).toFixed(2);
+    const distribution: Array<{role:string;employeeId:string;ledgerId:string;amount:string}> = [];
+    for (let i=0;i<3;i++) {
+      const e = matched[i][0];
+      const oldGross=toCents(e.grossAmount),oldFine=toCents(e.fineAmount),oldNet=toCents(e.payableAmount);
+      const newGross=kind==="BONUS"?oldGross+shares[i]:oldGross;
+      const newFine=kind==="FINE"?oldFine+shares[i]:oldFine;
+      if (![oldGross,oldFine,oldNet,newGross,newFine].every(Number.isSafeInteger) || newGross<newFine || newGross>999999999999) throw new Error("A fine exceeds an employee's available unpaid entitlement, or the amount is invalid.");
+      const changed=await tx.$executeRaw`
+        UPDATE public."WorkforcePayLedger" SET "grossAmount"=${decimal(newGross)}::numeric,"fineAmount"=${decimal(newFine)}::numeric
+        WHERE id=${e.id}::uuid AND status='PENDING'`;
+      if (changed!==1) throw new Error("Order ledger changed during adjustment.");
+      await tx.$executeRaw`
+        INSERT INTO public."WorkforceHoldAdjustment"
+        ("ledgerId","employeeId","taskId","sourceType","oldGross","newGross","oldFine","newFine","oldPayable","newPayable","adjustmentKind","adjustmentValue","reason","createdById")
+        VALUES (${e.id}::uuid,${e.employeeId}::uuid,${taskId}::uuid,${e.sourceType},
+          ${decimal(oldGross)}::numeric,${decimal(newGross)}::numeric,${decimal(oldFine)}::numeric,${decimal(newFine)}::numeric,
+          ${decimal(oldNet)}::numeric,${decimal(newGross-newFine)}::numeric,
+          ${"AMOUNT"},${decimal(shares[i])}::numeric,${reason},${actor.id}::uuid)`;
+      distribution.push({role:e.sourceType,employeeId:e.employeeId,ledgerId:e.id,amount:decimal(shares[i])});
+      await tx.portalNotification.create({data:{recipientId:e.employeeId,title:kind==="BONUS"?"Order bonus allocated":"Order fine allocated",body:`${kind}: ${decimal(shares[i])} USD for an order. Reason: ${reason}`,href:"/portal/earnings"}});
+    }
+    await tx.$executeRaw`
+      INSERT INTO public."WorkforceOrderDistribution" ("taskId","kind","totalAmount","adminRetained","distribution","reason","createdById")
+      VALUES (${taskId}::uuid,${kind},${decimal(total)}::numeric,${decimal(adminRetained)}::numeric,${JSON.stringify(distribution)}::jsonb,${reason},${actor.id}::uuid)`;
+  }, {timeout:20000});
+  revalidatePath("/portal/super-admin/on-hold");
   revalidatePath("/portal/super-admin/payroll/pay-team");
   revalidatePath("/portal/earnings");
   revalidatePath("/portal/notifications");
