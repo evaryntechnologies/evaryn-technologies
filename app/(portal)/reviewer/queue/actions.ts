@@ -101,7 +101,7 @@ export async function reviewSubmission(formData: FormData): Promise<void> {
       data: {
         status: decision === "APPROVED" ? "PENDING_QA" : "REWORK_REQUIRED",
         claimedReviewerId: null,
-        claimedQaId: decision === "REWORK_REQUIRED" ? null : undefined,
+        claimedQaId: null,
       },
     });
 

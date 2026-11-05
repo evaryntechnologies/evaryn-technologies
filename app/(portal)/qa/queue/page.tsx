@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import Link from "next/link";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
-import { qaDecision, claimQA } from "./actions";
+import { qaDecision, claimQA, takeOverQA } from "./actions";
 
 async function QAQueueContent({
   searchParams,
@@ -17,7 +17,7 @@ async function QAQueueContent({
 
   const qaProfile = await prisma.employeeProfile.findUnique({
     where: { authUserId: user.id },
-    select: { id: true },
+    select: { id: true, role: true },
   });
 
   if (!qaProfile) {
@@ -32,8 +32,8 @@ async function QAQueueContent({
     where: {
       status: "PENDING_QA",
       employeeId: { not: qaProfile.id },
-      task: { status: "PENDING_QA", OR:[{claimedQaId:null},{claimedQaId:qaProfile.id}], submissions: { none: { OR: [{ employeeId: qaProfile.id }, { reviews: { some: { reviewerId: qaProfile.id } } }] } } },
-      reviews: { none: { reviewerId: qaProfile.id } },
+      task: { status: "PENDING_QA", submissions: { none: { OR: [{ employeeId: qaProfile.id }, { reviews: { some: { reviewerId: qaProfile.id, stage: "REVIEWER" } } }] } } },
+      reviews: { none: { reviewerId: qaProfile.id, stage: "REVIEWER" } },
     },
     include: {
       employee: {
@@ -208,7 +208,16 @@ async function QAQueueContent({
 
                 <div className="mt-4 space-y-1 text-sm text-cyan-200"><p>Submission: {submission.task.deadline?.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"}) ?? "Not set"}</p><p>Review: {submission.task.reviewDeadline?.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"}) ?? "Not set"}</p><p>QA: {submission.task.qaDeadline?.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"}) ?? "Not set"}</p></div>
                 {submission.task.attachmentKey && <a className="mt-2 block text-sm text-cyan-300 underline" href={"/portal/attachments/"+submission.task.id}>Download: {submission.task.attachmentName}</a>}
-                {submission.task.claimedQaId === null ? (
+                {submission.task.claimedQaId !== null && submission.task.claimedQaId !== qaProfile.id ? (
+                  user.role === "ADMIN" || user.role === "SUPER_ADMIN" ? (
+                    <form action={takeOverQA} className="mt-6 space-y-3 rounded-xl border border-violet-400/30 bg-violet-500/5 p-4">
+                      <p className="text-sm text-slate-300">Claimed by another reviewer. An administrator may reassign the pending QA check with an explanation.</p>
+                      <input type="hidden" name="taskId" value={submission.task.id} />
+                      <textarea name="reason" required minLength={10} maxLength={1000} placeholder="Reason for QA reassignment" className="w-full rounded-lg border border-white/20 bg-[#071327] p-3 text-sm text-white" />
+                      <button className="rounded-xl bg-[#7956AF] px-5 py-3 font-semibold text-white">Assign QA to myself</button>
+                    </form>
+                  ) : <p className="mt-5 text-sm text-slate-300">This QA check is currently claimed by another colleague.</p>
+                ) : submission.task.claimedQaId === null ? (
                   <form action={claimQA} className="mt-6">
                     <input type="hidden" name="taskId" value={submission.task.id}/>
                     <button className="rounded-xl bg-[#0052CC] px-5 py-3 font-semibold">Claim QA task</button>
@@ -242,7 +251,7 @@ async function QAQueueContent({
                       value="APPROVED"
                       className="rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold text-white hover:bg-[#003F9E]"
                     >
-                      Approve & Deliver — Await Client
+                      Approve & Send to Post-QA
                     </button>
 
                     <button

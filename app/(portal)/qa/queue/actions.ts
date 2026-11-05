@@ -7,12 +7,12 @@ import { prisma } from "@/lib/db/prisma";
 import { saveOrderAttachment, removeOrderAttachment } from "@/lib/tasks/order-attachment";
 
 export async function claimQA(formData: FormData): Promise<void> {
-  const auth = await requireEmployee(["QA"]);
+  const auth = await requireEmployee(["QA", "ADMIN", "SUPER_ADMIN"]);
   const taskId = String(formData.get("taskId") ?? "");
   const profile = await prisma.employeeProfile.findUnique({where:{authUserId:auth.id},select:{id:true,status:true,role:true}});
-  if (!profile || profile.status !== "ACTIVE" || profile.role !== "QA") redirect("/portal/unauthorized");
+  if (!profile || profile.status !== "ACTIVE" || !(["QA", "ADMIN", "SUPER_ADMIN"] as string[]).includes(profile.role)) redirect("/portal/unauthorized");
   const changed = await prisma.workTask.updateMany({
-    where:{id:taskId,status:"PENDING_QA",claimedQaId:null,assignedToId:{not:profile.id}},
+    where:{id:taskId,status:"PENDING_QA",claimedQaId:null,assignedToId:{not:profile.id},submissions:{none:{OR:[{employeeId:profile.id},{reviews:{some:{reviewerId:profile.id,stage:"REVIEWER"}}}]}}},
     data:{claimedQaId:profile.id},
   });
   revalidatePath("/portal/qa/queue");
@@ -20,7 +20,7 @@ export async function claimQA(formData: FormData): Promise<void> {
 }
 
 export async function qaDecision(formData: FormData): Promise<void> {
-  const user = await requireEmployee(["QA"]);
+  const user = await requireEmployee(["QA", "ADMIN", "SUPER_ADMIN"]);
 
   const submissionId = String(formData.get("submissionId") ?? "");
   const decision = String(formData.get("decision") ?? "");
@@ -44,7 +44,7 @@ export async function qaDecision(formData: FormData): Promise<void> {
 
   if (
     !qaEmployee ||
-    qaEmployee.role !== "QA" ||
+    !(["QA", "ADMIN", "SUPER_ADMIN"] as string[]).includes(qaEmployee.role) ||
     qaEmployee.status !== "ACTIVE"
   ) {
     redirect("/portal/unauthorized");
@@ -53,9 +53,15 @@ export async function qaDecision(formData: FormData): Promise<void> {
   // Require a fresh attachment for this QA decision, without relaxing QA claim ownership.
   const candidate = await prisma.taskSubmission.findUnique({
     where: { id: submissionId },
-    select: { taskId: true, status: true, task: { select: { status: true, claimedQaId: true } } },
+    select: {
+      taskId: true, status: true, employeeId: true,
+      task: { select: {
+        status: true, claimedQaId: true, assignedToId: true,
+        submissions: { select: { employeeId: true, reviews: { where: { stage: "REVIEWER" }, select: { reviewerId: true } } } },
+      } },
+    },
   });
-  if (!candidate || candidate.status !== "PENDING_QA" || candidate.task.status !== "PENDING_QA" || candidate.task.claimedQaId !== qaEmployee.id) {
+  if (!candidate || candidate.status !== "PENDING_QA" || candidate.task.status !== "PENDING_QA" || candidate.task.claimedQaId !== qaEmployee.id || candidate.employeeId === qaEmployee.id || candidate.task.assignedToId === qaEmployee.id || candidate.task.submissions.some(s => s.employeeId === qaEmployee.id || s.reviews.some(r => r.reviewerId === qaEmployee.id))) {
     redirect("/portal/qa/queue?error=processed");
   }
   const attachment = await saveOrderAttachment(formData, candidate.taskId, qaEmployee.id, false);
@@ -164,4 +170,42 @@ export async function qaDecision(formData: FormData): Promise<void> {
   revalidatePath("/portal/reviewer/queue");
 
   redirect("/portal/qa/queue?result=saved");
+}
+
+export async function takeOverQA(formData: FormData): Promise<void> {
+  const user = await requireEmployee(["ADMIN", "SUPER_ADMIN"]);
+  const actor = await prisma.employeeProfile.findUnique({
+    where: { authUserId: user.id },
+    select: { id: true, role: true, status: true },
+  });
+  if (!actor || actor.status !== "ACTIVE" || !["ADMIN", "SUPER_ADMIN"].includes(actor.role)) {
+    redirect("/portal/unauthorized");
+  }
+  const taskId = String(formData.get("taskId") ?? "");
+  const reason = String(formData.get("reason") ?? "").trim();
+  if (!/^[0-9a-f-]{36}$/i.test(taskId) || reason.length < 10 || reason.length > 1000) {
+    redirect("/portal/qa/queue?error=invalid");
+  }
+  const task = await prisma.workTask.findUnique({
+    where: { id: taskId },
+    select: { id: true, status: true, claimedQaId: true, assignedToId: true, publicTaskId: true,
+      submissions: { select: { employeeId: true, reviews: { where: { stage: "REVIEWER" }, select: { reviewerId: true } } } } },
+  });
+  if (!task || task.status !== "PENDING_QA" || !task.claimedQaId || task.claimedQaId === actor.id ||
+      task.assignedToId === actor.id ||
+      task.submissions.some(s => s.employeeId === actor.id || s.reviews.some(r => r.reviewerId === actor.id))) {
+    redirect("/portal/qa/queue?error=processed");
+  }
+  const changed = await prisma.workTask.updateMany({
+    where: { id: taskId, status: "PENDING_QA", claimedQaId: task.claimedQaId },
+    data: { claimedQaId: actor.id },
+  });
+  if (changed.count !== 1) redirect("/portal/qa/queue?error=processed");
+  await prisma.portalNotification.create({
+    data: { recipientId: task.claimedQaId, title: "QA claim reassigned",
+      body: `Order ${task.publicTaskId ?? task.id} was reassigned for QA by an administrator. Reason: ${reason}`,
+      href: "/portal/qa/queue" },
+  });
+  revalidatePath("/portal/qa/queue");
+  redirect("/portal/qa/queue?result=claimed");
 }
