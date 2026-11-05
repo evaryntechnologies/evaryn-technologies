@@ -1,3 +1,4 @@
+import ClientNotificationBell from "@/components/client/ClientNotificationBell";
 import "./client-portal.css";
 import type { ReactNode } from "react";
 import { Prisma } from "@/generated/prisma/client";
@@ -29,7 +30,7 @@ export default async function ClientPortalLayout({ children }: { children: React
         <ClientNav awaiting={awaiting} />
         <form action={signOutClient}><button className="cp-signout">Sign out</button></form>
       </header>
-      {children}
+      <div className="mb-4 flex justify-end"><ClientNotificationBell clientId={client.id} /></div>{children}
     </div>
   );
 }
