@@ -6,8 +6,12 @@ export async function GET(_req:NextRequest,{params}:{params:Promise<{id:string}>
  const supabase=await createServerClient();const {data:{user}}=await supabase.auth.getUser();
  if(!user)return new NextResponse("Sign in required",{status:401,headers:{"Cache-Control":"no-store"}});
  const {id}=await params;
- const d=await prisma.clientDelivery.findFirst({where:{id,client:{authUserId:user.id,status:"ACTIVE"}},select:{storageKey:true}});
+ const d=await prisma.clientDelivery.findFirst({where:{id,client:{authUserId:user.id,status:"ACTIVE"}},select:{storageKey:true,task:{select:{status:true,clientPaidPercent:true}}}});
  if(!d)return new NextResponse("Not found",{status:404,headers:{"Cache-Control":"no-store"}});
+ // Final originals are never authorized by client-entered reports.
+ // Only a Super Admin's verified 100% settlement updates the trusted WorkTask record.
+ if(d.task.status!=="COMPLETED" || Number(d.task.clientPaidPercent ?? 0)<100)
+  return new NextResponse("Original deliverable locked until full payment is verified",{status:403,headers:{"Cache-Control":"private, no-store"}});
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.SUPABASE_SERVICE_ROLE_KEY;
  if(!url||!key)return new NextResponse("Delivery storage unavailable",{status:503});
  const admin=createAdmin(url,key,{auth:{autoRefreshToken:false,persistSession:false}});

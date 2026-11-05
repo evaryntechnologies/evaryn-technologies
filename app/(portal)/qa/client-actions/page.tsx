@@ -55,7 +55,7 @@ const panel = "flex flex-col rounded-xl bg-[var(--ev-inset)] p-4";
 
 async function Content() {
   await connection();
-  await requireEmployee(["ADMIN", "SUPER_ADMIN"]);
+  await requireEmployee(["SUPER_ADMIN"]);
 
   const tasks = await prisma.workTask.findMany({
     where: { status: "DELIVERED_AWAITING_CLIENT" },

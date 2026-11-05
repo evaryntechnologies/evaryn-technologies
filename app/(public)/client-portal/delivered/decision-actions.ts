@@ -14,12 +14,15 @@ export async function submitDeliveryDecision(form: FormData) {
   const decision = String(form.get("decision") ?? "");
   const reason = String(form.get("reason") ?? "").trim();
   const percentageText = String(form.get("percentage") ?? "");
-  const percentage = Number(percentageText);
-  if (!validId.test(id) || !["REVISION", "CANCELED", "PAID_PARTIAL"].includes(decision) || reason.length < 10 || reason.length > 5000) {
+  const percentage = decision === "PAID_FULL" ? 100 : Number(percentageText);
+  const isPayment = decision === "PAID_PARTIAL" || decision === "PAID_FULL";
+  const fullPayment = decision === "PAID_FULL" || (decision === "PAID_PARTIAL" && percentage === 100);
+  const paymentDecision = fullPayment ? "PAID_FULL" : "PAID_PARTIAL";
+  if (!validId.test(id) || !["REVISION", "CANCELED", "PAID_PARTIAL", "PAID_FULL"].includes(decision) || reason.length < 10 || reason.length > 5000) {
     throw new Error("Choose an action and provide at least 10 characters explaining your decision.");
   }
-  if (decision === "PAID_PARTIAL" && (!/^\d+(?:\.\d{1,2})?$/.test(percentageText) || !(percentage > 0 && percentage < 100))) {
-    throw new Error("Enter the reported percentage paid between 0 and 100 (maximum two decimal places).");
+  if (decision === "PAID_PARTIAL" && (!/^\d+(?:\.\d{1,2})?$/.test(percentageText) || !(percentage > 0 && percentage <= 100))) {
+    throw new Error("Enter a percentage from 0.01 to 100 (maximum two decimal places).");
   }
 
   await prisma.$transaction(async tx => {
@@ -32,12 +35,18 @@ export async function submitDeliveryDecision(form: FormData) {
     if (decision === "REVISION" && !delivery.task.assignedToId) throw new Error("An assigned tasker is required for a revision.");
 
     // A partial payment is a report, never confirmation of funds or a payroll settlement.
-    if (decision === "PAID_PARTIAL") {
+    if (isPayment) {
+      // One pending report per task. A newer report replaces the earlier unverified one.
+      // Reports are NEVER payment proof and NEVER unlock private final deliverables.
       await tx.$executeRaw`
         INSERT INTO public."ClientDeliveryDecision"("deliveryId","taskId","clientId","decision","reason","paidPercent","status")
-        VALUES (${id}::uuid, ${delivery.taskId}::uuid, ${client.id}::uuid, 'PAID_PARTIAL', ${reason}, ${percentage}, 'PENDING')`;
-      const admins = await tx.employeeProfile.findMany({ where: { role: { in: ["ADMIN", "SUPER_ADMIN"] }, status: "ACTIVE" }, select: { id: true } });
-      if (admins.length) await tx.portalNotification.createMany({ data: admins.map(a => ({ recipientId: a.id, title: "Client reported partial payment", body: `Order ${delivery.task.publicTaskId ?? delivery.taskId}: ${percentage}% reported. Staff must verify payment before settlement.`, href: "/portal/client-decisions" })) });
+        VALUES (${id}::uuid, ${delivery.taskId}::uuid, ${client.id}::uuid, ${paymentDecision}, ${reason}, ${percentage}, 'PENDING')
+        ON CONFLICT ("taskId") WHERE "status"='PENDING'
+        DO UPDATE SET "deliveryId"=EXCLUDED."deliveryId", "clientId"=EXCLUDED."clientId",
+          "decision"=EXCLUDED."decision", "reason"=EXCLUDED."reason",
+          "paidPercent"=EXCLUDED."paidPercent", "createdAt"=now()`;
+      const admins = await tx.employeeProfile.findMany({ where: { role: "SUPER_ADMIN", status: "ACTIVE" }, select: { id: true } });
+      if (admins.length) await tx.portalNotification.createMany({ data: admins.map(a => ({ recipientId: a.id, title: fullPayment ? "Client reported full payment" : "Client reported partial payment", body: `Order ${delivery.task.publicTaskId ?? delivery.taskId}: ${percentage}% reported. Super Admin must verify receipt before releasing original files.`, href: "/portal/client-decisions" })) });
       return;
     }
 

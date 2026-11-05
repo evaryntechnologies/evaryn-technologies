@@ -6,9 +6,9 @@ import { revalidatePath } from "next/cache";
 import { cancellationDetail, notifyOrderParticipants } from "@/lib/tasks/order-outcome-notifications";
 
 export async function finalizeClientAction(form: FormData) {
-  const user = await requireEmployee(["ADMIN", "SUPER_ADMIN"]);
+  const user = await requireEmployee(["SUPER_ADMIN"]);
   const actor = await prisma.employeeProfile.findUnique({where:{authUserId:user.id},select:{id:true,status:true,role:true}});
-  if (!actor || actor.status !== "ACTIVE" || !["ADMIN","SUPER_ADMIN"].includes(actor.role)) throw new Error("Unauthorized");
+  if (!actor || actor.status !== "ACTIVE" || actor.role !== "SUPER_ADMIN") throw new Error("Unauthorized");
   const id=String(form.get("taskId")??"");
   const action=String(form.get("action")??"");
   const note=String(form.get("note")??"").trim();

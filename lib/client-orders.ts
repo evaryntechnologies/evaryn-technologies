@@ -51,18 +51,19 @@ export type ClientOrder = {
   clientRating: number | null;
   clientFeedback: string | null;
   ratedAt: Date | null;
+  paymentPercent: number | null;
 };
 
 type Row = {
   taskId: string; publicTaskId: string | null; clientOrderCode: string | null; title: string; category: string | null; status: string;
   qaDeadline: Date | null; createdAt: Date; updatedAt: Date; clientRating: number | null;
-  deliveredAt: Date | null; deliveryNote: string | null; clientFeedback: string | null; ratedAt: Date | null;
+  deliveredAt: Date | null; deliveryNote: string | null; clientFeedback: string | null; ratedAt: Date | null; clientPaidPercent: Prisma.Decimal | null;
 };
 
 export async function listClientOrders(clientId: string): Promise<ClientOrder[]> {
   const rows = await prisma.$queryRaw<Row[]>(Prisma.sql`
     SELECT t."id" AS "taskId", t."publicTaskId", r."clientOrderCode", t."title", t."category", t."status", t."qaDeadline",
-           t."createdAt", t."updatedAt", t."clientRating",
+           t."createdAt", t."updatedAt", t."clientRating", t."clientPaidPercent",
            l."deliveredAt", l."deliveryNote", l."clientFeedback", l."ratedAt"
     FROM public."ClientOrderLink" l
     JOIN public."WorkTask" t ON t."id" = l."taskId"
@@ -75,7 +76,7 @@ export async function listClientOrders(clientId: string): Promise<ClientOrder[]>
     stage: stageOf(r.status, r.deliveredAt), inRevision: r.status === "REWORK_REQUIRED",
     targetDate: r.qaDeadline, createdAt: r.createdAt, updatedAt: r.updatedAt,
     deliveredAt: r.deliveredAt, deliveryNote: r.deliveryNote, clientRating: r.clientRating,
-    clientFeedback: r.clientFeedback, ratedAt: r.ratedAt,
+    clientFeedback: r.clientFeedback, ratedAt: r.ratedAt, paymentPercent: r.clientPaidPercent == null ? null : Number(r.clientPaidPercent),
   }));
 }
 
