@@ -1,3 +1,4 @@
+import OrderMessageComposer from "@/components/client/OrderMessageComposer";
 import { listClientMessages, listClientAttachments } from "@/lib/client-communication";
 import { sendClientMessage, terminateClientRequest } from "../../actions";
 import { notFound } from "next/navigation";
@@ -22,10 +23,11 @@ export default async function RequestDetails({ params }: { params: Promise<{ id:
       <div className="cp-head"><div><h1 className="cp-title">{orderCode} — {request.title}</h1><p className="cp-sub">{request.service} · Submitted {formatDate(request.createdAt)}</p></div><span className="cp-pill cp-pill--blue">{request.status.replaceAll("_", " ").toLowerCase()}</span></div>
       <div className="cp-panel"><h2 className="cp-h2">Your request</h2><p className="cp-prose">{request.details}</p></div>
       <div className="cp-panel"><h2 className="cp-h2">Messages about this order</h2><p className="text-sm">You can contact Evaryn at any stage of this project.</p>
-        <div className="mt-4 space-y-3">{messages.map(m => <div key={m.id} className="rounded-xl border p-3"><strong>{m.senderKind === "CLIENT" ? "You" : "Evaryn team"}</strong><span className="ml-2 text-xs">{new Date(m.createdAt).toLocaleString()}</span><p className="mt-2 whitespace-pre-wrap">{m.body}</p></div>)}</div>
-        <form action={sendClientMessage} className="mt-4 grid gap-3"><input type="hidden" name="requestId" value={id}/><label>New message<textarea required minLength={1} maxLength={5000} name="message" rows={4} className="w-full rounded-lg border p-3 text-slate-900"/></label><button className="ev2-primary">Send message</button></form>
+        <div className="mt-4 space-y-3">{messages.map(m => <div key={m.id} className="rounded-xl border p-3"><strong>{m.senderKind === "CLIENT" ? "You" : "Evaryn team"}</strong><span className="ml-2 text-xs">{new Date(m.createdAt).toLocaleString()}</span><p className="mt-2 whitespace-pre-wrap">{m.body}</p>
+          {attachments.filter(a=>a.messageId===m.id).map(a=><a key={a.id} className="mt-2 block break-all text-sm font-semibold text-cyan-700 underline dark:text-cyan-300" href={`/api/client-order-attachments/${a.id}`}>📎 {a.purpose==="FINAL"?"Final file · ":"Attachment · "}{a.fileName}</a>)}</div>)}</div>
+        <OrderMessageComposer requestId={id} />
       </div>
-      {attachments.length > 0 && <div className="cp-panel"><h2 className="cp-h2">Order attachments</h2><ul className="space-y-2">{attachments.map(a => <li key={a.id}><a className="underline" href={`/api/client-order-attachments/${a.id}`}>{a.fileName}</a></li>)}</ul></div>}
+      {attachments.some(a=>!a.messageId) && <div className="cp-panel"><h2 className="cp-h2">Order attachments</h2><ul className="space-y-2">{attachments.filter(a=>!a.messageId).map(a => <li key={a.id}><a className="underline" href={`/api/client-order-attachments/${a.id}`}>{a.fileName}</a></li>)}</ul></div>}
       {request.status !== "CLOSED" && <div className="cp-panel"><h2 className="cp-h2">End this project or contract</h2><p className="text-sm">You may end the project at any stage. A reason is required. Any payments or work already completed will be reviewed according to your agreement.</p><form action={terminateClientRequest} className="mt-3 grid gap-3"><input type="hidden" name="requestId" value={id}/><label>Reason for ending this project<textarea required minLength={10} maxLength={3000} name="reason" rows={3} className="w-full rounded-lg border p-3 text-slate-900"/></label><button className="rounded-lg bg-rose-800 p-3 font-semibold text-white">End project</button></form></div>}
       {request.adminNote && <div className="cp-panel cp-quote"><strong>Update from Evaryn</strong><p className="cp-prose">{request.adminNote}</p></div>}
     </main>

@@ -7,12 +7,12 @@ const types=["application/pdf","text/plain","application/vnd.openxmlformats-offi
 const prefixes:Record<string,string>={"Video Editing":"VID","Technical Writing":"TWR","Website Development":"WBD","Non-Technical Writing":"NTW","AI Data Annotation":"ADA","AI Training Data Operations":"ATO","Other":"OTH"};
 export function categoryPrefix(category:string) {const result=prefixes[category];if(!result)throw new Error("Unsupported order category");return result;}
 export type MessageRow={id:string;requestId:string;senderKind:string;body:string;createdAt:Date;senderId:string};
-export type AttachmentRow={id:string;requestId:string;fileName:string;storageKey:string;contentType:string;createdAt:Date};
+export type AttachmentRow={id:string;requestId:string;messageId:string|null;purpose:string;fileName:string;storageKey:string;contentType:string;createdAt:Date};
 export async function listClientMessages(requestId:string) {return prisma.$queryRaw<MessageRow[]>(Prisma.sql`
  SELECT "id","requestId","senderKind","senderId","body","createdAt" FROM public."ClientOrderMessage"
  WHERE "requestId"=${requestId}::uuid ORDER BY "createdAt" ASC LIMIT 500`);}
 export async function listClientAttachments(requestId:string) {return prisma.$queryRaw<AttachmentRow[]>(Prisma.sql`
- SELECT "id","requestId","fileName","storageKey","contentType","createdAt" FROM public."ClientOrderAttachment"
+ SELECT "id","requestId","messageId","purpose","fileName","storageKey","contentType","createdAt" FROM public."ClientOrderAttachment"
  WHERE "requestId"=${requestId}::uuid ORDER BY "createdAt" ASC LIMIT 100`);}
 export async function listRequestTaskLinks(clientId:string) {return prisma.$queryRaw<{taskId:string;requestId:string}[]>(Prisma.sql`
  SELECT l."taskId",l."requestId" FROM public."ClientOrderLink" l
