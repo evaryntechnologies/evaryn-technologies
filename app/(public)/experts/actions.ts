@@ -90,9 +90,19 @@ export async function submitExpertApplication(form:FormData){
  if(portfolioUrl){try{const parsed=new URL(portfolioUrl);if(!["https:","http:"].includes(parsed.protocol))throw Error();}catch{redirect("/experts/application?error=invalid");}}
  const resume = form.get("resume");
  if (!(resume instanceof File) || resume.size === 0 || resume.size > 10 * 1024 * 1024 || !["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(resume.type)) redirect("/experts/application?error=invalid");
+ const resumeStorageKey=String(form.get("resumeStorageKey")??"").trim();
+ if(!resumeStorageKey.startsWith(`expert-resumes/${user.id}/`) || !/^[a-f0-9-]{36}\.(pdf|docx)$/i.test(resumeStorageKey.split("/").pop() ?? "")) redirect("/experts/application?error=resume");
+ const storageUrl=process.env.NEXT_PUBLIC_SUPABASE_URL, storageSecret=process.env.SUPABASE_SERVICE_ROLE_KEY;
+ if(!storageUrl||!storageSecret) throw new Error("Private CV storage is not configured.");
+ const { createClient: createStorageAdmin }=await import("@supabase/supabase-js");
+ const storage=createStorageAdmin(storageUrl,storageSecret,{auth:{autoRefreshToken:false,persistSession:false}}).storage.from("task-attachments");
+ const storagePath=resumeStorageKey.slice(0,resumeStorageKey.lastIndexOf("/"));
+ const filename=resumeStorageKey.slice(resumeStorageKey.lastIndexOf("/")+1);
+ const listing=await storage.list(storagePath,{search:filename,limit:20});
+ if(listing.error||!listing.data?.some(item=>item.name===filename)) redirect("/experts/application?error=resume");
  const current=await prisma.expertApplication.findUnique({where:{authUserId:user.id},select:{id:true}});
  if(current)redirect("/experts/application");
  const uploaded = await uploadPrivateFile(resume, `expert-resumes/${user.id}`, ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]);
- try { await prisma.expertApplication.create({data:{authUserId:user.id,email,cvStorageKey:uploaded.storageKey,fullName:String(user.user_metadata?.full_name??email.split("@")[0]).slice(0,150),expertise,country,experience,portfolioUrl:portfolioUrl||null}}); } catch (error) { await removePrivateFile(uploaded.storageKey); throw error; }
+ try { await prisma.expertApplication.create({data:{authUserId:user.id,email,fullName:String(user.user_metadata?.full_name??email.split("@")[0]).slice(0,150),expertise,country,experience,portfolioUrl:portfolioUrl||null,cvStorageKey:resumeStorageKey}}); } catch (error) { await removePrivateFile(uploaded.storageKey); throw error; }
  redirect("/experts/application?submitted=1");
 }
