@@ -62,19 +62,56 @@ export async function changeEmployeeStatus(form: FormData): Promise<void> {
   const actor = await authorizedSuperAdmin();
   const id = String(form.get("employeeId") ?? "");
   const action = String(form.get("action") ?? "");
-  const employee = await prisma.employeeProfile.findUnique({where:{id},select:{id:true,role:true,status:true}});
-  if (!employee || employee.id === actor.id || employee.role === "SUPER_ADMIN" || employee.status === "DELETED") throw new Error("Protected account");
-  if (action === "reinstate") {
-    await prisma.employeeProfile.update({where:{id},data:{status:"ACTIVE",suspensionUntil:null}});
-  } else if (action === "temporary") {
-    const value = String(form.get("until") ?? "");
-    const until = new Date(value);
-    if (!value || !Number.isFinite(until.getTime()) || until.getTime() <= Date.now()) throw new Error("Choose a future suspension end date");
-    await prisma.employeeProfile.update({where:{id},data:{status:"SUSPENDED",suspensionUntil:until}});
-  } else if (action === "permanent") {
-    await prisma.employeeProfile.update({where:{id},data:{status:"TERMINATED",suspensionUntil:null}});
-  } else {throw new Error("Unknown action");}
+  const reason = String(form.get("reason") ?? "").trim();
+  if (!/^[0-9a-f-]{36}$/i.test(id)) throw new Error("Invalid employee reference");
+  if (!["temporary", "permanent", "reinstate"].includes(action)) throw new Error("Unknown action");
+  if (reason.length < 10 || reason.length > 1000) throw new Error("Provide a written reason (10–1000 characters)");
+  const value = String(form.get("until") ?? "");
+  const until = action === "temporary" ? new Date(value) : null;
+  if (action === "temporary" && (!value || !until || !Number.isFinite(until.getTime()) || until.getTime() <= Date.now())) {
+    throw new Error("Choose a future suspension review date");
+  }
+  // The profile lock serializes concurrent personnel actions. Release only unfinished
+  // tasker assignments; completed/delivered orders and all historical reviews remain intact.
+  const result = await prisma.$transaction(async (tx) => {
+    const locked = await tx.$queryRaw<Array<{id:string;role:string;status:string;fullName:string}>>`
+      SELECT id,role,status,"fullName" FROM public."EmployeeProfile" WHERE id=${id}::uuid FOR UPDATE`;
+    const employee = locked[0];
+    if (!employee || employee.id === actor.id || employee.role === "SUPER_ADMIN" || employee.status === "DELETED") throw new Error("Protected account");
+    if (action === "reinstate" && !["SUSPENDED", "TERMINATED"].includes(employee.status)) throw new Error("Employee is not suspended or terminated");
+    const status = action === "reinstate" ? "ACTIVE" : action === "temporary" ? "SUSPENDED" : "TERMINATED";
+    if (action !== "reinstate" && employee.status === "TERMINATED") throw new Error("Reactivate a terminated account before making other changes");
+    await tx.employeeProfile.update({where:{id},data:{status,suspensionUntil:action === "temporary" ? until : null}});
+    let released = 0;
+    if (action !== "reinstate") {
+      const tasks = await tx.workTask.findMany({
+        where:{assignedToId:id,status:{in:["ASSIGNED","REWORK_REQUIRED","PENDING_REVIEW","REVIEW_IN_PROGRESS","PENDING_QA","QA_IN_PROGRESS"]}},
+        select:{id:true,publicTaskId:true},
+      });
+      if (tasks.length) {
+        const result = await tx.workTask.updateMany({
+          where:{id:{in:tasks.map(t=>t.id)},assignedToId:id,status:{in:["ASSIGNED","REWORK_REQUIRED","PENDING_REVIEW","REVIEW_IN_PROGRESS","PENDING_QA","QA_IN_PROGRESS"]}},
+          data:{assignedToId:null,status:"OPEN",deadline:null,reviewDeadline:null,qaDeadline:null,claimedReviewerId:null,claimedQaId:null},
+        });
+        if(result.count!==tasks.length) throw new Error("Task assignments changed during suspension; retry");
+        released=result.count;
+      }
+      // Claims made in a separate Reviewer or QA role should not hold up the queues.
+      await tx.workTask.updateMany({where:{claimedReviewerId:id,status:"PENDING_REVIEW"},data:{claimedReviewerId:null}});
+      await tx.workTask.updateMany({where:{claimedQaId:id,status:"PENDING_QA"},data:{claimedQaId:null}});
+    }
+    await tx.portalNotification.create({data:{recipientId:id,title:status==="ACTIVE"?"Account reactivated":status==="SUSPENDED"?"Account suspended":"Employment access terminated",body:`${reason} ${released ? `${released} unfinished assignment(s) returned to the Task Hub.` : ""}`.trim(),href:"/portal/notifications"}});
+    await tx.portalNotification.create({data:{recipientId:actor.id,title:`Employee ${status.toLowerCase()}: ${employee.fullName}`,body:`Reason: ${reason}. Unfinished task assignments released: ${released}.`,href:"/portal/super-admin/employees"}});
+    return {released,status};
+  });
   refresh();
+  revalidatePath("/portal/task-hub");
+  revalidatePath("/portal/tasker");
+  revalidatePath("/portal/reviewer/queue");
+  revalidatePath("/portal/qa/queue");
+  revalidatePath("/portal/admin/task-management");
+  revalidatePath("/portal/super-admin/payroll/pay-team");
+  console.info("Employee access changed",{employeeId:id,action,released:result.released});
 }
 
 export async function deleteEmployeeAccount(form: FormData): Promise<void> {
