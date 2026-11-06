@@ -91,13 +91,15 @@ type NavigationEntry = MenuItem | NavigationGroup;
 
 // EVARYN_WORKSPACE_CLARITY_V1: one visible destination per feature; role-specific sections.
 // The links originate from roleMenu, so existing role checks and destinations are retained.
+// EVARYN_TASK_MANAGEMENT_SIDEBAR_V2: explicit role-aware Task Management navigation; no duplicate destinations.
+// EVARYN_TASK_SIDEBAR_FINAL_V3: role-specific Task Management contains Task Hub and My Orders.
 function groupedNavigation(role: Role): NavigationEntry[] {
   const source = roleMenu(role);
   const seen = new Set<string>();
   const groups: Record<string, MenuItem[]> = {
     "My Work": [],
     "Review & Quality": [],
-    "Operations": [],
+    "Task Management": [],
     "Client Management": [],
     "People & Talent": [],
     "Finance & Payroll": [],
@@ -107,7 +109,7 @@ function groupedNavigation(role: Role): NavigationEntry[] {
   const icons: Record<string, typeof LayoutDashboard> = {
     "My Work": ClipboardList,
     "Review & Quality": ShieldCheck,
-    "Operations": Compass,
+    "Task Management": ClipboardList,
     "Client Management": MessageSquare,
     "People & Talent": Users,
     "Finance & Payroll": Wallet,
@@ -117,7 +119,7 @@ function groupedNavigation(role: Role): NavigationEntry[] {
   const dashboard = source.find(item => item.name === "Dashboard") ?? { name: "Dashboard", href: home[role], icon: LayoutDashboard };
   seen.add(dashboard.href.split("?")[0]);
   const canManageClients = role === "ADMIN" || role === "SUPER_ADMIN";
-  const supplied: MenuItem[] = [...source];
+  const supplied: MenuItem[] = source.map(item => item.name === "All My Orders" ? {...item, name:"My Orders"} : item);
   // The legacy client-requests shortcut is consolidated here, rather than rendered above the sections.
   if (role === "SUPER_ADMIN") supplied.push({name:"Client Requests", href:"/portal/super-admin/client-requests", icon:ClipboardList});
   // Preserve all existing role-specific links, but show each destination only once.
@@ -133,17 +135,30 @@ function groupedNavigation(role: Role): NavigationEntry[] {
     const name = item.name.toLowerCase();
     const href = path.toLowerCase();
     let section: keyof typeof groups = "Administration";
-    if (/client|delivery|post-qa|order register/.test(name+" "+href) && canManageClients) section = "Client Management";
+    if (item.name === "Task Hub" || item.name === "My Orders") section = "Task Management";
+    else if (canManageClients && /order register|post.qa|fines? & penalties|categories|reassignment requests|force reassign|task management|task summary|operations hub|task.management|task.summary|admin.fines|admin.reassignments|admin.force.reassign|super.admin.categories|order.register|post.qa/.test(name+" "+href)) section = "Task Management";
+    else if (/client|delivery/.test(name+" "+href) && canManageClients) section = "Client Management";
     else if (/email|notification|memo|announcement|inquir/.test(name+" "+href)) section = "Communication";
     else if (/pay|earnings|financ|hours|time tracker|advance/.test(name+" "+href)) section = "Finance & Payroll";
     else if (/employee|recruit|expert application|people|hire/.test(name+" "+href)) section = "People & Talent";
     else if (/review|qa queue|quality|ratings|rubric/.test(name+" "+href)) section = "Review & Quality";
-    else if (/operations|management|task summary|reassign|force|fine|dispute|categories|audit/.test(name+" "+href) && canManageClients) section = "Operations";
+    else if (/operations|management|task summary|reassign|force|fine|dispute|categories|audit/.test(name+" "+href) && canManageClients) section = "Task Management";
     else if (/my orders|my work|task hub|tasker|marketplace|tasks/.test(name+" "+href)) section = "My Work";
     else if (/fine|dispute/.test(name+" "+href)) section = "Review & Quality";
     groups[section].push(item);
   }
-  const order = ["My Work", "Review & Quality", "Operations", "Client Management", "People & Talent", "Finance & Payroll", "Communication", "Administration"];
+  const taskManagementPriority = [
+    "Task Hub", "My Orders", "Order Register", "Post-QA Orders",
+    "Fines & Penalties", "Categories", "Reassignment Requests", "Force Reassign",
+  ];
+  groups["Task Management"].sort((a, b) => {
+    const index = (label: string) => {
+      const position = taskManagementPriority.indexOf(label);
+      return position < 0 ? taskManagementPriority.length : position;
+    };
+    return index(a.name) - index(b.name);
+  });
+  const order = ["My Work", "Review & Quality", "Task Management", "Client Management", "People & Talent", "Finance & Payroll", "Communication", "Administration"];
   const items: NavigationEntry[] = [dashboard];
   for (const name of order) {
     if (!groups[name].length) continue;

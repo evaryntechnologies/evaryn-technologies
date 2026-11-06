@@ -237,3 +237,46 @@
     max-height: min(35vh, 245px);
   }
 }
+
+
+/* EVARYN_TASK_MANAGEMENT_SIDEBAR_V2 — one natural mouse-wheel scroll area.
+   Overrides old nested 48vh category scroll without changing theme tokens. */
+.ev-portal .ev-sidebar { display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+.ev-portal .ev-sidebar .ev-sidebar-card,
+.ev-portal .ev-sidebar .ev-sidebar-heading,
+.ev-portal .ev-sidebar .ev-sidebar-footer { flex:0 0 auto; }
+.ev-portal .ev-sidebar .ev-sidebar-links {
+  display:flex; flex-direction:column;
+  flex:1 1 auto; min-height:0;
+  overflow-y:auto; overflow-x:hidden;
+  overscroll-behavior-y:auto;
+  scrollbar-width:auto;
+  scrollbar-color:var(--ev-border) transparent;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
+}
+.ev-portal .ev-sidebar .ev-sidebar-links > .ev-nav-group,
+.ev-portal .ev-sidebar .ev-sidebar-links > .ev-nav-link,
+.ev-portal .ev-sidebar .ev-sidebar-links > .ev-menu-pending { flex:0 0 auto; }
+.ev-portal .ev-sidebar .ev-nav-group { display:block; overflow:visible; }
+.ev-portal .ev-sidebar .ev-nav-group[open] > .ev-nav-group-items {
+  max-height:none !important;
+  overflow:visible !important;
+  overscroll-behavior-y:auto;
+}
+.ev-portal .ev-sidebar .ev-nav-group-items > .ev-nav-sub-link { min-height:39px; }
+.ev-portal .ev-sidebar .ev-nav-group-trigger { cursor:pointer; }
+@media (hover:hover) and (pointer:fine) {
+  .ev-portal .ev-sidebar .ev-sidebar-links::-webkit-scrollbar { width:9px; }
+  .ev-portal .ev-sidebar .ev-sidebar-links::-webkit-scrollbar-thumb {
+    background:color-mix(in srgb,var(--ev-cyan) 25%,var(--ev-border)); border-radius:99px;
+  }
+}
+
+
+/* EVARYN_TASK_SIDEBAR_FINAL_V3 — single continuous sidebar wheel scroll. */
+.ev-portal .ev-sidebar .ev-sidebar-links { scroll-behavior:auto; overflow-y:auto; overflow-x:hidden; min-height:0; flex:1 1 auto; overscroll-behavior-y:contain; }
+.ev-portal .ev-sidebar .ev-nav-group { flex:0 0 auto; }
+.ev-portal .ev-sidebar .ev-nav-group-items,
+.ev-portal .ev-sidebar .ev-nav-group[open] > .ev-nav-group-items { max-height:none !important; overflow:visible !important; }
+.ev-portal .ev-sidebar .ev-nav-group[open] { height:auto; flex-shrink:0; }
