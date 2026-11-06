@@ -63,26 +63,82 @@ async function RatingsContent() {
       aggregates.set(id,{count:previous.count+1,total:previous.total+(order.clientRating ?? 0)});
     }
   }
-  return <section className="min-w-0 space-y-5">
-    <header className="flex flex-wrap items-center justify-between gap-3">
-      <div><p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">Quality &amp; Feedback</p><h1 className="mt-1 text-2xl font-semibold">My Ratings &amp; Rubrics</h1><p className="mt-1 text-sm opacity-75">Client ratings for the orders you worked on.</p></div>
-      <div className={panel + " min-w-40 px-5 py-3"}><p className="text-xs font-semibold uppercase tracking-wide opacity-75">Average Rating</p><p className="mt-1 text-2xl font-bold">{avg === null ? "Not rated" : `${avg.toFixed(2)} / 5`}</p><p className="text-xs opacity-75">{rated.length} rated {rated.length === 1 ? "order" : "orders"}</p></div>
-    </header>
-    <div className={panel + " overflow-hidden"}>
-      <div className="hidden gap-4 border-b border-cyan-500/20 bg-cyan-200/65 px-4 py-3 text-xs font-bold uppercase tracking-wide dark:bg-[#163B66] md:grid md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)]"><span>Order Details</span><span>Order Rating</span><span>% of Completion</span></div>
-      {orders.map(o => <article key={o.id} className="grid min-w-0 gap-4 border-b border-cyan-500/20 px-4 py-3 last:border-b-0 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)] md:items-center">
-        <div className="min-w-0"><p className="break-words text-sm font-semibold">{o.title}</p><p className="text-xs opacity-70">{o.publicTaskId ?? "Order"}</p></div>
-        <div><p className="mb-1 text-[11px] font-semibold uppercase opacity-60 md:hidden">Order Rating</p><Stars rating={o.clientRating}/></div>
-        <div><p className="mb-1 text-[11px] font-semibold uppercase opacity-60 md:hidden">% of Completion</p><PaymentBar percent={o.clientPaidPercent === null ? null : Number(o.clientPaidPercent)}/></div>
-      </article>)}
-      {orders.length === 0 && <p className="p-6 text-sm opacity-75">No orders in which you participated have been recorded yet.</p>}
-    </div>
-    {user.role === "SUPER_ADMIN" && <section className="space-y-3"><div><h2 className="text-xl font-semibold">Employees’ Ratings &amp; Rubrics</h2><p className="text-sm opacity-70">Unique rated orders per employee, including Taskers, Reviewers, QA and Admin participants.</p></div>
-      <div className={panel + " overflow-hidden"}><div className="grid grid-cols-[minmax(0,1fr)_70px_100px] gap-3 border-b border-cyan-500/20 bg-cyan-200/65 px-4 py-3 text-xs font-bold dark:bg-[#163B66] sm:grid-cols-[minmax(0,1fr)_140px_160px]"><span>Employee</span><span>Rated Orders</span><span>Average Rating</span></div>
-      {employees.map(e=>{const s=aggregates.get(e.id);return <div key={e.id} className="grid grid-cols-[minmax(0,1fr)_70px_100px] items-center gap-3 border-b border-cyan-500/20 px-4 py-3 text-sm last:border-0 sm:grid-cols-[minmax(0,1fr)_140px_160px]"><div className="min-w-0"><p className="break-words font-semibold">{e.fullName}</p><p className="text-xs opacity-65">{e.role.replaceAll("_"," ")}</p></div><span>{s?.count ?? 0}</span><span className="font-semibold">{s ? `${(s.total/s.count).toFixed(2)} / 5` : "Not rated"}</span></div>})}
-      {employees.length === 0 && <p className="p-5 text-sm opacity-70">No active employees found.</p>}</div>
-    </section>}
-    <p className="text-xs opacity-65">Payment bar shows client payment, not task progress. Green: 80–100%. Yellow: above 50% to below 80%. Red: 50% or below.</p>
-  </section>;
+  return (
+    <main className="mx-auto w-full max-w-7xl min-w-0 space-y-8 px-2 pb-12 pt-3 font-sans sm:px-5 lg:px-8">
+      <header className="flex flex-col gap-5 rounded-[28px] border border-[#92CDE4]/60 bg-[#E4F5FD]/85 px-6 py-7 shadow-sm dark:border-[#41658E] dark:bg-[#113455]/90 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-9">
+        <div className="min-w-0 space-y-2">
+          <p className="text-xs font-bold uppercase tracking-[.17em] text-[#35699B] dark:text-[#8FE4F4]">Quality &amp; feedback</p>
+          <h1 className="text-2xl font-bold leading-tight tracking-tight text-[#122E54] dark:text-[#F3FBFF] sm:text-3xl">My Ratings &amp; Rubrics</h1>
+          <p className="max-w-2xl text-sm leading-7 text-[#375C7B] dark:text-[#C7DEEF]">A clear view of client feedback for the orders you participated in.</p>
+        </div>
+        <div className="w-full shrink-0 rounded-2xl border border-[#B2D9E9] bg-[#F4FBFF] px-6 py-5 shadow-sm dark:border-[#4F6991] dark:bg-[#1C4268] sm:w-auto sm:min-w-[230px]">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#416381] dark:text-[#C4DDEC]">Average client rating</p>
+          <p className="mt-2 text-3xl font-bold tracking-tight text-[#1A3C67] dark:text-[#F3FBFF]">{avg === null ? "Not rated" : `${avg.toFixed(2)} / 5`}</p>
+          <p className="mt-2 text-sm text-[#456783] dark:text-[#C8DDEC]">{rated.length} rated {rated.length === 1 ? "order" : "orders"}</p>
+        </div>
+      </header>
+
+      <section aria-labelledby="rated-orders-heading" className="min-w-0 space-y-4">
+        <div className="flex flex-wrap items-end justify-between gap-3 px-1">
+          <div>
+            <h2 id="rated-orders-heading" className="text-xl font-bold text-[#173555] dark:text-[#F0F9FF]">Order feedback</h2>
+            <p className="mt-1 text-sm leading-6 text-[#456783] dark:text-[#C4DDEA]">Your orders, client ratings, and recorded payment percentages.</p>
+          </div>
+          <span className="rounded-full border border-[#B7DDEC] bg-[#E8F7FC] px-4 py-1.5 text-xs font-semibold text-[#285D7F] dark:border-[#426A90] dark:bg-[#214567] dark:text-[#D5F4FC]">{orders.length} total {orders.length === 1 ? "order" : "orders"}</span>
+        </div>
+        <div className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-2">
+          {orders.map(o => (
+            <article key={o.id} className="min-w-0 rounded-[22px] border border-[#B4D9EB] bg-[#EBF8FE]/95 p-5 shadow-[0_8px_28px_rgba(18,55,91,.06)] dark:border-[#3C638B] dark:bg-[#14375A]/95 sm:p-7">
+              <div className="mb-6 flex min-w-0 items-start gap-4">
+                <span className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#BEDDED] bg-[#D5EFFA] text-[#356DA0] dark:border-[#54749C] dark:bg-[#23496B] dark:text-[#8FE4F4]" aria-hidden="true"><Star size={21} strokeWidth={1.7}/></span>
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p className="break-words text-base font-bold leading-7 text-[#163858] dark:text-[#F2FAFF] sm:text-lg">{o.title}</p>
+                  <p className="break-all text-xs font-medium tracking-wide text-[#547692] dark:text-[#C0D9E9]">{o.publicTaskId ?? "Order"}</p>
+                </div>
+              </div>
+              <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+                <div className="min-w-0 rounded-2xl border border-[#C4E1EE] bg-[#F5FCFF] px-5 py-5 dark:border-[#46678B] dark:bg-[#204365]">
+                  <p className="mb-3 text-xs font-bold uppercase tracking-wider text-[#4B6C87] dark:text-[#CEE4F1]">Client rating</p>
+                  <Stars rating={o.clientRating}/>
+                </div>
+                <div className="min-w-0 rounded-2xl border border-[#C4E1EE] bg-[#F5FCFF] px-5 py-5 dark:border-[#46678B] dark:bg-[#204365]">
+                  <p className="mb-3 text-xs font-bold uppercase tracking-wider text-[#4B6C87] dark:text-[#CEE4F1]">Client payment</p>
+                  <PaymentBar percent={o.clientPaidPercent === null ? null : Number(o.clientPaidPercent)}/>
+                </div>
+              </div>
+            </article>
+          ))}
+          {orders.length === 0 && <div className="rounded-[22px] border border-dashed border-[#9ECFE5] bg-[#E6F6FD] px-7 py-12 text-center text-sm leading-7 text-[#345C7A] dark:border-[#52749B] dark:bg-[#173A5D] dark:text-[#D2E5F2] xl:col-span-2">No orders in which you participated have been recorded yet.</div>}
+        </div>
+      </section>
+
+      {user.role === "SUPER_ADMIN" && (
+        <section aria-labelledby="employee-ratings-heading" className="space-y-4">
+          <div className="px-1">
+            <h2 id="employee-ratings-heading" className="text-xl font-bold text-[#173555] dark:text-[#F1FAFF]">Employees’ ratings</h2>
+            <p className="mt-1 max-w-3xl text-sm leading-7 text-[#456783] dark:text-[#C4DDEA]">Unique rated orders for each employee, including Taskers, Reviewers, QA and Admin participants.</p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+            {employees.map(e => {
+              const summary = aggregates.get(e.id);
+              return <article key={e.id} className="min-w-0 rounded-[22px] border border-[#B4D9EB] bg-[#EBF8FE]/95 p-6 shadow-[0_8px_28px_rgba(18,55,91,.05)] dark:border-[#3C638B] dark:bg-[#14375A]/95 sm:p-7">
+                <div className="min-w-0 space-y-1 border-b border-[#B7D9E8] pb-5 dark:border-[#46688A]">
+                  <h3 className="break-words text-base font-bold leading-7 text-[#163858] dark:text-[#F2FAFF]">{e.fullName}</h3>
+                  <span className="inline-block rounded-full bg-[#E1EAFB] px-3 py-1 text-xs font-semibold text-[#65529B] dark:bg-[#352C64] dark:text-[#D8C6FA]">{e.role.replaceAll("_", " ")}</span>
+                </div>
+                <div className="mt-5 grid grid-cols-2 gap-4">
+                  <div className="min-w-0"><p className="text-xs leading-5 text-[#52748C] dark:text-[#C3DDED]">Rated orders</p><p className="mt-2 text-xl font-bold tabular-nums text-[#173B62] dark:text-[#F3FAFF]">{summary?.count ?? 0}</p></div>
+                  <div className="min-w-0"><p className="text-xs leading-5 text-[#52748C] dark:text-[#C3DDED]">Average rating</p><p className="mt-2 text-lg font-bold tabular-nums text-[#173B62] dark:text-[#F3FAFF]">{summary ? `${(summary.total / summary.count).toFixed(2)} / 5` : "Not rated"}</p></div>
+                </div>
+              </article>;
+            })}
+            {employees.length === 0 && <div className="rounded-2xl border border-dashed border-[#9ECFE5] bg-[#E6F6FD] p-8 text-sm dark:border-[#52749B] dark:bg-[#173A5D]">No active employees found.</div>}
+          </div>
+        </section>
+      )}
+
+      <p className="rounded-xl border border-[#BEDCE9] bg-[#E8F5FB]/85 px-5 py-4 text-xs leading-6 text-[#496A83] dark:border-[#406487] dark:bg-[#1A3B5B] dark:text-[#C7DDEB]">The payment indicator shows the percentage paid by the client, not task progress. Green: 80–100%; yellow: above 50% to below 80%; red: 50% or below.</p>
+    </main>
+  );
 }
 export default function RatingsPage(){return <Suspense fallback={<section className="space-y-3" aria-busy="true"><h1 className="text-2xl font-semibold">My Ratings &amp; Rubrics</h1><p className="text-sm opacity-70">Loading ratings...</p></section>}><RatingsContent/></Suspense>}
