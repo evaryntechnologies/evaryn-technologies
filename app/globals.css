@@ -1,7 +1,4 @@
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
-@import "@fontsource/inter/600.css";
-@import "@fontsource/inter/700.css";
+@import "@fontsource-variable/inter";
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -22,8 +19,8 @@
   --ev-navy: #0b2447;
   --ev-amethyst: #7956af;
   --ev-amethyst-light: #b99be5;
-  --ev-gold: #d9a82e;
-  --ev-gold-light: #f0cf78;
+  --ev-gold: #7a4fc0;
+  --ev-gold-light: #a98be0;
 
   /* LIGHT MODE: airy blue-white, navy ink. Never pure white text, never pure black. */
   --ev-page: #e9f3fb;
@@ -38,13 +35,13 @@
   --ev-muted: #3c5878;
   --ev-accent-text: #0b4fb3;
   --ev-amethyst-text: #5f3c9e;
-  --ev-gold-text: #8a6210;
+  --ev-gold-text: #5f3c9e;
   --ev-primary: #0a47a8;
   --ev-primary-hover: #083a8c;
   --ev-on-primary: #ffffff;
-  --ev-gold-btn: #e2b13c;
-  --ev-gold-btn-hover: #efc25a;
-  --ev-on-gold: #1a1405;
+  --ev-gold-btn: #7a4fc0;
+  --ev-gold-btn-hover: #6a3fb0;
+  --ev-on-gold: #ffffff;
   --ev-hero-from: #0a2a63;
   --ev-hero-via: #0a47a8;
   --ev-hero-to: #3b2a86;
@@ -54,7 +51,7 @@
   /* atmosphere: glows behind the honeycomb artwork */
   --ev-glow-a: rgba(0, 176, 248, 0.26);
   --ev-glow-b: rgba(121, 86, 175, 0.16);
-  --ev-glow-c: rgba(217, 168, 46, 0.10);
+  --ev-glow-c: rgba(0, 176, 248, 0.08);
   --ev-mark-opacity: 1;
 
   --background: var(--ev-page);
@@ -77,13 +74,13 @@
   --ev-muted: #b6cce8;
   --ev-accent-text: #5ccbff;
   --ev-amethyst-text: #c4a9f5;
-  --ev-gold-text: #e7be5c;
+  --ev-gold-text: #c4a9f5;
   --ev-primary: #00b0f8;
   --ev-primary-hover: #38c4ff;
   --ev-on-primary: #04204a;
-  --ev-gold-btn: #e7be5c;
-  --ev-gold-btn-hover: #f3d27f;
-  --ev-on-gold: #1a1405;
+  --ev-gold-btn: #8a5fd1;
+  --ev-gold-btn-hover: #7a4fc0;
+  --ev-on-gold: #ffffff;
   --ev-hero-from: #051638;
   --ev-hero-via: #0a2f73;
   --ev-hero-to: #2a2170;
@@ -92,7 +89,7 @@
 
   --ev-glow-a: rgba(0, 176, 248, 0.18);
   --ev-glow-b: rgba(121, 86, 175, 0.30);
-  --ev-glow-c: rgba(231, 190, 92, 0.07);
+  --ev-glow-c: rgba(0, 176, 248, 0.06);
   --ev-mark-opacity: 1;
 }
 
@@ -107,9 +104,8 @@ body {
   margin: 0;
   background: transparent;
   color: var(--ev-ink);
-  font-family:
-    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
-    sans-serif;
+  font-family: "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-feature-settings: "cv11", "ss01", "tnum" 0;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -146,8 +142,13 @@ input,
 textarea,
 select,
 option {
-  font-family: "Inter", Arial, sans-serif !important;
+  font-family: "Inter Variable", "Inter", Arial, sans-serif !important;
 }
+/* Inter everywhere, including anything that asks for a monospace or serif utility */
+code, pre, kbd, samp, .font-mono, .font-serif, [class*="font-mono"], [class*="font-serif"] {
+  font-family: "Inter Variable", "Inter", Arial, sans-serif !important;
+}
+code, pre, kbd, samp, .font-mono { font-variant-numeric: tabular-nums; letter-spacing: 0; }
 html,
 body {
   font-weight: 500;
@@ -910,9 +911,3 @@ html:not(.dark) .ev-portal [role="alert"][class*="amber"] { background: #fdf0c8;
 
 /* Selection + links */
 .ev-portal main a:not([class]) { color: var(--ev-accent-text); font-weight: 600; }
-
-/* Evaryn client workspace — theme-aware cyan, deep navy and royal amethyst. */
-.ev-client-panel{border:1px solid var(--ev-border);border-radius:1.15rem;background:color-mix(in srgb,var(--ev-surface) 85%,transparent);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);box-shadow:0 12px 32px -25px rgba(9,35,77,.5);color:var(--ev-ink)}
-.ev-client-header{background:linear-gradient(115deg,color-mix(in srgb,var(--ev-page-2) 85%,transparent),color-mix(in srgb,#7956af 11%,var(--ev-surface) 89%))}
-.ev-client-hero{background:radial-gradient(circle at 90% 12%,color-mix(in srgb,#7956af 20%,transparent),transparent 43%),linear-gradient(120deg,color-mix(in srgb,var(--ev-page-2) 72%,var(--ev-surface)),color-mix(in srgb,var(--ev-surface) 82%,transparent))}
-[data-theme="dark"] .ev-client-hero,.dark .ev-client-hero{background:radial-gradient(circle at 90% 12%,rgba(121,86,175,.23),transparent 43%),linear-gradient(120deg,#00236a,#003f88)}

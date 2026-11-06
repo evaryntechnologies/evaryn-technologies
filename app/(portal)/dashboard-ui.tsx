@@ -28,7 +28,7 @@ export const tones = {
   rose: "#f43f5e",
   violet: "#8b5cf6",
   teal: "#14b8a6",
-  gold: "#f5b301",
+  gold: "#7a4fc0",
 } as const;
 export type Tone = keyof typeof tones;
 
@@ -163,7 +163,7 @@ export function HeroButton({
       href={href}
       className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition ${
         primary
-          ? "bg-gradient-to-b from-[#f0cf78] to-[#e2b13c] text-[#1a1405] hover:from-[#f7dd95] hover:to-[#efc25a]"
+          ? "bg-gradient-to-b from-[#8a5fd1] to-[#6a3fb0] text-white hover:from-[#9a73de] hover:to-[#7a4fc0]"
           : "border border-white/45 text-white hover:bg-white/15"
       }`}
     >

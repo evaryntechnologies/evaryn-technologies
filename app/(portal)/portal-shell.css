@@ -91,7 +91,7 @@
 /* v3 polish: brand gradient hairline on the top bar, gold marker on the active link,
    consistent with the public website. All colours come from the tokens in globals.css. */
 .ev-portal .ev-topbar { background: color-mix(in srgb, var(--ev-nav) 88%, transparent); -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%); border-bottom: 1px solid var(--ev-border-soft); }
-.ev-portal .ev-topbar::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: linear-gradient(90deg, var(--ev-cyan), var(--ev-amethyst) 55%, var(--ev-gold)); }
+.ev-portal .ev-topbar::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: linear-gradient(90deg, var(--ev-cyan), var(--ev-blue) 45%, var(--ev-amethyst)); }
 .ev-portal .ev-nav-active { position: relative; }
 .ev-portal .ev-nav-active::after { content: ""; position: absolute; right: 10px; top: 50%; width: 6px; height: 6px; border-radius: 2px; background: var(--ev-gold-light); transform: translateY(-50%) rotate(45deg); }
 .ev-portal .ev-sidebar { border-right-color: var(--ev-border-soft); }
@@ -103,4 +103,47 @@
 .ev-portal .ev-hero p { color: #d3e0f3; }
 .ev-portal .ev-hero { color: #f1f6ff; }
 .ev-portal .ev-hero a:not([class*="from-"]) { color: #f1f6ff; }
-.ev-portal .ev-hero a[class*="from-"] { color: #1a1405; }
+.ev-portal .ev-hero a[class*="from-"] { color: #ffffff; }
+
+/* =====================================================================
+   PORTAL v4: minimalist glass workspace (cyan · blue · royal amethyst)
+   ===================================================================== */
+.ev-workspace { background: transparent; }
+.ev-topbar {
+  background: color-mix(in srgb, var(--ev-nav) 80%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid var(--ev-border-soft);
+  box-shadow: 0 10px 30px -26px rgba(8, 30, 70, 0.6);
+}
+.ev-topbar::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: linear-gradient(90deg, var(--ev-cyan), var(--ev-blue) 45%, var(--ev-amethyst)); }
+.ev-sidebar { background: color-mix(in srgb, var(--ev-nav) 90%, transparent); -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); }
+
+/* every page renders on one soft glass sheet above the honeycomb artwork */
+.ev-workspace-main {
+  --ev-gap: clamp(0.6rem, 1.6vw, 1.4rem);
+  width: calc(100% - 2 * var(--ev-gap));
+  max-width: 1480px;
+  margin: var(--ev-gap) auto 2.5rem;
+  border: 1px solid var(--ev-border-soft);
+  border-radius: 26px;
+  background: color-mix(in srgb, var(--ev-surface) 70%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: var(--ev-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.dark .ev-workspace-main { box-shadow: var(--ev-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+@media (max-width: 640px) { .ev-workspace-main { border-radius: 16px; } }
+
+/* calmer, more minimal controls */
+.ev-nav-link { border-radius: 12px; font-size: 13.5px; }
+.ev-top-title { background: color-mix(in srgb, var(--ev-surface) 70%, transparent); }
+.ev-search, .ev-user, .ev-logout, .ev-top-icon, .ev-menu-trigger { background: color-mix(in srgb, var(--ev-surface) 75%, transparent); }
+.ev-portal .ev-workspace-main h1 { letter-spacing: -0.035em; }
+.ev-portal .ev-workspace-main :is(h2, h3) { letter-spacing: -0.015em; }
+.ev-portal .ev-workspace-main table { font-size: 14px; }
+.ev-portal .ev-workspace-main :is(p, li) { max-width: none; }
+.ev-portal .ev-workspace-main ul:not([class*="grid"]):not([class*="flex"]) { max-width: 70ch; }
+

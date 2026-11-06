@@ -117,11 +117,11 @@ model ClientProfile {
   updatedAt      DateTime            @updatedAt
   projectAccess  ClientProjectAccess[]
   projectRequests ClientProjectRequest[]
-  clientDeliveries ClientDelivery[]
-  clientAssignments ClientOrderAssignment[]
 
   @@index([email])
   @@index([status])
+  clientDeliveries ClientDelivery[]
+  clientAssignments ClientOrderAssignment[]
 }
 
 // Clients are explicitly granted access to operational projects, never by guessing IDs.
@@ -228,8 +228,6 @@ model WorkTask {
   messages TaskMessage[]
   reassignmentRequests TaskReassignmentRequest[]
   penalties TaskPenalty[]
-  clientDelivery ClientDelivery?
-  clientAssignment ClientOrderAssignment?
   clientRating Int?
   clientActionAt DateTime?
   reinstatedAt DateTime?
@@ -239,6 +237,8 @@ model WorkTask {
   @@index([projectId, status])
   @@index([assignedToId, status])
   @@index([deadline])
+  clientDelivery ClientDelivery?
+  clientAssignment ClientOrderAssignment?
 }
 
 model TaskSubmission {
@@ -403,6 +403,32 @@ model ClientProjectRequest {
   @@index([status, createdAt])
 }
 
+
+model ClientOrderAssignment {
+  id String @id @default(uuid()) @db.Uuid
+  taskId String @unique @db.Uuid
+  clientId String @db.Uuid
+  assignedById String @db.Uuid
+  createdAt DateTime @default(now())
+  task WorkTask @relation(fields:[taskId],references:[id],onDelete:Restrict)
+  client ClientProfile @relation(fields:[clientId],references:[id],onDelete:Restrict)
+  updates ClientOrderUpdate[]
+  @@index([clientId,createdAt])
+}
+
+
+model ClientOrderUpdate {
+  id String @id @default(uuid()) @db.Uuid
+  assignmentId String @db.Uuid
+  stage String
+  message String @db.Text
+  postedById String @db.Uuid
+  createdAt DateTime @default(now())
+  assignment ClientOrderAssignment @relation(fields:[assignmentId],references:[id],onDelete:Restrict)
+  @@index([assignmentId,createdAt])
+}
+
+
 model ClientDelivery {
   id String @id @default(uuid()) @db.Uuid
   taskId String @unique @db.Uuid
@@ -417,26 +443,4 @@ model ClientDelivery {
   task WorkTask @relation(fields:[taskId],references:[id],onDelete:Restrict)
   client ClientProfile @relation(fields:[clientId],references:[id],onDelete:Restrict)
   @@index([clientId,publishedAt])
-}
-
-model ClientOrderAssignment {
-  id String @id @default(uuid()) @db.Uuid
-  taskId String @unique @db.Uuid
-  clientId String @db.Uuid
-  assignedById String @db.Uuid
-  createdAt DateTime @default(now())
-  task WorkTask @relation(fields:[taskId],references:[id],onDelete:Restrict)
-  client ClientProfile @relation(fields:[clientId],references:[id],onDelete:Restrict)
-  updates ClientOrderUpdate[]
-  @@index([clientId,createdAt])
-}
-model ClientOrderUpdate {
-  id String @id @default(uuid()) @db.Uuid
-  assignmentId String @db.Uuid
-  stage String
-  message String @db.Text
-  postedById String @db.Uuid
-  createdAt DateTime @default(now())
-  assignment ClientOrderAssignment @relation(fields:[assignmentId],references:[id],onDelete:Restrict)
-  @@index([assignmentId,createdAt])
 }

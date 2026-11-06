@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 type Pending = {id:string;taskId:string;reason:string;paidPercent:string;createdAt:Date;title:string;clientName:string};
 
 export default async function ClientDecisions() {
-  const user = await requireEmployee(["ADMIN", "SUPER_ADMIN"]);
+  const user = await requireEmployee(["SUPER_ADMIN"]);
   const employee = await prisma.employeeProfile.findUnique({ where: { authUserId: user.id }, select: { role:true,status:true } });
   if (!employee || employee.status !== "ACTIVE" || !["ADMIN","SUPER_ADMIN"].includes(employee.role)) throw new Error("Unauthorized");
   const pending = await prisma.$queryRaw<Pending[]>`
