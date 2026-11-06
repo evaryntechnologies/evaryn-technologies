@@ -1,3 +1,4 @@
+import ClientOrderChatThread from "@/components/client/ClientOrderChatThread";
 import OrderMessageComposer from "@/components/client/OrderMessageComposer";
 import { listClientMessages, listClientAttachments } from "@/lib/client-communication";
 import { sendClientMessage, terminateClientRequest } from "../../actions";
@@ -23,8 +24,7 @@ export default async function RequestDetails({ params }: { params: Promise<{ id:
       <div className="cp-head"><div><h1 className="cp-title">{orderCode} — {request.title}</h1><p className="cp-sub">{request.service} · Submitted {formatDate(request.createdAt)}</p></div><span className="cp-pill cp-pill--blue">{request.status.replaceAll("_", " ").toLowerCase()}</span></div>
       <div className="cp-panel"><h2 className="cp-h2">Your request</h2><p className="cp-prose">{request.details}</p></div>
       <div className="cp-panel"><h2 className="cp-h2">Messages about this order</h2><p className="text-sm">You can contact Evaryn at any stage of this project.</p>
-        <div className="mt-4 space-y-3">{messages.map(m => <div key={m.id} className="rounded-xl border p-3"><strong>{m.senderKind === "CLIENT" ? "You" : "Evaryn team"}</strong><span className="ml-2 text-xs">{new Date(m.createdAt).toLocaleString()}</span><p className="mt-2 whitespace-pre-wrap">{m.body}</p>
-          {attachments.filter(a=>a.messageId===m.id).map(a=><a key={a.id} className="mt-2 block break-all text-sm font-semibold text-cyan-700 underline dark:text-cyan-300" href={`/api/client-order-attachments/${a.id}`}>📎 {a.purpose==="FINAL"?"Final file · ":"Attachment · "}{a.fileName}</a>)}</div>)}</div>
+        <ClientOrderChatThread messages={messages} attachments={attachments} />
         <OrderMessageComposer requestId={id} />
       </div>
       {attachments.some(a=>!a.messageId) && <div className="cp-panel"><h2 className="cp-h2">Order attachments</h2><ul className="space-y-2">{attachments.filter(a=>!a.messageId).map(a => <li key={a.id}><a className="underline" href={`/api/client-order-attachments/${a.id}`}>{a.fileName}</a></li>)}</ul></div>}
