@@ -1,7 +1,7 @@
 import ClientOrderChatThread from "@/components/client/ClientOrderChatThread";
 import OrderMessageComposer from "@/components/client/OrderMessageComposer";
 import { listClientMessages, listClientAttachments } from "@/lib/client-communication";
-import { sendClientMessage, terminateClientRequest } from "../../actions";
+import { terminateClientRequest } from "../../actions";
 import { notFound } from "next/navigation";
 import { Prisma } from "@/generated/prisma/client";
 import Link from "next/link";
