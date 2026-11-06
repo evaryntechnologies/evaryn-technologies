@@ -171,3 +171,69 @@
 .ev-portal .ev-workspace-main :is(table,pre) { max-width: 100%; }
 @media (max-width: 720px) { .ev-portal .ev-sidebar { width: min(330px, 91vw); } }
 @media (prefers-reduced-motion: reduce) { .ev-portal .ev-nav-group-arrow { transition: none; } }
+
+
+/* EVARYN_SIDEBAR_SCROLL_FLOW_V1
+   Sidebar: two-level scrolling without collapsing or overlapping later sections.
+   Scoped to the employee portal; no role/navigation behavior is modified. */
+.ev-portal .ev-sidebar {
+  min-height: 0;
+  overflow: hidden;
+}
+.ev-portal .ev-sidebar-card,
+.ev-portal .ev-sidebar-heading,
+.ev-portal .ev-sidebar-footer {
+  flex: 0 0 auto;
+}
+.ev-portal .ev-sidebar-links {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ev-border) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+/* These direct flex items must grow naturally, never compress into each other. */
+.ev-portal .ev-sidebar-links > .ev-nav-group,
+.ev-portal .ev-sidebar-links > .ev-nav-link,
+.ev-portal .ev-sidebar-links > .ev-menu-pending {
+  flex: 0 0 auto;
+  min-height: 0;
+}
+.ev-portal .ev-nav-group {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+}
+.ev-portal .ev-nav-group > .ev-nav-group-trigger {
+  display: flex;
+  min-height: 44px;
+}
+/* A long category scrolls inside its own panel, while the next one stays below it. */
+.ev-portal .ev-nav-group[open] > .ev-nav-group-items {
+  max-height: min(48vh, 420px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ev-border) transparent;
+  -webkit-overflow-scrolling: touch;
+  align-content: start;
+}
+.ev-portal .ev-nav-group-items > .ev-nav-sub-link {
+  min-width: 0;
+  flex-shrink: 0;
+}
+.ev-portal .ev-nav-sub-link span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+@media (max-height: 620px) {
+  .ev-portal .ev-nav-group[open] > .ev-nav-group-items {
+    max-height: min(35vh, 245px);
+  }
+}
