@@ -99,6 +99,8 @@ export async function replyToSpecialMessage(form: FormData): Promise<void> {
   const sender = await authenticatedSender();
   const conversationId = String(form.get("conversationId") ?? "");
   const body = String(form.get("body") ?? "").trim();
+  const replyToMessageId = String(form.get("replyToMessageId") ?? "").trim();
+  if (replyToMessageId && !/^[0-9a-f-]{36}$/i.test(replyToMessageId)) throw new Error("Invalid quoted message.");
   if (!/^[0-9a-f-]{36}$/i.test(conversationId) || !body || body.length > 6000) throw new Error("Invalid reply.");
   // Check permission and write the reply in one transaction so a membership change
   // cannot occur between a separate check and the insert.
@@ -112,9 +114,17 @@ export async function replyToSpecialMessage(form: FormData): Promise<void> {
         )) FOR UPDATE OF c;
     `);
     if (!permitted[0]) throw new Error("Conversation not available to your account.");
+    if (replyToMessageId) {
+      const original = await tx.$queryRaw<{ id: string }[]>(Prisma.sql`
+        SELECT "id" FROM public."InternalConversationMessage"
+        WHERE "id" = ${replyToMessageId}::uuid AND "conversationId" = ${conversationId}::uuid
+        LIMIT 1;
+      `);
+      if (!original[0]) throw new Error("The quoted message is not in this conversation.");
+    }
     await tx.$executeRaw(Prisma.sql`
-      INSERT INTO public."InternalConversationMessage" ("conversationId", "senderId", "body")
-      VALUES (${conversationId}::uuid, ${sender.id}::uuid, ${body});
+      INSERT INTO public."InternalConversationMessage" ("conversationId", "senderId", "body", "replyToMessageId")
+      VALUES (${conversationId}::uuid, ${sender.id}::uuid, ${body}, ${replyToMessageId || null}::uuid);
     `);
     await tx.$executeRaw(Prisma.sql`
       UPDATE public."InternalConversation" SET "updatedAt" = now() WHERE "id" = ${conversationId}::uuid;
