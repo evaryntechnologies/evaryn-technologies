@@ -83,6 +83,7 @@ function roleMenu(role:Role): MenuItem[] {
     {name:"Audit Log",href:"/portal/super-admin/audit-log",icon:ShieldCheck},
   );
   links.push(...baseMenu.slice(1), {name:"Ratings & Rubrics",href:"/portal/ratings",icon:Star});
+  links.push({name:"Internal Memos",href:"/announcements",icon:MessageSquare});
   return links;
 }
 // Navigation presentation only: authorization remains enforced by the destination routes.
