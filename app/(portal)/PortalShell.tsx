@@ -84,6 +84,7 @@ function roleMenu(role:Role): MenuItem[] {
   );
   links.push(...baseMenu.slice(1), {name:"Ratings & Rubrics",href:"/portal/ratings",icon:Star});
   links.push({name:"Internal Memos",href:"/announcements",icon:MessageSquare});
+  links.push({name:"Special Messages",href:"/special-messages",icon:MessageSquare});
   return links;
 }
 // Navigation presentation only: authorization remains enforced by the destination routes.
@@ -139,7 +140,7 @@ function groupedNavigation(role: Role): NavigationEntry[] {
     if (item.name === "Task Hub" || item.name === "My Orders") section = "Task Management";
     else if (canManageClients && /order register|post.qa|fines? & penalties|categories|reassignment requests|force reassign|task management|task summary|operations hub|task.management|task.summary|admin.fines|admin.reassignments|admin.force.reassign|super.admin.categories|order.register|post.qa/.test(name+" "+href)) section = "Task Management";
     else if (/client|delivery/.test(name+" "+href) && canManageClients) section = "Client Management";
-    else if (/email|notification|memo|announcement|inquir/.test(name+" "+href)) section = "Communication";
+    else if (/email|notification|memo|announcement|inquir|special.messages/.test(name+" "+href)) section = "Communication";
     else if (/pay|earnings|financ|hours|time tracker|advance/.test(name+" "+href)) section = "Finance & Payroll";
     else if (/employee|recruit|expert application|people|hire/.test(name+" "+href)) section = "People & Talent";
     else if (/review|qa queue|quality|ratings|rubric/.test(name+" "+href)) section = "Review & Quality";
