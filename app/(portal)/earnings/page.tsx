@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import {raisePayrollClarification} from "./pay-statement-actions";
+import {prisma} from "@/lib/db/prisma";
 import Link from "next/link";
 import { connection } from "next/server";
 import { Download, Receipt, SlidersHorizontal, Wallet } from "lucide-react";
@@ -30,6 +32,9 @@ async function Content({ searchParams }: Props) {
   await connection();
   const filters = cleanFilters(await searchParams);
   const { employee, rows } = await getEarningsReport();
+  const statements=await prisma.$queryRaw<Array<{payoutDate:Date;accrued:unknown;adjustments:unknown;finalPayable:unknown;publishedAt:Date;state:string;issueText:string|null;resolution:string|null}>>`
+    SELECT "payoutDate",accrued,adjustments,"finalPayable","publishedAt",state,"issueText",resolution
+    FROM public."WorkforcePayStatement" WHERE "employeeId"=${employee.id}::uuid ORDER BY "payoutDate" DESC LIMIT 24`;
   const selected = applyEarningsFilters(rows, filters);
   const totals = summarize(selected);
   const lifetime = summarize(rows);
@@ -59,6 +64,20 @@ async function Content({ searchParams }: Props) {
         <Metric label="Completed payments" value={moneyFmt(totals.paid)} accent="#00b0f8" />
         <Metric label="Lifetime earnings" value={moneyFmt(lifetime.paid + lifetime.pending)} accent="#8b5cf6" note="Paid plus pending" />
         <Metric label="Lifetime completed payments" value={moneyFmt(lifetime.paid)} accent="#f59e0b" />
+      </section>
+
+      <section className={`${card} mt-6 space-y-4 p-5`}>
+        <div><p className="text-xs font-semibold uppercase tracking-widest text-[var(--ev-accent-text)]">Final payroll review</p><h2 className="mt-1 text-xl font-bold">Your final payable statements</h2><p className="mt-1 text-sm text-[var(--ev-muted)]">Statements are published at least 48 hours before payment. You may raise a clarification before settlement.</p></div>
+        {statements.length === 0 ? <p className="text-sm text-[var(--ev-muted)]">No final payable statement has been published yet. Your current payroll period starts with a $0.00 pending balance.</p> : statements.map(s=>{
+          const period = new Date(s.payoutDate).toISOString().slice(0,10);
+          return <article key={period} className="rounded-xl border border-[var(--ev-border-soft)] p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="font-semibold">Payout period {period}</h3><Pill tone={s.state==="DISPUTED"?"amber":s.state==="PAID"?"green":"cyan"}>{s.state==="DISPUTED"?"Clarification open":s.state==="PAID"?"Paid":"Published for review"}</Pill></div>
+            <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-3"><div><dt className="text-[var(--ev-muted)]">Accrued</dt><dd className="font-semibold">{moneyFmt(Number(s.accrued))}</dd></div><div><dt className="text-[var(--ev-muted)]">Adjustments</dt><dd className="font-semibold">{moneyFmt(Number(s.adjustments))}</dd></div><div><dt className="text-[var(--ev-muted)]">Final payable</dt><dd className="text-lg font-bold">{moneyFmt(Number(s.finalPayable))}</dd></div></dl>
+            <p className="mt-2 text-xs text-[var(--ev-muted)]">Published {new Date(s.publishedAt).toLocaleString("en-GB")}</p>
+            {s.issueText&&<p className="mt-3 text-sm">Your issue: {s.issueText}</p>}{s.resolution&&<p className="mt-2 text-sm">Super Admin response: {s.resolution}</p>}
+            {(s.state==="REVIEW"||s.state==="CLEARED")&&<form action={raisePayrollClarification} className="mt-4 space-y-2"><input type="hidden" name="payoutDate" value={period}/><label className="block text-sm font-semibold">Request clarification<textarea name="issue" required minLength={10} maxLength={2000} rows={2} className={`${inputCls} mt-1.5`} placeholder="Describe the disputed amount or adjustment"/></label><button className={btnGhost}>Raise issue</button></form>}
+          </article>;
+        })}
       </section>
 
       <form method="GET" className={`${card} mt-6 grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-[repeat(4,minmax(0,1fr))_auto]`}>

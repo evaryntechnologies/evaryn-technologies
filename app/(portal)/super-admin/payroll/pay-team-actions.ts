@@ -49,14 +49,22 @@ async function performSettlement(form: FormData): Promise<void> {
       ORDER BY "createdAt",id FOR UPDATE`;
     const extrasTotal = extras.reduce((sum,a)=>sum+toCents(a.amount),0);
     const finalDue = due + extrasTotal;
+    const statements=await tx.$queryRaw<Array<{state:string;accrued:unknown;adjustments:unknown;finalPayable:unknown;ready:boolean;fundsVerifiedAt:Date|null}>>`
+      SELECT state,accrued,adjustments,"finalPayable","fundsVerifiedAt",("publishedAt" <= now()-interval '48 hours') AS ready
+      FROM public."WorkforcePayStatement" WHERE "employeeId"=${employeeId}::uuid AND "payoutDate"=${payoutDate}::date FOR UPDATE`;
+    const statement=statements[0];
+    if(!statement||!["REVIEW","CLEARED"].includes(statement.state)||!statement.ready||!statement.fundsVerifiedAt||
+      toCents(statement.accrued)!==due||toCents(statement.adjustments)!==extrasTotal||toCents(statement.finalPayable)!==finalDue)
+      throw new Error("Publish the employee's unchanged statement for at least 48 hours before payment.");
     if (!Number.isSafeInteger(extrasTotal) || !Number.isSafeInteger(finalDue) || finalDue < 0) throw new Error("Invalid final payout total.");
-    if (extras.length && mode === "CUSTOM") throw new Error("Use Pay in full for a period with named adjustments. Update On Hold before settlement.");
+    if (extras.length && mode === "CUSTOM") throw new Error("Use Pay in full for a period with named adjustments. Update the employee payout adjustment in Pay Team before settlement.");
     if (!Number.isSafeInteger(due)||due<0) throw new Error("Invalid outstanding balance.");
     const requested=mode==="FULL"?finalDue:Math.round(Number(enteredAmount)*100);
+    if(requested!==finalDue)throw new Error("Custom final amounts must be recorded as named employee-level adjustments and republished before settlement.");
     if (!Number.isSafeInteger(requested)||requested<=0) throw new Error("Final payment must be greater than zero. Zero-payout closeout requires a separate audited workflow.");
     const batch=await tx.$queryRaw<Array<{id:string}>>`
       INSERT INTO public."PayTeamSettlement" ("employeeId","payoutDate","approvedTotal","paidTotal","reason","paymentReference","paidById")
-      VALUES (${employeeId}::uuid,${payoutDate}::date,${(due/100).toFixed(2)}::numeric,${(requested/100).toFixed(2)}::numeric,${extras.length?"Named On Hold adjustments":mode==="FULL"?null:reason},${reference},${actor.id}::uuid)
+      VALUES (${employeeId}::uuid,${payoutDate}::date,${(due/100).toFixed(2)}::numeric,${(requested/100).toFixed(2)}::numeric,${extras.length?"Named employee payout adjustments":mode==="FULL"?null:reason},${reference},${actor.id}::uuid)
       RETURNING id`;
     // Allocate a final settlement across all approved entries. For overpayments,
     // allocate the positive adjustment to the last row rather than opening employee debt.
@@ -81,12 +89,17 @@ async function performSettlement(form: FormData): Promise<void> {
         WHERE "employeeId"=${employeeId}::uuid AND "payoutDate"=${payoutDate}::date AND "settlementId" IS NULL`;
       if (updated!==extras.length) throw new Error("Payout adjustment list changed during settlement.");
     }
-    await tx.portalNotification.create({data:{recipientId:employeeId,title:mode==="FULL"?"Payroll payment recorded":"Payroll payment adjusted",body:mode==="FULL"?`A payment of $${(requested/100).toFixed(2)} was recorded for ${payoutDate}. Reference: ${reference}.`:`A payment of $${(requested/100).toFixed(2)} was recorded against $${(due/100).toFixed(2)} for ${payoutDate}. Reason: ${reason}. Reference: ${reference}. Contact administration if you wish to dispute this adjustment.`,href:"/portal/earnings"}});
+    const statementMarked=await tx.$executeRaw`UPDATE public."WorkforcePayStatement" SET state='PAID',"updatedAt"=now()
+      WHERE "employeeId"=${employeeId}::uuid AND "payoutDate"=${payoutDate}::date AND state IN ('REVIEW','CLEARED')`;
+    if(statementMarked!==1)throw new Error("Statement changed during settlement");
+    await tx.$executeRaw`INSERT INTO public."WorkforcePayStatementEvent"("employeeId","payoutDate","eventKind","actorId",details)
+      VALUES(${employeeId}::uuid,${payoutDate}::date,'PAID',${actor.id}::uuid,${reference})`;
+    await tx.portalNotification.create({data:{recipientId:employeeId,title:mode==="FULL"?"Payroll payment recorded":"Payroll payment adjusted",body:mode==="FULL"?`A payment of $${(requested/100).toFixed(2)} was recorded for ${payoutDate}. Reference: ${reference}.`:`A payment of $${(requested/100).toFixed(2)} was recorded against $${(due/100).toFixed(2)} for ${payoutDate}. Reason: ${reason}. Reference: ${reference}. Contact administration if you wish to dispute this adjustment.`,href:"/earnings"}});
   }, {timeout:20000});
-  revalidatePath("/portal/super-admin/payroll/pay-team");
-  revalidatePath("/portal/super-admin/payroll");
-  revalidatePath("/portal/earnings");
-  revalidatePath("/portal/notifications");
+  revalidatePath("/super-admin/payroll/pay-team");
+  revalidatePath("/super-admin/payroll");
+  revalidatePath("/earnings");
+  revalidatePath("/notifications");
 }
 
 
@@ -172,7 +185,16 @@ export async function settleEmployeeTotal(
         const base = rows.reduce((sum,row)=>sum+cents(row.payableAmount),0);
         const net = base + extras.reduce((sum,row)=>sum+cents(row.amount),0);
         if (!Number.isSafeInteger(base) || !Number.isSafeInteger(net) || net <= 0)
-          throw new Error(`Payout period ${day} is zero or negative. Resolve it in On Hold before consolidated payment.`);
+          throw new Error(`Payout period ${day} has no positive payable amount. Review the employee-level adjustments in Pay Team.`);
+        // Enforce a published snapshot, open-issue resolution, and the 48-hour review window.
+        const statements=await tx.$queryRaw<Array<{state:string;accrued:unknown;adjustments:unknown;finalPayable:unknown;ready:boolean;fundsVerifiedAt:Date|null}>>`
+          SELECT state,accrued,adjustments,"finalPayable","fundsVerifiedAt",("publishedAt" <= now()-interval '48 hours') AS ready
+          FROM public."WorkforcePayStatement" WHERE "employeeId"=${employeeId}::uuid AND "payoutDate"=${day}::date FOR UPDATE`;
+        const statement=statements[0];
+        if(!statement || !["REVIEW","CLEARED"].includes(statement.state) || !statement.ready||!statement.fundsVerifiedAt)
+          throw new Error(`Payout period ${day} requires a published, undisputed statement and 48 hours of review.`);
+        if(cents(statement.accrued)!==base || cents(statement.adjustments)!==(net-base) || cents(statement.finalPayable)!==net)
+          throw new Error(`Payout period ${day} changed since publication. Republish the statement and restart the review window.`);
         total += net;
         if (!Number.isSafeInteger(total)) throw new Error("Invalid payout amount.");
         batches.push({date:day,rows,extras,base,net});
@@ -184,7 +206,7 @@ export async function settleEmployeeTotal(
         const settlement = await tx.$queryRaw<Array<{id:string}>>`
           INSERT INTO public."PayTeamSettlement" ("employeeId","payoutDate","approvedTotal","paidTotal","reason","paymentReference","paidById")
           VALUES (${employeeId}::uuid,${batch.date}::date,${(batch.base/100).toFixed(2)}::numeric,
-            ${(batch.net/100).toFixed(2)}::numeric,${batch.extras.length?"Named On Hold adjustments":"Consolidated employee payment"},${reference},${actor.id}::uuid)
+            ${(batch.net/100).toFixed(2)}::numeric,${batch.extras.length?"Named employee payout adjustments":"Consolidated employee payment"},${reference},${actor.id}::uuid)
           RETURNING id`;
         const settlementId = settlement[0]?.id;
         if(!settlementId) throw new Error("Unable to record settlement.");
@@ -206,12 +228,19 @@ export async function settleEmployeeTotal(
           if(updated!==batch.extras.length) throw new Error("Payout adjustments changed during settlement.");
         }
       }
-      await tx.portalNotification.create({data:{recipientId:employeeId,title:"Payroll payment recorded",body:`A total payment of $${(total/100).toFixed(2)} was recorded across ${batches.length} payout period(s). Reference: ${reference}.`,href:"/portal/earnings"}});
+      for (const batch of batches) {
+        const marked=await tx.$executeRaw`UPDATE public."WorkforcePayStatement" SET state='PAID',"updatedAt"=now()
+          WHERE "employeeId"=${employeeId}::uuid AND "payoutDate"=${batch.date}::date AND state IN ('REVIEW','CLEARED')`;
+        if(marked!==1)throw new Error("Published statement was modified during settlement.");
+        await tx.$executeRaw`INSERT INTO public."WorkforcePayStatementEvent"("employeeId","payoutDate","eventKind","actorId",details)
+          VALUES(${employeeId}::uuid,${batch.date}::date,'PAID',${actor.id}::uuid,${reference})`;
+      }
+      await tx.portalNotification.create({data:{recipientId:employeeId,title:"Payroll payment recorded",body:`A total payment of $${(total/100).toFixed(2)} was recorded across ${batches.length} payout period(s). Reference: ${reference}.`,href:"/earnings"}});
     },{timeout:30000});
-    revalidatePath("/portal/super-admin/payroll/pay-team");
-    revalidatePath("/portal/super-admin/on-hold");
-    revalidatePath("/portal/earnings");
-    revalidatePath("/portal/notifications");
+    revalidatePath("/super-admin/payroll/pay-team");
+    revalidatePath("/super-admin/on-hold");
+    revalidatePath("/earnings");
+    revalidatePath("/notifications");
     return {status:"success",message:"Full employee payment recorded across all eligible payout periods."};
   } catch(error){
     console.error("Consolidated Pay Team settlement failed",error);
