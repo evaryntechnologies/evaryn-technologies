@@ -37,3 +37,20 @@ export async function decideExpert(form:FormData){
  await prisma.expertApplication.update({where:{id},data:{status:"APPROVED",reviewedById:admin.id,reviewedAt:new Date(),decisionReason:reason||null}});
  revalidatePath("/super-admin/expert-applications");
 }
+
+// Server actions used with useActionState return validation errors instead of
+// producing unhandled production exceptions. Existing decision logic remains authoritative.
+export async function decideExpertWithFeedback(_previous: { error: string }, form: FormData): Promise<{ error: string }> {
+  try {
+    await decideExpert(form);
+    return { error: "" };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to update the application.";
+    // Avoid leaking database internals or secrets to browsers.
+    if (/rejection reason|invalid action|invalid role|already decided|unavailable|forbidden/i.test(message)) {
+      return { error: message };
+    }
+    console.error("Expert application decision failed", error);
+    return { error: "Could not save this decision. Please retry or contact the administrator." };
+  }
+}
