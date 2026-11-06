@@ -147,3 +147,27 @@
 .ev-portal .ev-workspace-main :is(p, li) { max-width: none; }
 .ev-portal .ev-workspace-main ul:not([class*="grid"]):not([class*="flex"]) { max-width: 70ch; }
 
+
+
+/* EVARYN_WORKSPACE_CLARITY_V1 — staff-only navigation and legibility. */
+.ev-portal .ev-workspace { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.ev-portal .ev-sidebar {
+  background: color-mix(in srgb, var(--ev-nav) 94%, var(--ev-blue) 6%);
+  border-right-color: var(--ev-border-soft);
+}
+.ev-portal .ev-sidebar-links { gap: 8px; padding: 7px 13px 18px; }
+.ev-portal .ev-sidebar-links > .ev-nav-link { font-weight: 700; }
+.ev-portal .ev-nav-group { border-radius: 13px; border: 1px solid var(--ev-border-soft); background: color-mix(in srgb, var(--ev-surface) 85%, transparent); overflow: hidden; }
+.ev-portal .ev-nav-group-trigger { font-weight: 700; min-height: 45px; }
+.ev-portal .ev-nav-group[open] { border-color: color-mix(in srgb, #7956af 44%, var(--ev-border)); }
+.ev-portal .ev-nav-group[open] > summary { background: color-mix(in srgb, #7956af 10%, var(--ev-surface-2)); }
+.ev-portal .ev-nav-group-items { margin: 0 10px 9px 18px; padding-left: 9px; border-left: 2px solid color-mix(in srgb, #7956af 35%, var(--ev-border)); }
+.ev-portal .ev-nav-sub-link { min-height: 37px; color: var(--ev-ink); }
+.ev-portal .ev-nav-link:focus-visible { outline: 2px solid var(--ev-cyan); outline-offset: -2px; }
+.ev-portal .ev-sidebar-card { background: var(--ev-surface); }
+.ev-portal .ev-workspace-main { color: var(--ev-ink); }
+.ev-portal .ev-workspace-main :is(input,select,textarea) { background-color: var(--ev-surface); border-color: var(--ev-border); color: var(--ev-ink); }
+.ev-portal .ev-workspace-main :is(input,select,textarea)::placeholder { color: var(--ev-muted); opacity: .9; }
+.ev-portal .ev-workspace-main :is(table,pre) { max-width: 100%; }
+@media (max-width: 720px) { .ev-portal .ev-sidebar { width: min(330px, 91vw); } }
+@media (prefers-reduced-motion: reduce) { .ev-portal .ev-nav-group-arrow { transition: none; } }

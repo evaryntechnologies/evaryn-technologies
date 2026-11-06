@@ -89,61 +89,69 @@ function roleMenu(role:Role): MenuItem[] {
 type NavigationGroup = { name: string; icon: typeof LayoutDashboard; items: MenuItem[] };
 type NavigationEntry = MenuItem | NavigationGroup;
 
+// EVARYN_WORKSPACE_CLARITY_V1: one visible destination per feature; role-specific sections.
+// The links originate from roleMenu, so existing role checks and destinations are retained.
 function groupedNavigation(role: Role): NavigationEntry[] {
-  const links = roleMenu(role);
-  const used = new Set<string>();
-  const single = (name: string): MenuItem | undefined => {
-    const link = links.find(item => item.name === name && !used.has(item.href));
-    if (link) used.add(link.href);
-    return link;
+  const source = roleMenu(role);
+  const seen = new Set<string>();
+  const groups: Record<string, MenuItem[]> = {
+    "My Work": [],
+    "Review & Quality": [],
+    "Operations": [],
+    "Client Management": [],
+    "People & Talent": [],
+    "Finance & Payroll": [],
+    "Communication": [],
+    "Administration": [],
   };
-  const section = (name: string, icon: typeof LayoutDashboard, names: string[]): NavigationGroup | undefined => {
-    const items = names.map(single).filter((item): item is MenuItem => Boolean(item));
-    return items.length ? {name, icon, items} : undefined;
+  const icons: Record<string, typeof LayoutDashboard> = {
+    "My Work": ClipboardList,
+    "Review & Quality": ShieldCheck,
+    "Operations": Compass,
+    "Client Management": MessageSquare,
+    "People & Talent": Users,
+    "Finance & Payroll": Wallet,
+    "Communication": Bell,
+    "Administration": Settings2,
   };
-  const navigation: (NavigationEntry | undefined)[] = [
-    single("Dashboard"),
-    single("All My Orders"),
-    section("My Orders", ClipboardList, ["Task Hub", "In Progress", "In Revision", "Completed", "Canceled Orders"]),
-  ];
-  if (role !== "TASKER") {
-    navigation.push(section("Order Queues", ShieldCheck, ["Review Queue", "QA Queue", "Client Actions", "Client Messages", "Order Register"]));
+  const dashboard = source.find(item => item.name === "Dashboard") ?? { name: "Dashboard", href: home[role], icon: LayoutDashboard };
+  seen.add(dashboard.href.split("?")[0]);
+  const canManageClients = role === "ADMIN" || role === "SUPER_ADMIN";
+  const supplied: MenuItem[] = [...source];
+  // The legacy client-requests shortcut is consolidated here, rather than rendered above the sections.
+  if (role === "SUPER_ADMIN") supplied.push({name:"Client Requests", href:"/portal/super-admin/client-requests", icon:ClipboardList});
+  // Preserve all existing role-specific links, but show each destination only once.
+  for (const item of supplied) {
+    const path = item.href.split("?")[0];
+    // All My Orders already includes progress, revision, completion and canceled tabs.
+    if (item.href.includes("?tab=")) continue;
+    // Keep a single dashboard link and avoid an extra Task Hub where admin Operations Hub is present.
+    if (item.name === "Dashboard" || seen.has(path)) continue;
+    if (item.name === "Notifications") continue; // persistent header bell
+    if (item.name === "On Hold") continue; // superseded by Pay Team
+    seen.add(path);
+    const name = item.name.toLowerCase();
+    const href = path.toLowerCase();
+    let section: keyof typeof groups = "Administration";
+    if (/client|delivery|post-qa|order register/.test(name+" "+href) && canManageClients) section = "Client Management";
+    else if (/email|notification|memo|announcement|inquir/.test(name+" "+href)) section = "Communication";
+    else if (/pay|earnings|financ|hours|time tracker|advance/.test(name+" "+href)) section = "Finance & Payroll";
+    else if (/employee|recruit|expert application|people|hire/.test(name+" "+href)) section = "People & Talent";
+    else if (/review|qa queue|quality|ratings|rubric/.test(name+" "+href)) section = "Review & Quality";
+    else if (/operations|management|task summary|reassign|force|fine|dispute|categories|audit/.test(name+" "+href) && canManageClients) section = "Operations";
+    else if (/my orders|my work|task hub|tasker|marketplace|tasks/.test(name+" "+href)) section = "My Work";
+    else if (/fine|dispute/.test(name+" "+href)) section = "Review & Quality";
+    groups[section].push(item);
   }
-  if (role === "SUPER_ADMIN" || role === "ADMIN") {
-    navigation.push(
-      section("Operations Hub", Compass, [
-        "Operations Hub", "Task Management", "Post-QA Orders", "Client Decisions", "Task Summary", "Force Reassign",
-        "Reassignment Requests", "Categories", "Review & QA Oversight",
-        "Fines & Penalties", "Disputes", "Ratings & Rubrics",
-      ]),
-      section("People Management", Users, ["Employees", "Employee Management", "Recruitment"]),
-      section("Finance & Payroll", Wallet, [
-        "Payment Approvals", "Payment Adjustments", "Payroll", "Pay Team",
-        "Admin Hours", "Time Tracker", "My Earnings", "Payment Method",
-      ]),
-    );
-    if (role === "SUPER_ADMIN") {
-      navigation.push(section("Administration", Settings2, ["Inquiries", "Company Email", "Expert Applications", "Audit Log"]));
-    }
-    // Team memos is a shared page, linked here without changing any role permissions.
-    navigation.push({name:"Team Memos",href:"/portal/announcements",icon:MessageSquare});
-  } else if (role === "QA") {
-    navigation.push(section("Quality & Oversight", ShieldCheck, ["Fines", "Disputes", "Ratings & Rubrics"]));
-    navigation.push({name:"Team Memos",href:"/portal/announcements",icon:MessageSquare});
-  } else if (role === "REVIEWER") {
-    navigation.push(section("Quality & Feedback", Star, ["Ratings & Rubrics"]));
-    navigation.push({name:"Team Memos",href:"/portal/announcements",icon:MessageSquare});
-  } else {
-    navigation.push(section("Feedback", Star, ["Ratings & Rubrics"]));
+  const order = ["My Work", "Review & Quality", "Operations", "Client Management", "People & Talent", "Finance & Payroll", "Communication", "Administration"];
+  const items: NavigationEntry[] = [dashboard];
+  for (const name of order) {
+    if (!groups[name].length) continue;
+    items.push({ name, icon: icons[name], items: groups[name] });
   }
-  if (role !== "ADMIN" && role !== "SUPER_ADMIN") {
-    navigation.push(section("Finances", Wallet, ["My Earnings", "Payment Method"]));
-  }
-  // Notifications are available through the persistent header bell, not duplicated in the sidebar.
-  const remaining = links.filter(item => !used.has(item.href) && item.name !== "Notifications" && item.name !== "Client Requests");
-  if (remaining.length) navigation.push({name:"More Workspace Tools",icon:PanelsTopLeft,items:remaining});
-  return navigation.filter((item): item is NavigationEntry => Boolean(item));
+  return items;
 }
+
 function isNavigationGroup(item:MenuItem | NavigationGroup): item is NavigationGroup {
   return "items" in item;
 }
@@ -226,19 +234,6 @@ export default function PortalShell({children,unreadNotifications=0,initialRole=
       <div className="ev-sidebar-card"><span className="ev-avatar ev-avatar-lg" aria-hidden="true">{firstName?firstName.charAt(0).toUpperCase():"E"}</span><div><strong>{firstName||"Welcome"}</strong><small>{role?roleTitle[role]:"Workspace"}</small></div></div>
       <div className="ev-sidebar-heading"><span>NAVIGATE</span></div>
       <nav className="ev-sidebar-links" aria-label="Your available pages">
-        {(role === "SUPER_ADMIN" || pathname?.startsWith("/portal/super-admin") || pathname?.startsWith("/super-admin")) && (
-          <Link
-            data-evaryn-client-requests-shortcut="true"
-            tabIndex={open ? 0 : -1}
-            href="/portal/super-admin/client-requests"
-            aria-current={isActive("/portal/super-admin/client-requests") ? "page" : undefined}
-            className={`ev-nav-link ${isActive("/portal/super-admin/client-requests") ? "ev-nav-active" : ""}`}
-          >
-            <ClipboardList size={17} />
-            <span>Client Requests</span>
-            {isActive("/portal/super-admin/client-requests") && <ChevronRight size={14} className="ev-nav-chevron" />}
-          </Link>
-        )}
         {navigation.map(item=>{
           const Icon=item.icon;
           if(isNavigationGroup(item)){
