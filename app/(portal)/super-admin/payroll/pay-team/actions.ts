@@ -39,7 +39,7 @@ export async function addEmployeePayoutAdjustment(form:FormData):Promise<void>{
       count(*)::bigint AS entries,
       count(*) FILTER (WHERE l.status='PAID' OR EXISTS(SELECT 1 FROM public."PayTeamAllocation" x WHERE x."ledgerId"=l.id))::bigint AS paid
     FROM public."WorkforcePayLedger" l WHERE l."employeeId"=${employeeId}::uuid AND l."payoutDate"=${payoutDate}::date`;
-   if(!base[0]||base[0].entries===BigInt(0)||base[0].paid>BigInt(0))throw new Error("No unlocked approved payroll period is available");
+   if(!base[0]||base[0].entries===BigInt(0))throw new Error("No unlocked approved payroll period is available");
    const other=await tx.$queryRaw<Array<{sum:unknown}>>`
     SELECT COALESCE(sum(amount),0) AS sum FROM public."WorkforcePayoutAdjustment"
     WHERE "employeeId"=${employeeId}::uuid AND "payoutDate"=${payoutDate}::date AND "settlementId" IS NULL`;
