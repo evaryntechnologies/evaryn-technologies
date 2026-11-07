@@ -18,3 +18,11 @@
 @media(max-width:760px){.ev-order-register .ev-order-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.ev-order-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ev-order-filter-hint,.ev-order-scroll-note{display:none}.ev-order-register{padding-inline:1rem}.ev-order-field-wide{grid-column:span 2}}
 @media(max-width:420px){.ev-order-register .ev-order-metric{padding:.9rem}.ev-order-filter-grid{grid-template-columns:1fr}.ev-order-field-wide{grid-column:auto}.ev-order-filter-actions{align-items:center}}
 @media(prefers-reduced-motion:reduce){.ev-order-register *{transition:none!important}}
+
+/* Historical contributors: keep completed review records visible after claims reset. */
+.ev-order-contributors{display:flex;flex-wrap:wrap;align-items:flex-start;gap:.35rem;min-width:150px;max-width:300px}
+.ev-order-person{display:inline-flex;align-items:center;gap:.4rem;max-width:100%;padding:.28rem .5rem;border-radius:.5rem;font-size:.73rem;font-weight:700;line-height:1.35;overflow-wrap:anywhere;border:1px solid #5bb2d8;background:#134d6c;color:#f5fbff}
+.ev-order-person small{font-size:.6rem;font-weight:750;letter-spacing:.015em;padding:.1rem .25rem;border-radius:.25rem;background:#d9c7ff;color:#332052;white-space:nowrap}
+.ev-order-person-current{border-color:#b38af5;background:#473274;color:#fff}
+.ev-order-person-completed{border-color:#51bdac;background:#0b5b54;color:#f4fffb}
+.ev-order-table td:nth-child(5),.ev-order-table td:nth-child(6),.ev-order-table td:nth-child(7){min-width:165px;vertical-align:top}
