@@ -1,4 +1,5 @@
 import "@/app/(portal)/compact-workspaces.css";
+import "./order-register.css";
 import Link from "next/link";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db/prisma";
@@ -28,8 +29,55 @@ export default async function Register({searchParams}:{searchParams:Promise<{q?:
  }).sort((a,b)=>sort==="cost-high"?(Number(b.price??-1)-Number(a.price??-1)):sort==="cost-low"?(Number(a.price??Infinity)-Number(b.price??Infinity)):sort==="oldest"?(+new Date(a.createdAt)- +new Date(b.createdAt)):sort==="title"?a.title.localeCompare(b.title):(+new Date(b.createdAt)- +new Date(a.createdAt)));
  const categories=Array.from(new Set(rows.map(r=>r.service))).sort();const statuses=Array.from(new Set(rows.flatMap(r=>[r.taskStatus,r.requestStatus]).filter((x):x is string=>!!x))).sort();
  const taskers=Array.from(new Set(rows.map(r=>r.tasker).filter((x):x is string=>!!x))).sort();const reviewers=Array.from(new Set(rows.map(r=>r.reviewer).filter((x):x is string=>!!x))).sort();const qas=Array.from(new Set(rows.map(r=>r.qa).filter((x):x is string=>!!x))).sort();
- const cls="rounded-lg border border-sky-400/30 bg-[#102b4d] px-3 py-2 text-white";
- return <main className="ev-compact-workspace mx-auto max-w-7xl px-4 py-6 sm:px-7"><h1 className="text-3xl font-bold">All Client Orders</h1><p className="mt-2 text-sm opacity-75">Find orders, adjust filters and open the existing record actions.</p>
- <div className="ev-register-metrics" aria-label="Order overview"><div><span>Total orders</span><strong>{rows.length}</strong></div><div><span>Matching filters</span><strong>{filtered.length}</strong></div><div><span>Linked to tasks</span><strong>{rows.filter(r=>r.taskId!==null).length}</strong></div></div><details className="ev-filter-panel" ><summary>Search and filter orders</summary><form method="GET" className="mt-6 grid gap-3 rounded-xl bg-[#0B2441] p-4 text-white sm:grid-cols-3 lg:grid-cols-5"><input name="q" defaultValue={q} placeholder="Order code, task ID, title, person" className={cls}/><select name="category" defaultValue={category} className={cls}><option value="">All categories</option>{categories.map(c=><option key={c}>{c}</option>)}</select><select name="status" defaultValue={status} className={cls}><option value="">All statuses</option>{statuses.map(s=><option key={s}>{s}</option>)}</select><select name="tasker" defaultValue={tasker} className={cls}><option value="">All taskers</option>{taskers.map(n=><option key={n}>{n}</option>)}</select><select name="reviewer" defaultValue={reviewer} className={cls}><option value="">All reviewers</option>{reviewers.map(n=><option key={n}>{n}</option>)}</select><select name="qa" defaultValue={qa} className={cls}><option value="">All QA staff</option>{qas.map(n=><option key={n}>{n}</option>)}</select><input name="min" type="number" step="0.01" min="0" defaultValue={p.min} placeholder="Min order price" className={cls}/><input name="max" type="number" step="0.01" min="0" defaultValue={p.max} placeholder="Max order price" className={cls}/><select name="sort" defaultValue={sort} className={cls}><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="cost-high">Highest price</option><option value="cost-low">Lowest price</option><option value="title">Title A-Z</option></select><button className="rounded-lg bg-[#7956AF] px-4 py-3 font-bold text-white">Apply filters</button><Link className="self-center underline" href="/portal/order-register">Clear filters</Link></form></details>
- <p className="my-4 text-sm">{filtered.length} matching orders</p><div className="overflow-x-auto rounded-xl border"><table className="min-w-full text-left text-sm"><thead><tr className="border-b"><th className="p-3">Client Order</th><th className="p-3">Worker Task ID</th><th className="p-3">Title / Category</th><th className="p-3">Status</th><th className="p-3">Tasker</th><th className="p-3">Reviewer</th><th className="p-3">QA</th><th className="p-3">Order price</th><th className="p-3">View</th></tr></thead><tbody>{filtered.map(r=><tr key={r.requestId} className="border-b"><td className="p-3 font-semibold">{r.clientOrderCode??"Legacy order"}</td><td className="p-3">{r.maskedId??"Not tasked"}</td><td className="p-3">{r.title}<div className="text-xs opacity-75">{r.service}</div></td><td className="p-3">{r.taskStatus??r.requestStatus}</td><td className="p-3">{r.tasker??"—"}</td><td className="p-3">{r.reviewer??"—"}</td><td className="p-3">{r.qa??"—"}</td><td className="p-3">{r.price===null?"Not priced":Number(r.price).toFixed(2)}</td><td className="p-3"><Link className="text-cyan-500 underline" href={`/portal/client-messages/${r.requestId}`}>Details</Link></td></tr>)}</tbody></table></div></main>;
+ const cls="ev-order-input";
+ const linkedCount=rows.filter(r=>r.taskId!==null).length;
+ const needsTaskCount=rows.length-linkedCount;
+ const money=(value:string|null)=>value===null?"Not priced":Number(value).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+ const statusTone=(value:string)=>{
+  const v=value.toLowerCase().replace(/[_-]/g," ");
+  if(/cancel|reject|fail|disput/.test(v)) return "risk";
+  if(/complete|deliver|approv|paid|client/.test(v)) return "done";
+  if(/revis|overdue|hold|pending/.test(v)) return "attention";
+  if(/review|qa/.test(v)) return "review";
+  return "active";
+ };
+ return <main className="ev-compact-workspace ev-order-register mx-auto max-w-7xl px-4 py-6 sm:px-7">
+  <header className="ev-order-intro">
+   <div className="ev-order-heading"><div><p className="ev-order-eyebrow">Operations / Order management</p><h1>Order Register</h1><p className="ev-order-subtitle">Search client orders, review assignments, and open the existing order records.</p></div><span className="ev-order-live">Client &amp; task overview</span></div>
+   <div className="ev-order-metrics" aria-label="Order overview">
+    <div className="ev-order-metric ev-order-metric-blue"><span>Recent orders</span><strong>{rows.length.toLocaleString()}</strong><small>Up to 1,000 most recent records</small></div>
+    <div className="ev-order-metric ev-order-metric-cyan"><span>Matching filters</span><strong>{filtered.length.toLocaleString()}</strong><small>Results for your current search</small></div>
+    <div className="ev-order-metric ev-order-metric-amethyst"><span>Linked to tasks</span><strong>{linkedCount.toLocaleString()}</strong><small>Orders with assigned task records</small></div>
+    <div className="ev-order-metric ev-order-metric-emerald"><span>Awaiting task link</span><strong>{needsTaskCount.toLocaleString()}</strong><small>Orders not yet linked to a task</small></div>
+   </div>
+  </header>
+  <details className="ev-order-filter-panel" open={!!(q||category||status||tasker||reviewer||qa||p.min||p.max||sort!=="newest")}>
+   <summary><span>Search &amp; refine orders</span><span className="ev-order-filter-hint">Order code, people, status, cost, and more</span></summary>
+   <form method="GET" className="ev-order-filter-grid">
+    <label className="ev-order-field ev-order-field-wide"><span>Find an order</span><input name="q" defaultValue={q} placeholder="Order code, task ID, title, client, staff" className={cls}/></label>
+    <label className="ev-order-field"><span>Category</span><select name="category" defaultValue={category} className={cls}><option value="">All categories</option>{categories.map(c=><option key={c}>{c}</option>)}</select></label>
+    <label className="ev-order-field"><span>Status</span><select name="status" defaultValue={status} className={cls}><option value="">All statuses</option>{statuses.map(s=><option key={s}>{s}</option>)}</select></label>
+    <label className="ev-order-field"><span>Tasker</span><select name="tasker" defaultValue={tasker} className={cls}><option value="">All taskers</option>{taskers.map(n=><option key={n}>{n}</option>)}</select></label>
+    <label className="ev-order-field"><span>Reviewer</span><select name="reviewer" defaultValue={reviewer} className={cls}><option value="">All reviewers</option>{reviewers.map(n=><option key={n}>{n}</option>)}</select></label>
+    <label className="ev-order-field"><span>QA</span><select name="qa" defaultValue={qa} className={cls}><option value="">All QA staff</option>{qas.map(n=><option key={n}>{n}</option>)}</select></label>
+    <label className="ev-order-field"><span>Minimum price</span><input name="min" type="number" step="0.01" min="0" defaultValue={p.min} placeholder="0.00" className={cls}/></label>
+    <label className="ev-order-field"><span>Maximum price</span><input name="max" type="number" step="0.01" min="0" defaultValue={p.max} placeholder="No maximum" className={cls}/></label>
+    <label className="ev-order-field"><span>Sort by</span><select name="sort" defaultValue={sort} className={cls}><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="cost-high">Highest price</option><option value="cost-low">Lowest price</option><option value="title">Title A–Z</option></select></label>
+    <div className="ev-order-filter-actions"><button type="submit" className="ev-order-submit">Apply filters</button><Link className="ev-order-clear" href="/portal/order-register">Reset</Link></div>
+   </form>
+  </details>
+  <section className="ev-order-list" aria-label="Order results">
+   <div className="ev-order-list-header"><div><h2>Order records</h2><p>{filtered.length.toLocaleString()} matching {filtered.length===1?"order":"orders"}{rows.length===1000?" · limited to the 1,000 newest records":""}</p></div><span className="ev-order-scroll-note">Scroll horizontally for all details</span></div>
+   <div className="ev-order-table-scroll" role="region" aria-label="Order register table" tabIndex={0}>
+    <table className="ev-order-table"><thead><tr><th scope="col">Client order</th><th scope="col">Worker task ID</th><th scope="col">Order / category</th><th scope="col">Status</th><th scope="col">Tasker</th><th scope="col">Reviewer</th><th scope="col">QA</th><th scope="col">Price</th><th scope="col">Record</th></tr></thead>
+    <tbody>{filtered.map(r=>{const currentStatus=r.taskStatus??r.requestStatus;return <tr key={r.requestId}>
+     <td><span className="ev-order-code">{r.clientOrderCode??"Legacy order"}</span></td><td><span className="ev-order-task">{r.maskedId??"Not tasked"}</span></td><td><strong className="ev-order-title">{r.title}</strong><span className="ev-order-category">{r.service}</span></td>
+     <td><span className={`ev-order-status ev-order-status-${statusTone(currentStatus)}`}>{currentStatus.replace(/_/g," ")}</span></td>
+     <td>{r.tasker??<span className="ev-order-missing">Unassigned</span>}</td><td>{r.reviewer??<span className="ev-order-missing">Unassigned</span>}</td><td>{r.qa??<span className="ev-order-missing">Unassigned</span>}</td>
+     <td className="ev-order-price">{money(r.price)}</td><td><Link className="ev-order-details" href={`/portal/client-messages/${r.requestId}`}>View details <span aria-hidden="true">↗</span></Link></td>
+    </tr>})}</tbody></table>
+    {filtered.length===0&&<div className="ev-order-empty"><strong>No matching orders</strong><p>Try broader search terms or clear your filters.</p><Link href="/portal/order-register">Clear all filters</Link></div>}
+   </div>
+  </section>
+ </main>;
 }
