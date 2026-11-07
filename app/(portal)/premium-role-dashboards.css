@@ -1,0 +1,125 @@
+/* Evaryn 2026 premium role-dashboard finish.
+   Shared dashboard components: Tasker, Reviewer, QA, Admin, Super Admin.
+   Visual refinements only; preserves actions, routes, data, order and spacing. */
+.ev-portal {
+  --evx-blue: #2879ec;
+  --evx-cyan: #089ac2;
+  --evx-violet: #8551c9;
+  --evx-green: #098665;
+  --ev-premium-blue: #145bbf;
+  --ev-premium-cyan: #11a9d0;
+  --ev-premium-amethyst: #7951b8;
+  --ev-premium-emerald: #078462;
+}
+.dark .ev-portal {
+  --evx-blue: #66aaff;
+  --evx-cyan: #45d8ee;
+  --evx-violet: #c6a0ff;
+  --evx-green: #52e1b4;
+}
+/* Every role shares .evx-page / .evx-bento; no role-specific duplication. */
+.ev-portal .evx-page .evx-lead {
+  border: 1px solid rgba(84, 191, 251, .32);
+  background:
+    radial-gradient(ellipse at 87% 95%, rgba(127, 56, 211, .38), transparent 52%),
+    radial-gradient(ellipse at 70% 22%, rgba(0, 198, 227, .19), transparent 47%),
+    linear-gradient(124deg, #081c48 3%, #123b81 62%, #29236f 100%);
+  box-shadow: 0 18px 40px -31px rgba(38, 124, 240, .8), inset 0 1px 0 rgba(255,255,255,.08);
+  color: #f7fbff;
+}
+.ev-portal .evx-page .evx-lead h1 { color: #f8fbff; }
+.ev-portal .evx-page .evx-lead-sub { color: #e2edff; }
+.ev-portal .evx-page .evx-lead-kicker {
+  color: #f9f4ff;
+  background: linear-gradient(110deg, rgba(95, 50, 171, .72), rgba(49, 103, 185, .44));
+  border-color: rgba(205, 165, 255, .6);
+}
+.ev-portal .evx-page .evx-lead-figure small { color: #89e7f7; }
+.ev-portal .evx-page .evx-lead-figure span { color: #e0ebff; }
+/* Explicitly override original white hero primary control. Use strong foreground
+   even when older contrast-safety utility selectors are present. */
+.ev-portal .evx-page .evx-lead .evx-btn-primary,
+.ev-portal .evx-page .evx-btn-primary {
+  background: linear-gradient(115deg, #0757ba 0%, #0b81d5 55%, #087eab 100%) !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  border: 1px solid #4ad5ef !important;
+  text-shadow: 0 1px 1px rgba(0, 20, 60, .28);
+  box-shadow: 0 7px 21px -11px rgba(0, 180, 242, .65), inset 0 1px 0 rgba(255,255,255,.22);
+}
+.ev-portal .evx-page .evx-lead .evx-btn-primary:hover:not(:disabled),
+.ev-portal .evx-page .evx-btn-primary:hover:not(:disabled) {
+  background: linear-gradient(115deg, #064896, #0879bf 57%, #096d93) !important;
+  box-shadow: 0 10px 25px -12px rgba(16, 211, 236, .85);
+}
+.ev-portal .evx-page .evx-lead .evx-btn-ghost {
+  color: #fff !important; -webkit-text-fill-color: #fff !important;
+  border: 1px solid rgba(204, 161, 255, .76);
+  background: linear-gradient(115deg, rgba(76, 46, 146, .64), rgba(95, 66, 174, .32));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.09);
+}
+.ev-portal .evx-page .evx-lead .evx-btn-ghost:hover:not(:disabled) {
+  background: linear-gradient(115deg, rgba(99, 53, 183, .85), rgba(91, 61, 157, .65));
+  border-color: #d1b2ff;
+}
+/* The third hero action gets an emerald surface; first remains blue, second amethyst. */
+.ev-portal .evx-page .evx-lead-actions > :nth-child(3) {
+  background: linear-gradient(115deg, #07684f, #088e76) !important;
+  border-color: #4be2b2 !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  box-shadow: 0 8px 23px -13px rgba(33, 214, 157, .72);
+}
+.ev-portal .evx-page .evx-lead-actions > :nth-child(3):hover {
+  background: linear-gradient(115deg, #065c45, #07745f) !important;
+}
+/* KPI cards take their status colour from --t, preserving the role's semantics. */
+.ev-portal .evx-page .evx-kpi {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--t, var(--evx-cyan)) 48%, var(--evx-line));
+  background: linear-gradient(145deg,
+    color-mix(in srgb, var(--t, var(--evx-cyan)) 10%, var(--ev-surface)),
+    var(--ev-surface) 62%);
+  box-shadow: inset 3px 0 0 var(--t, var(--evx-cyan)), 0 9px 23px -21px var(--t, var(--evx-cyan));
+}
+.ev-portal .evx-page .evx-kpi .evx-chip {
+  background: color-mix(in srgb, var(--t, var(--evx-cyan)) 20%, var(--ev-surface));
+  border: 1px solid color-mix(in srgb, var(--t, var(--evx-cyan)) 32%, transparent);
+}
+.ev-portal .evx-page .evx-kpi-cta { color: var(--t, var(--evx-cyan)); }
+.ev-portal .evx-page .evx-strip {
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--evx-blue) 28%, var(--evx-line));
+}
+.ev-portal .evx-page .evx-strip > * {
+  position: relative;
+  background: linear-gradient(180deg, transparent 50%, color-mix(in srgb, var(--t, var(--evx-blue)) 11%, transparent));
+}
+.ev-portal .evx-page .evx-strip > *::after {
+  content: ""; position: absolute; height: 3px; inset: auto 0 0;
+  background: var(--t, var(--evx-blue)); opacity: .85;
+}
+.ev-portal .evx-page .evx-strip-label::before { border-radius: 50%; }
+.ev-portal .evx-page .evx-link:hover,
+.ev-portal .evx-page .evx-link-card:hover { border-color: color-mix(in srgb, var(--evx-violet) 55%, var(--evx-line)); }
+.ev-portal .evx-page .evx-btn-violet {
+  background: linear-gradient(115deg, #6640ab, #7951b8) !important;
+  color: #fff !important; -webkit-text-fill-color: #fff !important;
+  border-color: #a48ce0;
+}
+.ev-portal .evx-page :is(.evx-btn,.evx-tab):focus-visible {
+  outline: 3px solid #3fdaf2; outline-offset: 3px;
+}
+.ev-portal .evx-page .evx-btn:disabled,
+.ev-portal .evx-page .evx-btn[aria-disabled="true"] {
+  opacity: .52; box-shadow: none; cursor: not-allowed;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ev-portal .evx-page .evx-btn:not(:disabled) { transition: background .17s, box-shadow .17s, border-color .17s, transform .17s; }
+  .ev-portal .evx-page .evx-btn:not(:disabled):hover { transform: translateY(-1px); }
+}
+@media (max-width: 640px) {
+  .ev-portal .evx-page .evx-lead-actions { gap: 8px; }
+  .ev-portal .evx-page .evx-lead-actions .evx-btn { min-height: 44px; }
+}

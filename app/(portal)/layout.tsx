@@ -5,6 +5,7 @@ import AdminActivityTracker from "./AdminActivityTracker";
 import PortalShellWithNotifications from "./PortalShellWithNotifications";
 import "./portal-shell.css";
 import "./layout-system.css";
+import "./premium-role-dashboards.css";
 
 export default async function PortalLayout({ children }: { children: ReactNode }) {
   const path = (await headers()).get("x-evaryn-portal-path") ?? "";
