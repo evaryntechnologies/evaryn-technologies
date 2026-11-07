@@ -1,0 +1,52 @@
+/* Evaryn premium finishing layer — presentation only, no component or workflow changes. */
+:root { --ev-emerald: #047857; --ev-emerald-soft: #d5f5e7; }
+.dark { --ev-emerald: #34d399; --ev-emerald-soft: #123f4b; }
+
+/* Legibility first: solid controls have an explicit foreground that cannot inherit
+   muted dashboard/link text. These selectors intentionally do not style plain links. */
+.ev-portal :is(button, a)[class*="bg-[#0052CC]"],
+.ev-portal :is(button, a)[class*="bg-[#085BC0]"],
+.ev-portal :is(button, a)[class*="bg-blue-600"],
+.ev-portal :is(button, a)[class*="bg-blue-700"],
+.ev-portal :is(button, a)[class*="bg-indigo-600"],
+.ev-portal :is(button, a)[class*="bg-violet-600"],
+.ev-portal :is(button, a)[class*="bg-purple-600"] {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff;
+  text-shadow: none;
+}
+.ev-portal :is(button, a)[class*="bg-[#0052CC]"]:not(:disabled),
+.ev-portal :is(button, a)[class*="bg-[#085BC0]"]:not(:disabled) {
+  background: linear-gradient(115deg, #0b4fac 0%, #155dc4 65%, #6848a8 100%);
+  box-shadow: 0 7px 20px -11px rgba(12,78,177,.7);
+}
+.ev-portal :is(button, a)[class*="bg-emerald-600"],
+.ev-portal :is(button, a)[class*="bg-green-600"] {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff;
+  background-color: #047857;
+}
+.ev-portal :is(button, a)[class*="bg-cyan-500"],
+.ev-portal :is(button, a)[class*="bg-cyan-400"] {
+  color: #06264a !important;
+  -webkit-text-fill-color: #06264a;
+}
+.ev-portal :is(button, a)[class*="bg-emerald-600"]:hover:not(:disabled),
+.ev-portal :is(button, a)[class*="bg-green-600"]:hover:not(:disabled) { background-color: #065f46; }
+.ev-portal :is(button, a)[class*="bg-violet-600"]:hover:not(:disabled),
+.ev-portal :is(button, a)[class*="bg-purple-600"]:hover:not(:disabled) { background-color: #6541a0; }
+.ev-portal main :is(button, a)[class*="bg-"]:focus-visible {
+  outline: 3px solid var(--ev-cyan);
+  outline-offset: 3px;
+}
+.ev-portal main :is(button, a)[class*="bg-"]:disabled { opacity: .55; cursor: not-allowed; }
+@media (prefers-reduced-motion: no-preference) {
+  .ev-portal main :is(button, a)[class*="bg-[#0052CC]"]:not(:disabled),
+  .ev-portal main :is(button, a)[class*="bg-emerald-600"]:not(:disabled) {
+    transition: box-shadow .18s ease, transform .18s ease, background-color .18s ease;
+  }
+  .ev-portal main :is(button, a)[class*="bg-[#0052CC]"]:hover:not(:disabled),
+  .ev-portal main :is(button, a)[class*="bg-emerald-600"]:hover:not(:disabled) {
+    box-shadow: 0 10px 27px -12px color-mix(in srgb, var(--ev-cyan) 55%, var(--ev-amethyst));
+  }
+}

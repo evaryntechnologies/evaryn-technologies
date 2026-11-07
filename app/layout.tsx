@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import "./contrast-safety.css";
+import "./premium-portal-polish.css";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://evaryn-technologies.vercel.app";

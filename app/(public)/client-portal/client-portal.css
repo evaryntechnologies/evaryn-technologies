@@ -173,3 +173,38 @@
 .cp-focus-side .ev2-textlink { margin-top:auto; }
 @media(max-width:760px) { .cp-focus { grid-template-columns:1fr; } .cp-stats--compact { grid-template-columns:repeat(2,minmax(0,1fr)); } .cp-stat { padding:.85rem; gap:.65rem; } .cp-stat b {font-size:1.4rem;} }
 @media(max-width:440px) { .cp-stats--compact { grid-template-columns:1fr; } }
+
+/* Premium clarity adjustments: existing markup, lighter visual density. */
+.cp-shell { --cp-emerald: #047857; }
+.cp-banner { margin-bottom: 1.25rem; border-radius: 18px; background: radial-gradient(75% 130% at 95% 0%, rgba(121,86,175,.42), transparent 70%), linear-gradient(115deg,#092858 0%,#0a4ca2 58%,#24478b 100%); }
+.cp-head { padding: 1.1rem 1.3rem; border-radius: 18px; }
+.cp-page { gap: 1.15rem; }
+.cp-panel, .cp-focus-main, .cp-focus-side { border-radius: 17px; }
+.cp-stats { gap: .75rem; }
+.cp-stat { padding: 1rem; border-radius: 15px; }
+.cp-stat-icon { background: linear-gradient(135deg, color-mix(in srgb,var(--ev-cyan) 20%,var(--ev-surface)),color-mix(in srgb,var(--ev-amethyst) 15%,var(--ev-surface))); }
+.cp-stat--link:last-child .cp-stat-icon { background: color-mix(in srgb, #10b981 17%, var(--ev-surface)); color: var(--cp-emerald); }
+.cp-focus-main { background: linear-gradient(115deg, color-mix(in srgb,var(--ev-cyan) 12%,var(--ev-surface)), color-mix(in srgb,var(--ev-amethyst) 8%,var(--ev-surface))); }
+.cp-focus-main .cp-eyebrow { color: var(--ev-amethyst-text); }
+.cp-shell .ev2-primary { background: linear-gradient(115deg,#0b4fac,#155dc4 62%,#6848a8); color: #fff !important; -webkit-text-fill-color:#fff; box-shadow: 0 10px 24px -14px #0b4fac; }
+.cp-shell .ev2-primary:hover { background: linear-gradient(115deg,#083b89,#114ea7 62%,#593b94); box-shadow: 0 12px 26px -13px rgba(76,84,180,.6); }
+.cp-shell .ev2-primary:focus-visible, .cp-shell .cp-nav a:focus-visible { outline: 3px solid var(--ev-cyan); outline-offset: 3px; }
+.cp-shell .cp-pill--green { background: #d5f5e7; color: #065f46; }
+.dark .cp-shell .cp-pill--green { background: rgba(16,185,129,.2); color: #a7f3d0; }
+
+/* Tracker geometry: connectors are confined to the icon rail, never the text.
+   Stronger selector intentionally supersedes the older public.css rules. */
+.cp-shell .cp-tracker { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.55rem; margin:0; padding: .25rem 0 0; list-style:none; }
+.cp-shell .cp-tracker li { position:relative; display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:32px auto auto; align-content:start; justify-items:start; align-items:start; gap:.35rem; padding:0 .3rem 0 0; min-width:0; }
+.cp-shell .cp-tracker li:not(:last-child)::after { content:""; display:block; position:absolute; top:15px; left:38px; right:0; width:auto; height:3px; z-index:0; background:var(--ev-border-soft); border-radius:4px; }
+.cp-shell .cp-tracker li[data-state="done"]:not(:last-child)::after { background:linear-gradient(90deg,#047857,#0a70b7); }
+.cp-shell .cp-tracker .cp-dot { position:relative; z-index:1; width:32px; height:32px; background:var(--ev-surface); }
+.cp-shell .cp-tracker li[data-state="done"] .cp-dot { background:linear-gradient(135deg,#047857,#0d9e91); color:#fff; border-color:transparent; }
+.cp-shell .cp-tracker li[data-state="active"] .cp-dot { border-color:var(--ev-cyan); color:var(--ev-accent-text); }
+.cp-shell .cp-tracker .cp-step-label { position:relative; z-index:1; display:block; min-width:0; overflow-wrap:anywhere; font-size:.82rem; font-weight:720; line-height:1.35; }
+.cp-shell .cp-tracker .cp-step-hint { display:block; grid-column:1; width:auto; max-width:24ch; padding:0; font-size:.72rem; line-height:1.4; }
+@media (max-width:620px) {
+  .cp-shell .cp-tracker { grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.1rem .8rem; }
+  .cp-shell .cp-tracker li::after { display:none !important; }
+}
+@media (max-width:380px) { .cp-shell .cp-tracker { grid-template-columns:1fr; } }
