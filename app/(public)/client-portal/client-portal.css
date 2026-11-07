@@ -157,3 +157,19 @@
 @media (max-width: 1080px) { .cp-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cp-nav { order: 3; width: 100%; } }
 @media (max-width: 760px) { .cp-pipeline { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cp-pipe-arrow { display: none; } .cp-tracker { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem; } }
 @media (max-width: 520px) { .cp-stats, .cp-pipeline { grid-template-columns: 1fr; } .cp-nav { overflow-x: auto; flex-wrap: nowrap; } .cp-nav a { white-space: nowrap; } }
+
+/* 2026 workspace clarity: consolidated summaries and a single next-action surface. */
+.cp-stats--compact { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.cp-stat--link { text-decoration:none; color:inherit; transition:transform .16s, border-color .16s; }
+.cp-stat--link:hover { transform:translateY(-2px); border-color:var(--ev-cyan); }
+.cp-stat--link:focus-visible, .cp-focus a:focus-visible { outline:3px solid var(--ev-cyan); outline-offset:3px; }
+.cp-focus { display:grid; grid-template-columns:minmax(0,1.7fr) minmax(240px,.8fr); gap:1rem; }
+.cp-focus-main { display:flex; flex-direction:column; align-items:flex-start; gap:.8rem; padding:clamp(1.3rem,3vw,2.2rem); border:1px solid var(--cp-line); border-radius:20px; background:linear-gradient(110deg,color-mix(in srgb,var(--ev-cyan) 12%,var(--ev-surface)),color-mix(in srgb,var(--ev-amethyst) 8%,var(--ev-surface))); }
+.cp-focus-main h2 { margin:0; font-size:clamp(1.15rem,2.1vw,1.65rem); letter-spacing:-.025em; line-height:1.25; font-weight:770; }
+.cp-focus-main p { margin:0 0 .35rem; color:var(--ev-muted); line-height:1.6; max-width:54ch; }
+.cp-focus-side { display:flex; flex-direction:column; align-items:flex-start; gap:.8rem; padding:1.5rem; background:var(--ev-surface); border:1px solid var(--cp-line); border-radius:20px; }
+.cp-focus-side svg { color:var(--ev-amethyst-text); }
+.cp-focus-side span { color:var(--ev-muted); font-size:.88rem; line-height:1.6; }
+.cp-focus-side .ev2-textlink { margin-top:auto; }
+@media(max-width:760px) { .cp-focus { grid-template-columns:1fr; } .cp-stats--compact { grid-template-columns:repeat(2,minmax(0,1fr)); } .cp-stat { padding:.85rem; gap:.65rem; } .cp-stat b {font-size:1.4rem;} }
+@media(max-width:440px) { .cp-stats--compact { grid-template-columns:1fr; } }

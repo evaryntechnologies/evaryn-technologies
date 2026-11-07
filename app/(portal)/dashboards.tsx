@@ -96,10 +96,6 @@ export function TaskerDashboard({
         <HeroButton href={base}>My orders</HeroButton>
       </Hero>
 
-      <SectionTitle title="Available work" hint="Tasks available for you to claim." />
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard label="Awaiting Tasker" value={metrics.available} icon={Inbox} tone="cyan" href="/portal/task-hub" cta="Open Task Hub" />
-      </section>
 
       <SectionTitle title="My orders" />
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -109,7 +105,7 @@ export function TaskerDashboard({
         <StatCard label="Cancelled" value={metrics.cancelled} icon={XCircle} tone="slate" href={`${base}?tab=cancelled`} cta="View orders" />
       </section>
 
-      <section className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      <section className="mt-6 grid gap-4">
         <Panel>
           <div className="flex items-center justify-between gap-3">
             <h2 className="flex items-center gap-2 font-bold text-[var(--ev-ink)]">
@@ -148,19 +144,6 @@ export function TaskerDashboard({
           )}
         </Panel>
 
-        <Link
-          href="/portal/task-hub"
-          className="group flex flex-col justify-between rounded-2xl border border-[var(--ev-border-soft)] bg-[var(--ev-surface)] p-6 shadow-[var(--ev-shadow)] transition hover:bg-[var(--ev-surface-2)]"
-        >
-          <div>
-            <p className="text-sm font-semibold text-[var(--ev-muted)]">Available in Task Hub</p>
-            <p className="mt-3 text-5xl font-bold tabular-nums text-[var(--ev-ink)]">{metrics.available}</p>
-            <p className="mt-2 text-sm text-[var(--ev-muted)]">open orders you can claim in your categories</p>
-          </div>
-          <span className="mt-6 inline-flex w-fit items-center gap-2 rounded-xl bg-[var(--ev-primary)] px-5 py-3 text-sm font-semibold text-[var(--ev-on-primary)]">
-            Open Task Hub <ArrowRight size={16} aria-hidden="true" />
-          </span>
-        </Link>
       </section>
     </>
   );
@@ -204,9 +187,8 @@ export function ReviewerDashboard({
         <HeroButton href="/portal/task-hub">Task Hub ({metrics.available})</HeroButton>
       </Hero>
 
-      <SectionTitle title="Available work" hint="Choose a review or claim an open Tasker task." />
+      <SectionTitle title="Other available work" hint="Review queue and current priorities are above." />
       <section className="grid gap-4 sm:grid-cols-2">
-        <StatCard label="Awaiting Reviewer" value={extras.awaiting} icon={ClipboardCheck} tone="cyan" href="/portal/reviewer/queue" cta="Open review queue" />
         <StatCard label="Awaiting Tasker" value={metrics.available} icon={Inbox} tone="blue" href="/portal/task-hub" cta="Open Task Hub" />
       </section>
 
@@ -274,9 +256,8 @@ export function QaDashboard({
         <HeroButton href="/portal/qa/client-actions">Client actions</HeroButton>
       </Hero>
 
-      <SectionTitle title="Available work" hint="Eligible orders are available in their respective queues." />
+      <SectionTitle title="Other available work" hint="Your QA queue and next action are above." />
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard label="Awaiting QA" value={extras.awaiting} icon={ShieldCheck} tone="cyan" href="/portal/qa/queue" cta="Open QA queue" />
         <StatCard label="Awaiting Reviewer" value={extras.awaitingReview} icon={ClipboardCheck} tone="blue" href="/portal/reviewer/queue" cta="Open review queue" />
         <StatCard label="Awaiting Tasker" value={metrics.available} icon={Inbox} tone="green" href="/portal/task-hub" cta="Open Task Hub" />
       </section>
@@ -306,12 +287,11 @@ export function QaDashboard({
       </section>
 
       <SectionTitle title="My orders" hint="Work you have performed at any level." />
-      <section className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+      <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <MiniStat label="In progress" value={metrics.progress} tone="cyan" href={`${base}?tab=progress`} />
         <MiniStat label="In revision" value={metrics.revision} tone="amber" href={`${base}?tab=revision`} />
         <MiniStat label="Completed" value={metrics.completed} tone="green" href={`${base}?tab=completed`} />
         <MiniStat label="Cancelled" value={metrics.cancelled} tone="slate" href={`${base}?tab=cancelled`} />
-        <MiniStat label="In Task Hub" value={metrics.available} tone="blue" href="/portal/task-hub" />
       </section>
     </>
   );
@@ -322,15 +302,13 @@ export function QaDashboard({
 /* ------------------------------------------------------------------ */
 function PipelineStrip({ p }: { p: Pipeline }) {
   return (
-    <section className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-8">
+    <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
       <MiniStat label="Open in hub" value={p.open} tone="blue" href="/portal/task-hub" />
       <MiniStat label="In progress" value={p.inProgress} tone="cyan" href="/portal/admin/task-summary" />
       <MiniStat label="Awaiting review" value={p.awaitingReview} tone="violet" href="/portal/admin/review-qa" />
       <MiniStat label="Awaiting QA" value={p.awaitingQa} tone="teal" href="/portal/admin/review-qa" />
       <MiniStat label="In revision" value={p.revision} tone="amber" href="/portal/admin/task-summary" />
       <MiniStat label="With client" value={p.awaitingClient} tone="gold" href="/portal/qa/client-actions" />
-      <MiniStat label="Completed" value={p.completed} tone="green" href="/portal/admin/task-history" />
-      <MiniStat label="Cancelled" value={p.cancelled} tone="slate" href="/portal/admin/task-history" />
     </section>
   );
 }
@@ -371,13 +349,17 @@ function PeopleBar({ p }: { p: People }) {
 }
 
 function AttentionGrid({ a, extra }: { a: Attention; extra?: ReactNode }) {
+  const attention = [
+    { title: "Reassignment requests", href: "/portal/admin/reassignments", icon: Repeat, tone: "violet" as const, badge: a.reassignments, description: "Employees requesting an order release." },
+    { title: "Disputes", href: "/portal/admin/disputes", icon: Gavel, tone: "rose" as const, badge: a.disputes, description: "Open order issues requiring a decision." },
+    { title: "Payment-method changes", href: "/portal/admin/payment-approvals", icon: Stamp, tone: "amber" as const, badge: a.paymentChanges, description: "Approve or reject payout detail changes." },
+    { title: "New applicants", href: "/portal/admin/recruitment", icon: UserCheck, tone: "teal" as const, badge: a.applications, description: "Applications awaiting review." },
+    { title: "Overdue orders", href: "/portal/admin/task-summary", icon: Clock, tone: "rose" as const, badge: a.overdue, description: "Orders needing timely intervention." },
+  ].filter(item => item.badge > 0);
   return (
-    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-      <ActionTile title="Reassignment requests" description="Employees asking to release an order." href="/portal/admin/reassignments" icon={Repeat} tone="violet" badge={a.reassignments} />
-      <ActionTile title="Disputes" description="Open issues raised on orders." href="/portal/admin/disputes" icon={Gavel} tone="rose" badge={a.disputes} />
-      <ActionTile title="Payment-method changes" description="Approve or reject payout detail changes." href="/portal/admin/payment-approvals" icon={Stamp} tone="amber" badge={a.paymentChanges} />
-      <ActionTile title="New applicants" description="Review applications from the Careers page." href="/portal/admin/recruitment" icon={UserCheck} tone="teal" badge={a.applications} />
-      <ActionTile title="Overdue orders" description="Assigned work past its deadline." href="/portal/admin/task-summary" icon={Clock} tone="rose" badge={a.overdue} />
+    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-label="Items needing attention">
+      {attention.length === 0 && !extra && <Panel><p className="text-sm font-semibold text-[var(--ev-ink)]">All caught up</p><p className="mt-2 text-sm text-[var(--ev-muted)]">There are no urgent approvals or exceptions right now.</p></Panel>}
+      {attention.map(item => <ActionTile key={item.href} {...item} />)}
       {extra}
     </section>
   );

@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { ArrowUpRight, Boxes, ClipboardCheck, PackageCheck, Plus, Timer } from "lucide-react";
+import { ArrowUpRight, Boxes, ClipboardCheck, PackageCheck, Plus, MessageCircle } from "lucide-react";
 import { prisma } from "@/lib/db/prisma";
-import { listClientOrders, STAGES, formatDate } from "@/lib/client-orders";
+import { listClientOrders, formatDate } from "@/lib/client-orders";
 import { ensureClientProfile } from "../clients/actions";
 import { OrderTracker, StagePill } from "./parts";
 
@@ -12,53 +12,43 @@ export default async function ClientHome() {
     prisma.clientProjectRequest.findMany({ where: { clientId: client.id }, orderBy: { createdAt: "desc" }, take: 6 }),
   ]);
   const inStage = (...st: string[]) => orders.filter((o) => st.includes(o.stage)).length;
-  const active = { length: inStage("TASKING", "REVIEW", "QA", "READY") };
-  const counts = [
-    { ...STAGES[0], n: inStage("TASKING") },
-    { ...STAGES[1], n: inStage("REVIEW") },
-    { ...STAGES[2], n: inStage("QA", "READY") },
-  ];
+  const active = inStage("TASKING", "REVIEW", "QA", "READY");
   const toRate = orders.filter((o) => o.stage === "DELIVERED" && !o.ratedAt);
   const delivered = orders.filter((o) => o.stage === "DELIVERED" || o.stage === "COMPLETED").length;
-  const recent = orders.filter((o) => o.stage !== "CANCELED").slice(0, 4);
+  const recent = orders.filter((o) => o.stage !== "CANCELED").slice(0, 5);
+  const inReview = inStage("REVIEW", "QA");
+  const recentRequests = requests.slice(0, 3);
 
   return (
     <main className="cp-page">
       <div className="cp-head">
         <div>
-          <h1 className="cp-title">Your orders at a glance</h1>
-          <p className="cp-sub">Follow every order through tasking, review and quality assurance, then rate it when it arrives.</p>
+          <h1 className="cp-title">Your workspace</h1>
+          <p className="cp-sub">A clear view of what needs your attention, ongoing work, and recent updates.</p>
         </div>
         <Link href="/client-portal/requests/new" className="ev2-primary"><Plus size={17} /> New request</Link>
       </div>
 
-      <section className="cp-stats" aria-label="Summary">
-        <div className="cp-stat"><span className="cp-stat-icon"><Boxes size={20} /></span><div><b>{active.length}</b><span>In progress</span></div></div>
-        <div className="cp-stat"><span className="cp-stat-icon"><Timer size={20} /></span><div><b>{orders.filter((o) => o.stage === "REVIEW" || o.stage === "QA").length}</b><span>In review or QA</span></div></div>
-        <div className="cp-stat"><span className="cp-stat-icon"><PackageCheck size={20} /></span><div><b>{delivered}</b><span>Delivered</span></div></div>
-        <div className="cp-stat"><span className="cp-stat-icon"><ClipboardCheck size={20} /></span><div><b>{toRate.length}</b><span>Waiting for your rating</span></div></div>
+      <section className="cp-stats cp-stats--compact" aria-label="Workspace summary">
+        <Link href="/client-portal/orders" className="cp-stat cp-stat--link"><span className="cp-stat-icon"><Boxes size={20} /></span><div><b>{active}</b><span>Active orders</span></div></Link>
+        <Link href="/client-portal/delivered/awaiting" className="cp-stat cp-stat--link"><span className="cp-stat-icon"><ClipboardCheck size={20} /></span><div><b>{toRate.length}</b><span>Need your decision</span></div></Link>
+        <Link href="/client-portal/delivered" className="cp-stat cp-stat--link"><span className="cp-stat-icon"><PackageCheck size={20} /></span><div><b>{delivered}</b><span>Delivered</span></div></Link>
       </section>
 
-      {toRate.length > 0 && (
-        <Link href="/client-portal/delivered" className="cp-callout">
-          <PackageCheck size={22} aria-hidden="true" />
-          <span><strong>{toRate.length} order{toRate.length === 1 ? " is" : "s are"} ready for you.</strong> Review the delivery and leave a rating.</span>
-          <ArrowUpRight size={18} aria-hidden="true" />
-        </Link>
-      )}
-
-      <section className="cp-panel" aria-labelledby="pipeline">
-        <h2 id="pipeline" className="cp-h2">Order pipeline</h2>
-        <div className="cp-pipeline">
-          {counts.slice(0, 3).map((c, i) => (
-            <div key={c.key} className="cp-pipe">
-              <span className="cp-pipe-n">{c.n}</span>
-              <span className="cp-pipe-l">{c.label}</span>
-              <span className="cp-pipe-h">{c.hint}</span>
-              {i < 2 && <span className="cp-pipe-arrow" aria-hidden="true">→</span>}
-            </div>
-          ))}
-          <div className="cp-pipe cp-pipe--done"><span className="cp-pipe-n">{delivered}</span><span className="cp-pipe-l">Delivered</span><span className="cp-pipe-h">Ready for you to review</span></div>
+      <section className="cp-focus" aria-label="Next steps">
+        <div className="cp-focus-main">
+          <span className="cp-eyebrow">Your next step</span>
+          <h2>{toRate.length ? `${toRate.length} delivery ${toRate.length === 1 ? "needs" : "need"} your review` : inReview ? `${inReview} order${inReview === 1 ? " is" : "s are"} being reviewed` : active ? "Your work is progressing" : "Ready to get started?"}</h2>
+          <p>{toRate.length ? "Confirm the delivery, request changes, or leave your rating." : active ? "Follow live progress without needing to check each stage separately." : "Send a new request and follow its progress here."}</p>
+          <Link href={toRate.length ? "/client-portal/delivered/awaiting" : active ? "/client-portal/orders" : "/client-portal/requests/new"} className="ev2-primary">
+            {toRate.length ? "Review deliveries" : active ? "Track my orders" : "Create a request"} <ArrowUpRight size={16} />
+          </Link>
+        </div>
+        <div className="cp-focus-side">
+          <MessageCircle size={19}/>
+          <strong>Conversations & updates</strong>
+          <span>Questions, discussions, and project activity stay with each request.</span>
+          <Link href="/client-portal/notifications" className="ev2-textlink">View notifications <ArrowUpRight size={15}/></Link>
         </div>
       </section>
 
@@ -82,10 +72,10 @@ export default async function ClientHome() {
       </section>
 
       <section className="cp-panel" aria-labelledby="requests">
-        <div className="cp-panel-head"><h2 id="requests" className="cp-h2">My service requests</h2><Link className="ev2-textlink" href="/client-portal/requests/new">New request <ArrowUpRight size={15} /></Link></div>
+        <div className="cp-panel-head"><h2 id="requests" className="cp-h2">Recent requests</h2><Link className="ev2-textlink" href="/client-portal/requests/new">New request <ArrowUpRight size={15} /></Link></div>
         {requests.length === 0 ? <p className="cp-empty">You have not submitted a service request yet.</p> : (
           <div className="cp-rows">
-            {requests.map((r) => (
+            {recentRequests.map((r) => (
               <Link key={r.id} href={`/client-portal/requests/${r.id}`} className="cp-row">
                 <span><strong>{r.title}</strong><small>{r.service} · {formatDate(r.createdAt)}</small></span>
                 <span className="cp-pill cp-pill--blue">{r.status.replaceAll("_", " ").toLowerCase()}</span>
