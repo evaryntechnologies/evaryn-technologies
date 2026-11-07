@@ -6,6 +6,7 @@ import PortalShellWithNotifications from "./PortalShellWithNotifications";
 import "./portal-shell.css";
 import "./layout-system.css";
 import "./premium-role-dashboards.css";
+import "./portal-palette-system.css";
 
 export default async function PortalLayout({ children }: { children: ReactNode }) {
   const path = (await headers()).get("x-evaryn-portal-path") ?? "";

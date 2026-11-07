@@ -1,0 +1,52 @@
+/* Evaryn client portal, four equal brand accents, all existing screens.
+   Uses the original page structures and leaves all client workflow intact. */
+.cp-shell { --cc-blue:#125cbe;--cc-cyan:#087f9f;--cc-amethyst:#7547b4;--cc-emerald:#087b60;--cc-color:var(--cc-blue); }
+.dark .cp-shell {--cc-blue:#69afff;--cc-cyan:#54d9ec;--cc-amethyst:#c6a5ff;--cc-emerald:#51ddb1;}
+.cp-shell .cp-banner {border:1px solid rgba(79,212,236,.55);background:radial-gradient(ellipse at 90% 20%,rgba(155,85,222,.35),transparent 48%),radial-gradient(ellipse at 45% 110%,rgba(22,188,213,.24),transparent 55%),linear-gradient(115deg,#071e47,#0a448f 55%,#28236c);}
+.cp-shell .cp-banner::after {content:"";position:absolute;inset:auto 0 0;height:3px;background:linear-gradient(90deg,#1773e1 0 25%,#22bed8 25% 50%,#9863db 50% 75%,#15a984 75%);}
+.cp-shell .cp-nav a[aria-current="page"] {background:linear-gradient(105deg,rgba(4,133,189,.49),rgba(113,71,179,.49));border:1px solid rgba(170,237,249,.65);box-shadow:inset 0 -3px 0 #48d6e9;color:#fff;}
+.cp-shell .cp-nav a:hover {background:rgba(84,206,240,.17);}
+.cp-shell .cp-count {background:#7441b8;color:#fff;}
+.cp-shell .cp-signout {border-color:rgba(116,222,239,.55);color:#fff;}
+.cp-shell :is(.cp-head,.ev-orders-hero) {border-color:color-mix(in srgb,var(--cc-blue) 43%,var(--ev-border));background:linear-gradient(115deg,color-mix(in srgb,var(--cc-blue) 11%,var(--ev-surface)),color-mix(in srgb,var(--cc-amethyst) 9%,var(--ev-surface)));}
+.cp-shell .cp-head {box-shadow:inset 0 3px 0 var(--cc-cyan),var(--ev-shadow);}
+.cp-shell .cp-eyebrow,.cp-shell .ev-orders-eyebrow {color:var(--cc-amethyst);}
+.cp-shell .cp-banner .cp-eyebrow {color:#86e8f3;}
+/* Grouped summary cards share the full palette by position. */
+.cp-shell :is(.cp-stats,.cp-pipeline,.cp-list,.ev-orders-summary,.ev-orders-cards,.ev-orders-requests,.cp-rows) > :nth-child(4n+1) {--cc-color:var(--cc-blue);}
+.cp-shell :is(.cp-stats,.cp-pipeline,.cp-list,.ev-orders-summary,.ev-orders-cards,.ev-orders-requests,.cp-rows) > :nth-child(4n+2) {--cc-color:var(--cc-cyan);}
+.cp-shell :is(.cp-stats,.cp-pipeline,.cp-list,.ev-orders-summary,.ev-orders-cards,.ev-orders-requests,.cp-rows) > :nth-child(4n+3) {--cc-color:var(--cc-amethyst);}
+.cp-shell :is(.cp-stats,.cp-pipeline,.cp-list,.ev-orders-summary,.ev-orders-cards,.ev-orders-requests,.cp-rows) > :nth-child(4n) {--cc-color:var(--cc-emerald);}
+.cp-shell :is(.cp-stat,.cp-pipe,.cp-order,.ev-orders-summary>div,.ev-orders-card,.ev-orders-request) {position:relative;border-color:color-mix(in srgb,var(--cc-color) 44%,var(--ev-border-soft));background:linear-gradient(135deg,color-mix(in srgb,var(--cc-color) 11%,var(--ev-surface)),var(--ev-surface) 76%);box-shadow:inset 3px 0 0 var(--cc-color),0 12px 30px -27px var(--cc-color);}
+.cp-shell .cp-panel {border-color:color-mix(in srgb,var(--cc-cyan) 34%,var(--ev-border-soft));box-shadow:inset 0 2px 0 color-mix(in srgb,var(--cc-cyan) 60%,transparent),var(--ev-shadow);}
+.cp-shell .cp-panel:nth-of-type(3n+2) {border-color:color-mix(in srgb,var(--cc-amethyst) 35%,var(--ev-border-soft));box-shadow:inset 0 2px 0 color-mix(in srgb,var(--cc-amethyst) 55%,transparent),var(--ev-shadow);}
+.cp-shell .cp-panel:nth-of-type(3n) {border-color:color-mix(in srgb,var(--cc-emerald) 35%,var(--ev-border-soft));box-shadow:inset 0 2px 0 color-mix(in srgb,var(--cc-emerald) 55%,transparent),var(--ev-shadow);}
+.cp-shell .cp-stat-icon {color:var(--cc-color);background:color-mix(in srgb,var(--cc-color) 15%,var(--ev-surface));border:1px solid color-mix(in srgb,var(--cc-color) 32%,transparent);}
+.cp-shell .cp-pipe-n {color:var(--cc-color);}
+.cp-shell .cp-pipe--done .cp-pipe-n {color:var(--cc-emerald);}
+.cp-shell .cp-pipe-arrow {border-color:color-mix(in srgb,var(--cc-color) 42%,var(--ev-border));color:var(--cc-color);}
+.cp-shell .cp-focus-main {border-color:color-mix(in srgb,var(--cc-cyan) 42%,var(--ev-border));background:linear-gradient(120deg,color-mix(in srgb,var(--cc-cyan) 15%,var(--ev-surface)),color-mix(in srgb,var(--cc-blue) 9%,var(--ev-surface)));box-shadow:inset 0 3px 0 var(--cc-cyan);}
+.cp-shell .cp-focus-side {border-color:color-mix(in srgb,var(--cc-amethyst) 44%,var(--ev-border));background:linear-gradient(120deg,color-mix(in srgb,var(--cc-amethyst) 13%,var(--ev-surface)),var(--ev-surface));box-shadow:inset 0 3px 0 var(--cc-amethyst);}
+.cp-shell .cp-callout {border-color:color-mix(in srgb,var(--cc-emerald) 47%,var(--ev-border));background:linear-gradient(110deg,color-mix(in srgb,var(--cc-emerald) 12%,var(--ev-surface)),color-mix(in srgb,var(--cc-cyan) 8%,var(--ev-surface)));}
+.cp-shell .cp-callout > svg:first-child {color:var(--cc-emerald);}
+.cp-shell :is(.ev2-primary,.ev-orders-primary) {background:linear-gradient(110deg,#074b9c,#0877bd 70%,#077f9d) !important;border:1px solid #45c8df !important;color:#fff !important;-webkit-text-fill-color:#fff !important;box-shadow:0 9px 22px -15px #087cbc;}
+.cp-shell :is(.ev2-primary,.ev-orders-primary):hover {background:linear-gradient(110deg,#063b80,#0767a5) !important;}
+.cp-shell .ev-orders-message {background:linear-gradient(110deg,#61379c,#8351c0);color:#fff !important;-webkit-text-fill-color:#fff !important;}
+.cp-shell :is(.ev-orders-secondary,.cp-signout) {transition:border-color .16s,background .16s;}
+.cp-shell .ev-orders-secondary {border-color:color-mix(in srgb,var(--cc-amethyst) 47%,var(--ev-border));}
+.cp-shell :is(.ev-orders-secondary,.cp-stat--link,.cp-order,.ev-orders-card):hover {border-color:var(--cc-cyan);}
+.cp-shell .cp-h2 {text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--cc-amethyst) 53%,transparent);text-decoration-thickness:2px;text-underline-offset:7px;}
+.cp-shell .ev-orders-hero::before {background:linear-gradient(90deg,#176bd5 0 25%,#29c9e0 25% 50%,#9660d5 50% 75%,#16a882 75%);}
+.cp-shell .ev-orders-section {border-color:color-mix(in srgb,var(--cc-amethyst) 34%,var(--ev-border));box-shadow:inset 0 2px 0 color-mix(in srgb,var(--cc-amethyst) 42%,transparent),var(--ev-shadow);}
+.cp-shell .ev-orders-section-count {background:color-mix(in srgb,var(--cc-amethyst) 15%,var(--ev-surface));color:var(--cc-amethyst);}
+.cp-shell .ev-orders-filters {border:1px solid color-mix(in srgb,var(--cc-cyan) 30%,var(--ev-border));}
+.cp-shell .ev-orders-filters a[aria-current="page"] {background:linear-gradient(110deg,#1359ad,#6c43ae);color:#fff !important;}
+.cp-shell :is(.cp-filter,.cp-badges) a:focus-visible,.cp-shell :is(a,button,input,select,textarea):focus-visible {outline:3px solid var(--cc-cyan);outline-offset:2px;}
+/* Step labels remain below the connector rail and never intersect its lines. */
+.cp-shell .cp-tracker li {grid-template-rows:32px auto auto;}
+.cp-shell .cp-tracker li:not(:last-child)::after {top:15px;z-index:0;}
+.cp-shell .cp-tracker .cp-step-label,.cp-shell .cp-tracker .cp-step-hint {z-index:1;}
+.cp-shell .cp-tracker li[data-state="done"] .cp-dot {background:linear-gradient(125deg,#07785c,#0c9b86);}
+.cp-shell .cp-tracker li[data-state="active"] .cp-dot {border-color:var(--cc-cyan);box-shadow:0 0 0 4px color-mix(in srgb,var(--cc-cyan) 20%,transparent);}
+@media(max-width:620px){.cp-shell .cp-tracker li::after {display:none !important;}}
+@media(prefers-reduced-motion:reduce){.cp-shell :is(.ev-orders-secondary,.cp-signout) {transition:none;}}

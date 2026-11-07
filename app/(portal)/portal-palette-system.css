@@ -1,0 +1,82 @@
+/* Evaryn integrated four-colour portal language — applied to every staff workspace.
+   Intentional contrast in both themes; cosmetic only, no markup or behaviour changes. */
+.ev-portal {
+  --ep-blue: #1261ca;
+  --ep-cyan: #087f9f;
+  --ep-amethyst: #7445b8;
+  --ep-emerald: #087b60;
+  --ep-blue-rgb: 18 97 202;
+  --ep-cyan-rgb: 8 127 159;
+  --ep-amethyst-rgb: 116 69 184;
+  --ep-emerald-rgb: 8 123 96;
+  --ep-color: var(--ep-blue);
+  --ep-line: color-mix(in srgb, var(--ep-color) 41%, var(--ev-border-soft));
+  --ep-wash: color-mix(in srgb, var(--ep-color) 9%, var(--ev-surface));
+}
+.dark .ev-portal, .dark.ev-portal {
+  --ep-blue: #62a9ff;
+  --ep-cyan: #51d8ea;
+  --ep-amethyst: #c4a0ff;
+  --ep-emerald: #53e0b5;
+}
+/* Shell, nav and active destinations are visibly branded on every staff page. */
+.ev-portal .ev-topbar { border-bottom-color: color-mix(in srgb, var(--ep-cyan) 48%, var(--ev-border-soft)); }
+.ev-portal .ev-topbar::before { background: linear-gradient(90deg,#176bd5 0 25%,#2ec9e5 25% 50%,#8d59d5 50% 75%,#0fa57b 75%); }
+.ev-portal .ev-top-title { border-color: color-mix(in srgb, var(--ep-cyan) 54%, var(--ev-border)); background: color-mix(in srgb, var(--ep-cyan) 12%, var(--ev-surface)); color: var(--ep-cyan); }
+.ev-portal .ev-menu-trigger { border-color: color-mix(in srgb,var(--ep-blue) 54%,var(--ev-border)); color:var(--ep-blue); }
+.ev-portal .ev-top-icon:nth-of-type(even) { border-color: color-mix(in srgb,var(--ep-amethyst) 38%,var(--ev-border)); color:var(--ep-amethyst); }
+.ev-portal .ev-search { border-color: color-mix(in srgb,var(--ep-cyan) 45%,var(--ev-border)); }
+.ev-portal .ev-user { border-color: color-mix(in srgb,var(--ep-amethyst) 42%,var(--ev-border)); }
+.ev-portal .ev-avatar { background: linear-gradient(135deg,#6441b5,#1164c0 60%,#0e9d88); }
+.ev-portal .ev-sidebar { border-right-color: color-mix(in srgb,var(--ep-amethyst) 34%,var(--ev-border-soft)); }
+.ev-portal .ev-sidebar-card { border-color: color-mix(in srgb,var(--ep-cyan) 30%,var(--ev-border-soft)); background:linear-gradient(125deg,color-mix(in srgb,var(--ep-blue) 9%,var(--ev-surface)),color-mix(in srgb,var(--ep-amethyst) 8%,var(--ev-surface))); }
+.ev-portal .ev-sidebar-heading { color:var(--ep-amethyst); }
+.ev-portal .ev-nav-active, .ev-portal .ev-acc-link-active { background:linear-gradient(110deg,#104ea6,#7050b3) !important; color:#fff !important; box-shadow:inset 3px 0 0 #52d9f1; }
+.ev-portal .ev-acc-open > .ev-acc-trigger { box-shadow:inset 3px 0 0 var(--ep-amethyst); }
+.ev-portal .ev-acc-link:hover:not(.ev-acc-link-active),.ev-portal .ev-nav-link:hover:not(.ev-nav-active) { background:color-mix(in srgb,var(--ep-cyan) 11%,var(--ev-surface)); }
+.ev-portal .ev-workspace-main { border-color:color-mix(in srgb,var(--ep-blue) 30%,var(--ev-border-soft)); }
+/* Four colours are distributed through each grid, feed, panel and card group.
+   Existing status tone (--t) is never rewritten: red/amber remain semantic. */
+.ev-portal :is(.evx-bento,.evx-rows,.evx-links,.evx-list,.evx-kanban,.evx-grid-2,.evx-stack) > :nth-child(4n + 1) { --ep-color: var(--ep-blue); }
+.ev-portal :is(.evx-bento,.evx-rows,.evx-links,.evx-list,.evx-kanban,.evx-grid-2,.evx-stack) > :nth-child(4n + 2) { --ep-color: var(--ep-cyan); }
+.ev-portal :is(.evx-bento,.evx-rows,.evx-links,.evx-list,.evx-kanban,.evx-grid-2,.evx-stack) > :nth-child(4n + 3) { --ep-color: var(--ep-amethyst); }
+.ev-portal :is(.evx-bento,.evx-rows,.evx-links,.evx-list,.evx-kanban,.evx-grid-2,.evx-stack) > :nth-child(4n) { --ep-color: var(--ep-emerald); }
+.ev-portal .evx-page :is(.evx-card,.evx-panel,.evx-kcard,.evx-tl-card,.evx-li,.evx-row,.evx-col,.evx-link-card) {
+  border-color:color-mix(in srgb,var(--ep-color) 35%,var(--ev-border-soft));
+  background-image:linear-gradient(145deg,color-mix(in srgb,var(--ep-color) 7%,transparent),transparent 54%);
+  box-shadow:inset 0 2px 0 color-mix(in srgb,var(--ep-color) 70%,transparent),0 12px 28px -27px var(--ep-color);
+}
+.ev-portal .evx-page :is(.evx-card,.evx-panel,.evx-kcard,.evx-tl-card,.evx-li,.evx-row,.evx-col,.evx-link-card):hover {
+  border-color:color-mix(in srgb,var(--ep-color) 65%,var(--ev-border));
+}
+.ev-portal .evx-page .evx-kpi { border-color:color-mix(in srgb,var(--t,var(--ep-color)) 50%,var(--ev-border-soft)); background-image:linear-gradient(140deg,color-mix(in srgb,var(--t,var(--ep-color)) 13%,transparent),transparent 65%); }
+.ev-portal .evx-page .evx-kpi .evx-chip { color:var(--t,var(--ep-color)); }
+.ev-portal .evx-page :is(.evx-head,.evx-section-head) { border-bottom:1px solid color-mix(in srgb,var(--ep-cyan) 28%,var(--ev-border-soft)); padding-bottom:9px; }
+.ev-portal .evx-page .evx-eyebrow { color:var(--ep-amethyst); }
+.ev-portal .evx-page .evx-section-title { text-decoration:underline; text-decoration-color:color-mix(in srgb,var(--ep-cyan) 50%,transparent); text-underline-offset:7px; text-decoration-thickness:2px; }
+.ev-portal .evx-page .evx-lead { border-color:color-mix(in srgb,var(--ep-cyan) 50%,var(--ev-border)); background:radial-gradient(circle at 75% 25%,rgba(22,196,219,.2),transparent 35%),radial-gradient(circle at 96% 90%,rgba(137,78,215,.38),transparent 40%),linear-gradient(122deg,#081c45,#0c4088 59%,#2b267b); }
+.ev-portal .evx-page .evx-lead .evx-btn-primary,.ev-portal .evx-page .evx-btn-primary { background:linear-gradient(115deg,#064b9e,#086bc3 60%,#08789c) !important;color:#fff !important;-webkit-text-fill-color:#fff !important;border:1px solid #4ecce6 !important; }
+.ev-portal .evx-page .evx-btn-violet {background:linear-gradient(110deg,#58349d,#7a4abd) !important;color:#fff !important;-webkit-text-fill-color:#fff !important;}
+.ev-portal .evx-page .evx-btn-ghost {border-color:color-mix(in srgb,var(--ep-amethyst) 55%,var(--ev-border));}
+.ev-portal .evx-page .evx-lead .evx-btn-ghost {color:#fff !important;-webkit-text-fill-color:#fff !important;background:rgba(89,55,156,.38);border-color:#bfa1ef;}
+.ev-portal .evx-page .evx-lead-actions > :nth-child(3) {background:linear-gradient(110deg,#075c48,#088e72) !important;color:#fff !important;-webkit-text-fill-color:#fff !important;border-color:#52d8ad !important;}
+.ev-portal .evx-page :is(.evx-btn,.evx-tab,.evx-link,.evx-kpi-cta,.evx-back) { transition:border-color .17s,background .17s,box-shadow .17s,color .17s; }
+.ev-portal .evx-page .evx-tab[aria-selected="true"],.ev-portal .evx-page .evx-tab[aria-current="page"] {border-color:var(--ep-amethyst);background:color-mix(in srgb,var(--ep-amethyst) 14%,var(--ev-surface));color:var(--ep-amethyst);}
+.ev-portal .evx-page .evx-tabs {border-bottom:2px solid color-mix(in srgb,var(--ep-amethyst) 30%,var(--ev-border));}
+.ev-portal .evx-page :is(.evx-input,.evx-select,.evx-textarea):focus {border-color:var(--ep-cyan);box-shadow:0 0 0 3px color-mix(in srgb,var(--ep-cyan) 22%,transparent);}
+.ev-portal .evx-page .evx-filter {border:1px solid color-mix(in srgb,var(--ep-cyan) 32%,var(--ev-border-soft));border-radius:14px;background:linear-gradient(115deg,color-mix(in srgb,var(--ep-cyan) 7%,var(--ev-surface)),color-mix(in srgb,var(--ep-amethyst) 6%,var(--ev-surface)));}
+.ev-portal .evx-page .evx-empty {border-color:color-mix(in srgb,var(--ep-cyan) 38%,var(--ev-border));background:linear-gradient(125deg,color-mix(in srgb,var(--ep-cyan) 5%,var(--ev-surface)),color-mix(in srgb,var(--ep-amethyst) 6%,var(--ev-surface)));}
+.ev-portal .evx-page .evx-more {border-color:color-mix(in srgb,var(--ep-amethyst) 30%,var(--ev-border-soft));}
+.ev-portal .evx-page .evx-notice {border-left:4px solid var(--t,var(--ep-cyan));}
+/* The legacy portal routes also use utility cards, forms and tables. Keep
+   them legible but expose the four accents across repeating sections. */
+.ev-portal .ev-workspace-main :is(article,section)[class*="rounded"][class*="border"] {border-color:color-mix(in srgb,var(--ep-blue) 27%,var(--ev-border-soft));}
+.ev-portal .ev-workspace-main :is(article,section)[class*="rounded"][class*="border"]:nth-of-type(4n+2) {border-color:color-mix(in srgb,var(--ep-cyan) 38%,var(--ev-border-soft));}
+.ev-portal .ev-workspace-main :is(article,section)[class*="rounded"][class*="border"]:nth-of-type(4n+3) {border-color:color-mix(in srgb,var(--ep-amethyst) 38%,var(--ev-border-soft));}
+.ev-portal .ev-workspace-main :is(article,section)[class*="rounded"][class*="border"]:nth-of-type(4n) {border-color:color-mix(in srgb,var(--ep-emerald) 38%,var(--ev-border-soft));}
+.ev-portal .ev-workspace-main table {border-color:var(--ev-border-soft);}
+.ev-portal .ev-workspace-main thead {background:linear-gradient(100deg,color-mix(in srgb,var(--ep-blue) 12%,var(--ev-surface)),color-mix(in srgb,var(--ep-amethyst) 10%,var(--ev-surface)));}
+.ev-portal .ev-workspace-main tbody tr:hover {background:color-mix(in srgb,var(--ep-cyan) 6%,transparent);}
+.ev-portal .ev-workspace-main :is(input,select,textarea):focus-visible {outline-color:var(--ep-cyan);}
+.ev-portal .ev-workspace-main :is(button,a):focus-visible {outline:3px solid var(--ep-cyan);outline-offset:2px;}
+@media (prefers-reduced-motion:reduce) { .ev-portal .evx-page :is(.evx-btn,.evx-tab,.evx-link,.evx-kpi-cta,.evx-back) {transition:none;} }

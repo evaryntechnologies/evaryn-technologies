@@ -1,5 +1,6 @@
 import ClientNotificationBell from "@/components/client/ClientNotificationBell";
 import "./client-portal.css";
+import "./client-palette-system.css";
 import type { ReactNode } from "react";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db/prisma";
