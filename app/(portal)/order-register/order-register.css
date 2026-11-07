@@ -26,3 +26,48 @@
 .ev-order-person-current{border-color:#b38af5;background:#473274;color:#fff}
 .ev-order-person-completed{border-color:#51bdac;background:#0b5b54;color:#f4fffb}
 .ev-order-table td:nth-child(5),.ev-order-table td:nth-child(6),.ev-order-table td:nth-child(7){min-width:165px;vertical-align:top}
+
+/* Screen-fit register: no horizontal scrollbar, even with long order codes/names. */
+.ev-order-register { min-width: 0; width: 100%; max-width: 100%; }
+.ev-order-list { min-width: 0; width: 100%; container-type: inline-size; }
+.ev-order-table-scroll { width: 100%; max-width: 100%; overflow-x: clip; overflow-y: visible; }
+.ev-order-table { min-width: 0; width: 100%; max-width: 100%; table-layout: fixed; }
+.ev-order-table th, .ev-order-table td { min-width: 0 !important; overflow-wrap: anywhere; word-break: normal; }
+.ev-order-register .ev-order-table th { white-space: normal; padding: .72rem .4rem; line-height: 1.25; letter-spacing: 0; font-size: .64rem; }
+.ev-order-table td { padding: .7rem .4rem; font-size: .74rem; line-height: 1.4; }
+.ev-order-table th:nth-child(1) { width: 11%; }
+.ev-order-table th:nth-child(2) { width: 10%; }
+.ev-order-table th:nth-child(3) { width: 17%; }
+.ev-order-table th:nth-child(4) { width: 12%; }
+.ev-order-table th:nth-child(5),
+.ev-order-table th:nth-child(6),
+.ev-order-table th:nth-child(7) { width: 11%; }
+.ev-order-table th:nth-child(8) { width: 8%; }
+.ev-order-table th:nth-child(9) { width: 9%; }
+.ev-order-code, .ev-order-price, .ev-order-task { white-space: normal; overflow-wrap: anywhere; }
+.ev-order-title { min-width: 0; overflow-wrap: anywhere; }
+.ev-order-contributors { min-width: 0; max-width: 100%; gap: .2rem; }
+.ev-order-person { max-width: 100%; min-width: 0; font-size: .67rem; padding: .2rem .3rem; }
+.ev-order-status { max-width: 100%; overflow-wrap: anywhere; padding: .28rem .4rem; font-size: .64rem; }
+.ev-order-details { max-width: 100%; white-space: normal; font-size: .67rem; line-height: 1.25; padding: .38rem .43rem; overflow-wrap: anywhere; }
+
+/* Below the usable table width, render each order as a fully visible labelled record.
+   This respects narrow laptop windows and open sidebars without hiding a column. */
+@container (max-width: 1110px) {
+  .ev-order-table { display: block; min-width: 0; width: 100%; }
+  .ev-order-table thead { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+  .ev-order-table tbody { display: grid; gap: .75rem; padding: .75rem; }
+  .ev-order-table tbody tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border: 1px solid rgba(159, 202, 241, .35); border-radius: .85rem; overflow: hidden; box-shadow: 0 8px 20px -19px #020817; }
+  .ev-order-table td { display: grid; align-content: start; gap: .35rem; padding: .65rem .75rem; min-width: 0; border-bottom: 1px solid rgba(184, 208, 240, .15); }
+  .ev-order-table td::before { content: attr(data-label); display: block; color: #b3eaff; font-size: .65rem; line-height: 1.25; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+  .ev-order-table td:nth-child(3) { grid-column: 1 / -1; }
+  .ev-order-table td:nth-child(7) { grid-column: 1 / -1; }
+  .ev-order-contributors { display: flex; flex-wrap: wrap; }
+  .ev-order-person { font-size: .73rem; }
+  .ev-order-details { display: inline-flex; justify-self: start; white-space: normal; }
+}
+@container (max-width: 480px) {
+  .ev-order-table tbody { padding: .55rem; }
+  .ev-order-table tbody tr { grid-template-columns: minmax(0, 1fr); }
+  .ev-order-table td { grid-column: 1 / -1 !important; }
+}

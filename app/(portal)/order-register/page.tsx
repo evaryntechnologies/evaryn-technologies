@@ -103,14 +103,14 @@ export default async function Register({searchParams}:{searchParams:Promise<{q?:
    </form>
   </details>
   <section className="ev-order-list" aria-label="Order results">
-   <div className="ev-order-list-header"><div><h2>Order records</h2><p>{filtered.length.toLocaleString()} matching {filtered.length===1?"order":"orders"}{rows.length===1000?" · limited to the 1,000 newest records":""}</p></div><span className="ev-order-scroll-note">Scroll horizontally for all details</span></div>
-   <div className="ev-order-table-scroll" role="region" aria-label="Order register table" tabIndex={0}>
+   <div className="ev-order-list-header"><div><h2>Order records</h2><p>{filtered.length.toLocaleString()} matching {filtered.length===1?"order":"orders"}{rows.length===1000?" · limited to the 1,000 newest records":""}</p></div><span className="ev-order-scroll-note">All columns fit your screen</span></div>
+   <div className="ev-order-table-scroll" role="region" aria-label="Order register table">
     <table className="ev-order-table"><thead><tr><th scope="col">Client order</th><th scope="col">Worker task ID</th><th scope="col">Order / category</th><th scope="col">Status</th><th scope="col">Taskers</th><th scope="col">Reviewers</th><th scope="col">QA reviewers</th><th scope="col">Price</th><th scope="col">Record</th></tr></thead>
     <tbody>{filtered.map(r=>{const currentStatus=r.taskStatus??r.requestStatus;return <tr key={r.requestId}>
-     <td><span className="ev-order-code">{r.clientOrderCode??"Legacy order"}</span></td><td><span className="ev-order-task">{r.maskedId??"Not tasked"}</span></td><td><strong className="ev-order-title">{r.title}</strong><span className="ev-order-category">{r.service}</span></td>
-     <td><span className={`ev-order-status ev-order-status-${statusTone(currentStatus)}`}>{currentStatus.replace(/_/g," ")}</span></td>
-     <td><ContributorCell people={r.taskers} empty="No tasker recorded"/></td><td><ContributorCell people={r.reviewers} empty="No review recorded"/></td><td><ContributorCell people={r.qas} empty="No QA review recorded"/></td>
-     <td className="ev-order-price">{money(r.price)}</td><td><Link className="ev-order-details" href={`/portal/client-messages/${r.requestId}`}>View details <span aria-hidden="true">↗</span></Link></td>
+     <td data-label="Client order"><span className="ev-order-code">{r.clientOrderCode??"Legacy order"}</span></td><td data-label="Worker task ID"><span className="ev-order-task">{r.maskedId??"Not tasked"}</span></td><td data-label="Order / category"><strong className="ev-order-title">{r.title}</strong><span className="ev-order-category">{r.service}</span></td>
+     <td data-label="Status"><span className={`ev-order-status ev-order-status-${statusTone(currentStatus)}`}>{currentStatus.replace(/_/g," ")}</span></td>
+     <td data-label="Taskers"><ContributorCell people={r.taskers} empty="No tasker recorded"/></td><td data-label="Reviewers"><ContributorCell people={r.reviewers} empty="No review recorded"/></td><td data-label="QA reviewers"><ContributorCell people={r.qas} empty="No QA review recorded"/></td>
+     <td data-label="Price" className="ev-order-price">{money(r.price)}</td><td data-label="Record"><Link className="ev-order-details" href={`/portal/client-messages/${r.requestId}`}>View details <span aria-hidden="true">↗</span></Link></td>
     </tr>})}</tbody></table>
     {filtered.length===0&&<div className="ev-order-empty"><strong>No matching orders</strong><p>Try broader search terms or clear your filters.</p><Link href="/portal/order-register">Clear all filters</Link></div>}
    </div>
