@@ -1,3 +1,4 @@
+import "@/app/(portal)/compact-workspaces.css";
 import { connection } from "next/server";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -131,9 +132,11 @@ async function Content({ searchParams }: Props) {
 export default function Page(p: Props) {
   return (
     <PageShell>
+      <div className="ev-compact-workspace">
       <Suspense fallback={<div className={`${card} p-8 text-[var(--ev-muted)]`}>Loading orders…</div>}>
         <Content {...p} />
       </Suspense>
+          </div>
     </PageShell>
   );
 }

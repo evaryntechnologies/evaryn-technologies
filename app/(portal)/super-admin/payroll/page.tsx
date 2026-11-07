@@ -1,3 +1,4 @@
+import "@/app/(portal)/compact-workspaces.css";
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
@@ -230,9 +231,11 @@ async function Content({
 export default function Page(props: { searchParams: Promise<{ view?: string }> }) {
   return (
     <PageShell>
+      <div className="ev-compact-workspace">
       <Suspense fallback={<div className={`${card} p-8 text-[var(--ev-muted)]`}>Loading payroll…</div>}>
         <Content {...props} />
       </Suspense>
+          </div>
     </PageShell>
   );
 }

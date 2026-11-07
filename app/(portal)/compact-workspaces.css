@@ -1,0 +1,24 @@
+/* Evaryn compact workspace system — scoped to the seven opted-in views. */
+.ev-compact-workspace { --ev-compact-gap: 0.875rem; }
+.ev-compact-workspace header { margin-bottom: 1.1rem; }
+.ev-compact-workspace h1 { font-size: clamp(1.4rem, 2vw, 1.9rem); line-height: 1.2; letter-spacing: -.025em; }
+.ev-compact-workspace h2 { letter-spacing: -.015em; }
+.ev-compact-workspace :is(input, select, textarea) { min-width: 0; }
+.ev-compact-workspace :is(button, a, summary):focus-visible { outline: 2px solid var(--ev-cyan, #0891b2); outline-offset: 3px; }
+.ev-compact-workspace :is(table, [role=table]) { font-variant-numeric: tabular-nums; }
+.ev-compact-workspace table th { font-size: .72rem; letter-spacing: .025em; font-weight: 700; white-space: nowrap; background: var(--ev-surface-2, #112d4f); }
+.ev-compact-workspace table td, .ev-compact-workspace table th { padding: .7rem .8rem; vertical-align: middle; }
+.ev-compact-workspace table tbody tr:hover { background: color-mix(in srgb, var(--ev-cyan, #0891b2) 7%, transparent); }
+.ev-compact-workspace details > summary { cursor: pointer; }
+.ev-compact-workspace :is(article, section) { min-width: 0; }
+.ev-compact-workspace .ev-register-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.7rem; margin-top:1rem; }
+.ev-compact-workspace .ev-register-metrics > div { padding: .9rem 1rem; background:var(--ev-surface, #0b2441); border:1px solid var(--ev-border, #25405e); border-radius:.8rem; display:flex; flex-direction:column; gap:.25rem; }
+.ev-compact-workspace .ev-register-metrics span { color:var(--ev-muted, #718096); font-size:.75rem; }
+.ev-compact-workspace .ev-register-metrics strong { font-size:1.45rem; line-height:1.3; font-variant-numeric: tabular-nums; }
+.ev-compact-workspace .ev-filter-panel { margin-top:1rem; border:1px solid var(--ev-border, #25405e); border-radius:.9rem; overflow:hidden; }
+.ev-compact-workspace .ev-filter-panel > summary { padding: .85rem 1.1rem; font-size:.9rem; font-weight:650; background:var(--ev-surface, #0b2441); }
+.ev-compact-workspace .ev-filter-panel > form { margin-top:0; border-radius:0; }
+.ev-compact-workspace .ev-compose-panel > summary { padding:.25rem 0; }
+.ev-compact-workspace .ev-compose-panel[open] > summary { margin-bottom:.8rem; }
+@media(max-width:640px) { .ev-compact-workspace .ev-register-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); } .ev-compact-workspace table td, .ev-compact-workspace table th { padding:.55rem .65rem; } }
+@media(prefers-reduced-motion:reduce) { .ev-compact-workspace * { scroll-behavior:auto !important; } }

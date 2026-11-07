@@ -1,3 +1,4 @@
+import "@/app/(portal)/compact-workspaces.css";
 import { Suspense } from "react";
 import {raisePayrollClarification} from "./pay-statement-actions";
 import {prisma} from "@/lib/db/prisma";
@@ -178,9 +179,11 @@ async function Content({ searchParams }: Props) {
 export default function Page(props: Props) {
   return (
     <PageShell>
+      <div className="ev-compact-workspace">
       <Suspense fallback={<div className={`${card} p-8 text-[var(--ev-muted)]`}>Loading earnings…</div>}>
         <Content {...props} />
       </Suspense>
+          </div>
     </PageShell>
   );
 }

@@ -1,3 +1,4 @@
+import "@/app/(portal)/compact-workspaces.css";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import Link from "next/link";
@@ -538,7 +539,7 @@ async function Hub({ searchParams }: Props) {
 
 export default function Page(props: Props) {
   return (
-    <main className="min-h-screen bg-[var(--ev-page)] px-4 py-6 text-[var(--ev-ink)] sm:px-8 sm:py-8">
+    <main className="ev-compact-workspace min-h-screen bg-[var(--ev-page)] px-4 py-6 text-[var(--ev-ink)] sm:px-8 sm:py-8">
       <div className="mx-auto w-full max-w-none">
         <Suspense
           fallback={
