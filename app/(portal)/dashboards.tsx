@@ -98,7 +98,7 @@ export function TaskerDashboard({
 
 
       <SectionTitle title="My orders" />
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="ev-bento-metrics grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="In progress" value={metrics.progress} icon={Loader2} tone="cyan" href={`${base}?tab=progress`} cta="View orders" />
         <StatCard label="In revision" value={metrics.revision} icon={RotateCcw} tone="amber" href={`${base}?tab=revision`} cta="View orders" />
         <StatCard label="Completed" value={metrics.completed} icon={CheckCircle2} tone="green" href={`${base}?tab=completed`} cta="View orders" />
@@ -193,7 +193,7 @@ export function ReviewerDashboard({
       </section>
 
       <SectionTitle title="Your review activity" />
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="ev-bento-metrics grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Reviewing now" value={extras.inReview} icon={Hourglass} tone="cyan" href="/portal/reviewer/queue" cta="Continue" />
         <StatCard label="Approved by you" value={extras.approved} icon={BadgeCheck} tone="green" />
         <StatCard label="Sent back for revision" value={extras.sentBack} icon={RotateCcw} tone="amber" />
@@ -257,13 +257,13 @@ export function QaDashboard({
       </Hero>
 
       <SectionTitle title="Other available work" hint="Your QA queue and next action are above." />
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="ev-bento-metrics grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard label="Awaiting Reviewer" value={extras.awaitingReview} icon={ClipboardCheck} tone="blue" href="/portal/reviewer/queue" cta="Open review queue" />
         <StatCard label="Awaiting Tasker" value={metrics.available} icon={Inbox} tone="green" href="/portal/task-hub" cta="Open Task Hub" />
       </section>
 
       <SectionTitle title="Quality overview" />
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="ev-bento-metrics grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="In QA now" value={extras.inQa} icon={Hourglass} tone="cyan" href="/portal/qa/queue" cta="Continue" />
         <StatCard label="Passed by you" value={extras.passed} icon={BadgeCheck} tone="green" />
         <StatCard label="Sent back" value={extras.sentBack} icon={RotateCcw} tone="amber" />

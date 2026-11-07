@@ -1,7 +1,6 @@
 import { BackLink } from "@/app/(portal)/ui";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import Link from "next/link";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 
@@ -45,7 +44,7 @@ async function AuditContent() {
   `;
 
   return (
-    <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
+    <main className="ev-layout-timeline min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
       <div className="w-full max-w-none">
         <BackLink href="/portal/super-admin" label="Super Admin" />
 
@@ -83,7 +82,7 @@ async function AuditContent() {
               </p>
             </div>
           ) : (
-            <div className="mt-6 space-y-3">
+            <div className="ev-layout-timeline-items mt-6 space-y-3">
               {events.map((event) => {
                 const hasDetails =
                   event.details !== null &&

@@ -64,7 +64,7 @@ async function RatingsContent() {
     }
   }
   return (
-    <main className="mx-auto w-full max-w-7xl min-w-0 space-y-8 px-2 pb-12 pt-3 font-sans sm:px-5 lg:px-8">
+    <main className="ev-layout-list mx-auto w-full max-w-7xl min-w-0 space-y-8 px-2 pb-12 pt-3 font-sans sm:px-5 lg:px-8">
       <header className="flex flex-col gap-5 rounded-[28px] border border-[#92CDE4]/60 bg-[#E4F5FD]/85 px-6 py-7 shadow-sm dark:border-[#41658E] dark:bg-[#113455]/90 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-9">
         <div className="min-w-0 space-y-2">
           <p className="text-xs font-bold uppercase tracking-[.17em] text-[#35699B] dark:text-[#8FE4F4]">Quality &amp; feedback</p>
@@ -86,7 +86,7 @@ async function RatingsContent() {
           </div>
           <span className="rounded-full border border-[#B7DDEC] bg-[#E8F7FC] px-4 py-1.5 text-xs font-semibold text-[#285D7F] dark:border-[#426A90] dark:bg-[#214567] dark:text-[#D5F4FC]">{orders.length} total {orders.length === 1 ? "order" : "orders"}</span>
         </div>
-        <div className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-2">
+        <div className="ev-layout-list-items grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-2">
           {orders.map(o => (
             <article key={o.id} className="min-w-0 rounded-[22px] border border-[#B4D9EB] bg-[#EBF8FE]/95 p-5 shadow-[0_8px_28px_rgba(18,55,91,.06)] dark:border-[#3C638B] dark:bg-[#14375A]/95 sm:p-7">
               <div className="mb-6 flex min-w-0 items-start gap-4">
@@ -118,7 +118,7 @@ async function RatingsContent() {
             <h2 id="employee-ratings-heading" className="text-xl font-bold text-[#173555] dark:text-[#F1FAFF]">Employees’ ratings</h2>
             <p className="mt-1 max-w-3xl text-sm leading-7 text-[#456783] dark:text-[#C4DDEA]">Unique rated orders for each employee, including Taskers, Reviewers, QA and Admin participants.</p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+          <div className="ev-layout-list-items grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
             {employees.map(e => {
               const summary = aggregates.get(e.id);
               return <article key={e.id} className="min-w-0 rounded-[22px] border border-[#B4D9EB] bg-[#EBF8FE]/95 p-6 shadow-[0_8px_28px_rgba(18,55,91,.05)] dark:border-[#3C638B] dark:bg-[#14375A]/95 sm:p-7">

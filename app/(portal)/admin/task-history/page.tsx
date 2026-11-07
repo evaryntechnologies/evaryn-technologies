@@ -283,7 +283,7 @@ async function HistoryContent({
             </p>
           </div>
         ) : (
-          <div className="mt-5 space-y-5">
+          <div className="ev-layout-timeline-items mt-5 space-y-5">
             {tasks.map((task) => (
               <details
                 key={task.id}
@@ -478,7 +478,7 @@ export default function TaskHistoryPage({
   searchParams: Promise<{ q?: string; status?: string; page?: string }>;
 }) {
   return (
-    <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
+    <main className="ev-layout-timeline min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
       <Suspense
         fallback={
           <div className="w-full max-w-none rounded-2xl border border-white/10 bg-[#101F39] p-8 text-slate-300">

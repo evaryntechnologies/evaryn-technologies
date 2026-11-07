@@ -408,7 +408,7 @@ async function Hub({ searchParams }: Props) {
               </div>
             </div>
           ) : (
-            <div className="mt-5 grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
+            <div className="ev-layout-kanban-items mt-5 grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
               {orders.map((t) => {
                 const pr = priorityStyle[t.priority];
                 const unit =
@@ -539,7 +539,7 @@ async function Hub({ searchParams }: Props) {
 
 export default function Page(props: Props) {
   return (
-    <main className="ev-compact-workspace min-h-screen bg-[var(--ev-page)] px-4 py-6 text-[var(--ev-ink)] sm:px-8 sm:py-8">
+    <main className="ev-layout-kanban ev-compact-workspace min-h-screen bg-[var(--ev-page)] px-4 py-6 text-[var(--ev-ink)] sm:px-8 sm:py-8">
       <div className="mx-auto w-full max-w-none">
         <Suspense
           fallback={

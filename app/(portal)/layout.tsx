@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import AdminActivityTracker from "./AdminActivityTracker";
 import PortalShellWithNotifications from "./PortalShellWithNotifications";
 import "./portal-shell.css";
+import "./layout-system.css";
 
 export default async function PortalLayout({ children }: { children: ReactNode }) {
   const path = (await headers()).get("x-evaryn-portal-path") ?? "";

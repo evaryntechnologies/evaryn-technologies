@@ -1,7 +1,6 @@
 import { BackLink } from "@/app/(portal)/ui";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import Link from "next/link";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 import { qaDecision, claimQA, takeOverQA } from "./actions";
@@ -130,8 +129,11 @@ async function QAQueueContent({
             </p>
           </section>
         ) : (
-          <div className="mt-8 space-y-6">
-            {submissions.map((submission) => (
+          <div className="ev-layout-kanban ev-kanban-board mt-8">
+            {[{label:"Available",claimed:false},{label:"Claimed",claimed:true}].map(lane => (
+              <section key={lane.label} className="ev-kanban-lane" aria-label={lane.label + " submissions"}>
+                <h2 className="ev-kanban-lane-title">{lane.label} <span>{submissions.filter(s => Boolean(s.task.claimedQaId) === lane.claimed).length}</span></h2>
+            {submissions.filter(s => Boolean(s.task.claimedQaId) === lane.claimed).map((submission) => (
               <article
                 key={submission.id}
                 className="rounded-2xl border border-white/10 bg-[#101F39] p-6 sm:p-8"
@@ -265,6 +267,8 @@ async function QAQueueContent({
                   </div>
                 </form>}
               </article>
+            ))}
+              </section>
             ))}
           </div>
         )}
