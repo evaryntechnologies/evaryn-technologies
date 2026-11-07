@@ -50,3 +50,47 @@
 .cp-shell .cp-tracker li[data-state="active"] .cp-dot {border-color:var(--cc-cyan);box-shadow:0 0 0 4px color-mix(in srgb,var(--cc-cyan) 20%,transparent);}
 @media(max-width:620px){.cp-shell .cp-tracker li::after {display:none !important;}}
 @media(prefers-reduced-motion:reduce){.cp-shell :is(.ev-orders-secondary,.cp-signout) {transition:none;}}
+
+/* ================================================================
+   FULL COLOR CLIENT CARD SURFACES — surfaces rotate through all four
+   brand hues; legible in both light and dark mode. No layout changes.
+   ================================================================ */
+.cp-shell {--cc-card-deep:#104c9b;--cc-card-soft:#c2dafa;--cc-card-glow:#2a8eea;}
+.cp-shell :is(.cp-stats,.cp-pipeline,.cp-list,.ev-orders-summary,.ev-orders-cards,.ev-orders-requests,.cp-rows) > :nth-child(4n + 1) {--cc-card-deep:#104c9b;--cc-card-soft:#c2dafa;--cc-card-glow:#2a8eea;}
+.cp-shell :is(.cp-stats,.cp-pipeline,.cp-list,.ev-orders-summary,.ev-orders-cards,.ev-orders-requests,.cp-rows) > :nth-child(4n + 2) {--cc-card-deep:#075b73;--cc-card-soft:#b2edf3;--cc-card-glow:#12bbd3;}
+.cp-shell :is(.cp-stats,.cp-pipeline,.cp-list,.ev-orders-summary,.ev-orders-cards,.ev-orders-requests,.cp-rows) > :nth-child(4n + 3) {--cc-card-deep:#56308e;--cc-card-soft:#dbc9f8;--cc-card-glow:#ac78e8;}
+.cp-shell :is(.cp-stats,.cp-pipeline,.cp-list,.ev-orders-summary,.ev-orders-cards,.ev-orders-requests,.cp-rows) > :nth-child(4n) {--cc-card-deep:#08634d;--cc-card-soft:#b4ebd8;--cc-card-glow:#1ac69a;}
+.cp-shell :is(.cp-stat,.cp-pipe,.cp-order,.ev-orders-summary > div,.ev-orders-card,.ev-orders-request) {
+  background:linear-gradient(135deg,color-mix(in srgb,var(--cc-card-soft) 79%,var(--ev-surface)),color-mix(in srgb,var(--cc-card-soft) 48%,var(--ev-surface))) !important;
+  border-color:color-mix(in srgb,var(--cc-card-glow) 56%,var(--ev-border-soft));
+  box-shadow:0 9px 24px -19px color-mix(in srgb,var(--cc-card-glow) 42%,transparent);
+}
+.dark .cp-shell :is(.cp-stat,.cp-pipe,.cp-order,.ev-orders-summary > div,.ev-orders-card,.ev-orders-request) {
+  background:linear-gradient(135deg,color-mix(in srgb,var(--cc-card-deep) 88%,var(--ev-surface)),color-mix(in srgb,var(--cc-card-deep) 65%,var(--ev-surface))) !important;
+}
+/* Full-body color on alternating larger client panels, too. */
+.cp-shell .cp-panel {
+  --cc-card-soft:#b2edf3;--cc-card-deep:#075b73;--cc-card-glow:#12bbd3;
+  background:linear-gradient(132deg,color-mix(in srgb,var(--cc-card-soft) 43%,var(--ev-surface)),color-mix(in srgb,var(--cc-card-soft) 22%,var(--ev-surface)));
+}
+.cp-shell .cp-panel:nth-of-type(3n+2) {--cc-card-soft:#dbc9f8;--cc-card-deep:#56308e;--cc-card-glow:#ac78e8;}
+.cp-shell .cp-panel:nth-of-type(3n) {--cc-card-soft:#b4ebd8;--cc-card-deep:#08634d;--cc-card-glow:#1ac69a;}
+.dark .cp-shell .cp-panel {
+  background:linear-gradient(130deg,color-mix(in srgb,var(--cc-card-deep) 53%,var(--ev-surface)),color-mix(in srgb,var(--cc-card-deep) 29%,var(--ev-surface)));
+}
+.cp-shell .cp-focus-main {background:linear-gradient(125deg,color-mix(in srgb,#b2edf3 63%,var(--ev-surface)),color-mix(in srgb,#c2dafa 48%,var(--ev-surface)));}
+.cp-shell .cp-focus-side {background:linear-gradient(125deg,color-mix(in srgb,#dbc9f8 68%,var(--ev-surface)),color-mix(in srgb,#dbc9f8 42%,var(--ev-surface)));}
+.cp-shell .cp-callout {background:linear-gradient(125deg,color-mix(in srgb,#b4ebd8 72%,var(--ev-surface)),color-mix(in srgb,#b2edf3 46%,var(--ev-surface)));}
+.dark .cp-shell .cp-focus-main {background:linear-gradient(120deg,#075368,#0b3b76);}
+.dark .cp-shell .cp-focus-side {background:linear-gradient(120deg,#492979,#302459);}
+.dark .cp-shell .cp-callout {background:linear-gradient(120deg,#075841,#0b4b5f);}
+/* Preserve semantic warning/error styles and familiar navigation. */
+/* Client delivery, notifications and project detail pages still include
+   their own filled Tailwind cards; tint these without replacing their fills. */
+.cp-shell :is(article,section)[class*="rounded"][class*="bg-"]:nth-of-type(4n+1) {--cc-legacy:#146bcc;}
+.cp-shell :is(article,section)[class*="rounded"][class*="bg-"]:nth-of-type(4n+2) {--cc-legacy:#08a5bc;}
+.cp-shell :is(article,section)[class*="rounded"][class*="bg-"]:nth-of-type(4n+3) {--cc-legacy:#8b56c8;}
+.cp-shell :is(article,section)[class*="rounded"][class*="bg-"]:nth-of-type(4n) {--cc-legacy:#0a9873;}
+.cp-shell :is(article,section)[class*="rounded"][class*="bg-"] {
+  background-image:linear-gradient(130deg,color-mix(in srgb,var(--cc-legacy,#146bcc) 28%,transparent),color-mix(in srgb,var(--cc-legacy,#146bcc) 15%,transparent));
+}

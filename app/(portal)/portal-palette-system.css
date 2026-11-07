@@ -80,3 +80,90 @@
 .ev-portal .ev-workspace-main :is(input,select,textarea):focus-visible {outline-color:var(--ep-cyan);}
 .ev-portal .ev-workspace-main :is(button,a):focus-visible {outline:3px solid var(--ep-cyan);outline-offset:2px;}
 @media (prefers-reduced-motion:reduce) { .ev-portal .evx-page :is(.evx-btn,.evx-tab,.evx-link,.evx-kpi-cta,.evx-back) {transition:none;} }
+
+/* ================================================================
+   2026-11 premium surface treatment: COLORED FILLS, not edge glows.
+   Existing layouts and semantic alert/status colors are unchanged.
+   Dark theme uses deep, visibly colored fills with accessible text.
+   Light theme uses saturated pastel fills with existing dark ink.
+   ================================================================ */
+.ev-portal {
+  --ep-card-deep: #104c9b;
+  --ep-card-soft: #c2dafa;
+  --ep-card-glow: #2a8eea;
+}
+.ev-portal :is(.evx-bento,.evx-grid-2,.evx-kanban,.evx-links,.evx-list,.evx-stack,.evx-rows,.evx-strip) > :nth-child(4n + 1) {
+  --ep-card-deep:#104c9b;--ep-card-soft:#c2dafa;--ep-card-glow:#2a8eea;
+}
+.ev-portal :is(.evx-bento,.evx-grid-2,.evx-kanban,.evx-links,.evx-list,.evx-stack,.evx-rows,.evx-strip) > :nth-child(4n + 2) {
+  --ep-card-deep:#075b73;--ep-card-soft:#b2edf3;--ep-card-glow:#12bbd3;
+}
+.ev-portal :is(.evx-bento,.evx-grid-2,.evx-kanban,.evx-links,.evx-list,.evx-stack,.evx-rows,.evx-strip) > :nth-child(4n + 3) {
+  --ep-card-deep:#56308e;--ep-card-soft:#dbc9f8;--ep-card-glow:#ac78e8;
+}
+.ev-portal :is(.evx-bento,.evx-grid-2,.evx-kanban,.evx-links,.evx-list,.evx-stack,.evx-rows,.evx-strip) > :nth-child(4n) {
+  --ep-card-deep:#08634d;--ep-card-soft:#b4ebd8;--ep-card-glow:#1ac69a;
+}
+/* Colored card bodies, not translucent border decorations. */
+.ev-portal .evx-page :is(.evx-card,.evx-panel,.evx-kcard,.evx-tl-card,.evx-li,.evx-col,.evx-link-card):not(.evx-filter):not(.evx-lead),
+.ev-portal .evx-page .evx-kpi {
+  background:linear-gradient(138deg,
+    color-mix(in srgb,var(--ep-card-soft) 76%,var(--ev-surface)) 0%,
+    color-mix(in srgb,var(--ep-card-soft) 45%,var(--ev-surface)) 100%);
+  border:1px solid color-mix(in srgb,var(--ep-card-glow) 54%,var(--ev-border-soft));
+  box-shadow:0 8px 22px -20px color-mix(in srgb,var(--ep-card-glow) 50%,transparent);
+}
+.dark .ev-portal .evx-page :is(.evx-card,.evx-panel,.evx-kcard,.evx-tl-card,.evx-li,.evx-col,.evx-link-card):not(.evx-filter):not(.evx-lead),
+.dark .ev-portal .evx-page .evx-kpi,
+.dark.ev-portal .evx-page :is(.evx-card,.evx-panel,.evx-kcard,.evx-tl-card,.evx-li,.evx-col,.evx-link-card):not(.evx-filter):not(.evx-lead),
+.dark.ev-portal .evx-page .evx-kpi {
+  background:linear-gradient(135deg,
+    color-mix(in srgb,var(--ep-card-deep) 86%,var(--ev-surface)) 0%,
+    color-mix(in srgb,var(--ep-card-deep) 62%,var(--ev-surface)) 100%);
+  border-color:color-mix(in srgb,var(--ep-card-glow) 55%,var(--ev-border-soft));
+}
+/* The repeated metric strip contains individual colored blocks. */
+.ev-portal .evx-page .evx-strip {overflow:hidden;border-radius:inherit;}
+.ev-portal .evx-page .evx-strip > * {
+  background:linear-gradient(140deg,color-mix(in srgb,var(--ep-card-soft) 78%,var(--ev-surface)),color-mix(in srgb,var(--ep-card-soft) 49%,var(--ev-surface)));
+  border-left-color:color-mix(in srgb,var(--ep-card-glow) 36%,var(--ev-border-soft));
+}
+.dark .ev-portal .evx-page .evx-strip > *,
+.dark.ev-portal .evx-page .evx-strip > * {
+  background:linear-gradient(140deg,color-mix(in srgb,var(--ep-card-deep) 90%,var(--ev-surface)),color-mix(in srgb,var(--ep-card-deep) 67%,var(--ev-surface)));
+}
+.ev-portal .evx-page .evx-strip > a:hover {filter:brightness(1.12);}
+/* Richer row fills are deliberately quieter than headline cards. */
+.ev-portal .evx-page .evx-rows > li {--ep-row-fill:color-mix(in srgb,var(--ep-card-soft) 30%,var(--ev-surface));}
+.ev-portal .evx-page .evx-row {
+  padding-inline:12px;border-radius:10px;
+  background:var(--ep-row-fill, color-mix(in srgb,var(--ep-card-soft) 26%,var(--ev-surface)));
+}
+.dark .ev-portal .evx-page .evx-row,.dark.ev-portal .evx-page .evx-row {
+  background:color-mix(in srgb,var(--ep-card-deep) 45%,var(--ev-surface));
+}
+.ev-portal .evx-page a.evx-row:hover {filter:brightness(1.08);}
+/* Give the sidebar, non-hero panel groups and shortcuts color-filled surfaces. */
+.ev-portal .ev-sidebar-card {
+  background:linear-gradient(130deg,color-mix(in srgb,#078da6 20%,var(--ev-surface)),color-mix(in srgb,#7246b5 20%,var(--ev-surface)));
+}
+.dark .ev-portal .ev-sidebar-card,.dark.ev-portal .ev-sidebar-card {
+  background:linear-gradient(130deg,#104667,#36236a);
+}
+.ev-portal .evx-page .evx-kpi .evx-chip {
+  background:color-mix(in srgb,var(--ep-card-glow) 23%,var(--ev-surface));
+  border-radius:12px;
+}
+/* Existing explicit red/amber semantic states still govern badges. */
+@media(prefers-reduced-motion:reduce){.ev-portal .evx-page .evx-strip > a:hover,.ev-portal .evx-page a.evx-row:hover{filter:none;}}
+/* Legacy employee screens use Tailwind cards rather than evx components.
+   Layer tint over their existing background instead of changing markup. */
+.ev-portal .ev-workspace-main :is(section,article,form)[class*="rounded"][class*="bg-"]:nth-of-type(4n+1) {--ep-legacy:#135fbb;}
+.ev-portal .ev-workspace-main :is(section,article,form)[class*="rounded"][class*="bg-"]:nth-of-type(4n+2) {--ep-legacy:#0999b2;}
+.ev-portal .ev-workspace-main :is(section,article,form)[class*="rounded"][class*="bg-"]:nth-of-type(4n+3) {--ep-legacy:#8958c9;}
+.ev-portal .ev-workspace-main :is(section,article,form)[class*="rounded"][class*="bg-"]:nth-of-type(4n) {--ep-legacy:#0f9a77;}
+.ev-portal .ev-workspace-main :is(section,article,form)[class*="rounded"][class*="bg-"] {
+  background-image:linear-gradient(125deg,color-mix(in srgb,var(--ep-legacy,#135fbb) 32%,transparent),color-mix(in srgb,var(--ep-legacy,#135fbb) 19%,transparent));
+}
+/* Only apply a legacy tint when a pre-existing filled card is present; no
+   blanket styling of alert boxes, bare links, or unfilled form elements. */
