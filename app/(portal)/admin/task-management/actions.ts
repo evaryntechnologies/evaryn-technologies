@@ -31,11 +31,20 @@ export async function assignTask(formData: FormData): Promise<Result> {
   const clientRequest = requestRows[0];
   if (!clientRequest || !clientRequest.clientOrderCode || clientRequest.status === "CLOSED" || clientRequest.status === "REJECTED") return {success:false,message:"Select an available, active client order."};
   const orderId = clientRequest.clientOrderCode;
-  const validCategory = await prisma.taskCategory.findFirst({where:{name:category,active:true},select:{id:true,rate:true,billingUnit:true}});
+  const validCategory = await prisma.taskCategory.findFirst({where:{name:category,active:true},select:{id:true,rate:true,rateKES:true,billingUnit:true}});
   if (!validCategory) return {success:false,message:"Please select an active category."};
   const unitsText=String(formData.get("unitsOrdered")??"").trim();
   const unitsOrdered=Number(unitsText);
   if (!unitsText || !Number.isFinite(unitsOrdered) || unitsOrdered<=0 || unitsOrdered>100000000 || !/^\d+(?:\.\d{1,2})?$/.test(unitsText)) return {success:false,message:"Enter valid units ordered (up to 2 decimal places)."};
+  const rateSelection=String(formData.get("rateSelection")??"PREDEFINED");
+  const pricingCurrency=String(formData.get("pricingCurrency")??"");
+  if (!(["PREDEFINED","CUSTOM_RATE","CUSTOM_TOTAL"].includes(rateSelection)) || !["USD","KES"].includes(pricingCurrency)) return {success:false,message:"Select a valid rate option and matching currency."};
+  const moneyInput=rateSelection==="CUSTOM_RATE"?String(formData.get("customRate")??"").trim():String(formData.get("customTotal")??"").trim();
+  if(rateSelection!=="PREDEFINED"&&(!/^\d+(?:\.\d{1,2})?$/.test(moneyInput) || Number(moneyInput)>100000000)) return {success:false,message:"Enter a valid custom amount (max two decimals)."};
+  if (rateSelection==="PREDEFINED" && pricingCurrency==="KES" && validCategory.rateKES===null) return {success:false,message:"No predefined KES rate exists for this category. Enter a custom rate or configure one."};
+  const unitRate=rateSelection==="CUSTOM_RATE"?new Prisma.Decimal(moneyInput):rateSelection==="CUSTOM_TOTAL"?new Prisma.Decimal(moneyInput).div(unitsText):(pricingCurrency==="KES"?validCategory.rateKES!:validCategory.rate);
+  const orderTotal=rateSelection==="CUSTOM_TOTAL"?new Prisma.Decimal(moneyInput):unitRate.mul(unitsText);
+  if(!Number.isFinite(Number(orderTotal))||Number(orderTotal)>99999999999999) return {success:false,message:"Total exceeds the allowed amount."};
   if (mode === "ASSIGN") {
     const eligible = await prisma.employeeCategory.findUnique({where:{employeeId_categoryId:{employeeId:assignedToId,categoryId:validCategory.id}}});
     if (!eligible) return {success:false,message:"This employee is not assigned to the selected task category."};
@@ -74,7 +83,7 @@ export async function assignTask(formData: FormData): Promise<Result> {
     await prisma.$transaction(async tx => {
     const task = await tx.workTask.create({data:{
       assignedToId:mode === "ASSIGN" ? assignedToId : null,createdById:creator.id,title,description,priority,status:mode === "ASSIGN" ? "ASSIGNED" : mode,
-      orderId,category,unitsOrdered:unitsOrdered.toFixed(2),unitRate:validCategory.rate,totalOrderCost:validCategory.rate.mul(unitsOrdered),billingUnit:validCategory.billingUnit,publicTaskId:"TASK-"+randomUUID().replaceAll("-","").slice(0,12).toUpperCase(),
+      orderId,category,unitsOrdered:unitsOrdered.toFixed(2),unitRate,totalOrderCost:orderTotal,billingUnit:validCategory.billingUnit,pricingCurrency,rateSelection,publicTaskId:"TASK-"+randomUUID().replaceAll("-","").slice(0,12).toUpperCase(),
       // For hub tasks, deadlines start only once a Tasker claims the task.
       deadline:mode === "ASSIGN" ? stamp(submissionHours) : null,
       reviewDeadline:mode === "ASSIGN" ? stamp(reviewHours) : null,

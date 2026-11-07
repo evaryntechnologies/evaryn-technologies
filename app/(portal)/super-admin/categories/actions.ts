@@ -22,12 +22,14 @@ export async function manageCategory(data: FormData): Promise<Result> {
   const rateText = String(data.get("rate") ?? "").trim();
   const rate = Number(rateText);
   const billingUnit = String(data.get("billingUnit") ?? "TASK");
+  const rateKESText = String(data.get("rateKES") ?? "").trim();
+  const rateKES = rateKESText ? Number(rateKESText) : null;
   const units = ["TASK","PAGE","HOUR","EDITED_VIDEO","EDITED_PHOTO"];
-  if (["create","update"].includes(operation) && (!rateText || !Number.isFinite(rate) || rate < 0 || rate > 100000000 || !units.includes(billingUnit))) return {ok:false,message:"Provide a valid non-negative rate and billing unit."};
+  if (["create","update"].includes(operation) && (!rateText || !Number.isFinite(rate) || rate < 0 || rate > 100000000 || !units.includes(billingUnit) || (rateKES !== null && (!Number.isFinite(rateKES) || rateKES < 0 || rateKES > 100000000 || !/^\d+(?:\.\d{1,2})?$/.test(rateKESText))))) return {ok:false,message:"Provide a valid non-negative rate and billing unit."};
   try {
     if (operation === "create") {
       if (name.length < 2 || name.length > 80) return {ok:false,message:"Category name must be 2–80 characters."};
-      await prisma.taskCategory.create({data:{name,rate:rate.toFixed(2),billingUnit}});
+      await prisma.taskCategory.create({data:{name,rate:rate.toFixed(2),billingUnit,rateKES:rateKES===null?null:rateKES.toFixed(2)}});
     } else {
       const category = await prisma.taskCategory.findUnique({where:{id}});
       if (!category) return {ok:false,message:"Category not found."};
@@ -35,7 +37,7 @@ export async function manageCategory(data: FormData): Promise<Result> {
         if (name.length < 2 || name.length > 80) return {ok:false,message:"Category name must be 2–80 characters."};
         // Rename historical strings together so existing tasks continue to display this category.
         await prisma.$transaction(async tx => {
-          await tx.taskCategory.update({where:{id},data:{name,...(operation === "update"?{rate:rate.toFixed(2),billingUnit}:{})}});
+          await tx.taskCategory.update({where:{id},data:{name,...(operation === "update"?{rate:rate.toFixed(2),billingUnit,rateKES:rateKES===null?null:rateKES.toFixed(2)}:{})}});
           await tx.workTask.updateMany({where:{category:category.name},data:{category:name}});
         });
       } else if (operation === "toggle") {

@@ -217,6 +217,8 @@ model WorkTask {
   unitRate Decimal? @db.Decimal(14,2)
   totalOrderCost Decimal? @db.Decimal(16,2)
   billingUnit String?
+  pricingCurrency String @default("USD")
+  rateSelection String @default("PREDEFINED")
   submissionHours Float?
   reviewHours Float?
   qaHours Float?
@@ -281,6 +283,7 @@ model TaskCategory {
   active    Boolean  @default(true)
   rate Decimal @default(0) @db.Decimal(14,2)
   billingUnit String @default("TASK")
+  rateKES Decimal? @db.Decimal(14,2)
   employees EmployeeCategory[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

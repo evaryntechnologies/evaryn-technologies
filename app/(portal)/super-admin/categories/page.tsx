@@ -27,7 +27,8 @@ async function Content({searchParams}:{searchParams:Promise<{message?:string;ok?
         <form action={submit} className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <input type="hidden" name="operation" value="create"/>
           <label>Category name<input name="name" required minLength={2} maxLength={80} placeholder="e.g. Technical Writing" className={input}/></label>
-          <label>Rate (USD)<input name="rate" required type="number" min="0" step="0.01" placeholder="0.00" className={input}/></label>
+          <label>Predefined rate — USD<input name="rate" required type="number" min="0" step="0.01" placeholder="0.00" className={input}/></label>
+          <label>Predefined rate — KES (optional)<input name="rateKES" type="number" min="0" step="0.01" placeholder="Set KES rate" className={input}/></label>
           <label>Per<select name="billingUnit" className={input}>{unitOptions.map(u=><option key={u.value} value={u.value}>{u.label}</option>)}</select></label>
           <button className="self-end rounded-lg bg-[#0052CC] px-5 py-3 font-semibold">Add Category</button>
         </form>
@@ -38,7 +39,8 @@ async function Content({searchParams}:{searchParams:Promise<{message?:string;ok?
           <form action={submit} className="grid gap-3 sm:grid-cols-2">
             <input type="hidden" name="operation" value="update"/><input type="hidden" name="id" value={category.id}/>
             <label className="sm:col-span-2">Category name<input name="name" defaultValue={category.name} required minLength={2} maxLength={80} className={input}/></label>
-            <label>Rate (USD)<input name="rate" type="number" min="0" step="0.01" required defaultValue={String(category.rate)} className={input}/></label>
+            <label>Predefined rate — USD<input name="rate" type="number" min="0" step="0.01" required defaultValue={String(category.rate)} className={input}/></label>
+            <label>Predefined rate — KES (optional)<input name="rateKES" type="number" min="0" step="0.01" defaultValue={category.rateKES===null?"":String(category.rateKES)} className={input}/></label>
             <label>Per<select name="billingUnit" defaultValue={category.billingUnit} className={input}>{unitOptions.map(u=><option key={u.value} value={u.value}>{u.label}</option>)}</select></label>
             <button className="rounded-lg bg-[#0052CC] px-4 py-2 font-semibold sm:col-span-2">Save Category</button>
           </form>
