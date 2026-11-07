@@ -1,18 +1,15 @@
-import { BackLink } from "@/app/(portal)/ui";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { ClipboardCheck, Download } from "lucide-react";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
+import { Empty, Kanban, KanbanCard, KanbanColumn, Notice, PageFrame, PageTitle, Pill, btn, field, fmtDateTime } from "@/app/(portal)/layouts";
 import { reviewSubmission, claimReview } from "./actions";
 
-async function ReviewQueueContent({
-  searchParams,
-}: {
-  searchParams: Promise<{ result?: string; error?: string }>;
-}) {
+async function ReviewQueueContent({ searchParams }: { searchParams: Promise<{ result?: string; error?: string }> }) {
   await connection();
-  const reviewerUser = await requireEmployee(["REVIEWER","QA","ADMIN","SUPER_ADMIN"]);
-  const reviewerProfile = await prisma.employeeProfile.findUnique({where:{authUserId:reviewerUser.id},select:{id:true}});
+  const reviewerUser = await requireEmployee(["REVIEWER", "QA", "ADMIN", "SUPER_ADMIN"]);
+  const reviewerProfile = await prisma.employeeProfile.findUnique({ where: { authUserId: reviewerUser.id }, select: { id: true } });
 
   const submissions = await prisma.taskSubmission.findMany({
     where: {
@@ -23,169 +20,117 @@ async function ReviewQueueContent({
     include: {
       task: {
         select: {
-          title: true,
-          description: true,
-          id: true,
-          publicTaskId: true,
-          deadline: true,
-          reviewDeadline: true,
-          claimedReviewerId: true,
-          attachmentKey: true,
-          attachmentName: true,
-          category: true,
+          title: true, description: true, id: true, publicTaskId: true, deadline: true, reviewDeadline: true,
+          claimedReviewerId: true, attachmentKey: true, attachmentName: true, category: true,
         },
       },
-      employee: {
-        select: { fullName: true, email: true },
-      },
+      employee: { select: { fullName: true, email: true } },
     },
     orderBy: { submittedAt: "asc" },
     take: 50,
   });
 
   const params = await searchParams;
+  const me = reviewerProfile?.id;
+  const lanes = [
+    { title: "Available to claim", tone: "cyan" as const, empty: "Nothing is waiting for a reviewer.", test: (c: string | null) => !c },
+    { title: "Claimed by you", tone: "blue" as const, empty: "Claim a submission to start reviewing.", test: (c: string | null) => !!c && c === me },
+    { title: "Claimed by colleagues", tone: "slate" as const, empty: "No colleague has claimed work.", test: (c: string | null) => !!c && c !== me },
+  ];
 
   return (
-    <main className="min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
-      <div className="w-full max-w-none">
-        <BackLink href="/portal/reviewer" label="Dashboard" />
+    <PageFrame>
+      <PageTitle
+        eyebrow="Review"
+        title="Review queue"
+        description="Examine submissions, give feedback, and approve work for Quality Assurance."
+        actions={<Pill tone="blue">{submissions.length} awaiting review</Pill>}
+      />
 
-        <header className="mt-8">
-          <p className="text-xs font-bold tracking-widest text-cyan-300">
-            EVARYN TECHNOLOGIES LIMITED
-          </p>
-          <h1 className="mt-4 text-3xl font-bold">Review Queue</h1>
-          <p className="mt-3 text-sm text-slate-300">
-            Examine employee submissions, provide feedback and approve work for Quality Assurance.
-          </p>
-        </header>
+      {params.result === "saved" && <Notice tone="green">Review decision saved successfully.</Notice>}
+      {params.error && (
+        <Notice tone="amber">
+          {params.error === "invalid"
+            ? "Check your decision and feedback. Revisions require at least 10 characters of feedback."
+            : "This submission has already been processed or is no longer available."}
+        </Notice>
+      )}
 
-        <div className="mt-7 rounded-xl border border-white/10 bg-[#101F39] p-5">
-          <span className="text-sm text-slate-300">Submissions awaiting review</span>
-          <p className="mt-2 text-3xl font-bold">{submissions.length}</p>
-          <p className="mt-1 text-xs text-slate-400">Showing up to 50 pending submissions</p>
-        </div>
+      {submissions.length === 0 ? (
+        <Empty icon={ClipboardCheck} title="Nothing to review yet" text="Submitted work will appear here automatically." />
+      ) : (
+        <Kanban columns={lanes.length} label="Review queue by claim status">
+          {lanes.map((lane) => {
+            const items = submissions.filter((s) => lane.test(s.task.claimedReviewerId));
+            return (
+              <KanbanColumn key={lane.title} title={lane.title} count={items.length} tone={lane.tone} empty={lane.empty}>
+                {items.map((s) => {
+                  const mine = s.task.claimedReviewerId === me;
+                  return (
+                    <KanbanCard key={s.id} tone={lane.tone}>
+                      <div className="evx-kcard-top"><Pill tone="blue">Pending review</Pill><span className="evx-id">{s.task.publicTaskId ?? s.task.id.slice(0, 8)}</span></div>
+                      <h3 className="evx-kcard-title">{s.task.title}</h3>
+                      <p className="evx-meta">{s.task.category ?? "Uncategorized"} · by {s.employee.fullName}</p>
+                      <p className="evx-meta">Submitted {fmtDateTime(s.submittedAt)}{mine && s.task.reviewDeadline ? ` · review due ${fmtDateTime(s.task.reviewDeadline)}` : ""}</p>
 
-        {params.result === "saved" && (
-          <p role="status" className="mt-6 rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-4 text-sm text-emerald-200">
-            Review decision saved successfully.
-          </p>
-        )}
+                      {!s.task.claimedReviewerId && (
+                        <>
+                          <p className="evx-kcard-text">{s.task.description}</p>
+                          <details className="evx-more">
+                            <summary>Preview submitted work</summary>
+                            <div className="evx-more-body"><div className="evx-block"><h4>Submitted work</h4><p>{s.content}</p></div><p className="evx-meta">Submission deadline: {fmtDateTime(s.task.deadline)}</p></div>
+                          </details>
+                          <form action={claimReview}><input type="hidden" name="taskId" value={s.task.id} /><button className={`${btn.primary} ${btn.block}`}>Claim task for review</button></form>
+                        </>
+                      )}
 
-        {params.error && (
-          <p role="alert" className="mt-6 rounded-xl border border-amber-500/30 bg-amber-950/30 p-4 text-sm text-amber-200">
-            {params.error === "invalid"
-              ? "Check your decision and feedback. Revisions require at least 10 characters of feedback."
-              : "This submission has already been processed or is no longer available."}
-          </p>
-        )}
+                      {mine && (
+                        <details className="evx-more" open>
+                          <summary>Review this submission</summary>
+                          <div className="evx-more-body">
+                            <div className="evx-block"><h4>Order description</h4><p>{s.task.description}</p></div>
+                            <div className="evx-block"><h4>Submitted work</h4><p>{s.content}</p></div>
+                            <p className="evx-meta">Submission deadline: {fmtDateTime(s.task.deadline)}</p>
+                            {s.task.attachmentKey && <a className={`${btn.ghost} ${btn.sm}`} href={"/portal/attachments/" + s.task.id}><Download size={14} aria-hidden="true" />{s.task.attachmentName ?? "Download attachment"}</a>}
+                            <form action={reviewSubmission} className="evx-form">
+                              <label className="evx-field"><span>Supporting attachment (optional, max 10 MB)</span><input type="file" name="attachment" className={field.input} /></label>
+                              <input type="hidden" name="submissionId" value={s.id} />
+                              <label className="evx-field"><span>Review feedback</span>
+                                <textarea name="feedback" rows={4} maxLength={5000} className={field.textarea} placeholder="Explain your findings. Feedback is required when requesting revisions." />
+                              </label>
+                              <div className="evx-actions">
+                                <button type="submit" name="decision" value="APPROVED" className={btn.primary}>Approve for QA</button>
+                                <button type="submit" name="decision" value="REWORK_REQUIRED" className={btn.warn}>Request revisions</button>
+                              </div>
+                            </form>
+                          </div>
+                        </details>
+                      )}
 
-        {submissions.length === 0 ? (
-          <section className="mt-8 rounded-2xl border border-white/10 bg-[#101F39] p-10 text-center">
-            <h2 className="text-xl font-semibold">Nothing to review yet</h2>
-            <p className="mt-3 text-sm text-slate-300">
-              Submitted employee work will appear here automatically.
-            </p>
-          </section>
-        ) : (
-          <div className="ev-layout-kanban ev-kanban-board mt-8">
-            {[{label:"Available",claimed:false},{label:"Claimed",claimed:true}].map(lane => (
-              <section key={lane.label} className="ev-kanban-lane" aria-label={lane.label + " submissions"}>
-                <h2 className="ev-kanban-lane-title">{lane.label} <span>{submissions.filter(s => Boolean(s.task.claimedReviewerId) === lane.claimed).length}</span></h2>
-            {submissions.filter(s => Boolean(s.task.claimedReviewerId) === lane.claimed).map((submission) => (
-              <article
-                key={submission.id}
-                className="rounded-2xl border border-white/10 bg-[#101F39] p-6 sm:p-8"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-semibold text-cyan-300">
-                      {submission.task.category ?? "Uncategorized"}
-                    </p>
-                    <h2 className="mt-2 text-xl font-bold">
-                      {submission.task.publicTaskId ?? submission.task.id} · {submission.task.title}
-                    </h2>
-                    <p className="mt-2 text-sm text-slate-300">
-                      Submitted by {submission.employee.fullName}
-                    </p>
-                  </div>
-                  <span className="rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-xs font-semibold text-amber-200">
-                    PENDING REVIEW
-                  </span>
-                </div>
-
-                <p className="mt-5 whitespace-pre-wrap text-sm leading-7 text-slate-300">
-                  {submission.task.description}
-                </p>
-
-                <div className="mt-6 rounded-xl border border-white/10 bg-[#071327] p-5">
-                  <h3 className="font-semibold">Submitted Work</h3>
-                  <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-7">
-                    {submission.content}
-                  </p>
-                  <p className="mt-4 text-xs text-slate-400">
-                    Submitted {submission.submittedAt.toLocaleString("en-KE", { timeZone: "Africa/Nairobi" })}
-                  </p>
-                </div>
-
-                <div className="mt-4 text-sm text-cyan-200">Submission deadline: {submission.task.deadline?.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"}) ?? "Not set"}</div>
-                {submission.task.claimedReviewerId === reviewerProfile?.id ? <div className="mt-2 text-sm text-cyan-200">Review deadline: {submission.task.reviewDeadline?.toLocaleString("en-KE",{timeZone:"Africa/Nairobi"}) ?? "Not set"}</div> : null}
-                {submission.task.attachmentKey && submission.task.claimedReviewerId === reviewerProfile?.id && <a className="mt-2 block text-sm text-cyan-300 underline" href={"/portal/attachments/"+submission.task.id}>Download: {submission.task.attachmentName}</a>}
-                {!submission.task.claimedReviewerId && <form action={claimReview} className="mt-4"><input type="hidden" name="taskId" value={submission.task.id}/><button className="rounded-xl bg-[#0052CC] px-5 py-3 font-bold">Claim task for review</button></form>}
-                {submission.task.claimedReviewerId === reviewerProfile?.id && <form action={reviewSubmission} className="mt-6 space-y-4">
-<label className="block text-sm font-semibold">Optional supporting attachment (any file format, maximum 10 MB)
-<input type="file" name="attachment" className="mt-2 block w-full rounded-lg border border-cyan-400/30 p-3 text-sm" />
-</label>
-                  <input type="hidden" name="submissionId" value={submission.id} />
-
-                  <label className="block text-sm font-semibold">
-                    Review Feedback
-                    <textarea
-                      name="feedback"
-                      rows={4}
-                      maxLength={5000}
-                      placeholder="Explain your findings. Feedback is required when requesting revisions."
-                      className="mt-2 w-full rounded-xl border border-slate-600 bg-[#071327] px-4 py-3 font-normal"
-                    />
-                  </label>
-
-                  <div className="flex flex-wrap gap-3">
-                    <button
-                      type="submit"
-                      name="decision"
-                      value="APPROVED"
-                      className="rounded-xl bg-[#0052CC] px-5 py-3 text-sm font-semibold hover:bg-[#003F9E]"
-                    >
-                      Approve for QA
-                    </button>
-                    <button
-                      type="submit"
-                      name="decision"
-                      value="REWORK_REQUIRED"
-                      className="rounded-xl border border-amber-400/40 px-5 py-3 text-sm font-semibold text-amber-200 hover:bg-amber-400/10"
-                    >
-                      Request Revisions
-                    </button>
-                  </div>
-                </form>}
-              </article>
-            ))}
-              </section>
-            ))}
-          </div>
-        )}
-      </div>
-    </main>
+                      {s.task.claimedReviewerId && !mine && (
+                        <>
+                          <p className="evx-meta">This review is claimed by a colleague.</p>
+                          <details className="evx-more">
+                            <summary>Preview submitted work</summary>
+                            <div className="evx-more-body"><div className="evx-block"><h4>Order description</h4><p>{s.task.description}</p></div><div className="evx-block"><h4>Submitted work</h4><p>{s.content}</p></div></div>
+                          </details>
+                        </>
+                      )}
+                    </KanbanCard>
+                  );
+                })}
+              </KanbanColumn>
+            );
+          })}
+        </Kanban>
+      )}
+    </PageFrame>
   );
 }
 
-export default function ReviewQueuePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ result?: string; error?: string }>;
-}) {
+export default function ReviewQueuePage({ searchParams }: { searchParams: Promise<{ result?: string; error?: string }> }) {
   return (
-    <Suspense fallback={<main className="min-h-screen bg-[#071327] p-8 text-slate-300">Loading review queue...</main>}>
+    <Suspense fallback={<div className="evx-page"><div className="evx-card evx-card-pad evx-muted">Loading review queue…</div></div>}>
       <ReviewQueueContent searchParams={searchParams} />
     </Suspense>
   );

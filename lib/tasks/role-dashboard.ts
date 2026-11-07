@@ -64,7 +64,7 @@ export async function getTaskerExtras(authUserId: string) {
             deadline: true,
           },
           orderBy: [{ deadline: "asc" }, { createdAt: "desc" }],
-          take: 4,
+          take: 8,
         }),
         []
       )

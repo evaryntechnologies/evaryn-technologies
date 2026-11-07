@@ -56,17 +56,17 @@ export default function OrderMessageComposer({requestId, staff=false}:{requestId
       setInfo("");setError(e instanceof Error ? e.message : "Unable to send message");
     } finally {setBusy(false);}
   }
-  return <form onSubmit={submit} className="mt-6 grid gap-3 rounded-2xl border border-sky-400/20 bg-sky-100/10 p-4 dark:bg-[#102b4a]/40">
+  return <form onSubmit={submit} className="mt-2 grid gap-3 rounded-xl border border-[var(--ev-border-soft)] bg-[var(--ev-surface)] p-4">
     <label className="grid gap-2 text-sm font-semibold">{staff?"Reply or send a progress update":"Send a message about your order"}
-      <textarea required maxLength={5000} rows={4} value={text} onChange={e=>setText(e.target.value)} placeholder="Describe your update or the attached files..." className="w-full rounded-xl border border-sky-400/30 bg-white/95 p-3 text-[#103D70] outline-none focus:ring-2 focus:ring-[#7956AF]" />
+      <textarea required maxLength={5000} rows={4} value={text} onChange={e=>setText(e.target.value)} placeholder="Describe your update or the attached files..." className="w-full rounded-xl border border-[var(--ev-border)] bg-[var(--ev-surface)] p-3 text-[var(--ev-ink)] outline-none focus:ring-2 focus:ring-[var(--ev-cyan)]" />
     </label>
     <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
       <label className="grid gap-1 text-sm font-semibold">Attach files (optional)
         <input id={`message-files-${requestId}`} type="file" multiple accept=".pdf,.txt,.docx,.xlsx,.png,.jpg,.jpeg" disabled={busy}
-          onChange={e=>setFiles(Array.from(e.target.files||[]))} className="max-w-full rounded-lg border border-sky-400/25 p-2 text-sm" />
+          onChange={e=>setFiles(Array.from(e.target.files||[]))} className="max-w-full rounded-lg border border-[var(--ev-border)] p-2 text-sm" />
       </label>
       <label className="grid gap-1 text-sm font-semibold">Attachment purpose
-        <select value={purpose} onChange={e=>setPurpose(e.target.value as "UPDATE"|"FINAL")} disabled={busy} className="rounded-lg border border-sky-400/25 bg-white p-2.5 text-[#103D70]">
+        <select value={purpose} onChange={e=>setPurpose(e.target.value as "UPDATE"|"FINAL")} disabled={busy} className="rounded-lg border border-[var(--ev-border)] bg-[var(--ev-surface)] p-2.5 text-[var(--ev-ink)]">
           <option value="UPDATE">Progress update / instructions</option>
           <option value="FINAL">Final copies / deliverables</option>
         </select>

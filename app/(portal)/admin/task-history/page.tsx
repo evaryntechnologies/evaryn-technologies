@@ -1,9 +1,10 @@
-import { BackLink } from "@/app/(portal)/ui";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import Link from "next/link";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
+import { Empty, Notice, PageFrame, PageTitle, Pill, Strip, Timeline, btn, field, fmtDateTime, statusTone, type TimelineEntry } from "@/app/(portal)/layouts";
+import { ScrollText } from "lucide-react";
 
 const statuses: Record<string, string> = {
   ASSIGNED: "Assigned",
@@ -17,37 +18,7 @@ const statuses: Record<string, string> = {
   CANCELED: "Canceled",
 };
 
-function formatDate(value: Date | null | undefined) {
-  if (!value) return "Not set";
-
-  return value.toLocaleString("en-KE", {
-    timeZone: "Africa/Nairobi",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-function StatusPill({ status }: { status: string }) {
-  const color =
-    status === "COMPLETED" || status === "APPROVED"
-      ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"
-      : status === "REWORK_REQUIRED"
-        ? "border-amber-400/30 bg-amber-400/10 text-amber-200"
-        : status === "CANCELLED"
-          ? "border-slate-400/20 bg-slate-400/10 text-slate-300"
-          : "border-cyan-400/20 bg-cyan-400/10 text-cyan-200";
-
-  return (
-    <span
-      className={`inline-flex rounded-lg border px-3 py-1.5 text-xs font-semibold ${color}`}
-    >
-      {statuses[status] ?? status.replaceAll("_", " ")}
-    </span>
-  );
-}
+const StatusPill = ({ status }: { status: string }) => <Pill tone={statusTone(status)}>{statuses[status] ?? status.replaceAll("_", " ")}</Pill>;
 
 async function HistoryContent({
   searchParams,
@@ -188,306 +159,132 @@ async function HistoryContent({
     ]);
 
   const canceledTasks = await prisma.workTask.count({ where: { status: { in: ["CANCELED", "CANCELLED"] } } }); /* EVARYN_CANCELLATION_TOTAL_V1 */
-  const summary = [
-    { label: "Canceled Tasks", value: canceledTasks, color: "text-amber-200" },
-    { label: "Total Tasks", value: totalTasks, color: "text-white" },
-    { label: "Completed", value: completedTasks, color: "text-emerald-300" },
-    { label: "Awaiting Review", value: waitingReview, color: "text-cyan-300" },
-    { label: "Awaiting QA", value: waitingQA, color: "text-sky-300" },
-    { label: "Revisions Required", value: revisions, color: "text-amber-300" },
-  ];
+
+  const entries: TimelineEntry[] = tasks.map((task) => {
+    const cancelled = task.status === "CANCELED" || task.status === "CANCELLED";
+    return {
+      key: task.id,
+      at: task.createdAt,
+      tone: statusTone(task.status),
+      node: (
+        <details className="evx-more" style={{ border: 0, padding: 0 }}>
+          <summary style={{ display: "block" }}>
+            <div className="evx-tl-head">
+              <div style={{ minWidth: 0 }}>
+                {task.project?.title && <p className="evx-eyebrow" style={{ fontSize: 10.5 }}>{task.project.title}</p>}
+                <h3 className="evx-tl-title" style={{ color: "var(--ev-ink)" }}>{task.title}</h3>
+                <p className="evx-tl-sub">Assigned to {task.assignedTo?.fullName ?? "Unassigned"} · {task.submissions.length} submission{task.submissions.length === 1 ? "" : "s"}</p>
+              </div>
+              <StatusPill status={task.status} />
+            </div>
+            {cancelled && <p className="evx-tl-sub" style={{ marginTop: 8 }}><strong>Cancellation reason:</strong> {task.cancellationReason || "Not recorded (historical cancellation)"}</p>}
+            <span className="evx-kpi-cta" style={{ padding: 0, marginTop: 10 }}>Submissions, reviews and details</span>
+          </summary>
+
+          <div className="evx-more-body" style={{ marginTop: 14 }}>
+            <dl className="evx-facts" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))" }}>
+              <div><dt>Created by</dt><dd>{task.createdBy.fullName}</dd></div>
+              <div><dt>Priority</dt><dd>{task.priority}</dd></div>
+              <div><dt>Deadline</dt><dd>{fmtDateTime(task.deadline)}</dd></div>
+              <div><dt>Last updated</dt><dd>{fmtDateTime(task.updatedAt)}</dd></div>
+              <div style={{ gridColumn: "1 / -1" }}><dt>Employee email</dt><dd style={{ wordBreak: "break-all" }}>{task.assignedTo?.email ?? "—"}</dd></div>
+            </dl>
+            <div className="evx-block"><h4>Task description</h4><p>{task.description}</p></div>
+
+            <div>
+              <h4 className="evx-section-title" style={{ fontSize: 13, marginBottom: 8 }}>Submission history</h4>
+              {task.submissions.length === 0 ? (
+                <p className="evx-meta">No work submitted yet.</p>
+              ) : (
+                <ol className="evx-tl-nested">
+                  {task.submissions.map((submission, index) => (
+                    <li key={submission.id} className={`evx-t-${statusTone(submission.status)}`}>
+                      <div className="evx-tl-head">
+                        <div><p className="evx-tl-title">Submission {index + 1}</p><p className="evx-tl-sub">{submission.employee.fullName} · {fmtDateTime(submission.submittedAt)}</p></div>
+                        <StatusPill status={submission.status} />
+                      </div>
+                      <p className="evx-prose" style={{ fontSize: 13.5, lineHeight: 1.7, marginTop: 10 }}>{submission.content}</p>
+                      {submission.reviews.length > 0 && (
+                        <ol className="evx-tl-nested" style={{ marginTop: 12 }}>
+                          {submission.reviews.map((review) => (
+                            <li key={review.id} className={`evx-t-${statusTone(review.decision)}`}>
+                              <div className="evx-tl-head">
+                                <div><p className="evx-tl-title" style={{ fontSize: 13 }}>{review.stage === "QA" ? "Quality assurance" : "Reviewer assessment"}</p><p className="evx-tl-sub">{review.reviewer.fullName} · {fmtDateTime(review.createdAt)}</p></div>
+                                <StatusPill status={review.decision} />
+                              </div>
+                              {review.feedback && <p className="evx-prose" style={{ fontSize: 13, lineHeight: 1.65, marginTop: 8 }}>{review.feedback}</p>}
+                            </li>
+                          ))}
+                        </ol>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+          </div>
+        </details>
+      ),
+    };
+  });
 
   return (
-    <div className="w-full max-w-none">
-      <BackLink href={user.role === "SUPER_ADMIN" ? "/portal/super-admin" : "/portal/admin"} label="Dashboard" />
+    <PageFrame>
+      <PageTitle
+        eyebrow="Reporting"
+        title="Order history"
+        description="Every assignment, submission, review and QA decision across the organization, newest first."
+        back={{ href: user.role === "SUPER_ADMIN" ? "/portal/super-admin" : "/portal/admin", label: "Dashboard" }}
+        actions={<Link href="/portal/admin/task-management" className={btn.ghost}>Open Task Management</Link>}
+      />
 
-      <header className="mt-8">
-        <p className="text-xs font-bold tracking-widest text-cyan-300">
-          EVARYN TECHNOLOGIES LIMITED
-        </p>
-        <h1 className="mt-4 text-3xl font-bold sm:text-4xl">
-          Task History & Reporting
-        </h1>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-300">
-          Track assignments, submissions, reviews, corrections
-          and QA decisions across the organization.
-        </p>
-      </header>
+      <Strip items={[
+        { label: "Total orders", value: totalTasks.toLocaleString("en-KE"), tone: "blue" },
+        { label: "Completed", value: completedTasks.toLocaleString("en-KE"), tone: "green" },
+        { label: "Awaiting review", value: waitingReview.toLocaleString("en-KE"), tone: "cyan" },
+        { label: "Awaiting QA", value: waitingQA.toLocaleString("en-KE"), tone: "violet" },
+        { label: "In revision", value: revisions.toLocaleString("en-KE"), tone: "amber" },
+        { label: "Cancelled", value: canceledTasks.toLocaleString("en-KE"), tone: "slate" },
+      ]} />
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        {summary.map((item) => (
-          <div
-            key={item.label}
-            className="rounded-2xl border border-white/10 bg-[#101F39] p-5"
-          >
-            <p className="text-sm text-slate-300">{item.label}</p>
-            <p className={`mt-4 text-3xl font-bold ${item.color}`}>
-              {item.value.toLocaleString("en-KE")}
-            </p>
-          </div>
-        ))}
-      </div>
+      <form method="GET" action="/portal/admin/task-history" className="evx-card evx-filter" role="search">
+        <label className="evx-field evx-grow"><span>Search order, project or employee</span>
+          <input type="search" name="q" maxLength={100} defaultValue={search} placeholder="Search order records…" className={field.input} />
+        </label>
+        <label className="evx-field"><span>Status</span>
+          <select name="status" defaultValue={status} className={field.select}>
+            <option value="">All statuses</option>
+            {allowedStatuses.map((value) => <option key={value} value={value}>{statuses[value] ?? value.replaceAll("_", " ")}</option>)}
+          </select>
+        </label>
+        <div className="evx-actions"><button type="submit" className={btn.primary}>Apply filters</button>{(search || status) && <Link href="/portal/admin/task-history" className={btn.ghost}>Clear</Link>}</div>
+      </form>
 
-      <section className="mt-8">
-        <form
-          method="GET"
-          action="/portal/admin/task-history"
-          className="mb-6 grid gap-4 rounded-2xl border border-white/10 bg-[#101F39] p-5 sm:grid-cols-[1fr_auto_auto] sm:items-end"
-        >
-          <label className="block text-sm font-medium">
-            Search task, project or employee
-            <input
-              type="search"
-              name="q"
-              maxLength={100}
-              defaultValue={search}
-              placeholder="Search task records..."
-              className="mt-2 w-full rounded-xl border border-white/20 bg-[#071327] px-4 py-3 text-white"
-            />
-          </label>
-          <label className="block text-sm font-medium">
-            Status
-            <select
-              name="status"
-              defaultValue={status}
-              className="mt-2 w-full rounded-xl border border-white/20 bg-[#071327] px-4 py-3 text-white"
-            >
-              <option value="">All statuses</option>
-              {allowedStatuses.map((value) => (
-                <option key={value} value={value}>
-                  {statuses[value] ?? value.replaceAll("_", " ")}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button
-            type="submit"
-            className="rounded-xl bg-[#0052CC] px-6 py-3 font-semibold text-white hover:bg-[#003F9E]"
-          >
-            Apply Filters
-          </button>
-        </form>
+      <p className="evx-meta">Showing {tasks.length} of {filteredTotal} matching orders</p>
 
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-xl font-bold">Task Records</h2>
-          <span className="rounded-lg border border-white/15 px-3 py-2 text-xs text-slate-300">
-            Showing {tasks.length} of {filteredTotal} matching tasks
-          </span>
-        </div>
+      {tasks.length === 0 ? (
+        <Empty icon={ScrollText} title="No order records" text="Orders created by your administrators will appear here automatically." />
+      ) : (
+        <Timeline entries={entries} label="Order history timeline" />
+      )}
 
-        {tasks.length === 0 ? (
-          <div className="mt-5 rounded-2xl border border-white/10 bg-[#101F39] p-8">
-            <p className="text-sm text-slate-300">
-              No task records exist yet. Tasks created by your
-              administrators will appear here automatically.
-            </p>
-          </div>
-        ) : (
-          <div className="ev-layout-timeline-items mt-5 space-y-5">
-            {tasks.map((task) => (
-              <details
-                key={task.id}
-                className="group rounded-2xl border border-white/10 bg-[#101F39] p-5 sm:p-7"
-              >
-                <summary className="cursor-pointer list-none">
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div className="min-w-0">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">
-                        {task.project?.title}
-                      </p>
-                      <h3 className="mt-2 text-lg font-bold">
-                        {task.title}
-                      </h3>
-                      <p className="mt-2 text-sm text-slate-300">
-                        Assigned to {task.assignedTo?.fullName ?? "Unassigned"}
-                      </p>
-                      <p className="mt-2 text-xs text-slate-400">
-                        Created {formatDate(task.createdAt)}
-                      </p>
-                    </div>
-                    <StatusPill status={task.status} />{/* EVARYN_HISTORY_CANCELLATION_V1 */}{(task.status === "CANCELED" || task.status === "CANCELLED") && <p className="mt-3 rounded-lg border border-amber-500/30 bg-amber-950/30 p-3 text-sm text-amber-100"><strong>Cancellation reason:</strong> {task.cancellationReason || "Not recorded (historical cancellation)"}</p>}
-                  </div>
-                  <p className="mt-5 text-xs font-semibold text-cyan-300 group-open:hidden">
-                    View submissions, reviews and details
-                  </p>
-                  <p className="mt-5 hidden text-xs font-semibold text-cyan-300 group-open:block">
-                    Hide task details
-                  </p>
-                </summary>
-
-                <div className="mt-6 border-t border-white/10 pt-6">
-                  <div className="grid gap-4 text-sm text-slate-300 sm:grid-cols-2">
-                    <p>
-                      <strong className="text-white">Created by:</strong>{" "}
-                      {task.createdBy.fullName}
-                    </p>
-                    <p>
-                      <strong className="text-white">Priority:</strong>{" "}
-                      {task.priority}
-                    </p>
-                    <p>
-                      <strong className="text-white">Deadline:</strong>{" "}
-                      {formatDate(task.deadline)}
-                    </p>
-                    <p>
-                      <strong className="text-white">Last updated:</strong>{" "}
-                      {formatDate(task.updatedAt)}
-                    </p>
-                    <p className="sm:col-span-2 break-all">
-                      <strong className="text-white">Employee email:</strong>{" "}
-                      {task.assignedTo?.email ?? "—"}
-                    </p>
-                  </div>
-
-                  <h4 className="mt-6 font-semibold">Task Description</h4>
-                  <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-7 text-slate-300">
-                    {task.description}
-                  </p>
-
-                  <h4 className="mt-8 font-semibold">
-                    Submission History ({task.submissions.length})
-                  </h4>
-
-                  {task.submissions.length === 0 ? (
-                    <p className="mt-3 text-sm text-slate-400">
-                      No work submitted yet.
-                    </p>
-                  ) : (
-                    <div className="mt-4 space-y-4">
-                      {task.submissions.map((submission, index) => (
-                        <div
-                          key={submission.id}
-                          className="rounded-xl border border-white/10 bg-[#071327] p-5"
-                        >
-                          <div className="flex flex-wrap items-center justify-between gap-3">
-                            <div>
-                              <h5 className="font-semibold">
-                                Submission {index + 1}
-                              </h5>
-                              <p className="mt-1 text-xs text-slate-400">
-                                {submission.employee.fullName} ·{" "}
-                                {formatDate(submission.submittedAt)}
-                              </p>
-                            </div>
-                            <StatusPill status={submission.status} />
-                          </div>
-
-                          <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-7 text-slate-300">
-                            {submission.content}
-                          </p>
-
-                          {submission.reviews.length > 0 && (
-                            <div className="mt-5 space-y-3 border-t border-white/10 pt-5">
-                              <h6 className="text-sm font-semibold">
-                                Review Decisions
-                              </h6>
-                              {submission.reviews.map((review) => (
-                                <div
-                                  key={review.id}
-                                  className="rounded-lg border border-white/10 p-4"
-                                >
-                                  <div className="flex flex-wrap items-center justify-between gap-3">
-                                    <p className="text-xs font-semibold text-cyan-300">
-                                      {review.stage === "QA"
-                                        ? "Quality Assurance"
-                                        : "Reviewer Assessment"}
-                                    </p>
-                                    <StatusPill status={review.decision} />
-                                  </div>
-                                  <p className="mt-2 text-xs text-slate-400">
-                                    {review.reviewer.fullName} ·{" "}
-                                    {formatDate(review.createdAt)}
-                                  </p>
-                                  {review.feedback && (
-                                    <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-slate-300">
-                                      {review.feedback}
-                                    </p>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </details>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <nav
-        aria-label="Task history pagination"
-        className="mt-7 flex flex-wrap items-center justify-between gap-4"
-      >
-        <p className="text-sm text-slate-300">
-          Page {currentPage} of {totalPages}
-        </p>
-        <div className="flex items-center gap-3">
-          {currentPage > 1 ? (
-            <Link
-              href={pageUrl(currentPage - 1)}
-              className="rounded-xl border border-white/20 px-4 py-2 text-sm text-cyan-300 hover:bg-white/5"
-            >
-              Previous
-            </Link>
-          ) : (
-            <span className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-500">
-              Previous
-            </span>
-          )}
-          {currentPage < totalPages ? (
-            <Link
-              href={pageUrl(currentPage + 1)}
-              className="rounded-xl border border-white/20 px-4 py-2 text-sm text-cyan-300 hover:bg-white/5"
-            >
-              Next
-            </Link>
-          ) : (
-            <span className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-500">
-              Next
-            </span>
-          )}
+      <nav aria-label="Order history pagination" className="evx-pagination">
+        <p className="evx-meta">Page {currentPage} of {totalPages}</p>
+        <div className="evx-actions">
+          {currentPage > 1 ? <Link href={pageUrl(currentPage - 1)} className={btn.ghost}>Previous</Link> : <span className={btn.ghost} aria-disabled="true">Previous</span>}
+          {currentPage < totalPages ? <Link href={pageUrl(currentPage + 1)} className={btn.ghost}>Next</Link> : <span className={btn.ghost} aria-disabled="true">Next</span>}
         </div>
       </nav>
 
-      <p className="mt-7 text-xs leading-6 text-slate-400">
-        Reporting is read-only. Summary counts cover all tasks;
-        the expanded history displays the 100 most recently created tasks.
-        Review and QA counts elsewhere may represent decisions rather
-        than unique tasks.
-      </p>
-
-      <div className="mt-8">
-        <Link
-          href="/portal/admin/task-management"
-          className="text-sm font-semibold text-cyan-300 hover:underline"
-        >
-          Open Task Management
-        </Link>
-      </div>
-    </div>
+      <Notice tone="cyan">Reporting is read-only. Summary counts cover all orders; review and QA counts elsewhere may represent decisions rather than unique orders.</Notice>
+    </PageFrame>
   );
 }
 
-export default function TaskHistoryPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string; status?: string; page?: string }>;
-}) {
+export default function TaskHistoryPage({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; page?: string }> }) {
   return (
-    <main className="ev-layout-timeline min-h-screen bg-[#071327] px-5 py-9 text-white sm:px-10">
-      <Suspense
-        fallback={
-          <div className="w-full max-w-none rounded-2xl border border-white/10 bg-[#101F39] p-8 text-slate-300">
-            Loading task history...
-          </div>
-        }
-      >
-        <HistoryContent searchParams={searchParams} />
-      </Suspense>
-    </main>
+    <Suspense fallback={<div className="evx-page"><div className="evx-card evx-card-pad evx-muted">Loading order history…</div></div>}>
+      <HistoryContent searchParams={searchParams} />
+    </Suspense>
   );
 }

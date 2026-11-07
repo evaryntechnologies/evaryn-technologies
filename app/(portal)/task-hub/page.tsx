@@ -1,20 +1,8 @@
-import "@/app/(portal)/compact-workspaces.css";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import Link from "next/link";
-import {
-  ArrowRight,
-  CheckCircle2,
-  ClipboardCheck,
-  Clock,
-  FolderKanban,
-  Inbox,
-  Search,
-  ShieldCheck,
-  Tag,
-  X,
-  Zap,
-} from "lucide-react";
+import { ArrowRight, ClipboardCheck, Clock, FolderKanban, Inbox, Search, ShieldCheck, Tag, X } from "lucide-react";
+import { Empty, Kanban, KanbanCard, KanbanColumn, Notice, PageFrame, PageTitle, Pill, Tabs, btn, field, hoursSince, pretty, usd, waitAgo, type EvTone } from "@/app/(portal)/layouts";
 import { requireEmployee } from "@/lib/auth/require-employee";
 import { prisma } from "@/lib/db/prisma";
 import { claimHubTask } from "./actions";
@@ -32,29 +20,7 @@ const priorityRank: Record<string, number> = {
   LOW: 3,
 };
 
-const priorityStyle: Record<string, { label: string; cls: string }> = {
-  URGENT: { label: "Urgent", cls: "bg-rose-500/15 text-rose-600 dark:text-rose-300" },
-  HIGH: { label: "High priority", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300" },
-  LOW: { label: "Low priority", cls: "bg-slate-500/15 text-slate-600 dark:text-slate-300" },
-};
-
-const usd = (n: number) =>
-  "$" +
-  n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
 const num = (v: unknown) => (v == null ? 0 : Number(v.toString()));
-
-function ago(d: Date) {
-  const mins = Math.max(1, Math.round((Date.now() - d.getTime()) / 60000));
-  if (mins < 60) return `${mins} min ago`;
-  const hrs = Math.round(mins / 60);
-  if (hrs < 24) return `${hrs} hr ago`;
-  const days = Math.round(hrs / 24);
-  return `${days} day${days === 1 ? "" : "s"} ago`;
-}
-
-const field =
-  "h-11 w-full rounded-xl border border-[var(--ev-border)] bg-[var(--ev-surface)] px-3.5 text-sm text-[var(--ev-ink)] outline-none transition focus:border-[var(--ev-cyan)] focus:ring-2 focus:ring-[var(--ev-cyan)]/30";
 
 async function Hub({ searchParams }: Props) {
   await connection();
@@ -219,338 +185,162 @@ async function Hub({ searchParams }: Props) {
   if (hasQaTab)
     tabs.push({ key: "qa", label: "Awaiting QA", count: qaCount, icon: ShieldCheck });
 
+  const ago = (d: Date) => `${waitAgo(d)} ago`;
+  const lanes: { key: string; title: string; tone: EvTone }[] = [
+    { key: "URGENT", title: "Urgent", tone: "rose" },
+    { key: "HIGH", title: "High priority", tone: "amber" },
+    { key: "NORMAL", title: "Normal", tone: "cyan" },
+    { key: "LOW", title: "Low priority", tone: "slate" },
+  ];
+  const laneOf = (p: string) => (lanes.some((l) => l.key === p) ? p : "NORMAL");
+  const ageLanes: { title: string; tone: EvTone; test: (hours: number) => boolean }[] = [
+    { title: "Waiting under 24 hours", tone: "green", test: (h) => h < 24 },
+    { title: "Waiting 1 to 3 days", tone: "amber", test: (h) => h >= 24 && h < 72 },
+    { title: "Waiting over 3 days", tone: "rose", test: (h) => h >= 72 },
+  ];
+
   return (
-    <>
-      {/* ---------- Header ---------- */}
-      <header className="flex flex-wrap items-end justify-between gap-5">
-        <div className="max-w-2xl">
-          <p className="text-xs font-bold uppercase tracking-widest text-[var(--ev-accent-text)]">
-            Task Hub
-          </p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-            {manager ? "Open orders across the company" : "Find your next order"}
-          </h1>
-          <p className="mt-3 text-sm leading-7 text-[var(--ev-muted)]">
-            {manager
-              ? "Every unclaimed order in all categories. Open one to edit or reassign it."
-              : "Orders in the categories you are approved for. Claim one and it moves straight to My orders."}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          {manager && (
-            <Link
-              href="/portal/admin/task-management"
-              className="inline-flex items-center gap-2 rounded-xl bg-[var(--ev-primary)] px-5 py-3 text-sm font-semibold text-[var(--ev-on-primary)] transition hover:bg-[var(--ev-primary-hover)]"
-            >
-              <FolderKanban size={16} aria-hidden="true" /> Create or manage tasks
-            </Link>
-          )}
-          {!manager && (
-            <Link
-              href={myOrders}
-              className="inline-flex items-center gap-2 rounded-xl border border-[var(--ev-border)] bg-[var(--ev-surface)] px-5 py-3 text-sm font-semibold text-[var(--ev-ink)] transition hover:bg-[var(--ev-surface-2)]"
-            >
-              My orders <ArrowRight size={15} aria-hidden="true" />
-            </Link>
-          )}
-        </div>
-      </header>
+    <PageFrame>
+      <PageTitle
+        eyebrow="Task Hub"
+        title={manager ? "Open orders across the company" : "Find your next order"}
+        description={manager
+          ? "Every unclaimed order in all categories. Open one to edit or reassign it."
+          : "Orders in the categories you are approved for. Claim one and it moves straight to My orders."}
+        actions={manager
+          ? <Link href="/portal/admin/task-management" className={btn.primary}><FolderKanban size={16} aria-hidden="true" />Create or manage tasks</Link>
+          : <Link href={myOrders} className={btn.ghost}>My orders <ArrowRight size={15} aria-hidden="true" /></Link>}
+      />
 
       {sp.claimed === "1" && (
-        <div
-          role="status"
-          className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-5 py-4 text-sm"
-        >
-          <span className="flex items-center gap-2 font-semibold text-[var(--ev-ink)]">
-            <CheckCircle2 size={18} className="text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
-            Order claimed. Its deadlines are now running.
-          </span>
-          <Link
-            href={`${myOrders}?tab=progress`}
-            className="inline-flex items-center gap-1 font-bold text-[var(--ev-accent-text)]"
-          >
-            Go to my orders <ArrowRight size={14} aria-hidden="true" />
-          </Link>
-        </div>
+        <Notice tone="green">
+          Order claimed. Its deadlines are now running.{" "}
+          <Link href={`${myOrders}?tab=progress`} style={{ fontWeight: 700, color: "var(--ev-accent-text)" }}>Go to my orders</Link>
+        </Notice>
       )}
 
-      {/* ---------- Tabs ---------- */}
       {tabs.length > 1 && (
-        <nav
-          aria-label="Task Hub sections"
-          className="mt-8 flex flex-wrap gap-2 rounded-2xl border border-[var(--ev-border-soft)] bg-[var(--ev-surface)] p-1.5"
-        >
-          {tabs.map(({ key, label, count, icon: Icon }) => {
-            const active = key === view;
-            return (
-              <Link
-                key={key}
-                href={key === "open" ? "/portal/task-hub" : `/portal/task-hub?view=${key}`}
-                aria-current={active ? "page" : undefined}
-                className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
-                  active
-                    ? "bg-[var(--ev-primary)] text-[var(--ev-on-primary)]"
-                    : "text-[var(--ev-ink)] hover:bg-[var(--ev-surface-2)]"
-                }`}
-              >
-                <Icon size={16} aria-hidden="true" />
-                {label}
-                <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-bold tabular-nums ${
-                    active ? "bg-white/25" : "bg-[var(--ev-inset)]"
-                  }`}
-                >
-                  {count}
-                </span>
-              </Link>
-            );
-          })}
-        </nav>
+        <Tabs label="Task Hub sections" tabs={tabs.map((x) => ({ key: x.key, label: x.label, count: x.count, icon: x.icon, active: x.key === view, href: x.key === "open" ? "/portal/task-hub" : `/portal/task-hub?view=${x.key}` }))} />
       )}
 
-      {/* ---------- Available orders ---------- */}
       {view === "open" && (
         <>
-          <form
-            method="GET"
-            className="mt-6 grid gap-3 rounded-2xl border border-[var(--ev-border-soft)] bg-[var(--ev-surface)] p-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(0,1.2fr)_minmax(0,1fr)_auto]"
-          >
-            <label className="relative block">
+          <form method="GET" className="evx-card evx-filter" role="search">
+            <label className="evx-field evx-grow">
               <span className="sr-only">Search orders</span>
-              <Search
-                size={16}
-                aria-hidden="true"
-                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--ev-muted)]"
-              />
-              <input
-                name="q"
-                defaultValue={q}
-                placeholder="Search by title, ID or description"
-                className={`${field} pl-10`}
-              />
+              <span style={{ position: "relative", display: "block" }}>
+                <Search size={16} aria-hidden="true" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--ev-muted)" }} />
+                <input name="q" defaultValue={q} placeholder="Search by title, ID or description" className={field.input} style={{ paddingLeft: 38 }} />
+              </span>
             </label>
-            <label className="block">
-              <span className="sr-only">Category</span>
-              <select name="category" defaultValue={category} className={field}>
+            <label className="evx-field"><span className="sr-only">Category</span>
+              <select name="category" defaultValue={category} className={field.select}>
                 <option value="">All {manager ? "" : "my "}categories</option>
-                {categoryOptions.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
+                {categoryOptions.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </label>
-            <label className="block">
-              <span className="sr-only">Sort by</span>
-              <select name="sort" defaultValue={sort} className={field}>
-                <option value="newest">Newest first</option>
-                <option value="value">Highest value</option>
-                <option value="priority">Most urgent</option>
+            <label className="evx-field"><span className="sr-only">Sort by</span>
+              <select name="sort" defaultValue={sort} className={field.select}>
+                <option value="newest">Newest first</option><option value="value">Highest value</option><option value="priority">Most urgent</option>
               </select>
             </label>
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                className="h-11 flex-1 rounded-xl bg-[var(--ev-primary)] px-5 text-sm font-semibold text-[var(--ev-on-primary)] transition hover:bg-[var(--ev-primary-hover)]"
-              >
-                Apply
-              </button>
-              {filtering && (
-                <Link
-                  href="/portal/task-hub"
-                  aria-label="Clear filters"
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--ev-border)] text-[var(--ev-ink)] transition hover:bg-[var(--ev-surface-2)]"
-                >
-                  <X size={17} aria-hidden="true" />
-                </Link>
-              )}
+            <div className="evx-actions">
+              <button type="submit" className={btn.primary}>Apply</button>
+              {filtering && <Link href="/portal/task-hub" aria-label="Clear filters" className={btn.ghost}><X size={16} aria-hidden="true" /></Link>}
             </div>
           </form>
 
-          <p className="mt-4 text-sm text-[var(--ev-muted)]">
-            {orders.length === 0
-              ? "No matching orders"
-              : `${orders.length} order${orders.length === 1 ? "" : "s"}${filtering ? " match your filters" : " available"} · combined value ${usd(totalValue)}`}
+          <p className="evx-meta">
+            {orders.length === 0 ? "No matching orders" : `${orders.length} order${orders.length === 1 ? "" : "s"}${filtering ? " match your filters" : " available"} · combined value ${usd(totalValue)}`}
           </p>
 
           {orders.length === 0 ? (
-            <div className="mt-5 rounded-2xl border border-dashed border-[var(--ev-border)] bg-[var(--ev-surface)] p-10 text-center">
-              <Inbox size={34} className="mx-auto text-[var(--ev-accent-text)]" aria-hidden="true" />
-              <h2 className="mt-4 text-lg font-bold">
-                {filtering ? "Nothing matches these filters" : "No open orders right now"}
-              </h2>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-[var(--ev-muted)]">
-                {filtering
-                  ? "Try a different search or clear the filters to see everything available."
-                  : manager
-                    ? "All orders are claimed. Create a new one from Task Management."
-                    : allowed.length === 0
-                      ? "You are not approved for any categories yet. Ask an administrator to assign them."
-                      : "New orders appear here as soon as they are published. Check back soon."}
-              </p>
-              <div className="mt-5 flex flex-wrap justify-center gap-3">
-                {filtering && (
-                  <Link
-                    href="/portal/task-hub"
-                    className="rounded-xl bg-[var(--ev-primary)] px-5 py-3 text-sm font-semibold text-[var(--ev-on-primary)]"
-                  >
-                    Clear filters
-                  </Link>
-                )}
-                {!manager && (
-                  <Link
-                    href={myOrders}
-                    className="rounded-xl border border-[var(--ev-border)] px-5 py-3 text-sm font-semibold text-[var(--ev-ink)] hover:bg-[var(--ev-surface-2)]"
-                  >
-                    Go to my orders
-                  </Link>
-                )}
-              </div>
-            </div>
+            <Empty icon={Inbox}
+              title={filtering ? "Nothing matches these filters" : "No open orders right now"}
+              text={filtering ? "Try a different search or clear the filters to see everything available."
+                : manager ? "All orders are claimed. Create a new one from Task Management."
+                : allowed.length === 0 ? "You are not approved for any categories yet. Ask an administrator to assign them."
+                : "New orders appear here as soon as they are published. Check back soon."}
+              action={<>{filtering && <Link href="/portal/task-hub" className={btn.primary}>Clear filters</Link>}{!manager && <Link href={myOrders} className={btn.ghost}>Go to my orders</Link>}</>} />
           ) : (
-            <div className="ev-layout-kanban-items mt-5 grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
-              {orders.map((t) => {
-                const pr = priorityStyle[t.priority];
-                const unit =
-                  t.billingUnit?.replaceAll("_", " ").toLowerCase() ?? "units";
+            <Kanban columns={lanes.length} label="Open orders by priority">
+              {lanes.map((lane) => {
+                const items = orders.filter((o) => laneOf(o.priority) === lane.key);
                 return (
-                  <article
-                    key={t.id}
-                    className="group flex min-w-0 flex-col rounded-2xl border border-[var(--ev-border-soft)] bg-[var(--ev-surface)] p-6 shadow-[var(--ev-shadow)] transition hover:-translate-y-0.5 hover:border-[var(--ev-cyan)]"
-                  >
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--ev-inset)] px-3 py-1 text-xs font-semibold text-[var(--ev-accent-text)]">
-                        <Tag size={12} aria-hidden="true" />
-                        {t.category ?? "Uncategorized"}
-                      </span>
-                      {pr && (
-                        <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold ${pr.cls}`}>
-                          <Zap size={12} aria-hidden="true" />
-                          {pr.label}
-                        </span>
-                      )}
-                      <span className="ml-auto text-xs font-semibold text-[var(--ev-muted)]">
-                        {t.publicTaskId ?? "Open order"}
-                      </span>
-                    </div>
-
-                    <h2 className="mt-4 text-lg font-bold leading-snug">{t.title}</h2>
-                    <p className="mt-2 line-clamp-3 whitespace-pre-wrap break-words text-sm leading-7 text-[var(--ev-muted)]">
-                      {t.description}
-                    </p>
-
-                    <dl className="mt-5 grid grid-cols-3 gap-3 rounded-xl bg-[var(--ev-inset)] p-4 text-sm">
-                      <div>
-                        <dt className="text-xs font-semibold text-[var(--ev-muted)]">Volume</dt>
-                        <dd className="mt-1 font-bold capitalize tabular-nums">
-                          {t.unitsOrdered ? num(t.unitsOrdered).toLocaleString("en-US") : "—"}{" "}
-                          <span className="text-xs font-semibold normal-case text-[var(--ev-muted)]">{unit}</span>
-                        </dd>
-                      </div>
-                      <div>
-                        <dt className="text-xs font-semibold text-[var(--ev-muted)]">Rate</dt>
-                        <dd className="mt-1 font-bold tabular-nums">
-                          {t.unitRate ? usd(num(t.unitRate)) : "—"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt className="text-xs font-semibold text-[var(--ev-muted)]">Order value</dt>
-                        <dd className="mt-1 font-bold tabular-nums text-[var(--ev-accent-text)]">
-                          {t.totalOrderCost ? usd(num(t.totalOrderCost)) : "—"}
-                        </dd>
-                      </div>
-                    </dl>
-
-                    <div className="mt-5 flex flex-1 items-end justify-between gap-3">
-                      <span className="inline-flex items-center gap-1.5 text-xs text-[var(--ev-muted)]">
-                        <Clock size={13} aria-hidden="true" /> Posted {ago(t.createdAt)}
-                      </span>
-                      {canClaim ? (
-                        <form action={claimHubTask}>
-                          <input type="hidden" name="taskId" value={t.id} />
-                          <button
-                            type="submit"
-                            className="rounded-xl bg-[var(--ev-primary)] px-5 py-2.5 text-sm font-semibold text-[var(--ev-on-primary)] transition hover:bg-[var(--ev-primary-hover)]"
-                          >
-                            Claim order
-                          </button>
-                        </form>
-                      ) : (
-                        <Link
-                          href={`/portal/admin/task-management/edit/${t.id}`}
-                          className="inline-flex items-center gap-1 rounded-xl border border-[var(--ev-border)] px-4 py-2.5 text-sm font-semibold text-[var(--ev-ink)] transition hover:bg-[var(--ev-surface-2)]"
-                        >
-                          Manage <ArrowRight size={14} aria-hidden="true" />
-                        </Link>
-                      )}
-                    </div>
-                  </article>
+                  <KanbanColumn key={lane.key} title={lane.title} count={items.length} tone={lane.tone} empty="No orders at this priority">
+                    {items.map((t) => {
+                      const unit = t.billingUnit?.replaceAll("_", " ").toLowerCase() ?? "units";
+                      return (
+                        <KanbanCard key={t.id} tone={lane.tone}>
+                          <div className="evx-kcard-top">
+                            <Pill tone="cyan" plain><Tag size={11} aria-hidden="true" />{t.category ?? "Uncategorized"}</Pill>
+                            <span className="evx-id">{t.publicTaskId ?? "Open order"}</span>
+                          </div>
+                          <h3 className="evx-kcard-title">{t.title}</h3>
+                          <p className="evx-kcard-text">{t.description}</p>
+                          <dl className="evx-facts">
+                            <div><dt>Volume</dt><dd>{t.unitsOrdered ? num(t.unitsOrdered).toLocaleString("en-US") : "—"} <span className="evx-muted" style={{ fontWeight: 500, fontSize: 11 }}>{unit}</span></dd></div>
+                            <div><dt>Rate</dt><dd>{t.unitRate ? usd(num(t.unitRate)) : "—"}</dd></div>
+                            <div><dt>Value</dt><dd style={{ color: "var(--ev-accent-text)" }}>{t.totalOrderCost ? usd(num(t.totalOrderCost)) : "—"}</dd></div>
+                          </dl>
+                          <div className="evx-kcard-foot">
+                            <span className="evx-meta" style={{ display: "inline-flex", alignItems: "center", gap: 5 }}><Clock size={13} aria-hidden="true" />{ago(t.createdAt)}</span>
+                            {canClaim ? (
+                              <form action={claimHubTask}><input type="hidden" name="taskId" value={t.id} /><button type="submit" className={`${btn.primary} ${btn.sm}`}>Claim order</button></form>
+                            ) : (
+                              <Link href={`/portal/admin/task-management/edit/${t.id}`} className={`${btn.ghost} ${btn.sm}`}>Manage <ArrowRight size={13} aria-hidden="true" /></Link>
+                            )}
+                          </div>
+                        </KanbanCard>
+                      );
+                    })}
+                  </KanbanColumn>
                 );
               })}
-            </div>
+            </Kanban>
           )}
         </>
       )}
 
-      {/* ---------- Awaiting review / QA ---------- */}
       {(view === "review" || view === "qa") && (
-        <section className="mt-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-[var(--ev-muted)]">
-              {pending.length === 0
-                ? "Nothing is waiting for you right now."
+        <>
+          <div className="evx-head">
+            <p className="evx-meta">
+              {pending.length === 0 ? "Nothing is waiting for you right now."
                 : `${pending.length} order${pending.length === 1 ? "" : "s"} in your categories waiting for ${view === "review" ? "review" : "quality assurance"}.`}
             </p>
-            <Link
-              href={view === "review" ? "/portal/reviewer/queue" : "/portal/qa/queue"}
-              className="inline-flex items-center gap-2 rounded-xl bg-[var(--ev-primary)] px-5 py-3 text-sm font-semibold text-[var(--ev-on-primary)] transition hover:bg-[var(--ev-primary-hover)]"
-            >
+            <Link href={view === "review" ? "/portal/reviewer/queue" : "/portal/qa/queue"} className={btn.primary}>
               Open {view === "review" ? "review" : "QA"} queue <ArrowRight size={15} aria-hidden="true" />
             </Link>
           </div>
-
           {pending.length > 0 && (
-            <ul className="mt-5 divide-y divide-[var(--ev-border-soft)] overflow-hidden rounded-2xl border border-[var(--ev-border-soft)] bg-[var(--ev-surface)]">
-              {pending.map((t) => (
-                <li
-                  key={t.id}
-                  className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold">
-                      {t.publicTaskId ?? t.id.slice(0, 8)} · {t.title}
-                    </p>
-                    <p className="mt-0.5 text-xs text-[var(--ev-muted)]">
-                      {t.category ?? "Uncategorized"} · waiting since {ago(t.updatedAt)}
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-[var(--ev-inset)] px-3 py-1 text-xs font-bold text-[var(--ev-accent-text)]">
-                    {t.status.replaceAll("_", " ")}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <Kanban columns={ageLanes.length} label="Orders by waiting time">
+              {ageLanes.map((lane) => {
+                const items = pending.filter((t) => lane.test(hoursSince(t.updatedAt)));
+                return (
+                  <KanbanColumn key={lane.title} title={lane.title} count={items.length} tone={lane.tone} empty="Nothing in this lane">
+                    {items.map((t) => (
+                      <KanbanCard key={t.id} tone={lane.tone}>
+                        <div className="evx-kcard-top"><Pill tone={view === "review" ? "blue" : "violet"}>{pretty(t.status)}</Pill><span className="evx-id">{t.publicTaskId ?? t.id.slice(0, 8)}</span></div>
+                        <h3 className="evx-kcard-title">{t.title}</h3>
+                        <p className="evx-meta">{t.category ?? "Uncategorized"} · waiting {ago(t.updatedAt).replace(" ago", "")}</p>
+                      </KanbanCard>
+                    ))}
+                  </KanbanColumn>
+                );
+              })}
+            </Kanban>
           )}
-        </section>
+        </>
       )}
-    </>
+    </PageFrame>
   );
 }
 
 export default function Page(props: Props) {
   return (
-    <main className="ev-layout-kanban ev-compact-workspace min-h-screen bg-[var(--ev-page)] px-4 py-6 text-[var(--ev-ink)] sm:px-8 sm:py-8">
-      <div className="mx-auto w-full max-w-none">
-        <Suspense
-          fallback={
-            <div className="rounded-2xl border border-[var(--ev-border-soft)] bg-[var(--ev-surface)] p-8 text-[var(--ev-muted)]">
-              Loading Task Hub...
-            </div>
-          }
-        >
-          <Hub {...props} />
-        </Suspense>
-      </div>
-    </main>
+    <Suspense fallback={<div className="evx-page"><div className="evx-card evx-card-pad evx-muted">Loading Task Hub…</div></div>}>
+      <Hub {...props} />
+    </Suspense>
   );
 }

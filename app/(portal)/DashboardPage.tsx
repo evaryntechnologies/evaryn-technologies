@@ -83,15 +83,12 @@ async function DashboardContent({
   const metrics = await getDashboardMetrics(user.id);
   if (!metrics) {
     return (
-      <section className="rounded-2xl border border-amber-400/40 bg-[var(--ev-surface)] p-8">
-        <h2 className="text-xl font-bold text-[var(--ev-ink)]">
-          Employee Profile Unavailable
-        </h2>
-        <p className="mt-3 text-[var(--ev-muted)]">
-          Your employee account has not been activated. Contact your
-          administrator.
-        </p>
-      </section>
+      <div className="evx-page">
+        <div className="evx-empty">
+          <h2>Employee profile unavailable</h2>
+          <p>Your employee account has not been activated. Contact your administrator.</p>
+        </div>
+      </div>
     );
   }
 
@@ -149,18 +146,12 @@ export default function DashboardPage({
   variant: DashboardVariant;
 }) {
   return (
-    <main className="min-h-screen bg-[var(--ev-page)] px-4 py-6 text-[var(--ev-ink)] sm:px-8 sm:py-8">
-      <div className="mx-auto w-full max-w-none">
-        <Suspense
-          fallback={
-            <div className="rounded-2xl border border-[var(--ev-border-soft)] bg-[var(--ev-surface)] p-8 text-[var(--ev-muted)]">
-              Loading your dashboard...
-            </div>
-          }
-        >
-          <DashboardContent roles={roles} variant={variant} />
-        </Suspense>
-      </div>
-    </main>
+    <Suspense
+      fallback={
+        <div className="evx-page"><div className="evx-card evx-card-pad evx-muted">Loading your dashboard…</div></div>
+      }
+    >
+      <DashboardContent roles={roles} variant={variant} />
+    </Suspense>
   );
 }

@@ -1,503 +1,267 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
 import {
-  Briefcase,
-  CheckCircle2,
-  ClipboardCheck,
-  Clock,
-  FileWarning,
-  Gavel,
-  HandCoins,
-  Inbox,
-  Landmark,
-  Loader2,
-  MessageSquare,
-  RotateCcw,
-  ScrollText,
-  Send,
-  Settings2,
-  ShieldCheck,
-  Stamp,
-  Tags,
-  Timer,
-  UserCheck,
-  UserPlus,
-  Users,
-  UsersRound,
-  Wallet,
-  XCircle,
-  Crown,
-  Hourglass,
-  BadgeCheck,
-  ArrowRight,
-  CalendarClock,
-  UserCog,
-  FolderKanban,
-  Repeat,
+  ArrowRight, BadgeCheck, Briefcase, CalendarClock, CheckCircle2, ClipboardCheck, Clock, Crown, FileWarning,
+  FolderKanban, Gavel, HandCoins, Hourglass, Inbox, Landmark, Loader2, MessageSquare, RotateCcw, ScrollText,
+  Send, Settings2, ShieldCheck, Stamp, Tags, Timer, UserCheck, UserCog, UserPlus, Users, UsersRound, Wallet,
+  XCircle, Repeat,
 } from "lucide-react";
 import type { DashboardMetrics } from "@/lib/tasks/dashboard-metrics";
-import type {
-  Attention,
-  MyMoney,
-  People,
-  Pipeline,
-  UpcomingTask,
-} from "@/lib/tasks/role-dashboard";
-import {
-  ActionTile,
-  Hero,
-  HeroButton,
-  HeroFigure,
-  MiniStat,
-  Panel,
-  SectionTitle,
-  StatCard,
-  money,
-  when,
-} from "./dashboard-ui";
+import type { Attention, MyMoney, People, Pipeline, UpcomingTask } from "@/lib/tasks/role-dashboard";
+import { money, when } from "./dashboard-ui";
+import { Bento, Kpi, Lead, LeadLink, QuickLink, SectionHead, Strip, Tile, type EvTone } from "./layouts";
 
 type Common = { firstName: string };
 
+/* ------------------------------------------------------------------ */
+/* Shared tiles                                                         */
+/* ------------------------------------------------------------------ */
+function MyOrdersStrip({ m, href }: { m: DashboardMetrics; href: string }) {
+  return (
+    <div className="evx-s12">
+      <SectionHead title="My orders" hint="Every order you have worked on, at any level." aside={<Link href={href} className="evx-kpi-cta">Open statistics <ArrowRight size={13} aria-hidden="true" /></Link>} />
+      <Strip items={[
+        { label: "In progress", value: m.progress, tone: "cyan" },
+        { label: "In revision", value: m.revision, tone: "amber" },
+        { label: "Completed", value: m.completed, tone: "green" },
+        { label: "Cancelled", value: m.cancelled, tone: "slate" },
+      ]} />
+    </div>
+  );
+}
+
+function PipelineTile({ p, title }: { p: Pipeline; title: string }) {
+  return (
+    <div className="evx-s12">
+      <SectionHead title={title} hint="Every live order in the company, by stage." />
+      <Strip items={[
+        { label: "Open in hub", value: p.open, tone: "blue", href: "/portal/task-hub" },
+        { label: "In progress", value: p.inProgress, tone: "cyan", href: "/portal/admin/task-summary" },
+        { label: "Awaiting review", value: p.awaitingReview, tone: "violet", href: "/portal/admin/review-qa" },
+        { label: "Awaiting QA", value: p.awaitingQa, tone: "violet", href: "/portal/admin/review-qa" },
+        { label: "In revision", value: p.revision, tone: "amber", href: "/portal/admin/task-summary" },
+        { label: "With client", value: p.awaitingClient, tone: "green", href: "/portal/qa/client-actions" },
+      ]} />
+    </div>
+  );
+}
+
+function PeopleTile({ p }: { p: People }) {
+  const rows: [string, number, EvTone][] = [
+    ["Taskers", p.tasker, "cyan"], ["Reviewers", p.reviewer, "blue"], ["QA", p.qa, "violet"],
+    ["Admins", p.admin, "amber"], ["Super Admins", p.superAdmin, "green"],
+  ];
+  const max = Math.max(1, ...rows.map((r) => r[1]));
+  return (
+    <Tile className="evx-s5" title="Active team" aside={<span className="evx-kpi-value" style={{ fontSize: "1.4rem" }}><UsersRound size={16} aria-hidden="true" style={{ display: "inline", marginRight: 8, verticalAlign: "-2px" }} />{p.total}</span>}>
+      <ul className="evx-bars">
+        {rows.map(([label, n, tone]) => (
+          <li key={label} className={`evx-t-${tone}`}>
+            <div className="evx-bar-top"><span>{label}</span><span>{n}</span></div>
+            <div className="evx-bar"><i style={{ width: `${(n / max) * 100}%` }} /></div>
+          </li>
+        ))}
+      </ul>
+    </Tile>
+  );
+}
+
+function AttentionTile({ a, extraLinks }: { a: Attention; extraLinks?: { href: string; label: string; icon: typeof Gavel }[] }) {
+  const items = [
+    { title: "Reassignment requests", href: "/portal/admin/reassignments", icon: Repeat, tone: "violet" as const, n: a.reassignments },
+    { title: "Disputes", href: "/portal/admin/disputes", icon: Gavel, tone: "rose" as const, n: a.disputes },
+    { title: "Payment-method changes", href: "/portal/admin/payment-approvals", icon: Stamp, tone: "amber" as const, n: a.paymentChanges },
+    { title: "New applicants", href: "/portal/admin/recruitment", icon: UserCheck, tone: "cyan" as const, n: a.applications },
+    { title: "Overdue orders", href: "/portal/admin/task-summary", icon: Clock, tone: "rose" as const, n: a.overdue },
+  ].filter((i) => i.n > 0);
+  return (
+    <Tile className="evx-s7" title="Needs your attention">
+      {items.length === 0 ? (
+        <p className="evx-meta" style={{ padding: "14px 0" }}><CheckCircle2 size={15} aria-hidden="true" style={{ display: "inline", marginRight: 6, verticalAlign: "-2px", color: "var(--evx-green)" }} />All caught up. There are no urgent approvals or exceptions.</p>
+      ) : (
+        <ul className="evx-rows">
+          {items.map((i) => {
+            const Icon = i.icon;
+            return (
+              <li key={i.href}>
+                <Link href={i.href} className={`evx-row evx-t-${i.tone}`}>
+                  <span className="evx-chip" aria-hidden="true"><Icon size={16} /></span>
+                  <span className="evx-row-main"><p className="evx-row-title">{i.title}</p></span>
+                  <span className="evx-count">{i.n}</span>
+                  <ArrowRight size={15} aria-hidden="true" className="evx-muted" />
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      {extraLinks && extraLinks.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
+          {extraLinks.map((l) => { const Icon = l.icon; return <Link key={l.href} href={l.href} className="evx-btn evx-btn-ghost evx-btn-sm"><Icon size={14} aria-hidden="true" />{l.label}</Link>; })}
+        </div>
+      )}
+    </Tile>
+  );
+}
+
 /* ================================================================== */
-/* TASKER: earn, claim, deliver                                         */
+/* TASKER                                                               */
 /* ================================================================== */
-export function TaskerDashboard({
-  firstName,
-  metrics,
-  money: m,
-  upcoming,
-}: Common & {
-  metrics: DashboardMetrics;
-  money: MyMoney;
-  upcoming: UpcomingTask[];
-}) {
+export function TaskerDashboard({ firstName, metrics, money: m, upcoming }: Common & { metrics: DashboardMetrics; money: MyMoney; upcoming: UpcomingTask[] }) {
   const base = "/portal/tasker/my-tasks";
   return (
-    <>
-      <Hero
-        icon={Briefcase}
-        eyebrow="Tasker workspace"
-        title={`Welcome back, ${firstName}`}
-        subtitle="Claim work from the Task Hub, deliver it on time, and track what you have earned."
-        accent="#00b0f8"
-        aside={
-          <HeroFigure
-            label="Available balance"
-            value={money(m.available)}
-            note={`Paid to date ${money(m.paid)}`}
-            href="/portal/earnings"
-            cta="View my earnings"
-          />
-        }
-      >
-        <HeroButton href="/portal/task-hub" primary>
-          <Inbox size={16} aria-hidden="true" /> Browse Task Hub
-        </HeroButton>
-        <HeroButton href={base}>My orders</HeroButton>
-      </Hero>
+    <div className="evx-page">
+      <Bento label="Tasker dashboard">
+        <Lead className="evx-s8 evx-r2" icon={Briefcase} kicker="Tasker workspace" title={`Welcome back, ${firstName}`}
+          subtitle="Claim work from the Task Hub, deliver it on time, and track what you have earned."
+          figure={{ label: "Available balance", value: money(m.available), note: `Paid to date ${money(m.paid)}` }}
+          actions={<><LeadLink href="/portal/task-hub" primary><Inbox size={16} aria-hidden="true" />Browse Task Hub</LeadLink><LeadLink href="/portal/earnings">My earnings</LeadLink></>} />
+        <Kpi label="In progress" value={metrics.progress} icon={Loader2} tone="cyan" />
+        <Kpi label="In revision" value={metrics.revision} icon={RotateCcw} tone="amber" accent={metrics.revision > 0} note={metrics.revision > 0 ? "Needs your changes" : undefined} />
 
-
-      <SectionTitle title="My orders" />
-      <section className="ev-bento-metrics grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="In progress" value={metrics.progress} icon={Loader2} tone="cyan" href={`${base}?tab=progress`} cta="View orders" />
-        <StatCard label="In revision" value={metrics.revision} icon={RotateCcw} tone="amber" href={`${base}?tab=revision`} cta="View orders" />
-        <StatCard label="Completed" value={metrics.completed} icon={CheckCircle2} tone="green" href={`${base}?tab=completed`} cta="View orders" />
-        <StatCard label="Cancelled" value={metrics.cancelled} icon={XCircle} tone="slate" href={`${base}?tab=cancelled`} cta="View orders" />
-      </section>
-
-      <section className="mt-6 grid gap-4">
-        <Panel>
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="flex items-center gap-2 font-bold text-[var(--ev-ink)]">
-              <CalendarClock size={18} className="text-[var(--ev-accent-text)]" aria-hidden="true" />
-              Next deadlines
-            </h2>
-            <Link href={`${base}?tab=progress`} className="text-xs font-bold text-[var(--ev-accent-text)]">
-              All in progress
-            </Link>
-          </div>
+        <Tile className="evx-s8 evx-r2" title="Next deadlines" aside={<Link href={base} className="evx-kpi-cta">Order statistics <ArrowRight size={13} aria-hidden="true" /></Link>}>
           {upcoming.length === 0 ? (
-            <p className="mt-5 text-sm text-[var(--ev-muted)]">
-              Nothing is due. Pick up a new order from the Task Hub.
-            </p>
+            <p className="evx-meta" style={{ padding: "14px 0" }}><CalendarClock size={15} aria-hidden="true" style={{ display: "inline", marginRight: 6, verticalAlign: "-2px" }} />Nothing is due. Pick up a new order from the Task Hub.</p>
           ) : (
-            <ul className="mt-4 divide-y divide-[var(--ev-border-soft)]">
+            <ul className="evx-rows">
               {upcoming.map((t) => (
                 <li key={t.id}>
-                  <Link
-                    href={`/portal/tasker/tasks/${t.id}`}
-                    className="flex items-center justify-between gap-4 py-3 transition hover:opacity-80"
-                  >
-                    <div className="min-w-0">
-                      <p className="truncate font-semibold text-[var(--ev-ink)]">
-                        {t.publicTaskId ?? t.id.slice(0, 8)} · {t.title}
-                      </p>
-                      <p className="mt-0.5 text-xs text-[var(--ev-muted)]">
-                        {t.status === "REWORK_REQUIRED" ? "Revision requested" : "Assigned"} · Due {when(t.deadline)}
-                      </p>
-                    </div>
-                    <ArrowRight size={16} className="shrink-0 text-[var(--ev-accent-text)]" aria-hidden="true" />
+                  <Link href={`/portal/tasker/tasks/${t.id}`} className="evx-row">
+                    <span className="evx-row-main">
+                      <p className="evx-row-title">{t.publicTaskId ?? t.id.slice(0, 8)} · {t.title}</p>
+                      <p className="evx-row-sub">{t.status === "REWORK_REQUIRED" ? "Revision requested" : "Assigned"} · Due {when(t.deadline)}</p>
+                    </span>
+                    <ArrowRight size={15} aria-hidden="true" className="evx-muted" />
                   </Link>
                 </li>
               ))}
             </ul>
           )}
-        </Panel>
-
-      </section>
-    </>
+        </Tile>
+        <Kpi label="Completed" value={metrics.completed} icon={CheckCircle2} tone="green" />
+        <Kpi label="Cancelled" value={metrics.cancelled} icon={XCircle} tone="slate" />
+      </Bento>
+    </div>
   );
 }
 
 /* ================================================================== */
-/* REVIEWER: the review desk                                            */
+/* REVIEWER                                                             */
 /* ================================================================== */
-export function ReviewerDashboard({
-  firstName,
-  metrics,
-  money: m,
-  extras,
-}: Common & {
-  metrics: DashboardMetrics;
-  money: MyMoney;
-  extras: { awaiting: number; inReview: number; approved: number; sentBack: number };
+export function ReviewerDashboard({ firstName, metrics, money: m, extras }: Common & {
+  metrics: DashboardMetrics; money: MyMoney; extras: { awaiting: number; inReview: number; approved: number; sentBack: number };
 }) {
-  const base = "/portal/my-work";
   return (
-    <>
-      <Hero
-        icon={ClipboardCheck}
-        eyebrow="Reviewer desk"
-        title={`Welcome back, ${firstName}`}
-        subtitle="Assess submitted work, give clear feedback, and pass approved submissions on to Quality Assurance."
-        accent="#7c9cff"
-        aside={
-          <HeroFigure
-            label="Submissions awaiting review"
-            value={String(extras.awaiting)}
-            note="Claim one from the queue to start reviewing"
-            href="/portal/reviewer/queue"
-            cta="Open review queue"
-          />
-        }
-      >
-        <HeroButton href="/portal/reviewer/queue" primary>
-          <ClipboardCheck size={16} aria-hidden="true" /> Review queue
-        </HeroButton>
-        <HeroButton href="/portal/task-hub">Task Hub ({metrics.available})</HeroButton>
-      </Hero>
-
-      <SectionTitle title="Other available work" hint="Review queue and current priorities are above." />
-      <section className="grid gap-4 sm:grid-cols-2">
-        <StatCard label="Awaiting Tasker" value={metrics.available} icon={Inbox} tone="blue" href="/portal/task-hub" cta="Open Task Hub" />
-      </section>
-
-      <SectionTitle title="Your review activity" />
-      <section className="ev-bento-metrics grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Reviewing now" value={extras.inReview} icon={Hourglass} tone="cyan" href="/portal/reviewer/queue" cta="Continue" />
-        <StatCard label="Approved by you" value={extras.approved} icon={BadgeCheck} tone="green" />
-        <StatCard label="Sent back for revision" value={extras.sentBack} icon={RotateCcw} tone="amber" />
-        <StatCard label="Available balance" value={money(m.available)} icon={Wallet} tone="violet" href="/portal/earnings" cta="My earnings" />
-      </section>
-
-      <SectionTitle title="My orders" hint="Work you have performed at any level." />
-      <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <MiniStat label="In progress" value={metrics.progress} tone="cyan" href={`${base}?tab=progress`} />
-        <MiniStat label="In revision" value={metrics.revision} tone="amber" href={`${base}?tab=revision`} />
-        <MiniStat label="Completed" value={metrics.completed} tone="green" href={`${base}?tab=completed`} />
-        <MiniStat label="Cancelled" value={metrics.cancelled} tone="slate" href={`${base}?tab=cancelled`} />
-      </section>
-    </>
+    <div className="evx-page">
+      <Bento label="Reviewer dashboard">
+        <Lead className="evx-s8 evx-r2" icon={ClipboardCheck} kicker="Reviewer desk" title={`Welcome back, ${firstName}`}
+          subtitle="Assess submitted work, give clear feedback, and pass approved submissions on to Quality Assurance."
+          figure={{ label: "Submissions awaiting review", value: String(extras.awaiting), note: "Claim one from the queue to start reviewing" }}
+          actions={<><LeadLink href="/portal/reviewer/queue" primary><ClipboardCheck size={16} aria-hidden="true" />Review queue</LeadLink><LeadLink href="/portal/task-hub">Task Hub ({metrics.available})</LeadLink></>} />
+        <Kpi label="Reviewing now" value={extras.inReview} icon={Hourglass} tone="cyan" href="/portal/reviewer/queue" cta="Continue" />
+        <Kpi label="Awaiting a tasker" value={metrics.available} icon={Inbox} tone="blue" href="/portal/task-hub" cta="Open Task Hub" />
+        <Kpi label="Approved by you" value={extras.approved} icon={BadgeCheck} tone="green" />
+        <Kpi label="Sent back for revision" value={extras.sentBack} icon={RotateCcw} tone="amber" />
+        <Kpi label="Available balance" value={money(m.available)} icon={Wallet} tone="violet" href="/portal/earnings" cta="My earnings" />
+        <MyOrdersStrip m={metrics} href="/portal/my-work" />
+      </Bento>
+    </div>
   );
 }
 
 /* ================================================================== */
-/* QA: final quality gate                                               */
+/* QA                                                                   */
 /* ================================================================== */
-export function QaDashboard({
-  firstName,
-  metrics,
-  money: m,
-  extras,
-}: Common & {
-  metrics: DashboardMetrics;
-  money: MyMoney;
-  extras: {
-    awaiting: number;
-    awaitingReview: number;
-    inQa: number;
-    deliveredToClient: number;
-    passed: number;
-    sentBack: number;
-  };
+export function QaDashboard({ firstName, metrics, money: m, extras }: Common & {
+  metrics: DashboardMetrics; money: MyMoney;
+  extras: { awaiting: number; awaitingReview: number; inQa: number; deliveredToClient: number; passed: number; sentBack: number };
 }) {
-  const base = "/portal/my-work";
   return (
-    <>
-      <Hero
-        icon={ShieldCheck}
-        eyebrow="Quality assurance"
-        title={`Welcome back, ${firstName}`}
-        subtitle="You are the final quality gate. Check approved work, then pass it for delivery or send it back."
-        accent="#2dd4bf"
-        aside={
-          <HeroFigure
-            label="Awaiting QA"
-            value={String(extras.awaiting)}
-            note="Orders approved by reviewers and ready for final checks"
-            href="/portal/qa/queue"
-            cta="Open QA queue"
-          />
-        }
-      >
-        <HeroButton href="/portal/qa/queue" primary>
-          <ShieldCheck size={16} aria-hidden="true" /> QA queue
-        </HeroButton>
-        <HeroButton href="/portal/qa/client-actions">Client actions</HeroButton>
-      </Hero>
-
-      <SectionTitle title="Other available work" hint="Your QA queue and next action are above." />
-      <section className="ev-bento-metrics grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard label="Awaiting Reviewer" value={extras.awaitingReview} icon={ClipboardCheck} tone="blue" href="/portal/reviewer/queue" cta="Open review queue" />
-        <StatCard label="Awaiting Tasker" value={metrics.available} icon={Inbox} tone="green" href="/portal/task-hub" cta="Open Task Hub" />
-      </section>
-
-      <SectionTitle title="Quality overview" />
-      <section className="ev-bento-metrics grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="In QA now" value={extras.inQa} icon={Hourglass} tone="cyan" href="/portal/qa/queue" cta="Continue" />
-        <StatCard label="Passed by you" value={extras.passed} icon={BadgeCheck} tone="green" />
-        <StatCard label="Sent back" value={extras.sentBack} icon={RotateCcw} tone="amber" />
-        <StatCard label="With client" value={extras.deliveredToClient} icon={Send} tone="blue" href="/portal/qa/client-actions" cta="Finalize" />
-      </section>
-
-      <section className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
-        <Panel>
-          <p className="flex items-center gap-2 text-sm font-semibold text-[var(--ev-muted)]">
-            <Wallet size={16} aria-hidden="true" /> Available balance
-          </p>
-          <p className="mt-3 text-4xl font-bold tabular-nums text-[var(--ev-ink)]">{money(m.available)}</p>
-          <Link href="/portal/earnings" className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-[var(--ev-accent-text)]">
-            My earnings <ArrowRight size={14} aria-hidden="true" />
-          </Link>
-        </Panel>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <ActionTile title="Fines" description="Review fines on delivered work." href="/portal/admin/fines" icon={FileWarning} tone="rose" />
-          <ActionTile title="Force reassign" description="Move an order to another employee." href="/portal/admin/force-reassign" icon={Repeat} tone="violet" />
-        </div>
-      </section>
-
-      <SectionTitle title="My orders" hint="Work you have performed at any level." />
-      <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <MiniStat label="In progress" value={metrics.progress} tone="cyan" href={`${base}?tab=progress`} />
-        <MiniStat label="In revision" value={metrics.revision} tone="amber" href={`${base}?tab=revision`} />
-        <MiniStat label="Completed" value={metrics.completed} tone="green" href={`${base}?tab=completed`} />
-        <MiniStat label="Cancelled" value={metrics.cancelled} tone="slate" href={`${base}?tab=cancelled`} />
-      </section>
-    </>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Shared by Admin and Super Admin                                      */
-/* ------------------------------------------------------------------ */
-function PipelineStrip({ p }: { p: Pipeline }) {
-  return (
-    <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
-      <MiniStat label="Open in hub" value={p.open} tone="blue" href="/portal/task-hub" />
-      <MiniStat label="In progress" value={p.inProgress} tone="cyan" href="/portal/admin/task-summary" />
-      <MiniStat label="Awaiting review" value={p.awaitingReview} tone="violet" href="/portal/admin/review-qa" />
-      <MiniStat label="Awaiting QA" value={p.awaitingQa} tone="teal" href="/portal/admin/review-qa" />
-      <MiniStat label="In revision" value={p.revision} tone="amber" href="/portal/admin/task-summary" />
-      <MiniStat label="With client" value={p.awaitingClient} tone="gold" href="/portal/qa/client-actions" />
-    </section>
-  );
-}
-
-function PeopleBar({ p }: { p: People }) {
-  const rows: [string, number, string][] = [
-    ["Taskers", p.tasker, "#00b0f8"],
-    ["Reviewers", p.reviewer, "#7c9cff"],
-    ["QA", p.qa, "#2dd4bf"],
-    ["Admins", p.admin, "#a78bfa"],
-    ["Super Admins", p.superAdmin, "#f5b301"],
-  ];
-  const max = Math.max(1, ...rows.map((r) => r[1]));
-  return (
-    <Panel>
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="flex items-center gap-2 font-bold text-[var(--ev-ink)]">
-          <UsersRound size={18} className="text-[var(--ev-accent-text)]" aria-hidden="true" />
-          Active team
-        </h2>
-        <p className="text-2xl font-bold tabular-nums text-[var(--ev-ink)]">{p.total}</p>
-      </div>
-      <ul className="mt-5 space-y-3">
-        {rows.map(([label, n, color]) => (
-          <li key={label}>
-            <div className="flex justify-between text-sm">
-              <span className="font-semibold text-[var(--ev-ink)]">{label}</span>
-              <span className="tabular-nums text-[var(--ev-muted)]">{n}</span>
-            </div>
-            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-[var(--ev-inset)]">
-              <div className="h-full rounded-full" style={{ width: `${(n / max) * 100}%`, background: color }} />
-            </div>
-          </li>
-        ))}
-      </ul>
-    </Panel>
-  );
-}
-
-function AttentionGrid({ a, extra }: { a: Attention; extra?: ReactNode }) {
-  const attention = [
-    { title: "Reassignment requests", href: "/portal/admin/reassignments", icon: Repeat, tone: "violet" as const, badge: a.reassignments, description: "Employees requesting an order release." },
-    { title: "Disputes", href: "/portal/admin/disputes", icon: Gavel, tone: "rose" as const, badge: a.disputes, description: "Open order issues requiring a decision." },
-    { title: "Payment-method changes", href: "/portal/admin/payment-approvals", icon: Stamp, tone: "amber" as const, badge: a.paymentChanges, description: "Approve or reject payout detail changes." },
-    { title: "New applicants", href: "/portal/admin/recruitment", icon: UserCheck, tone: "teal" as const, badge: a.applications, description: "Applications awaiting review." },
-    { title: "Overdue orders", href: "/portal/admin/task-summary", icon: Clock, tone: "rose" as const, badge: a.overdue, description: "Orders needing timely intervention." },
-  ].filter(item => item.badge > 0);
-  return (
-    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-label="Items needing attention">
-      {attention.length === 0 && !extra && <Panel><p className="text-sm font-semibold text-[var(--ev-ink)]">All caught up</p><p className="mt-2 text-sm text-[var(--ev-muted)]">There are no urgent approvals or exceptions right now.</p></Panel>}
-      {attention.map(item => <ActionTile key={item.href} {...item} />)}
-      {extra}
-    </section>
-  );
-}
-
-/* ================================================================== */
-/* ADMIN: run operations                                                */
-/* ================================================================== */
-export function AdminDashboard({
-  firstName,
-  pipeline,
-  attention,
-  people,
-  clockRunning,
-}: Common & {
-  pipeline: Pipeline;
-  attention: Attention;
-  people: People;
-  clockRunning: boolean;
-}) {
-  const todo =
-    attention.reassignments + attention.disputes + attention.paymentChanges + attention.applications + attention.overdue;
-  return (
-    <>
-      <Hero
-        icon={Settings2}
-        eyebrow="Operations centre"
-        title={`Welcome back, ${firstName}`}
-        subtitle="Publish and assign work, keep orders moving, and look after the people who deliver them."
-        accent="#a78bfa"
-        aside={
-          <HeroFigure
-            label="Items needing your attention"
-            value={String(todo)}
-            note={todo === 0 ? "You are all caught up" : "Reassignments, disputes, approvals, applicants and overdue orders"}
-          />
-        }
-      >
-        <HeroButton href="/portal/admin/task-management" primary>
-          <FolderKanban size={16} aria-hidden="true" /> Task management
-        </HeroButton>
-        <HeroButton href="/portal/admin/time-tracker">
-          <Timer size={16} aria-hidden="true" /> {clockRunning ? "Clock running" : "Start time tracker"}
-        </HeroButton>
-      </Hero>
-
-      <SectionTitle title="Order pipeline" hint="Every live order in the company, by stage." />
-      <PipelineStrip p={pipeline} />
-
-      <SectionTitle title="Needs your attention" />
-      <AttentionGrid a={attention} />
-
-      <section className="mt-10 grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-        <div>
-          <h2 className="mb-4 text-lg font-bold tracking-tight text-[var(--ev-ink)]">Manage</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <ActionTile title="Task categories per employee" description="Choose which categories each Tasker, Reviewer and QA can handle." href="/portal/admin/employees" icon={Tags} tone="cyan" />
-            <ActionTile title="Task management" description="Create, edit, publish and assign orders." href="/portal/admin/task-management" icon={FolderKanban} tone="blue" />
-            <ActionTile title="Review & QA oversight" description="Watch the review and QA stages." href="/portal/admin/review-qa" icon={ShieldCheck} tone="teal" />
-            <ActionTile title="Fines & penalties" description="Issue, review or waive fines." href="/portal/admin/fines" icon={FileWarning} tone="rose" />
-            <ActionTile title="Force reassign" description="Move an order to another employee." href="/portal/admin/force-reassign" icon={Repeat} tone="violet" />
-            <ActionTile title="Order reinstatement" description="Bring cancelled orders back into the flow." href="/portal/admin/order-reinstatement" icon={RotateCcw} tone="amber" />
+    <div className="evx-page">
+      <Bento label="Quality assurance dashboard">
+        <Lead className="evx-s8 evx-r2" icon={ShieldCheck} kicker="Quality assurance" title={`Welcome back, ${firstName}`}
+          subtitle="You are the final quality gate. Check approved work, then pass it for delivery or send it back."
+          figure={{ label: "Awaiting QA", value: String(extras.awaiting), note: "Approved by reviewers and ready for final checks" }}
+          actions={<><LeadLink href="/portal/qa/queue" primary><ShieldCheck size={16} aria-hidden="true" />QA queue</LeadLink><LeadLink href="/portal/qa/client-actions">Client actions</LeadLink></>} />
+        <Kpi label="In QA now" value={extras.inQa} icon={Hourglass} tone="cyan" href="/portal/qa/queue" cta="Continue" />
+        <Kpi label="Awaiting a reviewer" value={extras.awaitingReview} icon={ClipboardCheck} tone="blue" href="/portal/reviewer/queue" cta="Open review queue" />
+        <Kpi className="evx-s3" label="Passed by you" value={extras.passed} icon={BadgeCheck} tone="green" />
+        <Kpi className="evx-s3" label="Sent back" value={extras.sentBack} icon={RotateCcw} tone="amber" />
+        <Kpi className="evx-s3" label="With client" value={extras.deliveredToClient} icon={Send} tone="blue" href="/portal/qa/client-actions" cta="Finalize" />
+        <Kpi className="evx-s3" label="Available balance" value={money(m.available)} icon={Wallet} tone="violet" href="/portal/earnings" cta="My earnings" />
+        <Tile className="evx-s12" title="Quick actions">
+          <div className="evx-links">
+            <QuickLink href="/portal/admin/fines" icon={FileWarning} title="Fines" text="Review fines on delivered work." tone="rose" />
+            <QuickLink href="/portal/admin/force-reassign" icon={Repeat} title="Force reassign" text="Move an order to another employee." tone="violet" />
+            <QuickLink href="/portal/task-hub" icon={Inbox} title="Task Hub" text={`${metrics.available} order${metrics.available === 1 ? "" : "s"} waiting for a tasker.`} tone="blue" />
           </div>
-        </div>
-        <PeopleBar p={people} />
-      </section>
-    </>
+        </Tile>
+        <MyOrdersStrip m={metrics} href="/portal/my-work" />
+      </Bento>
+    </div>
   );
 }
 
 /* ================================================================== */
-/* SUPER ADMIN: people, money and the whole company                     */
+/* ADMIN                                                                */
 /* ================================================================== */
-export function SuperAdminDashboard({
-  firstName,
-  pipeline,
-  attention,
-  people,
-  payroll,
-  inquiries,
-}: Common & {
-  pipeline: Pipeline;
-  attention: Attention;
-  people: People;
-  payroll: { awaitingApproval: number; pendingEntries: number; pendingTotal: number };
-  inquiries: number;
+export function AdminDashboard({ firstName, pipeline, attention, people, clockRunning }: Common & {
+  pipeline: Pipeline; attention: Attention; people: People; clockRunning: boolean;
+}) {
+  const todo = attention.reassignments + attention.disputes + attention.paymentChanges + attention.applications + attention.overdue;
+  return (
+    <div className="evx-page">
+      <Bento label="Administrator dashboard">
+        <Lead className="evx-s12" icon={Settings2} kicker="Operations centre" title={`Welcome back, ${firstName}`}
+          subtitle="Publish and assign work, keep orders moving, and look after the people who deliver them."
+          figure={{ label: "Items needing your attention", value: String(todo), note: todo === 0 ? "You are all caught up" : "Reassignments, disputes, approvals, applicants and overdue orders" }}
+          actions={<><LeadLink href="/portal/admin/task-management" primary><FolderKanban size={16} aria-hidden="true" />Task management</LeadLink><LeadLink href="/portal/admin/time-tracker"><Timer size={16} aria-hidden="true" />{clockRunning ? "Clock running" : "Start time tracker"}</LeadLink></>} />
+        <PipelineTile p={pipeline} title="Order pipeline" />
+        <AttentionTile a={attention} />
+        <PeopleTile p={people} />
+        <Tile className="evx-s12" title="Manage">
+          <div className="evx-links">
+            <QuickLink href="/portal/admin/employees" icon={Tags} title="Task categories per employee" text="Choose which categories each Tasker, Reviewer and QA can handle." tone="cyan" />
+            <QuickLink href="/portal/admin/task-management" icon={FolderKanban} title="Task management" text="Create, edit, publish and assign orders." tone="blue" />
+            <QuickLink href="/portal/admin/review-qa" icon={ShieldCheck} title="Review & QA oversight" text="Watch the review and QA stages." tone="violet" />
+            <QuickLink href="/portal/admin/fines" icon={FileWarning} title="Fines & penalties" text="Issue, review or waive fines." tone="rose" />
+            <QuickLink href="/portal/admin/force-reassign" icon={Repeat} title="Force reassign" text="Move an order to another employee." tone="violet" />
+            <QuickLink href="/portal/admin/order-reinstatement" icon={RotateCcw} title="Order reinstatement" text="Bring cancelled orders back into the flow." tone="amber" />
+          </div>
+        </Tile>
+      </Bento>
+    </div>
+  );
+}
+
+/* ================================================================== */
+/* SUPER ADMIN                                                          */
+/* ================================================================== */
+export function SuperAdminDashboard({ firstName, pipeline, attention, people, payroll, inquiries }: Common & {
+  pipeline: Pipeline; attention: Attention; people: People;
+  payroll: { awaitingApproval: number; pendingEntries: number; pendingTotal: number }; inquiries: number;
 }) {
   return (
-    <>
-      <Hero
-        icon={Crown}
-        eyebrow="Executive overview"
-        title={`Welcome back, ${firstName}`}
-        subtitle="Hire and manage people, approve and record payouts, and oversee every order in the company."
-        accent="#f5b301"
-        aside={
-          <HeroFigure
-            label="Net payroll pending payment"
-            value={money(payroll.pendingTotal)}
-            note={`${payroll.pendingEntries} approved entries · ${payroll.awaitingApproval} earnings awaiting your approval`}
-            href="/portal/super-admin/payroll"
-            cta="Open payroll"
-          />
-        }
-      >
-        <HeroButton href="/portal/super-admin/employees" primary>
-          <UserPlus size={16} aria-hidden="true" /> Add employee
-        </HeroButton>
-        <HeroButton href="/portal/super-admin/payroll/pay-team">
-          <HandCoins size={16} aria-hidden="true" /> Pay team
-        </HeroButton>
-      </Hero>
-
-      <SectionTitle title="Company order pipeline" />
-      <PipelineStrip p={pipeline} />
-
-      <section className="mt-10 grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-        <div>
-          <h2 className="mb-4 text-lg font-bold tracking-tight text-[var(--ev-ink)]">Money and people</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <ActionTile title="Payroll" description="Approve earnings and record payments." href="/portal/super-admin/payroll" icon={Landmark} tone="green" badge={payroll.awaitingApproval} />
-            <ActionTile title="Employees" description="Add staff, set roles, suspend or restore access." href="/portal/super-admin/employees" icon={UserCog} tone="cyan" />
-            <ActionTile title="Admin hours" description="Review tracked Admin time and pay." href="/portal/super-admin/payroll/admin-hours" icon={Timer} tone="violet" />
-            <ActionTile title="Task categories" description="Create, rename or retire categories and rates." href="/portal/super-admin/categories" icon={Tags} tone="blue" />
-            <ActionTile title="Recruitment" description="Open roles and hire applicants." href="/portal/super-admin/recruitment" icon={Users} tone="teal" badge={attention.applications} />
-            <ActionTile title="Client inquiries" description="Messages and custom requests from the website." href="/portal/super-admin/inquiries" icon={MessageSquare} tone="amber" badge={inquiries} />
+    <div className="evx-page">
+      <Bento label="Super administrator dashboard">
+        <Lead className="evx-s8 evx-r2" icon={Crown} kicker="Executive overview" title={`Welcome back, ${firstName}`}
+          subtitle="Hire and manage people, approve and record payouts, and oversee every order in the company."
+          figure={{ label: "Net payroll pending payment", value: money(payroll.pendingTotal), note: `${payroll.pendingEntries} approved entries · ${payroll.awaitingApproval} earnings awaiting your approval` }}
+          actions={<><LeadLink href="/portal/super-admin/payroll" primary><Landmark size={16} aria-hidden="true" />Open payroll</LeadLink><LeadLink href="/portal/super-admin/employees"><UserPlus size={16} aria-hidden="true" />Add employee</LeadLink><LeadLink href="/portal/super-admin/payroll/pay-team"><HandCoins size={16} aria-hidden="true" />Pay team</LeadLink></>} />
+        <Kpi label="Earnings awaiting approval" value={payroll.awaitingApproval} icon={Stamp} tone="amber" accent={payroll.awaitingApproval > 0} href="/portal/super-admin/payroll" cta="Review" />
+        <Kpi label="Client inquiries" value={inquiries} icon={MessageSquare} tone="cyan" accent={inquiries > 0} href="/portal/super-admin/inquiries" cta="Open inbox" />
+        <PipelineTile p={pipeline} title="Company order pipeline" />
+        <AttentionTile a={attention} extraLinks={[{ href: "/portal/super-admin/audit-log", label: "Audit log", icon: ScrollText }]} />
+        <PeopleTile p={people} />
+        <Tile className="evx-s12" title="Money and people">
+          <div className="evx-links">
+            <QuickLink href="/portal/super-admin/payroll" icon={Landmark} title="Payroll" text="Approve earnings and record payments." tone="green" badge={payroll.awaitingApproval} />
+            <QuickLink href="/portal/super-admin/employees" icon={UserCog} title="Employees" text="Add staff, set roles, suspend or restore access." tone="cyan" />
+            <QuickLink href="/portal/super-admin/payroll/admin-hours" icon={Timer} title="Admin hours" text="Review tracked Admin time and pay." tone="violet" />
+            <QuickLink href="/portal/super-admin/categories" icon={Tags} title="Task categories" text="Create, rename or retire categories and rates." tone="blue" />
+            <QuickLink href="/portal/super-admin/recruitment" icon={Users} title="Recruitment" text="Open roles and hire applicants." tone="cyan" badge={attention.applications} />
           </div>
-        </div>
-        <PeopleBar p={people} />
-      </section>
-
-      <SectionTitle title="Needs attention" />
-      <AttentionGrid
-        a={attention}
-        extra={
-          <ActionTile title="Audit log" description="Who did what, and when." href="/portal/super-admin/audit-log" icon={ScrollText} tone="slate" />
-        }
-      />
-    </>
+        </Tile>
+      </Bento>
+    </div>
   );
 }

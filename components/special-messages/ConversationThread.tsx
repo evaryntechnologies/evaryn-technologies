@@ -44,47 +44,45 @@ export default function ConversationThread({ conversationId, currentEmployeeId, 
   const [body, setBody] = useState("");
   const audience = isGeneral ? "everyone in General Chat" : "everyone in this conversation";
 
-  return <div className="space-y-5">
-    <section aria-label="Conversation messages" className="space-y-3">
+  return <div className="evx-stack" style={{ gap: 20 }}>
+    <section aria-label="Conversation messages" className="evx-stack" style={{ gap: 18 }}>
       {messages.map(message => {
         const sender = roleStyle(message.role);
         const quoted = roleStyle(message.quotedRole ?? "");
         const initials = message.fullName.trim().split(/\s+/).slice(0, 2).map(part => part[0] ?? "").join("").toUpperCase();
-        return <article id={`message-${message.id}`} key={message.id} className="scroll-mt-24 rounded-2xl border border-[var(--ev-border)] bg-[var(--ev-surface)] p-4 shadow-sm transition-colors target:ring-2 target:ring-[#0891B2] sm:p-5">
-          <div className="flex items-start gap-3">
-            <div aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" style={{ backgroundColor: sender.color }}>{initials || "?"}</div>
-            <div className="min-w-0 flex-1 space-y-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="break-words text-sm font-bold">{message.fullName}</span>
-                <span className="rounded px-2 py-0.5 text-[10px] font-bold text-white" style={{ backgroundColor: sender.color }}>{sender.label}</span>
-                {message.senderId === currentEmployeeId && <span className="text-xs text-[var(--ev-muted)]">You</span>}
-                <time className="ml-auto text-xs text-[var(--ev-muted)]" dateTime={message.createdAt}>{formatDate(message.createdAt)}</time>
-              </div>
-              <div className="rounded-r-xl rounded-bl-xl border-l-[3px] p-3 sm:p-4" style={{ borderLeftColor: sender.color, backgroundColor: sender.background }}>
-                {message.quotedId && <a href={`#message-${message.quotedId}`} className="mb-3 block rounded-lg border-l-[3px] bg-[var(--ev-surface)] p-3 transition hover:opacity-80" style={{ borderLeftColor: quoted.color }} title="Jump to original message">
-                  <span className="block text-xs font-bold" style={{ color: quoted.color }}>{message.quotedName ?? "Employee"} · {quoted.label}</span>
-                  <span className="mt-1 block max-h-20 overflow-hidden whitespace-pre-wrap break-words text-xs text-[var(--ev-muted)]">{message.quotedBody ?? "Original message unavailable"}</span>
-                </a>}
-                <p className="whitespace-pre-wrap break-words text-sm leading-7">{message.body}</p>
-              </div>
-              <button type="button" onClick={() => { setReply(message); document.getElementById("special-message-composer")?.scrollIntoView({ behavior: "smooth", block: "center" }); }} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-[var(--ev-muted)] hover:bg-[var(--ev-surface-2)] hover:text-[var(--ev-ink)]" aria-label={`Reply to ${message.fullName}`}><CornerUpLeft size={15}/>Reply</button>
-            </div>
+        const mine = message.senderId === currentEmployeeId;
+        return <article id={`message-${message.id}`} key={message.id} className="evx-bubble" style={{ scrollMarginTop: 96, ["--t" as string]: sender.color }}>
+          <div className="evx-bubble-head">
+            <span aria-hidden="true" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: 999, background: sender.color, color: "#fff", fontSize: 11, fontWeight: 700 }}>{initials || "?"}</span>
+            <strong>{message.fullName}</strong>
+            <span className="evx-pill evx-pill-plain" style={{ ["--t" as string]: sender.color }}>{sender.label}</span>
+            {mine && <span className="evx-meta">You</span>}
+            <time className="evx-meta" style={{ marginLeft: "auto" }} dateTime={message.createdAt}>{formatDate(message.createdAt)}</time>
+          </div>
+          <div className="evx-bubble-body">
+            {message.quotedId && <a href={`#message-${message.quotedId}`} title="Jump to original message" style={{ display: "block", marginBottom: 10, padding: "8px 12px", borderLeft: `3px solid ${quoted.color}`, borderRadius: 8, background: "var(--ev-surface)", textDecoration: "none", color: "inherit" }}>
+              <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: quoted.color }}>{message.quotedName ?? "Employee"} · {quoted.label}</span>
+              <span className="evx-meta" style={{ display: "block", marginTop: 2, maxHeight: 54, overflow: "hidden", whiteSpace: "pre-wrap" }}>{message.quotedBody ?? "Original message unavailable"}</span>
+            </a>}
+            {message.body}
+          </div>
+          <div>
+            <button type="button" onClick={() => { setReply(message); document.getElementById("special-message-composer")?.scrollIntoView({ behavior: "smooth", block: "center" }); }} className="evx-btn evx-btn-ghost evx-btn-sm" style={{ border: 0, background: "transparent", color: "var(--ev-muted)" }} aria-label={`Reply to ${message.fullName}`}><CornerUpLeft size={14} aria-hidden="true"/>Reply</button>
           </div>
         </article>;
       })}
     </section>
-    <section id="special-message-composer" className="scroll-mt-20 rounded-2xl border border-[var(--ev-border)] bg-[var(--ev-surface)] p-5 sm:p-7">
-      <h2 className="font-bold">{reply ? `Replying to ${reply.fullName}` : "Reply to all"}</h2>
-      <p className="mt-1 text-xs text-[var(--ev-muted)]">Your message is visible to {audience}.</p>
-      {reply && <div className="mt-4 flex items-start gap-3 rounded-xl bg-[var(--ev-surface-2)] p-3" style={{ borderLeft: `3px solid ${roleStyle(reply.role).color}` }}>
-        <div className="min-w-0 flex-1"><p className="text-xs font-bold" style={{ color: roleStyle(reply.role).color }}>{reply.fullName} · {roleStyle(reply.role).label}</p><p className="mt-1 line-clamp-3 whitespace-pre-wrap break-words text-xs text-[var(--ev-muted)]">{reply.body}</p></div>
-        <button type="button" aria-label="Cancel quoted reply" onClick={() => setReply(null)} className="rounded-lg p-1 hover:bg-[var(--ev-surface)]"><X size={17}/></button>
+    <section id="special-message-composer" className="evx-composer" style={{ scrollMarginTop: 80 }}>
+      <div><h2 className="evx-section-title">{reply ? `Replying to ${reply.fullName}` : "Reply to all"}</h2><p className="evx-meta">Your message is visible to {audience}.</p></div>
+      {reply && <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 12px", borderRadius: 10, background: "var(--ev-inset)", borderLeft: `3px solid ${roleStyle(reply.role).color}` }}>
+        <div style={{ minWidth: 0, flex: 1 }}><p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: roleStyle(reply.role).color }}>{reply.fullName} · {roleStyle(reply.role).label}</p><p className="evx-meta" style={{ marginTop: 2, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", whiteSpace: "pre-wrap" }}>{reply.body}</p></div>
+        <button type="button" aria-label="Cancel quoted reply" onClick={() => setReply(null)} className="evx-btn evx-btn-ghost evx-btn-sm" style={{ padding: 6, minHeight: 0 }}><X size={16}/></button>
       </div>}
-      <form action={replyToSpecialMessage} className="mt-4 space-y-3">
+      <form action={replyToSpecialMessage} className="evx-form">
         <input type="hidden" name="conversationId" value={conversationId}/>
         <input type="hidden" name="replyToMessageId" value={reply?.id ?? ""}/>
-        <textarea name="body" required maxLength={6000} rows={4} value={body} onChange={event => setBody(event.target.value)} placeholder={reply ? "Write your reply..." : "Write a message..."} className="w-full rounded-xl border border-[var(--ev-border)] bg-[var(--ev-surface-2)] p-4 text-sm leading-7"/>
-        <button disabled={!body.trim()} className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#7956AF] px-6 py-3 font-semibold text-white transition hover:bg-[#68479E] disabled:cursor-not-allowed disabled:opacity-50"><Send size={17}/>{reply ? "Send quoted reply" : "Reply to all"}</button>
+        <textarea name="body" required maxLength={6000} rows={4} value={body} onChange={event => setBody(event.target.value)} placeholder={reply ? "Write your reply…" : "Write a message…"} className="evx-textarea"/>
+        <div><button disabled={!body.trim()} className="evx-btn evx-btn-violet"><Send size={16} aria-hidden="true"/>{reply ? "Send quoted reply" : "Reply to all"}</button></div>
       </form>
     </section>
   </div>;

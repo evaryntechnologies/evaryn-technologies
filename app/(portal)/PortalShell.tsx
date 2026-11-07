@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import BrandLogo from "@/components/brand/BrandLogo";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Menu, X, LayoutDashboard, ClipboardList, PanelsTopLeft, Wallet, Bell, CreditCard, Users, ChevronDown, ShieldCheck, Clock3, Settings2, MessageSquare, ChevronRight, LogOut, Search, Star, Gavel, Compass, HandCoins, SlidersHorizontal, CornerDownLeft } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Menu, X, LayoutDashboard, ClipboardList, PanelsTopLeft, Wallet, Bell, CreditCard, Users, ChevronDown, ShieldCheck, Clock3, Settings2, MessageSquare, LogOut, Search, Star, Gavel, Compass, HandCoins, SlidersHorizontal, CornerDownLeft } from "lucide-react";
 import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
 import RoleLogout from "./RoleLogout";
 import { signOut } from "./actions";
@@ -185,6 +185,7 @@ export default function PortalShell({children,unreadNotifications=0,initialRole=
   const [cmdOpen,setCmdOpen]=useState(false);
   const [query,setQuery]=useState("");
   const [cursor,setCursor]=useState(0);
+  const [manualGroup,setManualGroup]=useState<{at:string;name:string|null}|null>(null);
   const router=useRouter();
   const isAuth = !pathname || pathname === "/portal" || authRoutes.some(p=>pathname.startsWith(p));
   useEffect(()=>{
@@ -222,17 +223,23 @@ export default function PortalShell({children,unreadNotifications=0,initialRole=
     return ()=>window.removeEventListener("keydown",onKey);
   },[]);
   useEffect(()=>{setCmdOpen(false)},[pathname]);
-  if(isAuth) return <>{children}</>;
-  const navigation=role ? groupedNavigation(role) : [];
-  const entries:MenuItem[]=navigation.flatMap(item=>isNavigationGroup(item)?item.items:[item]);
-  const results=entries.filter(e=>e.name.toLowerCase().includes(query.trim().toLowerCase())).slice(0,9);
-  const go=(href:string)=>{setCmdOpen(false);router.push(href);};
+  const navigation=useMemo(()=>role ? groupedNavigation(role) : [],[role]);
   const isActive=(href:string)=>{
     const [target,query]=href.split("?");
     if(pathname!==target)return false;
     if(!query)return !params.has("tab");
     return new URLSearchParams(query).get("tab")===params.get("tab");
   };
+  // Accordion: the section that contains the current page opens by itself; only one section is open at a time.
+  const currentGroup=navigation.find(item=>isNavigationGroup(item)&&item.items.some(child=>isActive(child.href)))?.name??null;
+  // A manual choice only lasts for the page it was made on; navigating re-opens the section holding the current page.
+  const locationKey=pathname+"?"+params.toString();
+  const openGroup=manualGroup&&manualGroup.at===locationKey?manualGroup.name:currentGroup;
+  const setOpenGroup=(name:string|null)=>setManualGroup({at:locationKey,name});
+  if(isAuth) return <>{children}</>;
+  const entries:MenuItem[]=navigation.flatMap(item=>isNavigationGroup(item)?item.items:[item]);
+  const results=entries.filter(e=>e.name.toLowerCase().includes(query.trim().toLowerCase())).slice(0,9);
+  const go=(href:string)=>{setCmdOpen(false);router.push(href);};
   return <div className="ev-workspace">
     <header className="ev-topbar">
       <button type="button" className="ev-menu-trigger" aria-label={open?"Close navigation":"Open navigation"} aria-controls="ev-main-sidebar" aria-expanded={open} onClick={()=>setOpen(v=>!v)}>{open?<X size={21}/>:<Menu size={21}/>}</button>
@@ -249,21 +256,28 @@ export default function PortalShell({children,unreadNotifications=0,initialRole=
     {open && <button className="ev-backdrop" type="button" aria-label="Close sidebar" onClick={()=>setOpen(false)}/>}
     <aside id="ev-main-sidebar" className={`ev-sidebar ${open?"ev-sidebar-open":""}`} aria-label="Employee workspace navigation" aria-hidden={!open}>
       <div className="ev-sidebar-card"><span className="ev-avatar ev-avatar-lg" aria-hidden="true">{firstName?firstName.charAt(0).toUpperCase():"E"}</span><div><strong>{firstName||"Welcome"}</strong><small>{role?roleTitle[role]:"Workspace"}</small></div></div>
-      <div className="ev-sidebar-heading"><span>NAVIGATE</span></div>
+      <div className="ev-sidebar-heading"><span>Workspace</span></div>
       <nav className="ev-sidebar-links" aria-label="Your available pages">
         {navigation.map(item=>{
           const Icon=item.icon;
           if(isNavigationGroup(item)){
-            const active=item.items.some(child=>isActive(child.href));
-            return <details key={item.name} className="ev-nav-group" open={active}>
-              <summary className={`ev-nav-link ev-nav-group-trigger ${active?"ev-nav-group-active":""}`}><Icon size={17}/><span>{item.name}</span><ChevronDown size={15} className="ev-nav-chevron ev-nav-group-arrow"/></summary>
-              <div className="ev-nav-group-items">{item.items.map(child=>{
-                const ChildIcon=child.icon;
-                return <Link tabIndex={open?0:-1} key={child.href} href={child.href} aria-current={isActive(child.href)?"page":undefined} className={`ev-nav-link ev-nav-sub-link ${isActive(child.href)?"ev-nav-active":""}`}><ChildIcon size={15}/><span>{child.name}</span>{isActive(child.href)&&<ChevronRight size={13} className="ev-nav-chevron"/>}</Link>;
-              })}</div>
-            </details>;
+            const expanded=openGroup===item.name;
+            const holdsCurrent=item.items.some(child=>isActive(child.href));
+            const panelId="ev-acc-"+item.name.toLowerCase().replace(/[^a-z]+/g,"-");
+            return <div key={item.name} className={`ev-acc ${expanded?"ev-acc-open":""}`}>
+              <button type="button" id={panelId+"-trigger"} className={`ev-acc-trigger ${holdsCurrent?"ev-acc-current":""}`} aria-expanded={expanded} aria-controls={panelId} tabIndex={open?0:-1} onClick={()=>setOpenGroup(expanded?null:item.name)}>
+                <Icon size={17} aria-hidden="true"/><span className="ev-acc-label">{item.name}</span><span className="ev-acc-count" aria-hidden="true">{item.items.length}</span><ChevronDown size={15} className="ev-acc-chevron" aria-hidden="true"/>
+              </button>
+              <div id={panelId} role="region" aria-labelledby={panelId+"-trigger"} className="ev-acc-panel" inert={!expanded}>
+                <ul className="ev-acc-list">{item.items.map(child=>{
+                  const ChildIcon=child.icon;
+                  const current=isActive(child.href);
+                  return <li key={child.href}><Link tabIndex={open&&expanded?0:-1} href={child.href} aria-current={current?"page":undefined} className={`ev-acc-link ${current?"ev-acc-link-active":""}`}><ChildIcon size={15} aria-hidden="true"/><span>{child.name}</span></Link></li>;
+                })}</ul>
+              </div>
+            </div>;
           }
-          return <Link tabIndex={open?0:-1} key={item.href} href={item.href} aria-current={isActive(item.href)?"page":undefined} className={`ev-nav-link ${isActive(item.href)?"ev-nav-active":""}`}><Icon size={17}/><span>{item.name}</span>{isActive(item.href)&&<ChevronRight size={14} className="ev-nav-chevron"/>}</Link>;
+          return <Link tabIndex={open?0:-1} key={item.href} href={item.href} aria-current={isActive(item.href)?"page":undefined} className={`ev-nav-link ev-nav-solo ${isActive(item.href)?"ev-nav-active":""}`}><Icon size={17} aria-hidden="true"/><span>{item.name}</span></Link>;
         })}
         {!role && <div className="ev-menu-pending">{loading?"Loading your navigation…":"Please sign in to access your workspace."}</div>}
       </nav>
