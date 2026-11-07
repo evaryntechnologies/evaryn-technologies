@@ -37,9 +37,23 @@ async function Content({ searchParams }: Props) {
     SELECT "payoutDate",accrued,adjustments,"finalPayable","publishedAt",state,"issueText",resolution
     FROM public."WorkforcePayStatement" WHERE "employeeId"=${employee.id}::uuid ORDER BY "payoutDate" DESC LIMIT 24`;
   // Historic ledger balances stay USD; confirmed transfers show their actual currency.
-  const transfers=await prisma.$queryRaw<Array<{paymentCurrency:"USD"|"KES";transferAmount:unknown;usdTotal:unknown;exchangeRate:unknown;paymentReference:string;createdAt:Date}>>`
-    SELECT "paymentCurrency","transferAmount","usdTotal","exchangeRate","paymentReference","createdAt"
-    FROM public."PayTeamTransferRecord" WHERE "employeeId"=${employee.id}::uuid ORDER BY "createdAt" DESC LIMIT 25`;
+  type Transfer = {paymentCurrency:"USD"|"KES";transferAmount:unknown;usdTotal:unknown;exchangeRate:unknown;paymentReference:string;createdAt:Date};
+  let transfers: Transfer[] = [];
+  let transferHistoryUnavailable = false;
+  try {
+    transfers = await prisma.$queryRaw<Transfer[]>`
+      SELECT "paymentCurrency","transferAmount","usdTotal","exchangeRate","paymentReference","createdAt"
+      FROM public."PayTeamTransferRecord"
+      WHERE "employeeId"=${employee.id}::uuid ORDER BY "createdAt" DESC LIMIT 25`;
+  } catch (error) {
+    // An incomplete rollout must not take the entire earnings page offline.
+    // Only recover from the missing relation; other database errors still surface.
+    const e = error as { code?: string; message?: string; meta?: { code?: string; message?: string } };
+    const diagnostic = `${e.message ?? ""} ${e.meta?.message ?? ""}`;
+    if (e.code !== "P2010" || !/42P01|PayTeamTransferRecord.*does not exist|relation.*PayTeamTransferRecord.*does not exist/i.test(diagnostic)) throw error;
+    console.error("Currency migration incomplete: PayTeamTransferRecord is missing", error);
+    transferHistoryUnavailable = true;
+  }
   const selected = applyEarningsFilters(rows, filters);
   const totals = summarize(selected);
   const lifetime = summarize(rows);
@@ -88,7 +102,8 @@ async function Content({ searchParams }: Props) {
       <section className={`${card} mt-6 space-y-3 p-5`}>
         <h2 className="text-lg font-bold">Recorded payments in USD or KES</h2>
         <p className="text-sm text-[var(--ev-muted)]">Your earnings balance is accounted for in USD. These are the actual payment amounts recorded by the Super Admin in their original transfer currency, with the corresponding USD value and exchange rate.</p>
-        {transfers.length === 0 ? <p className="text-sm text-[var(--ev-muted)]">No dual-currency transfer records yet. Older completed payments remain in the existing earnings history.</p> : transfers.map(t=><article key={`${t.paymentReference}-${t.createdAt.toISOString()}`} className="rounded-xl border border-[var(--ev-border-soft)] p-3 text-sm">
+        {transferHistoryUnavailable && <p role="alert" className="rounded-lg border border-amber-500/60 p-3 text-sm">Payment transfer history is temporarily unavailable because the currency database migration has not been completed. Existing earnings figures are unaffected. Ask Super Admin to apply the migration before recording payments.</p>}
+        {!transferHistoryUnavailable && transfers.length === 0 ? <p className="text-sm text-[var(--ev-muted)]">No dual-currency transfer records yet. Older completed payments remain in the existing earnings history.</p> : transfers.map(t=><article key={`${t.paymentReference}-${t.createdAt.toISOString()}`} className="rounded-xl border border-[var(--ev-border-soft)] p-3 text-sm">
           <strong>{new Intl.NumberFormat("en-KE",{style:"currency",currency:t.paymentCurrency}).format(Number(t.transferAmount))}</strong>
           <span className="ml-2 text-[var(--ev-muted)]">(USD {Number(t.usdTotal).toFixed(2)} accounting value{t.paymentCurrency==="KES"?` · 1 USD = ${Number(t.exchangeRate).toFixed(6)} KES`:""})</span>
           <p className="mt-1 text-xs text-[var(--ev-muted)]">{t.createdAt.toLocaleString("en-GB")} · Reference: {t.paymentReference}</p>

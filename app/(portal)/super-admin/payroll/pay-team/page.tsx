@@ -20,7 +20,7 @@ export default async function PayTeamPage(){
  const [employees,periods,statements]=await Promise.all([
   prisma.$queryRaw<Employee[]>`SELECT e.id,e."fullName",e.role,e.status,
    EXISTS(SELECT 1 FROM public."EmployeePaymentMethod" m WHERE m."employeeId"=e.id AND length(btrim(m.details))>0) AS "hasMethod",
-   COALESCE((SELECT m."currency" FROM public."EmployeePaymentMethod" m WHERE m."employeeId"=e.id),'USD') AS "preferredCurrency"
+   COALESCE((SELECT NULLIF(to_jsonb(m)->>'currency','') FROM public."EmployeePaymentMethod" m WHERE m."employeeId"=e.id LIMIT 1),'USD') AS "preferredCurrency"
    FROM public."EmployeeProfile" e ORDER BY e."fullName"`,
   prisma.$queryRaw<Period[]>`WITH eligible AS (
     SELECT l."employeeId",l."payoutDate",l."payableAmount" FROM public."WorkforcePayLedger" l
