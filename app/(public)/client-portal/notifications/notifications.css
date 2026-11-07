@@ -1,0 +1,73 @@
+/* Client notifications: scoped visual refinements only. The existing server actions and data feed remain unchanged. */
+.cp-shell .cp-notifications {
+  --cn-blue: #1766c6;
+  --cn-cyan: #087f99;
+  --cn-amethyst: #8252be;
+  --cn-emerald: #087b5f;
+  width: min(100%, 1000px);
+  margin-inline: auto;
+  padding-block: .5rem 3rem;
+  color: var(--ev-ink);
+}
+.cp-shell .cp-notifications-heading { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: flex-end; gap: 1.5rem; margin-bottom: 1.2rem; }
+.cp-shell .cp-notifications-heading-copy { min-width: 0; flex: 1 1 390px; }
+.cp-shell .cp-notifications-back { display: inline-flex; align-items: center; gap: .5rem; margin: 0 0 1rem; font-size: .86rem; font-weight: 700; text-decoration: none; color: var(--ev-amethyst-text); }
+.cp-shell .cp-notifications-back:hover { text-decoration: underline; text-underline-offset: 3px; }
+.cp-shell .cp-notifications-title-row { display: flex; align-items: center; gap: 1rem; }
+.cp-shell .cp-notifications-title-icon { display: grid; place-items: center; flex: none; width: 3.25rem; height: 3.25rem; border-radius: 17px; color: #fff; background: linear-gradient(140deg,#1b72ca,#7850bd); box-shadow: 0 10px 22px -14px #6f43aa; }
+.cp-shell .cp-notifications h1 { margin: 0; font-size: clamp(1.65rem,3vw,2.25rem); line-height: 1.15; letter-spacing: -.035em; font-weight: 800; }
+.cp-shell .cp-notifications-title-row p { margin: .5rem 0 0; max-width: 60ch; color: var(--ev-muted); line-height: 1.55; font-size: .91rem; }
+.cp-shell .cp-notifications-mark-all { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; min-height: 44px; padding: .65rem 1.1rem; border-radius: 12px; border: 1px solid #7750ad; background: linear-gradient(120deg,#6540a3,#8152bd); color: #fff !important; -webkit-text-fill-color: #fff !important; font-size: .85rem; font-weight: 750; cursor: pointer; box-shadow: 0 8px 20px -16px #7650b5; }
+.cp-shell .cp-notifications-mark-all:hover { filter: brightness(1.12); }
+.cp-shell .cp-notifications-overview { display: flex; align-items: center; flex-wrap: wrap; gap: .9rem 1.2rem; padding: 1.05rem 1.3rem; margin-bottom: 1.5rem; border-radius: 18px; border: 1px solid color-mix(in srgb,var(--ev-cyan) 32%,var(--ev-border)); background: linear-gradient(110deg,color-mix(in srgb,#b9ebf5 42%,var(--ev-surface)),color-mix(in srgb,#d2c3f4 30%,var(--ev-surface))); }
+.dark .cp-shell .cp-notifications-overview { background: linear-gradient(110deg,#103d58,#352454); }
+.cp-shell .cp-notifications-overview-block { display: flex; align-items: baseline; gap: .55rem; min-width: 140px; }
+.cp-shell .cp-notifications-overview-number { font-size: 1.65rem; font-variant-numeric: tabular-nums; font-weight: 850; line-height: 1; color: var(--ev-ink); }
+.cp-shell .cp-notifications-overview-label { font-size: .8rem; font-weight: 650; color: var(--ev-muted); }
+.cp-shell .cp-notifications-overview-total { padding-left: 1.2rem; border-left: 1px solid color-mix(in srgb,var(--ev-muted) 28%,transparent); }
+.cp-shell .cp-notifications-overview-note { margin: 0 0 0 auto; font-size: .78rem; color: var(--ev-muted); }
+.cp-shell .cp-notifications-feed { overflow: hidden; border-radius: 20px; border: 1px solid var(--ev-border-soft); background: var(--ev-surface); box-shadow: var(--ev-shadow); }
+.cp-shell .cp-notifications-feed-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .7rem; padding: 1.2rem 1.4rem; border-bottom: 1px solid var(--ev-border-soft); background: color-mix(in srgb,var(--ev-surface) 75%,var(--ev-inset)); }
+.cp-shell .cp-notifications-feed-head h2 { margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--ev-ink); }
+.cp-shell .cp-notifications-feed-head > span { font-size: .79rem; font-weight: 700; color: var(--ev-muted); }
+.cp-shell .cp-notifications-form + .cp-notifications-form { border-top: 1px solid var(--ev-border-soft); }
+.cp-shell .cp-notifications-item { --cn-tone: var(--cn-blue); --cn-wash: #c9dcfa; position: relative; display: flex; align-items: flex-start; gap: 1rem; min-width: 0; width: 100%; padding: 1.25rem 1.4rem; border: 0; border-radius: 0; background: transparent; color: var(--ev-ink) !important; -webkit-text-fill-color: initial; text-align: left; cursor: pointer; transition: background .17s ease; }
+.cp-shell .cp-notifications-item[data-kind="message"] { --cn-tone: var(--cn-amethyst); --cn-wash: #e1d1fa; }
+.cp-shell .cp-notifications-item[data-kind="progress"] { --cn-tone: var(--cn-cyan); --cn-wash: #b9edf4; }
+.cp-shell .cp-notifications-item[data-kind="delivery"] { --cn-tone: var(--cn-emerald); --cn-wash: #b7ead8; }
+.cp-shell .cp-notifications-item[data-unread="true"] { background: linear-gradient(100deg,color-mix(in srgb,var(--cn-wash) 56%,var(--ev-surface)),color-mix(in srgb,var(--cn-wash) 18%,var(--ev-surface))); box-shadow: inset 3px 0 var(--cn-tone); }
+.dark .cp-shell .cp-notifications-item[data-unread="true"] { background: linear-gradient(100deg,color-mix(in srgb,var(--cn-tone) 24%,var(--ev-surface)),color-mix(in srgb,var(--cn-tone) 9%,var(--ev-surface))); }
+.cp-shell .cp-notifications-item:hover { background: color-mix(in srgb,var(--cn-tone) 12%,var(--ev-surface)); }
+.cp-shell .cp-notifications-item:focus-visible { outline: 3px solid var(--ev-cyan); outline-offset: -4px; z-index: 1; }
+.cp-shell .cp-notifications-item-icon { flex: none; display: grid; place-items: center; width: 2.8rem; height: 2.8rem; border-radius: 13px; background: color-mix(in srgb,var(--cn-tone) 17%,var(--ev-surface)); border: 1px solid color-mix(in srgb,var(--cn-tone) 32%,transparent); color: var(--cn-tone); }
+.dark .cp-shell .cp-notifications-item-icon { color: color-mix(in srgb,var(--cn-tone) 53%,white); }
+.cp-shell .cp-notifications-item-content { flex: 1; display: block; min-width: 0; }
+.cp-shell .cp-notifications-item-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .65rem; margin-bottom: .4rem; }
+.cp-shell .cp-notifications-type { color: var(--cn-tone); font-size: .72rem; line-height: 1.4; font-weight: 800; letter-spacing: .025em; }
+.dark .cp-shell .cp-notifications-type { color: color-mix(in srgb,var(--cn-tone) 48%,white); }
+.cp-shell .cp-notifications-new { background: var(--cn-tone); color: #fff; border-radius: 999px; padding: .14rem .55rem; font-size: .67rem; font-weight: 800; line-height: 1.35; }
+.cp-shell .cp-notifications-item-meta time { margin-left: auto; font-size: .72rem; font-variant-numeric: tabular-nums; color: var(--ev-muted); }
+.cp-shell .cp-notifications-item-title { display: block; margin: 0 0 .3rem; font-size: .96rem; line-height: 1.45; font-weight: 760; overflow-wrap: anywhere; color: var(--ev-ink); }
+.cp-shell .cp-notifications-item-body { display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .85rem; line-height: 1.65; color: var(--ev-muted); }
+.cp-shell .cp-notifications-open { display: inline-flex; align-items: center; gap: .3rem; margin-top: .65rem; font-size: .78rem; font-weight: 750; color: var(--ev-amethyst-text); }
+.cp-shell .cp-notifications-end-icon { flex: none; margin-top: .2rem; color: var(--ev-muted); opacity: .65; }
+.cp-shell .cp-notifications-empty { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 3rem 1.2rem; }
+.cp-shell .cp-notifications-empty-icon { display: grid; place-items: center; width: 4rem; height: 4rem; border-radius: 18px; background: color-mix(in srgb,var(--ev-cyan) 18%,var(--ev-surface)); color: var(--ev-accent-text); }
+.cp-shell .cp-notifications-empty h3 { margin: 1rem 0 .4rem; font-size: 1.05rem; color: var(--ev-ink); }
+.cp-shell .cp-notifications-empty p { margin: 0; max-width: 45ch; font-size: .87rem; line-height: 1.6; color: var(--ev-muted); }
+.cp-shell .cp-notifications-empty a { display: inline-flex; gap: .35rem; align-items: center; margin-top: 1.1rem; color: var(--ev-amethyst-text); font-weight: 750; font-size: .85rem; text-decoration: none; }
+@media(max-width: 640px) {
+  .cp-shell .cp-notifications-title-row { align-items: flex-start; }
+  .cp-shell .cp-notifications-title-icon { width: 2.75rem; height: 2.75rem; }
+  .cp-shell .cp-notifications-mark-all { width: 100%; }
+  .cp-shell .cp-notifications-heading > form { width: 100%; }
+  .cp-shell .cp-notifications-overview { padding: .9rem; gap: .7rem; }
+  .cp-shell .cp-notifications-overview-block { min-width: 0; }
+  .cp-shell .cp-notifications-overview-total { padding-left: .75rem; }
+  .cp-shell .cp-notifications-overview-note { flex-basis: 100%; margin: 0; }
+  .cp-shell .cp-notifications-item { padding: 1rem .9rem; gap: .75rem; }
+  .cp-shell .cp-notifications-item-icon { width: 2.45rem; height: 2.45rem; }
+  .cp-shell .cp-notifications-end-icon { display: none; }
+  .cp-shell .cp-notifications-item-meta time { margin-left: 0; width: 100%; }
+}
+@media(prefers-reduced-motion: reduce) { .cp-shell .cp-notifications-item { transition: none; } }
