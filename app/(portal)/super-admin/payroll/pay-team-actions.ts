@@ -136,6 +136,15 @@ export async function settleEmployeeTotal(
     const user = await requireEmployee(["SUPER_ADMIN"]);
     const employeeId = String(form.get("employeeId") ?? "");
     const reference = String(form.get("reference") ?? "").trim();
+    const currency = String(form.get("paymentCurrency") ?? "");
+    const rateString = String(form.get("exchangeRate") ?? "");
+    const transferString = String(form.get("transferAmount") ?? "");
+    const rate = currency === "USD" ? 1 : Number(rateString);
+    if (currency !== "USD" && currency !== "KES") throw new Error("Select USD or KES.");
+    if (currency === "KES" && (!/^\d+(?:\.\d{1,6})?$/.test(rateString) || !Number.isFinite(rate) || rate < 1 || rate > 10000))
+      throw new Error("Enter a valid verified KES per USD exchange rate.");
+    if (!/^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(transferString) || Number(transferString) <= 0)
+      throw new Error("Enter the actual positive transferred amount with up to two decimals.");
     if (!uuidPattern.test(employeeId) || reference.length < 3 || reference.length > 120)
       throw new Error("Enter a valid employee and payment reference (3–120 characters).");
     const actor = await prisma.employeeProfile.findUnique({where:{authUserId:user.id},select:{id:true,role:true,status:true}});
@@ -200,6 +209,13 @@ export async function settleEmployeeTotal(
         batches.push({date:day,rows,extras,base,net});
       }
       if(total<=0) throw new Error("Nothing payable for this employee.");
+      // Historic earnings and ledger amounts remain USD. The transfer amount is
+      // recorded in its real currency with the audited rate; no relabeling.
+      const usdTotal = total / 100;
+      const expectedTransferCents = Math.round(usdTotal * rate * 100);
+      const actualTransferCents = Math.round(Number(transferString) * 100);
+      if (!Number.isSafeInteger(expectedTransferCents) || actualTransferCents !== expectedTransferCents)
+        throw new Error("Transfer amount must match USD payable converted at the verified rate.");
       // All transfers use the ONE externally verified reference. Each period's
       // ledger and adjustment amounts are settled once, under the employee lock.
       for (const batch of batches) {
@@ -235,7 +251,10 @@ export async function settleEmployeeTotal(
         await tx.$executeRaw`INSERT INTO public."WorkforcePayStatementEvent"("employeeId","payoutDate","eventKind","actorId",details)
           VALUES(${employeeId}::uuid,${batch.date}::date,'PAID',${actor.id}::uuid,${reference})`;
       }
-      await tx.portalNotification.create({data:{recipientId:employeeId,title:"Payroll payment recorded",body:`A total payment of $${(total/100).toFixed(2)} was recorded across ${batches.length} payout period(s). Reference: ${reference}.`,href:"/earnings"}});
+      await tx.$executeRaw`
+        INSERT INTO public."PayTeamTransferRecord" ("employeeId","usdTotal","paymentCurrency","exchangeRate","transferAmount","paymentReference","paidById")
+        VALUES (${employeeId}::uuid,${usdTotal.toFixed(2)}::numeric,${currency},${rate.toFixed(6)}::numeric,${(actualTransferCents/100).toFixed(2)}::numeric,${reference},${actor.id}::uuid)`;
+      await tx.portalNotification.create({data:{recipientId:employeeId,title:"Payroll payment recorded",body:`A ${currency} ${(actualTransferCents/100).toFixed(2)} payment was recorded (USD ${usdTotal.toFixed(2)} accounting value) across ${batches.length} payout period(s). Reference: ${reference}.`,href:"/earnings"}});
     },{timeout:30000});
     revalidatePath("/super-admin/payroll/pay-team");
     revalidatePath("/super-admin/on-hold");
@@ -245,7 +264,7 @@ export async function settleEmployeeTotal(
   } catch(error){
     console.error("Consolidated Pay Team settlement failed",error);
     const msg=error instanceof Error?error.message:"Unable to record payment.";
-    const safe = /^(Enter a valid|Not authorized|Employee has no|Nothing payable|Invalid payout|Payout period|Payroll balances changed|Payroll changed during|Payout adjustments changed)/.test(msg)
+    const safe = /^(Enter |Select USD|Transfer amount|Not authorized|Employee has no|Nothing payable|Invalid payout|Payout period|Payroll balances changed|Payroll changed during|Payout adjustments changed)/.test(msg)
       ? msg : "Payment could not be recorded. Check settlement logs; no partial database settlement was committed.";
     return {status:"error",message:safe};
   }

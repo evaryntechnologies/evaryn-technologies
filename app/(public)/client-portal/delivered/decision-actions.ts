@@ -14,6 +14,8 @@ export async function submitDeliveryDecision(form: FormData) {
   const decision = String(form.get("decision") ?? "");
   const reason = String(form.get("reason") ?? "").trim();
   const percentageText = String(form.get("percentage") ?? "");
+  const currency = String(form.get("currency") ?? "");
+  const amountText = String(form.get("amount") ?? "");
   const percentage = decision === "PAID_FULL" ? 100 : Number(percentageText);
   const isPayment = decision === "PAID_PARTIAL" || decision === "PAID_FULL";
   const fullPayment = decision === "PAID_FULL" || (decision === "PAID_PARTIAL" && percentage === 100);
@@ -25,6 +27,9 @@ export async function submitDeliveryDecision(form: FormData) {
     throw new Error("Enter a percentage from 0.01 to 100 (maximum two decimal places).");
   }
 
+  if (isPayment && (currency !== "USD" && currency !== "KES")) throw new Error("Select USD or KES for the reported payment.");
+  if (isPayment && (!/^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(amountText) || Number(amountText) <= 0 || !Number.isFinite(Number(amountText))))
+    throw new Error("Enter the actual positive amount paid in the selected currency.");
   await prisma.$transaction(async tx => {
     // Ownership and current state are checked on every request, not trusted from the form.
     const delivery = await tx.clientDelivery.findFirst({
@@ -39,14 +44,14 @@ export async function submitDeliveryDecision(form: FormData) {
       // One pending report per task. A newer report replaces the earlier unverified one.
       // Reports are NEVER payment proof and NEVER unlock private final deliverables.
       await tx.$executeRaw`
-        INSERT INTO public."ClientDeliveryDecision"("deliveryId","taskId","clientId","decision","reason","paidPercent","status")
-        VALUES (${id}::uuid, ${delivery.taskId}::uuid, ${client.id}::uuid, ${paymentDecision}, ${reason}, ${percentage}, 'PENDING')
+        INSERT INTO public."ClientDeliveryDecision"("deliveryId","taskId","clientId","decision","reason","paidPercent","currency","paidAmount","status")
+        VALUES (${id}::uuid, ${delivery.taskId}::uuid, ${client.id}::uuid, ${paymentDecision}, ${reason}, ${percentage}, ${currency}, ${amountText}::numeric, 'PENDING')
         ON CONFLICT ("taskId") WHERE "status"='PENDING'
         DO UPDATE SET "deliveryId"=EXCLUDED."deliveryId", "clientId"=EXCLUDED."clientId",
           "decision"=EXCLUDED."decision", "reason"=EXCLUDED."reason",
-          "paidPercent"=EXCLUDED."paidPercent", "createdAt"=now()`;
+          "paidPercent"=EXCLUDED."paidPercent", "currency"=EXCLUDED."currency", "paidAmount"=EXCLUDED."paidAmount", "createdAt"=now()`;
       const admins = await tx.employeeProfile.findMany({ where: { role: "SUPER_ADMIN", status: "ACTIVE" }, select: { id: true } });
-      if (admins.length) await tx.portalNotification.createMany({ data: admins.map(a => ({ recipientId: a.id, title: fullPayment ? "Client reported full payment" : "Client reported partial payment", body: `Order ${delivery.task.publicTaskId ?? delivery.taskId}: ${percentage}% reported. Super Admin must verify receipt before releasing original files.`, href: "/portal/client-decisions" })) });
+      if (admins.length) await tx.portalNotification.createMany({ data: admins.map(a => ({ recipientId: a.id, title: fullPayment ? "Client reported full payment" : "Client reported partial payment", body: `Order ${delivery.task.publicTaskId ?? delivery.taskId}: ${percentage}% reported · ${currency} ${Number(amountText).toFixed(2)} (unverified). Super Admin must verify receipt before releasing original files.`, href: "/portal/client-decisions" })) });
       return;
     }
 

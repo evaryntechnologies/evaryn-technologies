@@ -9,14 +9,14 @@ import {
   PageShell, PageHeader, EmptyState, Pill, card, textareaCls, btnPrimary, dateTimeFmt,
 } from "@/app/(portal)/ui";
 
-type Request = { id: string; employeeId: string; method: string; accountName: string; requestedAt: Date; fullName: string; email: string };
+type Request = { id: string; employeeId: string; method: string; accountName: string; currency: string; requestedAt: Date; fullName: string; email: string };
 
 async function Content() {
   await connection();
   const auth = await requireEmployee(["ADMIN", "SUPER_ADMIN"]);
   const p = await prisma.employeeProfile.findUnique({ where: { authUserId: auth.id }, select: { role: true, status: true } });
   if (!p || p.status !== "ACTIVE" || !["ADMIN", "SUPER_ADMIN"].includes(p.role)) throw new Error("Not authorized.");
-  const requests = await prisma.$queryRaw<Request[]>`SELECT r."id",r."employeeId",r."method",r."accountName",r."requestedAt",e."fullName",e."email" FROM public."PaymentChangeRequest" r JOIN public."EmployeeProfile" e ON e."id"=r."employeeId" WHERE r."status"='PENDING' ORDER BY r."requestedAt" ASC LIMIT 100`;
+  const requests = await prisma.$queryRaw<Request[]>`SELECT r."id",r."employeeId",r."method",r."accountName",r."currency",r."requestedAt",e."fullName",e."email" FROM public."PaymentChangeRequest" r JOIN public."EmployeeProfile" e ON e."id"=r."employeeId" WHERE r."status"='PENDING' ORDER BY r."requestedAt" ASC LIMIT 100`;
   const locked = !canChangePaymentNow();
 
   return (
@@ -42,7 +42,7 @@ async function Content() {
                   <h2 className="font-bold">{r.fullName}</h2>
                   <p className="mt-0.5 truncate text-sm text-[var(--ev-muted)]">{r.email}</p>
                 </div>
-                <Pill tone="blue">{r.method}</Pill>
+                <Pill tone="blue">{r.method} · {r.currency}</Pill>
               </div>
               <p className="mt-3 text-sm">Account name: <strong>{r.accountName}</strong></p>
               <p className="mt-1 text-xs text-[var(--ev-muted)]">Requested {dateTimeFmt(r.requestedAt)}</p>

@@ -24,10 +24,15 @@ export async function addEmployeePayoutAdjustment(form:FormData):Promise<void>{
  const label=String(form.get("label")??"").trim();
  const reason=String(form.get("reason")??"").trim();
  const value=String(form.get("amount")??"").trim();
+ const currency=String(form.get("currency")??"");
+ const rateText=String(form.get("exchangeRate")??"").trim();
+ const rate=currency==="USD"?1:Number(rateText);
+ if(!["USD","KES"].includes(currency))throw new Error("Select USD or KES");
+ if(currency==="KES"&&(!/^\d+(?:\.\d{1,6})?$/.test(rateText)||!Number.isFinite(rate)||rate<1||rate>10000))throw new Error("Enter a verified USD to KES exchange rate");
  if(!idPattern.test(employeeId)||!dayPattern.test(payoutDate))throw new Error("Select an employee and payout period");
  if(label.length<2||label.length>100||reason.length<10||reason.length>2000)throw new Error("Adjustment name and a detailed reason are required");
  if(!/^[+-]?(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/.test(value))throw new Error("Enter a signed amount, e.g. -2500.00 or +180.00");
- const delta=cents(value);if(delta===0)throw new Error("The adjustment cannot be zero");
+ const delta=currency==="USD"?cents(value):Math.round(Number(value)*100/rate);if(!Number.isSafeInteger(delta))throw new Error("Invalid monetary value");if(delta===0)throw new Error("The adjustment cannot be zero");
  await prisma.$transaction(async tx=>{
    const locked=await tx.$queryRaw<Array<{id:string}>>`SELECT id FROM public."EmployeeProfile" WHERE id=${employeeId}::uuid FOR UPDATE`;
    if(!locked.length)throw new Error("Employee not found");
@@ -47,11 +52,11 @@ export async function addEmployeePayoutAdjustment(form:FormData):Promise<void>{
    const issue=await tx.$queryRaw<Array<{state:string}>>`
     SELECT state FROM public."WorkforcePayStatement" WHERE "employeeId"=${employeeId}::uuid AND "payoutDate"=${payoutDate}::date FOR UPDATE`;
    if(issue[0]?.state==="DISPUTED"||issue[0]?.state==="PAID")throw new Error("Resolve the employee issue or settled statement first");
-   await tx.$executeRaw`INSERT INTO public."WorkforcePayoutAdjustment"("employeeId","payoutDate","label","reason","amount","createdById")
-     VALUES(${employeeId}::uuid,${payoutDate}::date,${label},${reason},${amount(delta)}::numeric,${actor.id}::uuid)`;
+   await tx.$executeRaw`INSERT INTO public."WorkforcePayoutAdjustment"("employeeId","payoutDate","label","reason","amount","createdById","originalCurrency","originalAmount","exchangeRate")
+     VALUES(${employeeId}::uuid,${payoutDate}::date,${label},${reason},${amount(delta)}::numeric,${actor.id}::uuid,${currency},${Number(value).toFixed(2)}::numeric,${rate.toFixed(6)}::numeric)`;
    // A changed payable must be published again, restarting the 48-hour review.
    await tx.$executeRaw`DELETE FROM public."WorkforcePayStatement" WHERE "employeeId"=${employeeId}::uuid AND "payoutDate"=${payoutDate}::date AND state<>'PAID'`;
-   await tx.portalNotification.create({data:{recipientId:employeeId,title:"Payroll adjustment pending review",body:`${label}: ${delta>0?"+":""}$${amount(delta)}. ${reason}. A revised final statement will be published before payout.`,href:"/earnings"}});
+   await tx.portalNotification.create({data:{recipientId:employeeId,title:"Payroll adjustment pending review",body:`${label}: ${currency} ${value} (USD ${amount(delta)} accounting adjustment at ${rate.toFixed(6)} KES/USD when applicable). ${reason}. A revised final statement will be published before payout.`,href:"/earnings"}});
  },{timeout:20000});
  refresh();
 }

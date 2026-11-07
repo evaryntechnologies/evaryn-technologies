@@ -10,6 +10,8 @@ export async function requestPaymentChange(form:FormData) {
   if(!profile || profile.status!=="ACTIVE") throw new Error("Employee access denied.");
   const existing = await prisma.$queryRaw<Array<{present:boolean}>>`SELECT EXISTS(SELECT 1 FROM public."EmployeePaymentMethod" WHERE "employeeId"=${profile.id}::uuid) AS present`;
   if(existing[0]?.present && !canChangePaymentNow()) throw new Error("Payment method changes close four days before payout. Initial registration remains available.");
+  const currency=String(form.get("currency")??"");
+  if(currency!=="USD"&&currency!=="KES")throw new Error("Select USD or KES.");
   const method=String(form.get("method")??"");
   const provider=String(form.get("provider")??"");
   const other=String(form.get("otherProvider")??"").trim();
@@ -33,8 +35,8 @@ export async function requestPaymentChange(form:FormData) {
   // Transactional pending record + administrator notifications. No account numbers in notifications.
   await prisma.$transaction(async tx => {
     const pending = await tx.$queryRaw<Array<{ id: string }>>`
-      INSERT INTO public."PaymentChangeRequest" ("employeeId","method","accountName","details")
-      VALUES (${profile.id}::uuid, ${method}, ${accountName}, ${encrypted})
+      INSERT INTO public."PaymentChangeRequest" ("employeeId","method","accountName","details","currency")
+      VALUES (${profile.id}::uuid, ${method}, ${accountName}, ${encrypted},${currency})
       RETURNING "id"`;
     if (!pending[0]) throw new Error("Could not create the payment request.");
     const recipients = await tx.employeeProfile.findMany({

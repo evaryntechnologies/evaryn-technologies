@@ -36,6 +36,10 @@ async function Content({ searchParams }: Props) {
   const statements=await prisma.$queryRaw<Array<{payoutDate:Date;accrued:unknown;adjustments:unknown;finalPayable:unknown;publishedAt:Date;state:string;issueText:string|null;resolution:string|null}>>`
     SELECT "payoutDate",accrued,adjustments,"finalPayable","publishedAt",state,"issueText",resolution
     FROM public."WorkforcePayStatement" WHERE "employeeId"=${employee.id}::uuid ORDER BY "payoutDate" DESC LIMIT 24`;
+  // Historic ledger balances stay USD; confirmed transfers show their actual currency.
+  const transfers=await prisma.$queryRaw<Array<{paymentCurrency:"USD"|"KES";transferAmount:unknown;usdTotal:unknown;exchangeRate:unknown;paymentReference:string;createdAt:Date}>>`
+    SELECT "paymentCurrency","transferAmount","usdTotal","exchangeRate","paymentReference","createdAt"
+    FROM public."PayTeamTransferRecord" WHERE "employeeId"=${employee.id}::uuid ORDER BY "createdAt" DESC LIMIT 25`;
   const selected = applyEarningsFilters(rows, filters);
   const totals = summarize(selected);
   const lifetime = summarize(rows);
@@ -52,7 +56,7 @@ async function Content({ searchParams }: Props) {
       <PageHeader
         eyebrow="My earnings"
         title="Earnings"
-        subtitle={`${employee.fullName} · ${employee.role.replaceAll("_", " ")} · USD (confirm compensation currency)`}
+        subtitle={`${employee.fullName} · ${employee.role.replaceAll("_", " ")} · USD accounting balance · transfers may be USD or KES`}
         actions={
           <Link href={`/api/portal/earnings/pdf?${params.toString()}`} className={btnPrimary}>
             <Download size={16} aria-hidden="true" /> Download statement (PDF)
@@ -79,6 +83,16 @@ async function Content({ searchParams }: Props) {
             {(s.state==="REVIEW"||s.state==="CLEARED")&&<form action={raisePayrollClarification} className="mt-4 space-y-2"><input type="hidden" name="payoutDate" value={period}/><label className="block text-sm font-semibold">Request clarification<textarea name="issue" required minLength={10} maxLength={2000} rows={2} className={`${inputCls} mt-1.5`} placeholder="Describe the disputed amount or adjustment"/></label><button className={btnGhost}>Raise issue</button></form>}
           </article>;
         })}
+      </section>
+
+      <section className={`${card} mt-6 space-y-3 p-5`}>
+        <h2 className="text-lg font-bold">Recorded payments in USD or KES</h2>
+        <p className="text-sm text-[var(--ev-muted)]">Your earnings balance is accounted for in USD. These are the actual payment amounts recorded by the Super Admin in their original transfer currency, with the corresponding USD value and exchange rate.</p>
+        {transfers.length === 0 ? <p className="text-sm text-[var(--ev-muted)]">No dual-currency transfer records yet. Older completed payments remain in the existing earnings history.</p> : transfers.map(t=><article key={`${t.paymentReference}-${t.createdAt.toISOString()}`} className="rounded-xl border border-[var(--ev-border-soft)] p-3 text-sm">
+          <strong>{new Intl.NumberFormat("en-KE",{style:"currency",currency:t.paymentCurrency}).format(Number(t.transferAmount))}</strong>
+          <span className="ml-2 text-[var(--ev-muted)]">(USD {Number(t.usdTotal).toFixed(2)} accounting value{t.paymentCurrency==="KES"?` · 1 USD = ${Number(t.exchangeRate).toFixed(6)} KES`:""})</span>
+          <p className="mt-1 text-xs text-[var(--ev-muted)]">{t.createdAt.toLocaleString("en-GB")} · Reference: {t.paymentReference}</p>
+        </article>)}
       </section>
 
       <form method="GET" className={`${card} mt-6 grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-[repeat(4,minmax(0,1fr))_auto]`}>
